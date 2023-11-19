@@ -1,4 +1,4 @@
-use std::f32::consts::TAU;
+//use std::f32::consts::TAU;
 
 use bevy::prelude::*;
 use bevy_vector_shapes::prelude::*;
@@ -27,6 +27,7 @@ struct Pos {
 fn setup(mut commands: Commands) {
     // Spawn the camera
     commands.spawn((
+        //Camera2dBundle::default(),
         Camera2dBundle {
             transform: Transform::from_translation(Vec3::Z), //push the camera "back" one unit
             projection: OrthographicProjection {
@@ -61,17 +62,18 @@ fn spawn_circles(
         let Some(point) = camera.viewport_to_world_2d(camera_transform, cursor_position) else {
             return;
         };
-        commands.spawn((    
+        commands.spawn(    
             Pos {
                 pos: point.extend(0.0)
             }
-        ));
+        );
     }
 }
 
-fn draw_circles(mut painter: ShapePainter, query: Query<(&Pos)>) {
+fn draw_circles(mut painter: ShapePainter, query: Query<&Pos>) {
     for pos in &query {
-        painter.translate(pos.pos);
+        painter.translate(Vec3::ZERO);
+        painter.translate(pos.pos); //this is wrong, i think we're accumulating translation
         painter.color = Color::hsla(random::<f32>()*360., 100.0, 50.0, random::<f32>());
         painter.circle(5.);
     }
