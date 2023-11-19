@@ -1,6 +1,11 @@
 //use std::f32::consts::TAU;
 
-use bevy::prelude::*;
+use bevy::{
+    core_pipeline::{
+        bloom::{BloomCompositeMode, BloomSettings},
+        tonemapping::Tonemapping,
+    },
+    prelude::*};
 use bevy_vector_shapes::prelude::*;
 use bevy_pancam::{PanCam, PanCamPlugin};
 use bevy::render::camera::ScalingMode;
@@ -11,7 +16,7 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugins(PanCamPlugin::default())
         .add_plugins(Shape2dPlugin::default())
-        .insert_resource(ClearColor(Color::DARK_GRAY))
+        .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(Msaa::Off)
         .add_systems(Startup, setup)
         .add_systems(Update, (spawn_circles, draw_circles))
@@ -29,6 +34,11 @@ fn setup(mut commands: Commands) {
     commands.spawn((
         //Camera2dBundle::default(),
         Camera2dBundle {
+            camera: Camera {
+                hdr: true, //for bloom
+                ..default()
+            },
+            tonemapping: Tonemapping::TonyMcMapface, //also for bloom
             transform: Transform::from_translation(Vec3::Z), //push the camera "back" one unit
             projection: OrthographicProjection {
                 scaling_mode: ScalingMode::AutoMin { //something to do with window size
@@ -39,6 +49,7 @@ fn setup(mut commands: Commands) {
             },
         ..default()
         },
+        BloomSettings::default(), //enable bloom
         PanCam {
             //limit zooming
             max_scale: Some(40.),
