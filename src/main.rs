@@ -14,7 +14,15 @@ fn main() {
 
 fn setup(mut commands: Commands) {
     // Spawn the camera
-    commands.spawn((Camera2dBundle::default(), PanCam::default()));
+    commands.spawn((
+        Camera2dBundle::default(),
+        PanCam {
+            //limit zooming
+            max_scale: Some(40.),
+            min_scale: 0.25,
+            ..default()
+        },
+    ));
 }
 
 fn draw(mut painter: ShapePainter) {
