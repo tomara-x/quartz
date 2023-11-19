@@ -11,19 +11,25 @@ fn main() {
         .add_plugins(PanCamPlugin::default())
         .add_plugins(Shape2dPlugin::default())
         .insert_resource(ClearColor(Color::DARK_GRAY))
-        .insert_resource(Msaa::Off) //hm?
+        .insert_resource(Msaa::Off)
         .add_systems(Startup, setup)
-        .add_systems(Update, draw_gallery)
+        .add_systems(Update, (spawn_circles, draw_circles))
+        .add_systems(Update, toggle_pan)
         .run();
+}
+
+#[derive(Component)]
+struct Pos {
+    pos: Vec3
 }
 
 fn setup(mut commands: Commands) {
     // Spawn the camera
     commands.spawn((
         Camera2dBundle {
-            transform: Transform::from_translation(Vec3::Z), //HM?!
+            transform: Transform::from_translation(Vec3::Z), //push the camera "back" one unit
             projection: OrthographicProjection {
-                scaling_mode: ScalingMode::AutoMin { //HMM??
+                scaling_mode: ScalingMode::AutoMin { //something to do with window size
                     min_width: 5.2 * 4.5,
                     min_height: 3.2 * 4.5,
                 },
@@ -40,6 +46,37 @@ fn setup(mut commands: Commands) {
     ));
 }
 
+fn spawn_circles(
+    mut commands: Commands,
+    mouse_button_input: Res<Input<MouseButton>>,
+    camera_query: Query<(&Camera, &GlobalTransform)>,
+    windows: Query<&Window>,
+    ) {
+    if mouse_button_input.just_pressed(MouseButton::Left) {
+        let (camera, camera_transform) = camera_query.single();
+        let Some(cursor_position) = windows.single().cursor_position() else {
+            return;
+        };
+        let Some(point) = camera.viewport_to_world_2d(camera_transform, cursor_position) else {
+            return;
+        };
+        commands.spawn((    
+            Pos {
+                pos: point.extend(0.0)
+            }
+        ));
+    }
+}
+
+fn draw_circles(mut painter: ShapePainter, query: Query<(&Pos)>) {
+    for pos in &query {
+        painter.translate(pos.pos);
+        painter.color = Color::rgba(0.0, 0.0, 1.0, 0.5);
+        painter.circle(50.);
+    }
+}
+
+/*
 fn draw_circles(painter: &mut ShapePainter, radius: f32) {
     painter.translate(-(Vec3::X + Vec3::NEG_Y) * f32::sqrt(radius) * 0.5);
     painter.color = Color::rgba(1.0, 0.0, 0.0, 0.5);
@@ -73,3 +110,13 @@ fn draw_gallery(mut painter: ShapePainter) {
     painter.alpha_mode = AlphaMode::Blend;
     draw_circles(&mut painter, radius);
 }
+*/
+
+fn toggle_pan(mut query: Query<&mut PanCam>, keys: Res<Input<KeyCode>>) {
+    if keys.just_pressed(KeyCode::Space) {
+        for mut pancam in &mut query {
+            pancam.enabled = !pancam.enabled;
+        }
+    }
+}
+
