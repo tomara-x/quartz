@@ -4,6 +4,7 @@ use bevy::prelude::*;
 use bevy_vector_shapes::prelude::*;
 use bevy_pancam::{PanCam, PanCamPlugin};
 use bevy::render::camera::ScalingMode;
+use rand::prelude::random;
 
 fn main() {
     App::new()
@@ -71,8 +72,8 @@ fn spawn_circles(
 fn draw_circles(mut painter: ShapePainter, query: Query<(&Pos)>) {
     for pos in &query {
         painter.translate(pos.pos);
-        painter.color = Color::rgba(0.0, 0.0, 1.0, 0.5);
-        painter.circle(50.);
+        painter.color = Color::hsla(random::<f32>()*360., 100.0, 50.0, random::<f32>());
+        painter.circle(5.);
     }
 }
 
