@@ -72,8 +72,8 @@ fn spawn_circles(
 
 fn draw_circles(mut painter: ShapePainter, query: Query<&Pos>) {
     for pos in &query {
-        painter.translate(Vec3::ZERO);
-        painter.translate(pos.pos); //this is wrong, i think we're accumulating translation
+        painter.set_translation(Vec3::ZERO); //put the painter at origin before translating
+        painter.translate(pos.pos);
         painter.color = Color::hsla(random::<f32>()*360., 100.0, 50.0, random::<f32>());
         painter.circle(5.);
     }
