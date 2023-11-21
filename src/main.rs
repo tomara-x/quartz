@@ -13,7 +13,13 @@ use rand::prelude::random;
 
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins)
+        .add_plugins(DefaultPlugins.set(WindowPlugin {
+            primary_window: Some(Window {
+                title: String::from("awawawa"),
+                ..default()
+            }),
+            ..default()
+        }))
         .add_plugins(PanCamPlugin::default())
         .add_plugins(Shape2dPlugin::default())
         .insert_resource(ClearColor(Color::BLACK))
@@ -83,7 +89,7 @@ fn spawn_circles(
 
 fn draw_circles(mut painter: ShapePainter, query: Query<&Pos>) {
     for pos in &query {
-        painter.set_translation(Vec3::ZERO); //put the painter at origin before translating
+        painter.reset();
         painter.translate(pos.pos);
         painter.color = Color::hsla(random::<f32>()*360., 100.0, 50.0, random::<f32>());
         painter.circle(5.);
