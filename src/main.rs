@@ -2,7 +2,7 @@
 
 use bevy::{
     core_pipeline::{
-        bloom::{BloomCompositeMode, BloomSettings},
+        bloom::{BloomSettings},
         tonemapping::Tonemapping,
     },
     prelude::*};
@@ -10,6 +10,9 @@ use bevy_vector_shapes::prelude::*;
 use bevy_pancam::{PanCam, PanCamPlugin};
 use bevy::render::camera::ScalingMode;
 use rand::prelude::random;
+
+mod bloom_settings;
+use bloom_settings::*;
 
 fn main() {
     App::new()
@@ -22,6 +25,7 @@ fn main() {
         }))
         .add_plugins(PanCamPlugin::default())
         .add_plugins(Shape2dPlugin::default())
+        .add_plugins(BloomSettingsPlugin)
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(Msaa::Off)
         .add_systems(Startup, setup)
@@ -95,42 +99,6 @@ fn draw_circles(mut painter: ShapePainter, query: Query<&Pos>) {
         painter.circle(5.);
     }
 }
-
-/*
-fn draw_circles(painter: &mut ShapePainter, radius: f32) {
-    painter.translate(-(Vec3::X + Vec3::NEG_Y) * f32::sqrt(radius) * 0.5);
-    painter.color = Color::rgba(1.0, 0.0, 0.0, 0.5);
-    painter.circle(radius);
-
-    painter.rotate_z(-TAU / 3.0);
-    painter.translate(Vec3::Y * radius * 1.2 + Vec3::Z * 0.0001);
-    painter.color = Color::rgba(0.0, 1.0, 0.0, 0.5);
-    painter.circle(radius);
-
-    painter.rotate_z(-TAU / 3.0);
-    painter.translate(Vec3::Y * radius * 1.2 + Vec3::Z * 0.0001);
-    painter.color = Color::rgba(0.0, 0.0, 1.0, 0.5);
-    painter.circle(radius);
-}
-
-fn draw_gallery(mut painter: ShapePainter) {
-    let radius = 2.0;
-
-    painter.reset();
-    painter.translate(Vec3::X * radius * -4.0);
-    painter.alpha_mode = AlphaMode::Add;
-    draw_circles(&mut painter, radius);
-
-    painter.reset();
-    painter.alpha_mode = AlphaMode::Multiply;
-    draw_circles(&mut painter, radius);
-
-    painter.reset();
-    painter.translate(Vec3::X * radius * 4.0);
-    painter.alpha_mode = AlphaMode::Blend;
-    draw_circles(&mut painter, radius);
-}
-*/
 
 fn toggle_pan(mut query: Query<&mut PanCam>, keys: Res<Input<KeyCode>>) {
     if keys.just_pressed(KeyCode::Space) {
