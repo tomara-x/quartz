@@ -4,11 +4,13 @@ use bevy::{
         tonemapping::Tonemapping,
     },
     sprite::MaterialMesh2dBundle,
+    sprite::Material2d,
     prelude::*};
 
 use rand::prelude::random;
 use bevy_pancam::{PanCam, PanCamPlugin};
 use bevy_mod_picking::prelude::*;
+use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 //use bevy_vector_shapes::prelude::*;
 //use bevy::render::camera::ScalingMode;
@@ -28,12 +30,14 @@ fn main() {
         .add_plugins(PanCamPlugin::default())
         //.add_plugins(Shape2dPlugin::default())
         .add_plugins(DefaultPickingPlugins)
+        .add_plugins(WorldInspectorPlugin::new())
         //.add_plugins(BloomSettingsPlugin)
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(Msaa::Off)
         .add_systems(Startup, setup)
         .add_systems(Update, spawn_circles)
         .add_systems(Update, toggle_pan)
+        .add_systems(Update, update_colors)
         .run();
 }
 
@@ -66,7 +70,7 @@ fn setup(mut commands: Commands) {
         PanCam {
             //limit zooming
             max_scale: Some(80.),
-            min_scale: 0.01,
+            min_scale: 0.005,
             ..default()
         },
     ));
@@ -87,12 +91,25 @@ fn spawn_circles(
         let Some(point) = camera.viewport_to_world_2d(camera_transform, cursor_position) else { return; };
         commands.spawn((MaterialMesh2dBundle {
         mesh: meshes.add(shape::Circle::new(5.).into()).into(),
-        material: materials.add(ColorMaterial::from(Color::PURPLE)),
+        material: materials.add(ColorMaterial::from(Color::rgb(255., 0., 170.))),
         transform: Transform::from_translation(point.extend(0.0)),
         ..default()
         },
         PickableBundle::default(),
         ));
+    }
+}
+
+fn update_colors(
+    mut mats: ResMut<Assets<ColorMaterial>>,
+    materials: Query<&Handle<ColorMaterial>>,
+    keyboard_input: Res<Input<KeyCode>>,
+) {
+    if keyboard_input.pressed(KeyCode::C) {
+        for m in materials.iter() {
+            let mat = mats.get_mut(m).unwrap();
+            mat.color = Color::hsl(random::<f32>()*360., 100.0, 50.0);
+            }
     }
 }
 
