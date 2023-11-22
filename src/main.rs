@@ -1,15 +1,17 @@
-//use std::f32::consts::TAU;
-
 use bevy::{
     core_pipeline::{
         bloom::{BloomSettings},
         tonemapping::Tonemapping,
     },
+    sprite::MaterialMesh2dBundle,
     prelude::*};
-use bevy_vector_shapes::prelude::*;
-use bevy_pancam::{PanCam, PanCamPlugin};
-//use bevy::render::camera::ScalingMode;
+
 use rand::prelude::random;
+use bevy_pancam::{PanCam, PanCamPlugin};
+use bevy_mod_picking::prelude::*;
+
+//use bevy_vector_shapes::prelude::*;
+//use bevy::render::camera::ScalingMode;
 
 mod bloom_settings;
 use bloom_settings::*;
@@ -24,12 +26,13 @@ fn main() {
             ..default()
         }))
         .add_plugins(PanCamPlugin::default())
-        .add_plugins(Shape2dPlugin::default())
-        .add_plugins(BloomSettingsPlugin)
+        //.add_plugins(Shape2dPlugin::default())
+        .add_plugins(DefaultPickingPlugins)
+        //.add_plugins(BloomSettingsPlugin)
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(Msaa::Off)
         .add_systems(Startup, setup)
-        .add_systems(Update, (spawn_circles, draw_circles))
+        .add_systems(Update, spawn_circles)
         .add_systems(Update, toggle_pan)
         .run();
 }
@@ -48,7 +51,7 @@ fn setup(mut commands: Commands) {
                 hdr: true, //for bloom
                 ..default()
             },
-            tonemapping: Tonemapping::AgX, //also for bloom
+            tonemapping: Tonemapping::BlenderFilmic, //also for bloom
             transform: Transform::from_translation(Vec3::Z), //push the camera "back" one unit
             //projection: OrthographicProjection {
             //    scaling_mode: ScalingMode::AutoMin {
@@ -75,31 +78,32 @@ fn spawn_circles(
     keyboard_input: Res<Input<KeyCode>>,
     camera_query: Query<(&Camera, &GlobalTransform)>,
     windows: Query<&Window>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
     ) {
     if mouse_button_input.just_pressed(MouseButton::Left) && keyboard_input.pressed(KeyCode::ControlRight) {
         let (camera, camera_transform) = camera_query.single();
-        let Some(cursor_position) = windows.single().cursor_position() else {
-            return;
-        };
-        let Some(point) = camera.viewport_to_world_2d(camera_transform, cursor_position) else {
-            return;
-        };
-        commands.spawn(    
-            Pos {
-                pos: point.extend(0.0)
-            }
-        );
+        let Some(cursor_position) = windows.single().cursor_position() else { return; };
+        let Some(point) = camera.viewport_to_world_2d(camera_transform, cursor_position) else { return; };
+        commands.spawn((MaterialMesh2dBundle {
+        mesh: meshes.add(shape::Circle::new(5.).into()).into(),
+        material: materials.add(ColorMaterial::from(Color::PURPLE)),
+        transform: Transform::from_translation(point.extend(0.0)),
+        ..default()
+        },
+        PickableBundle::default(),
+        ));
     }
 }
 
-fn draw_circles(mut painter: ShapePainter, query: Query<&Pos>) {
-    for pos in &query {
-        painter.reset();
-        painter.translate(pos.pos);
-        painter.color = Color::hsla(random::<f32>()*360., 100.0, 50.0, random::<f32>());
-        painter.circle(5.);
-    }
-}
+//fn draw_circles(mut painter: ShapePainter, query: Query<&Pos>) {
+//    for pos in &query {
+//        painter.reset();
+//        painter.translate(pos.pos);
+//        painter.color = Color::hsla(random::<f32>()*360., 100.0, 50.0, random::<f32>());
+//        painter.circle(5.);
+//    }
+//}
 
 fn toggle_pan(mut query: Query<&mut PanCam>, keys: Res<Input<KeyCode>>) {
     if keys.just_pressed(KeyCode::Space) {
