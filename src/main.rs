@@ -8,7 +8,7 @@ use bevy::{
     prelude::*};
 use bevy_vector_shapes::prelude::*;
 use bevy_pancam::{PanCam, PanCamPlugin};
-use bevy::render::camera::ScalingMode;
+//use bevy::render::camera::ScalingMode;
 use rand::prelude::random;
 
 mod bloom_settings;
@@ -48,22 +48,22 @@ fn setup(mut commands: Commands) {
                 hdr: true, //for bloom
                 ..default()
             },
-            tonemapping: Tonemapping::TonyMcMapface, //also for bloom
+            tonemapping: Tonemapping::AgX, //also for bloom
             transform: Transform::from_translation(Vec3::Z), //push the camera "back" one unit
-            projection: OrthographicProjection {
-                scaling_mode: ScalingMode::AutoMin { //something to do with window size
-                    min_width: 5.2 * 4.5,
-                    min_height: 3.2 * 4.5,
-                },
-                ..default()
-            },
+            //projection: OrthographicProjection {
+            //    scaling_mode: ScalingMode::AutoMin {
+            //        min_width: 5.2 * 4.5,
+            //        min_height: 3.2 * 4.5,
+            //    },
+            //    ..default()
+            //},
         ..default()
         },
         BloomSettings::default(), //enable bloom
         PanCam {
             //limit zooming
-            max_scale: Some(40.),
-            min_scale: 0.25,
+            max_scale: Some(80.),
+            min_scale: 0.01,
             ..default()
         },
     ));
@@ -72,10 +72,11 @@ fn setup(mut commands: Commands) {
 fn spawn_circles(
     mut commands: Commands,
     mouse_button_input: Res<Input<MouseButton>>,
+    keyboard_input: Res<Input<KeyCode>>,
     camera_query: Query<(&Camera, &GlobalTransform)>,
     windows: Query<&Window>,
     ) {
-    if mouse_button_input.just_pressed(MouseButton::Left) {
+    if mouse_button_input.just_pressed(MouseButton::Left) && keyboard_input.pressed(KeyCode::ControlRight) {
         let (camera, camera_transform) = camera_query.single();
         let Some(cursor_position) = windows.single().cursor_position() else {
             return;
