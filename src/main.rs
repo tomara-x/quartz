@@ -29,7 +29,7 @@ fn main() {
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(Msaa::Off)
         .add_systems(Startup, setup)
-        .add_systems(Update, spawn_circles)
+        .add_systems(Update, spawn_and_move_circles)
         .add_systems(Update, toggle_pan)
         .add_systems(Update, update_colors)
         .run();
@@ -57,7 +57,7 @@ fn setup(mut commands: Commands) {
     ));
 }
 
-fn spawn_circles(
+fn spawn_and_move_circles(
     mut commands: Commands,
     mouse_button_input: Res<Input<MouseButton>>,
     keyboard_input: Res<Input<KeyCode>>,
@@ -77,25 +77,32 @@ fn spawn_circles(
         ..default()
         },
         PickableBundle::default(),
+            //need to take pancam's zoom into account (and disable panning)
+            On::<Pointer<DragStart>>::target_insert(Pickable::IGNORE),
+            On::<Pointer<DragEnd>>::target_insert(Pickable::default()),
+            On::<Pointer<Drag>>::target_component_mut::<Transform>(|drag, transform| {
+                transform.translation.x += drag.delta.x;
+                transform.translation.y -= drag.delta.y;
+            }),
         ));
     }
 }
 
 fn update_colors(
     mut mats: ResMut<Assets<ColorMaterial>>,
-    materials: Query<&Handle<ColorMaterial>>,
+    material_ids: Query<&Handle<ColorMaterial>>,
     keyboard_input: Res<Input<KeyCode>>,
 ) {
-    if keyboard_input.pressed(KeyCode::C) {
-        for m in materials.iter() {
-            let mat = mats.get_mut(m).unwrap();
+    if keyboard_input.just_pressed(KeyCode::C) {
+        for id in material_ids.iter() {
+            let mat = mats.get_mut(id).unwrap();
             mat.color = Color::hsl(random::<f32>()*360., 1.0, 0.5);
             }
     }
 }
 
 fn toggle_pan(mut query: Query<&mut PanCam>, keys: Res<Input<KeyCode>>) {
-    if keys.just_pressed(KeyCode::Space) {
+    if keys.just_pressed(KeyCode::P) {
         for mut pancam in &mut query {
             pancam.enabled = !pancam.enabled;
         }
