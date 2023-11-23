@@ -52,7 +52,7 @@ fn setup(mut commands: Commands) {
         //Camera2dBundle::default(),
         Camera2dBundle {
             camera: Camera {
-                hdr: true, //for bloom
+                hdr: true,
                 ..default()
             },
             tonemapping: Tonemapping::BlenderFilmic, //also for bloom
@@ -92,7 +92,7 @@ fn spawn_circles(
         commands.spawn((MaterialMesh2dBundle {
         mesh: meshes.add(shape::Circle::new(5.).into()).into(),
         material: materials.add(ColorMaterial::from(Color::rgb(255., 0., 170.))),
-        transform: Transform::from_translation(point.extend(0.0)),
+        transform: Transform::from_translation(point.extend(-1.0)),
         ..default()
         },
         PickableBundle::default(),
