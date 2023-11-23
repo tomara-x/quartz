@@ -9,72 +9,75 @@ pub struct BloomSettingsPlugin;
 
 impl Plugin for BloomSettingsPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, setup);
+        //app.add_systems(Startup, setup);
         app.add_systems(Update, update_bloom_settings);
     }
 }
 
-fn setup(mut commands: Commands) {
-    commands.spawn(
-        TextBundle::from_section(
-            "",
-            TextStyle {
-                font_size: 18.0,
-                color: Color::WHITE,
-                ..default()
-            },
-        )
-        .with_style(Style {
-            position_type: PositionType::Absolute,
-            bottom: Val::Px(10.0),
-            left: Val::Px(10.0),
-            ..default()
-        }),
-    );
-}
+//fn setup(mut commands: Commands) {
+//    commands.spawn(
+//        TextBundle::from_section(
+//            "",
+//            TextStyle {
+//                font_size: 18.0,
+//                color: Color::WHITE,
+//                ..default()
+//            },
+//        )
+//        .with_style(Style {
+//            position_type: PositionType::Absolute,
+//            bottom: Val::Px(10.0),
+//            left: Val::Px(10.0),
+//            ..default()
+//        }),
+//    );
+//}
+
+//FIXME(amy): figure out why text panics when there's multiple
+// mod_picking uses text and so this panics
 
 fn update_bloom_settings(
     mut camera: Query<(Entity, Option<&mut BloomSettings>), With<Camera>>,
-    mut text: Query<&mut Text>,
+    //mut text: Query<&mut Text>,
     mut commands: Commands,
     keycode: Res<Input<KeyCode>>,
     time: Res<Time>,
 ) {
     let bloom_settings = camera.single_mut();
-    let mut text = text.single_mut();
-    let text = &mut text.sections[0].value;
+    //let mut text = text.single_mut();
+    //let text = &mut text.sections[0].value;
 
     match bloom_settings {
         (entity, Some(mut bloom_settings)) => {
-            *text = "BloomSettings (Toggle: Space)\n".to_string();
-            text.push_str(&format!("(Q/A) Intensity: {}\n", bloom_settings.intensity));
-            text.push_str(&format!(
-                "(W/S) Low-frequency boost: {}\n",
-                bloom_settings.low_frequency_boost
-            ));
-            text.push_str(&format!(
-                "(E/D) Low-frequency boost curvature: {}\n",
-                bloom_settings.low_frequency_boost_curvature
-            ));
-            text.push_str(&format!(
-                "(R/F) High-pass frequency: {}\n",
-                bloom_settings.high_pass_frequency
-            ));
-            text.push_str(&format!(
-                "(T/G) Mode: {}\n",
-                match bloom_settings.composite_mode {
-                    BloomCompositeMode::EnergyConserving => "Energy-conserving",
-                    BloomCompositeMode::Additive => "Additive",
-                }
-            ));
-            text.push_str(&format!(
-                "(Y/H) Threshold: {}\n",
-                bloom_settings.prefilter_settings.threshold
-            ));
-            text.push_str(&format!(
-                "(U/J) Threshold softness: {}\n",
-                bloom_settings.prefilter_settings.threshold_softness
-            ));
+            //*text = "BloomSettings (Toggle: Space)\n".to_string();
+            //text.push_str(&format!("(Q/A) Intensity: {}\n", bloom_settings.intensity));
+            //text.push_str(&format!(
+            //    "(W/S) Low-frequency boost: {}\n",
+            //    bloom_settings.low_frequency_boost
+            //));
+            //text.push_str(&format!(
+            //    "(E/D) Low-frequency boost curvature: {}\n",
+            //    bloom_settings.low_frequency_boost_curvature
+            //));
+            //text.push_str(&format!(
+            //    "(R/F) High-pass frequency: {}\n",
+            //    bloom_settings.high_pass_frequency
+            //));
+            //text.push_str(&format!(
+            //    "(T/G) Mode: {}\n",
+            //    match bloom_settings.composite_mode {
+            //        BloomCompositeMode::EnergyConserving => "Energy-conserving",
+            //        BloomCompositeMode::Additive => "Additive",
+            //    }
+            //));
+            //text.push_str(&format!(
+            //    "(Y/H) Threshold: {}\n",
+            //    bloom_settings.prefilter_settings.threshold
+            //));
+            //text.push_str(&format!(
+            //    "(U/J) Threshold softness: {}\n",
+            //    bloom_settings.prefilter_settings.threshold_softness
+            //));
 
             if keycode.just_pressed(KeyCode::Space) {
                 commands.entity(entity).remove::<BloomSettings>();
@@ -144,7 +147,7 @@ fn update_bloom_settings(
         }
 
         (entity, None) => {
-            *text = "Bloom: Off (Toggle: Space)".to_string();
+            //*text = "Bloom: Off (Toggle: Space)".to_string();
 
             if keycode.just_pressed(KeyCode::Space) {
                 commands.entity(entity).insert(BloomSettings::default());

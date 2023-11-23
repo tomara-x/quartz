@@ -3,17 +3,12 @@ use bevy::{
         bloom::{BloomSettings},
         tonemapping::Tonemapping,
     },
-    sprite::MaterialMesh2dBundle,
-    sprite::Material2d,
     prelude::*};
 
 use rand::prelude::random;
 use bevy_pancam::{PanCam, PanCamPlugin};
 use bevy_mod_picking::prelude::*;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
-
-//use bevy_vector_shapes::prelude::*;
-//use bevy::render::camera::ScalingMode;
 
 mod bloom_settings;
 use bloom_settings::*;
@@ -28,10 +23,9 @@ fn main() {
             ..default()
         }))
         .add_plugins(PanCamPlugin::default())
-        //.add_plugins(Shape2dPlugin::default())
         .add_plugins(DefaultPickingPlugins)
         .add_plugins(WorldInspectorPlugin::new())
-        //.add_plugins(BloomSettingsPlugin)
+        .add_plugins(BloomSettingsPlugin)
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(Msaa::Off)
         .add_systems(Startup, setup)
@@ -41,13 +35,7 @@ fn main() {
         .run();
 }
 
-#[derive(Component)]
-struct Pos {
-    pos: Vec3
-}
-
 fn setup(mut commands: Commands) {
-    // Spawn the camera
     commands.spawn((
         //Camera2dBundle::default(),
         Camera2dBundle {
@@ -55,15 +43,8 @@ fn setup(mut commands: Commands) {
                 hdr: true,
                 ..default()
             },
-            tonemapping: Tonemapping::BlenderFilmic, //also for bloom
+            tonemapping: Tonemapping::BlenderFilmic,
             transform: Transform::from_translation(Vec3::Z), //push the camera "back" one unit
-            //projection: OrthographicProjection {
-            //    scaling_mode: ScalingMode::AutoMin {
-            //        min_width: 5.2 * 4.5,
-            //        min_height: 3.2 * 4.5,
-            //    },
-            //    ..default()
-            //},
         ..default()
         },
         BloomSettings::default(), //enable bloom
@@ -89,9 +70,9 @@ fn spawn_circles(
         let (camera, camera_transform) = camera_query.single();
         let Some(cursor_position) = windows.single().cursor_position() else { return; };
         let Some(point) = camera.viewport_to_world_2d(camera_transform, cursor_position) else { return; };
-        commands.spawn((MaterialMesh2dBundle {
+        commands.spawn((ColorMesh2dBundle {
         mesh: meshes.add(shape::Circle::new(5.).into()).into(),
-        material: materials.add(ColorMaterial::from(Color::rgb(255., 0., 170.))),
+        material: materials.add(ColorMaterial::from(Color::hsl(0., 1.0, 0.5))),
         transform: Transform::from_translation(point.extend(-1.0)),
         ..default()
         },
@@ -108,19 +89,10 @@ fn update_colors(
     if keyboard_input.pressed(KeyCode::C) {
         for m in materials.iter() {
             let mat = mats.get_mut(m).unwrap();
-            mat.color = Color::hsl(random::<f32>()*360., 100.0, 50.0);
+            mat.color = Color::hsl(random::<f32>()*360., 1.0, 0.5);
             }
     }
 }
-
-//fn draw_circles(mut painter: ShapePainter, query: Query<&Pos>) {
-//    for pos in &query {
-//        painter.reset();
-//        painter.translate(pos.pos);
-//        painter.color = Color::hsla(random::<f32>()*360., 100.0, 50.0, random::<f32>());
-//        painter.circle(5.);
-//    }
-//}
 
 fn toggle_pan(mut query: Query<&mut PanCam>, keys: Res<Input<KeyCode>>) {
     if keys.just_pressed(KeyCode::Space) {
