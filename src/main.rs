@@ -22,7 +22,7 @@ fn main() {
             }),
             ..default()
         }))
-        .init_resource::<Depth>()
+        .insert_resource(Depth {z: -10.})
         .add_plugins(PanCamPlugin::default())
         .add_plugins(DefaultPickingPlugins)
         .add_plugins(WorldInspectorPlugin::new())
@@ -36,7 +36,7 @@ fn main() {
         .run();
 }
 
-#[derive(Resource, Default)]
+#[derive(Resource)]
 struct Depth { z: f32 }
 
 fn setup(
