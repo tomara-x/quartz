@@ -7,7 +7,7 @@ use bevy::{
 
 use rand::prelude::random;
 use bevy_pancam::{PanCam, PanCamPlugin};
-use bevy_mod_picking::prelude::*;
+//use bevy_mod_picking::prelude::*;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 mod bloom_settings;
@@ -24,7 +24,7 @@ fn main() {
         }))
         .insert_resource(Depth {z: -10.})
         .add_plugins(PanCamPlugin::default())
-        .add_plugins(DefaultPickingPlugins)
+        //.add_plugins(DefaultPickingPlugins)
         .add_plugins(WorldInspectorPlugin::new())
         .add_plugins(BloomSettingsPlugin)
         .insert_resource(ClearColor(Color::BLACK))
@@ -33,11 +33,15 @@ fn main() {
         .add_systems(Update, spawn_and_move_circles)
         .add_systems(Update, toggle_pan)
         .add_systems(Update, update_colors)
+        .add_systems(Update, selection_check)
         .run();
 }
 
 #[derive(Resource)]
 struct Depth { z: f32 }
+
+#[derive(Component)]
+struct Selectable;
 
 fn setup(
     mut commands: Commands,
@@ -83,16 +87,37 @@ fn spawn_and_move_circles(
         transform: Transform::from_translation(point.extend(depth.z)),
         ..default()
         },
-        PickableBundle::default(),
-            //need to take pancam's zoom into account (and disable panning)
-            On::<Pointer<DragStart>>::target_insert(Pickable::IGNORE),
-            On::<Pointer<DragEnd>>::target_insert(Pickable::default()),
-            On::<Pointer<Drag>>::target_component_mut::<Transform>(|drag, transform| {
-                transform.translation.x += drag.delta.x;
-                transform.translation.y -= drag.delta.y;
-            }),
+        Selectable,
+        //PickableBundle::default(),
+        //    //need to take pancam's zoom into account (and disable panning)
+        //    On::<Pointer<DragStart>>::target_insert(Pickable::IGNORE),
+        //    On::<Pointer<DragEnd>>::target_insert(Pickable::default()),
+        //    On::<Pointer<Drag>>::target_component_mut::<Transform>(|drag, transform| {
+        //        transform.translation.x += drag.delta.x;
+        //        transform.translation.y -= drag.delta.y;
+        //    }),
         ));
         depth.z += 0.00001;
+    }
+}
+
+fn selection_check(
+    mouse_button_input: Res<Input<MouseButton>>,
+    keyboard_input: Res<Input<KeyCode>>,
+    camera_query: Query<(&Camera, &GlobalTransform)>,
+    windows: Query<&Window>,
+    mut movable: Query<(&ViewVisibility, &mut Transform), With<Selectable>>,
+    ) {
+    if mouse_button_input.just_pressed(MouseButton::Left) {
+        let (camera, camera_transform) = camera_query.single();
+        let Some(cursor_position) = windows.single().cursor_position() else { return; };
+        let Some(point) = camera.viewport_to_world_2d(camera_transform, cursor_position) else { return; };
+        for (v, t) in &mut movable {
+            if v.get() {
+                println!("{:?}", t.translation);
+                // follow the mouse here
+            }
+        }
     }
 }
 
@@ -112,7 +137,12 @@ fn update_colors(
 fn toggle_pan(mut query: Query<&mut PanCam>, keys: Res<Input<KeyCode>>) {
     if keys.just_pressed(KeyCode::P) {
         for mut pancam in &mut query {
-            pancam.enabled = !pancam.enabled;
+            pancam.enabled = true;
+        }
+    }
+    if keys.just_released(KeyCode::P) {
+        for mut pancam in &mut query {
+            pancam.enabled = false;
         }
     }
 }
