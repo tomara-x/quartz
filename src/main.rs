@@ -22,6 +22,7 @@ fn main() {
             }),
             ..default()
         }))
+        .init_resource::<Depth>()
         .add_plugins(PanCamPlugin::default())
         .add_plugins(DefaultPickingPlugins)
         .add_plugins(WorldInspectorPlugin::new())
@@ -35,7 +36,12 @@ fn main() {
         .run();
 }
 
-fn setup(mut commands: Commands) {
+#[derive(Resource, Default)]
+struct Depth { z: f32 }
+
+fn setup(
+    mut commands: Commands,
+    ) {
     commands.spawn((
         //Camera2dBundle::default(),
         Camera2dBundle {
@@ -65,6 +71,7 @@ fn spawn_and_move_circles(
     windows: Query<&Window>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
+    mut depth: ResMut<Depth>,
     ) {
     if mouse_button_input.just_pressed(MouseButton::Left) && keyboard_input.pressed(KeyCode::ControlRight) {
         let (camera, camera_transform) = camera_query.single();
@@ -73,7 +80,7 @@ fn spawn_and_move_circles(
         commands.spawn((ColorMesh2dBundle {
         mesh: meshes.add(shape::Circle::new(5.).into()).into(),
         material: materials.add(ColorMaterial::from(Color::hsl(0., 1.0, 0.5))),
-        transform: Transform::from_translation(point.extend(-1.0)),
+        transform: Transform::from_translation(point.extend(depth.z)),
         ..default()
         },
         PickableBundle::default(),
@@ -85,6 +92,7 @@ fn spawn_and_move_circles(
                 transform.translation.y -= drag.delta.y;
             }),
         ));
+        depth.z += 0.00001;
     }
 }
 
