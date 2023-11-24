@@ -23,6 +23,7 @@ fn main() {
             ..default()
         }))
         .insert_resource(Depth {z: -10.})
+        .insert_resource(CursorInfo {i: Vec2{x:0.,y:0.}, f: Vec2{x:0.,y:0.}})
         .add_plugins(PanCamPlugin::default())
         //.add_plugins(DefaultPickingPlugins)
         .add_plugins(WorldInspectorPlugin::new())
@@ -33,15 +34,25 @@ fn main() {
         .add_systems(Update, spawn_and_move_circles)
         .add_systems(Update, toggle_pan)
         .add_systems(Update, update_colors)
-        .add_systems(Update, selection_check)
+        //.add_systems(Update, selection_check)
+        .add_systems(Update, (update_cursor_info, draw_selection).chain())
         .run();
 }
 
 #[derive(Resource)]
 struct Depth { z: f32 }
 
+#[derive(Resource)]
+struct CursorInfo {
+    i: Vec2,
+    f: Vec2,
+}
+
 #[derive(Component)]
 struct Selectable;
+
+#[derive(Component)]
+struct Selected(bool);
 
 fn setup(
     mut commands: Commands,
@@ -88,6 +99,7 @@ fn spawn_and_move_circles(
         ..default()
         },
         Selectable,
+        Selected(false),
         //PickableBundle::default(),
         //    //need to take pancam's zoom into account (and disable panning)
         //    On::<Pointer<DragStart>>::target_insert(Pickable::IGNORE),
@@ -101,23 +113,53 @@ fn spawn_and_move_circles(
     }
 }
 
+fn update_cursor_info(
+    mouse_button_input: Res<Input<MouseButton>>,
+    camera_query: Query<(&Camera, &GlobalTransform)>,
+    windows: Query<&Window>,
+    mut cursor: ResMut<CursorInfo>,
+    ) {
+    let (cam, cam_transform) = camera_query.single();
+    if mouse_button_input.just_pressed(MouseButton::Left) {
+        let Some(cursor_pos) = windows.single().cursor_position() else { return; };
+        let Some(point) = cam.viewport_to_world_2d(cam_transform, cursor_pos) else { return; };
+        cursor.i = point;
+    }
+    if mouse_button_input.pressed(MouseButton::Left) {
+        let Some(cursor_pos) = windows.single().cursor_position() else { return; };
+        let Some(point) = cam.viewport_to_world_2d(cam_transform, cursor_pos) else { return; };
+        cursor.f = point;
+    }
+}
+
+fn draw_selection(
+    cursor: Res<CursorInfo>,
+) {
+    println!("{:?} {:?}", cursor.i, cursor.f);
+    //gizmos.circle_2d(Vec2::ZERO, 1., Color::GREEN);
+}
+
+
 fn selection_check(
     mouse_button_input: Res<Input<MouseButton>>,
     keyboard_input: Res<Input<KeyCode>>,
     camera_query: Query<(&Camera, &GlobalTransform)>,
     windows: Query<&Window>,
     mut movable: Query<(&ViewVisibility, &mut Transform), With<Selectable>>,
+    mut selected: Query<&Selected>,
+    mut gizmos: Gizmos,
     ) {
+    let (cam, cam_transform) = camera_query.single();
     if mouse_button_input.just_pressed(MouseButton::Left) {
-        let (camera, camera_transform) = camera_query.single();
-        let Some(cursor_position) = windows.single().cursor_position() else { return; };
-        let Some(point) = camera.viewport_to_world_2d(camera_transform, cursor_position) else { return; };
-        for (v, t) in &mut movable {
-            if v.get() {
-                println!("{:?}", t.translation);
-                // follow the mouse here
-            }
-        }
+        let Some(cursor_pos_i) = windows.single().cursor_position() else { return; };
+        let Some(point_i) = cam.viewport_to_world_2d(cam_transform, cursor_pos_i) else { return; };
+        
+        println!("{:?}", point_i);
+        //for (v, t) in &mut movable {
+        //    if v.get() {
+        //        println!("{:?}", t.translation);
+        //    }
+        //}
     }
 }
 
