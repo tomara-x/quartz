@@ -56,7 +56,9 @@ struct Selected(bool);
 
 fn setup(
     mut commands: Commands,
+    mut config: ResMut<GizmoConfig>,
     ) {
+    config.line_width = 1.;
     commands.spawn((
         //Camera2dBundle::default(),
         Camera2dBundle {
@@ -134,9 +136,12 @@ fn update_cursor_info(
 
 fn draw_selection(
     cursor: Res<CursorInfo>,
+    mut gizmos: Gizmos,
+    mouse_button_input: Res<Input<MouseButton>>,
 ) {
-    println!("{:?} {:?}", cursor.i, cursor.f);
-    //gizmos.circle_2d(Vec2::ZERO, 1., Color::GREEN);
+    if mouse_button_input.pressed(MouseButton::Left) {
+        gizmos.circle_2d(cursor.i, cursor.f.distance(cursor.i), Color::GREEN).segments(64);
+    }
 }
 
 
@@ -147,7 +152,6 @@ fn selection_check(
     windows: Query<&Window>,
     mut movable: Query<(&ViewVisibility, &mut Transform), With<Selectable>>,
     mut selected: Query<&Selected>,
-    mut gizmos: Gizmos,
     ) {
     let (cam, cam_transform) = camera_query.single();
     if mouse_button_input.just_pressed(MouseButton::Left) {
