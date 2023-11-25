@@ -3,6 +3,7 @@ use bevy::{
         bloom::{BloomSettings},
         tonemapping::Tonemapping,
     },
+    render::view::VisibleEntities,
     prelude::*};
 
 use rand::prelude::random;
@@ -34,7 +35,7 @@ fn main() {
         .add_systems(Update, spawn_and_move_circles)
         .add_systems(Update, toggle_pan)
         .add_systems(Update, update_colors)
-        //.add_systems(Update, selection_check)
+        .add_systems(Update, selection_test)
         .add_systems(Update, (update_cursor_info, draw_selection).chain())
         .run();
 }
@@ -47,12 +48,6 @@ struct CursorInfo {
     i: Vec2,
     f: Vec2,
 }
-
-#[derive(Component)]
-struct Selectable;
-
-#[derive(Component)]
-struct Selected(bool);
 
 fn setup(
     mut commands: Commands,
@@ -100,8 +95,6 @@ fn spawn_and_move_circles(
         transform: Transform::from_translation(point.extend(depth.z)),
         ..default()
         },
-        Selectable,
-        Selected(false),
         //PickableBundle::default(),
         //    //need to take pancam's zoom into account (and disable panning)
         //    On::<Pointer<DragStart>>::target_insert(Pickable::IGNORE),
@@ -145,25 +138,15 @@ fn draw_selection(
 }
 
 
-fn selection_check(
+fn selection_test(
     mouse_button_input: Res<Input<MouseButton>>,
-    keyboard_input: Res<Input<KeyCode>>,
-    camera_query: Query<(&Camera, &GlobalTransform)>,
-    windows: Query<&Window>,
-    mut movable: Query<(&ViewVisibility, &mut Transform), With<Selectable>>,
-    mut selected: Query<&Selected>,
+    mut visible: Query<&VisibleEntities>
     ) {
-    let (cam, cam_transform) = camera_query.single();
     if mouse_button_input.just_pressed(MouseButton::Left) {
-        let Some(cursor_pos_i) = windows.single().cursor_position() else { return; };
-        let Some(point_i) = cam.viewport_to_world_2d(cam_transform, cursor_pos_i) else { return; };
-        
-        println!("{:?}", point_i);
-        //for (v, t) in &mut movable {
-        //    if v.get() {
-        //        println!("{:?}", t.translation);
-        //    }
-        //}
+        let entities = &mut visible.single_mut();
+        for e in &entities.entities {
+            println!("{:?}", e);
+        }
     }
 }
 
