@@ -3,7 +3,7 @@ use bevy::{
         bloom::{BloomSettings},
         tonemapping::Tonemapping,
     },
-    render::view::VisibleEntities,
+    //render::view::VisibleEntities,
     prelude::*};
 
 use rand::prelude::random;
@@ -137,15 +137,15 @@ fn draw_selection(
     }
 }
 
-
 fn selection_test(
     mouse_button_input: Res<Input<MouseButton>>,
-    mut visible: Query<&VisibleEntities>
+    visible: Query<(&ViewVisibility, &mut Transform)>
     ) {
     if mouse_button_input.just_pressed(MouseButton::Left) {
-        let entities = &mut visible.single_mut();
-        for e in &entities.entities {
-            println!("{:?}", e);
+        for (v, t) in visible.iter() {
+            if v.get() {
+                println!("{:?}", t.translation);
+            }
         }
     }
 }
