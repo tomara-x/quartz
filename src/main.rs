@@ -32,7 +32,7 @@ fn main() {
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(Msaa::Off)
         .add_systems(Startup, setup)
-        .add_systems(Update, spawn_and_move_circles)
+        .add_systems(Update, spawn_circles)
         .add_systems(Update, toggle_pan)
         .add_systems(Update, update_colors)
         .add_systems(Update, selection_test)
@@ -75,34 +75,22 @@ fn setup(
     ));
 }
 
-fn spawn_and_move_circles(
+fn spawn_circles(
     mut commands: Commands,
     mouse_button_input: Res<Input<MouseButton>>,
     keyboard_input: Res<Input<KeyCode>>,
-    camera_query: Query<(&Camera, &GlobalTransform)>,
-    windows: Query<&Window>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     mut depth: ResMut<Depth>,
+    cursor: Res<CursorInfo>,
     ) {
-    if mouse_button_input.just_pressed(MouseButton::Left) && keyboard_input.pressed(KeyCode::ControlRight) {
-        let (camera, camera_transform) = camera_query.single();
-        let Some(cursor_position) = windows.single().cursor_position() else { return; };
-        let Some(point) = camera.viewport_to_world_2d(camera_transform, cursor_position) else { return; };
+    if mouse_button_input.just_released(MouseButton::Left) && keyboard_input.pressed(KeyCode::ControlRight) {
         commands.spawn((ColorMesh2dBundle {
-        mesh: meshes.add(shape::Circle::new(5.).into()).into(),
+        mesh: meshes.add(shape::Circle::new(cursor.f.distance(cursor.i)).into()).into(),
         material: materials.add(ColorMaterial::from(Color::hsl(0., 1.0, 0.5))),
-        transform: Transform::from_translation(point.extend(depth.z)),
+        transform: Transform::from_translation(cursor.i.extend(depth.z)),
         ..default()
         },
-        //PickableBundle::default(),
-        //    //need to take pancam's zoom into account (and disable panning)
-        //    On::<Pointer<DragStart>>::target_insert(Pickable::IGNORE),
-        //    On::<Pointer<DragEnd>>::target_insert(Pickable::default()),
-        //    On::<Pointer<Drag>>::target_component_mut::<Transform>(|drag, transform| {
-        //        transform.translation.x += drag.delta.x;
-        //        transform.translation.y -= drag.delta.y;
-        //    }),
         ));
         depth.z += 0.00001;
     }
@@ -144,7 +132,7 @@ fn selection_test(
     if mouse_button_input.just_pressed(MouseButton::Left) {
         for (v, t) in visible.iter() {
             if v.get() {
-                println!("{:?}", t.translation);
+                //println!("{:?}", t.translation);
             }
         }
     }
@@ -164,14 +152,14 @@ fn update_colors(
 }
 
 fn toggle_pan(mut query: Query<&mut PanCam>, keys: Res<Input<KeyCode>>) {
-    if keys.just_pressed(KeyCode::P) {
-        for mut pancam in &mut query {
-            pancam.enabled = true;
-        }
-    }
-    if keys.just_released(KeyCode::P) {
+    if keys.just_pressed(KeyCode::ControlRight) {
         for mut pancam in &mut query {
             pancam.enabled = false;
+        }
+    }
+    if keys.just_released(KeyCode::ControlRight) {
+        for mut pancam in &mut query {
+            pancam.enabled = true;
         }
     }
 }
