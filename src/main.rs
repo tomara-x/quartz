@@ -168,6 +168,7 @@ fn update_selection(
     keyboard_input: Res<Input<KeyCode>>,
     ) {
     if mouse_button_input.just_pressed(MouseButton::Left) && keyboard_input.pressed(KeyCode::AltRight) {
+        for (_, mut s, _, _) in query.iter_mut() { s.value = false; } //this is terrible (ish)
         for (v, mut s, r, p) in query.iter_mut() {
             if v.get() && cursor.i.distance(p.value.xy()) < r.value {
                 s.value = true;
