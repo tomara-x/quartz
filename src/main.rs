@@ -3,12 +3,10 @@ use bevy::{
         bloom::{BloomSettings},
         tonemapping::Tonemapping,
     },
-    //render::view::VisibleEntities,
     prelude::*};
 
 use rand::prelude::random;
 use bevy_pancam::{PanCam, PanCamPlugin};
-//use bevy_mod_picking::prelude::*;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 mod bloom_settings;
@@ -23,25 +21,28 @@ fn main() {
             }),
             ..default()
         }))
-        .insert_resource(Depth {z: -10.})
-        .insert_resource(CursorInfo {i: Vec2{x:0.,y:0.}, f: Vec2{x:0.,y:0.}})
-        .add_plugins(PanCamPlugin::default())
-        //.add_plugins(DefaultPickingPlugins)
-        .add_plugins(WorldInspectorPlugin::new())
-        .add_plugins(BloomSettingsPlugin)
+        //RESOURCES
+        .insert_resource(Depth {value: -10.})
+        .insert_resource(CursorInfo {i: Vec2::ZERO, f: Vec2::ZERO})
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(Msaa::Off)
+        //PLUGINS
+        .add_plugins(PanCamPlugin::default())
+        .add_plugins(WorldInspectorPlugin::new())
+        //INTERNAL PLUGINS
+        .add_plugins(BloomSettingsPlugin)
+        //SYSTEMS
         .add_systems(Startup, setup)
         .add_systems(Update, spawn_circles)
         .add_systems(Update, toggle_pan)
         .add_systems(Update, update_colors)
-        .add_systems(Update, selection_test)
-        .add_systems(Update, (update_cursor_info, draw_selection).chain())
+        .add_systems(Update, draw_pointer_circle)
+        .add_systems(Update, (update_cursor_info, update_selection, move_selected).chain())
         .run();
 }
 
 #[derive(Resource)]
-struct Depth { z: f32 }
+struct Depth { value: f32 }
 
 #[derive(Resource)]
 struct CursorInfo {
@@ -49,13 +50,21 @@ struct CursorInfo {
     f: Vec2,
 }
 
+#[derive(Component)]
+struct Radius { value: f32 }
+
+#[derive(Component)]
+struct Pos { value: Vec3 }
+
+#[derive(Component)]
+struct Selected { value: bool }
+
 fn setup(
     mut commands: Commands,
     mut config: ResMut<GizmoConfig>,
     ) {
     config.line_width = 1.;
     commands.spawn((
-        //Camera2dBundle::default(),
         Camera2dBundle {
             camera: Camera {
                 hdr: true,
@@ -88,11 +97,14 @@ fn spawn_circles(
         commands.spawn((ColorMesh2dBundle {
         mesh: meshes.add(shape::Circle::new(cursor.f.distance(cursor.i)).into()).into(),
         material: materials.add(ColorMaterial::from(Color::hsl(0., 1.0, 0.5))),
-        transform: Transform::from_translation(cursor.i.extend(depth.z)),
+        transform: Transform::from_translation(cursor.i.extend(depth.value)),
         ..default()
         },
+        Radius { value: cursor.f.distance(cursor.i)}, //opt?
+        Pos { value: cursor.i.extend(depth.value)},
+        Selected { value: false },
         ));
-        depth.z += 0.00001;
+        depth.value += 0.00001;
     }
 }
 
@@ -115,7 +127,29 @@ fn update_cursor_info(
     }
 }
 
-fn draw_selection(
+fn update_colors(
+    mut mats: ResMut<Assets<ColorMaterial>>,
+    material_ids: Query<&Handle<ColorMaterial>>,
+    keyboard_input: Res<Input<KeyCode>>,
+) {
+    if keyboard_input.pressed(KeyCode::C) {
+        for id in material_ids.iter() {
+            let mat = mats.get_mut(id).unwrap();
+            mat.color = Color::hsl(random::<f32>()*360., 1.0, 0.5);
+            }
+    }
+}
+
+fn toggle_pan(mut query: Query<&mut PanCam>, keys: Res<Input<KeyCode>>) {
+    if keys.just_pressed(KeyCode::P) {
+        for mut pancam in &mut query {
+            pancam.enabled = !pancam.enabled;
+        }
+    }
+}
+
+
+fn draw_pointer_circle(
     cursor: Res<CursorInfo>,
     mut gizmos: Gizmos,
     mouse_button_input: Res<Input<MouseButton>>,
@@ -125,42 +159,41 @@ fn draw_selection(
     }
 }
 
-fn selection_test(
+fn update_selection(
     mouse_button_input: Res<Input<MouseButton>>,
-    visible: Query<(&ViewVisibility, &mut Transform)>
-    ) {
-    if mouse_button_input.just_pressed(MouseButton::Left) {
-        for (v, t) in visible.iter() {
-            if v.get() {
-                //println!("{:?}", t.translation);
-            }
-        }
-    }
-}
-
-fn update_colors(
-    mut mats: ResMut<Assets<ColorMaterial>>,
-    material_ids: Query<&Handle<ColorMaterial>>,
+    mut query: Query<(&ViewVisibility, &mut Selected, &Radius, &Pos)>,
+    cursor: Res<CursorInfo>,
     keyboard_input: Res<Input<KeyCode>>,
-) {
-    if keyboard_input.just_pressed(KeyCode::C) {
-        for id in material_ids.iter() {
-            let mat = mats.get_mut(id).unwrap();
-            mat.color = Color::hsl(random::<f32>()*360., 1.0, 0.5);
+    ) {
+    if mouse_button_input.just_pressed(MouseButton::Left) && keyboard_input.pressed(KeyCode::AltRight) {
+        for (v, mut s, r, p) in query.iter_mut() {
+            if v.get() && cursor.i.distance(p.value.xy()) < r.value {
+                s.value = true;
+                break;
             }
-    }
-}
-
-fn toggle_pan(mut query: Query<&mut PanCam>, keys: Res<Input<KeyCode>>) {
-    if keys.just_pressed(KeyCode::ControlRight) {
-        for mut pancam in &mut query {
-            pancam.enabled = false;
-        }
-    }
-    if keys.just_released(KeyCode::ControlRight) {
-        for mut pancam in &mut query {
-            pancam.enabled = true;
         }
     }
 }
 
+fn move_selected(
+    mouse_button_input: Res<Input<MouseButton>>,
+    cursor: Res<CursorInfo>,
+    mut query: Query<(&Selected, &mut Transform, &mut Pos)>,
+    ) {
+    if mouse_button_input.pressed(MouseButton::Left) {
+        for (s, mut t, p) in query.iter_mut() {
+            if s.value {
+                t.translation = (p.value.xy() + cursor.f - cursor.i).extend(p.value.z);
+                //t.translation.x = p.value.x + cursor.f.x - cursor.i.x;
+                //t.translation.y = p.value.y + cursor.f.y - cursor.i.y;
+            }
+        }
+    }
+    if mouse_button_input.just_released(MouseButton::Left) {
+        for (s, t, mut p) in query.iter_mut() {
+            if s.value {
+                p.value = t.translation;
+            }
+        }
+    }
+}
