@@ -140,11 +140,13 @@ fn update_colors(
     }
 }
 
-fn toggle_pan(mut query: Query<&mut PanCam>, keys: Res<Input<KeyCode>>) {
-    if keys.just_pressed(KeyCode::P) {
-        for mut pancam in &mut query {
-            pancam.enabled = !pancam.enabled;
-        }
+fn toggle_pan(
+    mut query: Query<&mut PanCam>,
+    keyboard_input: Res<Input<KeyCode>>,
+    ) {
+    if keyboard_input.just_pressed(KeyCode::P) {
+        let mut pancam = query.single_mut();
+        pancam.enabled = !pancam.enabled;
     }
 }
 
