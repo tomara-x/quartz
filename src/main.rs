@@ -3,6 +3,7 @@ use bevy::{
         bloom::{BloomSettings},
         tonemapping::Tonemapping,
     },
+    ecs::schedule::{LogLevel, ScheduleBuildSettings},
     prelude::*};
 
 use rand::prelude::random;
@@ -14,6 +15,12 @@ use bloom_settings::*;
 
 fn main() {
     App::new()
+        .edit_schedule(Main, |schedule| {
+            schedule.set_build_settings(ScheduleBuildSettings {
+                ambiguity_detection: LogLevel::Warn,
+                ..default()
+            });
+        })
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
                 title: String::from("awawawa"),
@@ -37,7 +44,7 @@ fn main() {
         .add_systems(Update, toggle_pan)
         .add_systems(Update, update_colors)
         .add_systems(Update, draw_pointer_circle)
-        .add_systems(Update, (update_cursor_info, update_selection, move_selected).chain())
+        .add_systems(Update, (update_cursor_info, update_selection, highlight_selected, move_selected).chain())
         .run();
 }
 
@@ -158,6 +165,17 @@ fn draw_pointer_circle(
 ) {
     if mouse_button_input.pressed(MouseButton::Left) {
         gizmos.circle_2d(cursor.i, cursor.f.distance(cursor.i), Color::GREEN).segments(64);
+    }
+}
+
+fn highlight_selected(
+    mut gizmos: Gizmos,
+    query: Query<(&ViewVisibility, &Selected, &Radius, &Pos)>,
+) {
+    for (v, s, r, p) in query.iter() {
+        if v.get() && s.value {
+            gizmos.circle_2d(p.value.xy(), r.value, Color::RED).segments(64);
+        }
     }
 }
 
