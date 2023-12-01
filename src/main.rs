@@ -224,7 +224,7 @@ fn move_selected(
 
 fn delete_selected(
     keyboard_input: Res<Input<KeyCode>>,
-    mut query: Query<(Entity, &Selected)>,
+    query: Query<(Entity, &Selected)>,
     mut commands: Commands,
 ) {
     if keyboard_input.pressed(KeyCode::Delete) {
