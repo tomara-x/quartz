@@ -191,17 +191,19 @@ fn highlight_selected(
 }
 
 fn mark_visible(
+    mouse_button_input: Res<Input<MouseButton>>,
     mut commands: Commands,
     query: Query<Entity, With<Visible>>,
     visible: Query<&VisibleEntities>,
 ) {
-    //update on mouse just_pressed
-    for e in query.iter() {
-        commands.entity(e).remove::<Visible>();
-    }
-    let vis = visible.single();
-    for e in &vis.entities {
-        commands.entity(*e).insert(Visible);
+    if mouse_button_input.just_released(MouseButton::Left) {
+        for e in query.iter() {
+            commands.entity(e).remove::<Visible>();
+        }
+        let vis = visible.single();
+        for e in &vis.entities {
+            commands.entity(*e).insert(Visible);
+        }
     }
 }
 
