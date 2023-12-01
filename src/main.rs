@@ -45,6 +45,7 @@ fn main() {
         .add_systems(Update, update_colors)
         .add_systems(Update, draw_pointer_circle)
         .add_systems(Update, (update_cursor_info, update_selection, highlight_selected, move_selected).chain())
+        .add_systems(Update, delete_selected)
         .run();
 }
 
@@ -220,3 +221,18 @@ fn move_selected(
         }
     }
 }
+
+fn delete_selected(
+    keyboard_input: Res<Input<KeyCode>>,
+    mut query: Query<(Entity, &Selected)>,
+    mut commands: Commands,
+) {
+    if keyboard_input.pressed(KeyCode::Delete) {
+        for (id, s) in query.iter() {
+            if s.value {
+                commands.entity(id).despawn();
+            }
+        }
+    }
+}
+
