@@ -3,6 +3,7 @@ use bevy::{
         bloom::{BloomSettings},
         tonemapping::Tonemapping,
     },
+    render::view::VisibleEntities,
     ecs::schedule::{LogLevel, ScheduleBuildSettings},
     prelude::*};
 
@@ -44,7 +45,9 @@ fn main() {
         .add_systems(Update, toggle_pan)
         .add_systems(Update, update_colors)
         .add_systems(Update, draw_pointer_circle)
-        .add_systems(Update, (update_cursor_info, update_selection, highlight_selected, move_selected).chain())
+        .add_systems(Update,
+            (update_cursor_info, mark_visible, update_selection, highlight_selected, move_selected)
+            .chain())
         .add_systems(Update, delete_selected)
         .run();
 }
@@ -65,7 +68,17 @@ struct Radius { value: f32 }
 struct Pos { value: Vec3 }
 
 #[derive(Component)]
-struct Selected { value: bool }
+struct Selected;
+
+#[derive(Component)]
+struct Visible;
+
+//#[derive(Resource)]
+//struct Connection<T> {
+//    data: T,
+//    src: Entity,
+//    dst: Entity,
+//}
 
 fn setup(
     mut commands: Commands,
@@ -110,7 +123,6 @@ fn spawn_circles(
         },
         Radius { value: cursor.f.distance(cursor.i)}, //opt?
         Pos { value: cursor.i.extend(depth.value)},
-        Selected { value: false },
         ));
         depth.value += 0.00001;
     }
@@ -171,28 +183,44 @@ fn draw_pointer_circle(
 
 fn highlight_selected(
     mut gizmos: Gizmos,
-    query: Query<(&ViewVisibility, &Selected, &Radius, &Pos)>,
+    query: Query<(&Radius, &Pos), With<Selected>>,
 ) {
-    for (v, s, r, p) in query.iter() {
-        if v.get() && s.value {
-            gizmos.circle_2d(p.value.xy(), r.value, Color::RED).segments(64);
-        }
+    for (r, p) in query.iter() {
+        gizmos.circle_2d(p.value.xy(), r.value, Color::RED).segments(64);
+    }
+}
+
+fn mark_visible(
+    mut commands: Commands,
+    query: Query<Entity, With<Visible>>,
+    visible: Query<&VisibleEntities>,
+) {
+    //update on mouse just_pressed
+    for e in query.iter() {
+        commands.entity(e).remove::<Visible>();
+    }
+    let vis = visible.single();
+    for e in &vis.entities {
+        commands.entity(*e).insert(Visible);
     }
 }
 
 fn update_selection(
+    mut commands: Commands,
     mouse_button_input: Res<Input<MouseButton>>,
-    mut query: Query<(&ViewVisibility, &mut Selected, &Radius, &Pos)>,
+    query: Query<(Entity, &Radius, &Pos), Or<(With<Visible>, With<Selected>)>>,
     cursor: Res<CursorInfo>,
     keyboard_input: Res<Input<KeyCode>>,
     ) {
     if mouse_button_input.just_pressed(MouseButton::Left) && keyboard_input.pressed(KeyCode::AltRight) {
         if !keyboard_input.pressed(KeyCode::ShiftRight) {
-            for (_, mut s, _, _) in query.iter_mut() { s.value = false; } //this is meh
+            for (e, _, _) in query.iter() {
+                commands.entity(e).remove::<Selected>();
+            }
         }
-        for (v, mut s, r, p) in query.iter_mut() {
-            if v.get() && cursor.i.distance(p.value.xy()) < r.value {
-                s.value = true;
+        for (e, r, p) in query.iter() {
+            if cursor.i.distance(p.value.xy()) < r.value {
+                commands.entity(e).insert(Selected);
                 break;
             }
         }
@@ -202,36 +230,30 @@ fn update_selection(
 fn move_selected(
     mouse_button_input: Res<Input<MouseButton>>,
     cursor: Res<CursorInfo>,
-    mut query: Query<(&Selected, &mut Transform, &mut Pos)>,
+    mut query: Query<(&mut Transform, &mut Pos), With<Selected>>,
     ) {
     if mouse_button_input.pressed(MouseButton::Left) {
-        for (s, mut t, p) in query.iter_mut() {
-            if s.value {
-                t.translation = (p.value.xy() + cursor.f - cursor.i).extend(p.value.z);
-                //t.translation.x = p.value.x + cursor.f.x - cursor.i.x;
-                //t.translation.y = p.value.y + cursor.f.y - cursor.i.y;
-            }
+        for (mut t, p) in query.iter_mut() {
+            t.translation = (p.value.xy() + cursor.f - cursor.i).extend(p.value.z);
+            //t.translation.x = p.value.x + cursor.f.x - cursor.i.x;
+            //t.translation.y = p.value.y + cursor.f.y - cursor.i.y;
         }
     }
     if mouse_button_input.just_released(MouseButton::Left) {
-        for (s, t, mut p) in query.iter_mut() {
-            if s.value {
-                p.value = t.translation;
-            }
+        for (t, mut p) in query.iter_mut() {
+            p.value = t.translation;
         }
     }
 }
 
 fn delete_selected(
     keyboard_input: Res<Input<KeyCode>>,
-    query: Query<(Entity, &Selected)>,
+    query: Query<Entity, With<Selected>>,
     mut commands: Commands,
 ) {
     if keyboard_input.pressed(KeyCode::Delete) {
-        for (id, s) in query.iter() {
-            if s.value {
-                commands.entity(id).despawn();
-            }
+        for id in query.iter() {
+            commands.entity(id).despawn();
         }
     }
 }
