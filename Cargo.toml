@@ -1,16 +1,14 @@
 [package]
-name = "adhesion"
+name = "quartz"
 version = "0.1.0"
 edition = "2021"
 authors = ["amy universe <nopenullnilvoid00@gmail.com>"]
 repository = "https://github.com/tomara-x/adhesion"
 
 [dependencies]
-bevy = { version = "0.12.0", features = ["dynamic_linking"] }
+bevy = { version = "0.12.1", features = ["dynamic_linking"] }
 rand = "0.8.0"
 bevy_pancam = "0.10.0"
-bevy_vector_shapes = "0.6.0"
-bevy_mod_picking = "0.17.0"
 bevy-inspector-egui = "0.21.0"
 
 # Enable a small amount of optimization in debug mode
