@@ -73,25 +73,19 @@ struct Selected;
 #[derive(Component)]
 struct Visible;
 
+
+//in the params for the systems, make sure you have queries for every component
+//(radius, color, position, data, extra, etc) then destructure based on match
 #[derive(Component)]
 struct Connection {
     src: Vec<Entity>,
     dst: Vec<Entity>,
+    src_target: String,
+    dst_target: String,
     op: String,
-    target: Target,
+    order: usize,
 }
 
-enum Target {
-    Color(Component),
-    Pos(Component),
-    Radius(Component),
-    Data(Component),
-}
-
-#[derive(Component)]
-struct Op {
-    f: String,
-}
 
 fn setup(
     mut commands: Commands,
