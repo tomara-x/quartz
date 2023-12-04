@@ -73,12 +73,25 @@ struct Selected;
 #[derive(Component)]
 struct Visible;
 
-//#[derive(Resource)]
-//struct Connection<T> {
-//    data: T,
-//    src: Entity,
-//    dst: Entity,
-//}
+#[derive(Component)]
+struct Connection {
+    src: Vec<Entity>,
+    dst: Vec<Entity>,
+    op: String,
+    target: Target,
+}
+
+enum Target {
+    Color(Component),
+    Pos(Component),
+    Radius(Component),
+    Data(Component),
+}
+
+#[derive(Component)]
+struct Op {
+    f: String,
+}
 
 fn setup(
     mut commands: Commands,
@@ -114,7 +127,7 @@ fn spawn_circles(
     mut depth: ResMut<Depth>,
     cursor: Res<CursorInfo>,
     ) {
-    if mouse_button_input.just_released(MouseButton::Left) && keyboard_input.pressed(KeyCode::ControlRight) {
+    if mouse_button_input.just_released(MouseButton::Left) && keyboard_input.pressed(KeyCode::Z) {
         commands.spawn((ColorMesh2dBundle {
         mesh: meshes.add(shape::Circle::new(cursor.f.distance(cursor.i)).into()).into(),
         material: materials.add(ColorMaterial::from(Color::hsl(0., 1.0, 0.5))),
@@ -164,9 +177,13 @@ fn toggle_pan(
     mut query: Query<&mut PanCam>,
     keyboard_input: Res<Input<KeyCode>>,
     ) {
-    if keyboard_input.just_pressed(KeyCode::P) {
+    if keyboard_input.just_pressed(KeyCode::V) {
         let mut pancam = query.single_mut();
-        pancam.enabled = !pancam.enabled;
+        pancam.enabled = true;
+    }
+    if keyboard_input.just_released(KeyCode::V) {
+        let mut pancam = query.single_mut();
+        pancam.enabled = false;
     }
 }
 
@@ -214,7 +231,7 @@ fn update_selection(
     cursor: Res<CursorInfo>,
     keyboard_input: Res<Input<KeyCode>>,
     ) {
-    if mouse_button_input.just_pressed(MouseButton::Left) && keyboard_input.pressed(KeyCode::AltRight) {
+    if mouse_button_input.just_pressed(MouseButton::Left) && keyboard_input.pressed(KeyCode::X) {
         if !keyboard_input.pressed(KeyCode::ShiftRight) {
             for (e, _, _) in query.iter() {
                 commands.entity(e).remove::<Selected>();
