@@ -5,11 +5,41 @@ edition = "2021"
 authors = ["amy universe <nopenullnilvoid00@gmail.com>"]
 repository = "https://github.com/tomara-x/adhesion"
 
+[dependencies.bevy]
+version = "0.12.1"
+default-features = false
+features = [
+  "multi-threaded",     # Run with multithreading
+  "bevy_asset",         # Assets management
+  "bevy_audio",         # Builtin audio
+  #"bevy_gilrs",         # Gamepad input support
+  #"bevy_scene",         # Scenes management
+  "bevy_winit",         # Window management (cross-platform Winit backend)
+  "bevy_render",        # Rendering framework core
+  "bevy_core_pipeline", # Common rendering abstractions
+  "bevy_gizmos",        # Support drawing debug lines and shapes
+  #"bevy_sprite",        # 2D (sprites) rendering
+  #"bevy_pbr",           # 3D (physically-based) rendering
+  #"bevy_gltf",          # GLTF 3D assets format support
+  "bevy_text",          # Text/font rendering
+  "bevy_ui",            # UI toolkit
+  #"animation",          # Animation support
+  "tonemapping_luts",   # Support different camera Tonemapping modes (enables KTX2+zstd)
+  "default_font",       # Embed a minimal default font for text/UI
+  #"png",                # PNG image format for simple 2D images
+  #"hdr",                # HDR images
+  #"ktx2",               # Preferred format for GPU textures
+  #"zstd",               # ZSTD compression support in KTX2 files
+  #"vorbis",             # Audio: OGG Vorbis
+  "x11",                # Linux: Support X11 windowing system
+
+  "dynamic_linking",
+]
+
 [dependencies]
-bevy = { version = "0.12.1", features = ["dynamic_linking"] }
 rand = "0.8.0"
 bevy_pancam = "0.10.0"
-bevy-inspector-egui = "0.21.0"
+#bevy-inspector-egui = "0.21.0"
 
 # Enable a small amount of optimization in debug mode
 [profile.dev]

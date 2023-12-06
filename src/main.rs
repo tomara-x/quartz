@@ -4,24 +4,17 @@ use bevy::{
         tonemapping::Tonemapping,
     },
     render::view::VisibleEntities,
-    ecs::schedule::{LogLevel, ScheduleBuildSettings},
     prelude::*};
 
 use rand::prelude::random;
 use bevy_pancam::{PanCam, PanCamPlugin};
-use bevy_inspector_egui::quick::WorldInspectorPlugin;
+//use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 mod bloom_settings;
 use bloom_settings::*;
 
 fn main() {
     App::new()
-        .edit_schedule(Main, |schedule| {
-            schedule.set_build_settings(ScheduleBuildSettings {
-                ambiguity_detection: LogLevel::Warn,
-                ..default()
-            });
-        })
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
                 title: String::from("awawawa"),
@@ -36,7 +29,7 @@ fn main() {
         .insert_resource(Msaa::Off)
         //PLUGINS
         .add_plugins(PanCamPlugin::default())
-        .add_plugins(WorldInspectorPlugin::new())
+        //.add_plugins(WorldInspectorPlugin::new())
         //INTERNAL PLUGINS
         .add_plugins(BloomSettingsPlugin)
         //SYSTEMS
@@ -98,7 +91,7 @@ fn setup(
                 hdr: true,
                 ..default()
             },
-            tonemapping: Tonemapping::BlenderFilmic,
+            tonemapping: Tonemapping::TonyMcMapface,
             transform: Transform::from_translation(Vec3::Z), //push the camera "back" one unit
         ..default()
         },
@@ -227,7 +220,7 @@ fn update_selection(
     keyboard_input: Res<Input<KeyCode>>,
 ) {
     if mouse_button_input.just_pressed(MouseButton::Left) && keyboard_input.pressed(KeyCode::X) {
-        if !keyboard_input.pressed(KeyCode::ShiftRight) {
+        if !keyboard_input.pressed(KeyCode::ShiftLeft) {
             for (e, _, _) in query.iter() {
                 commands.entity(e).remove::<Selected>();
             }
