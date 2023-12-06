@@ -90,7 +90,7 @@ struct Connection {
 fn setup(
     mut commands: Commands,
     mut config: ResMut<GizmoConfig>,
-    ) {
+) {
     config.line_width = 1.;
     commands.spawn((
         Camera2dBundle {
@@ -120,7 +120,7 @@ fn spawn_circles(
     mut materials: ResMut<Assets<ColorMaterial>>,
     mut depth: ResMut<Depth>,
     cursor: Res<CursorInfo>,
-    ) {
+) {
     if mouse_button_input.just_released(MouseButton::Left) && keyboard_input.pressed(KeyCode::Z) {
         commands.spawn((ColorMesh2dBundle {
         mesh: meshes.add(shape::Circle::new(cursor.f.distance(cursor.i)).into()).into(),
@@ -140,7 +140,7 @@ fn update_cursor_info(
     camera_query: Query<(&Camera, &GlobalTransform)>,
     windows: Query<&Window>,
     mut cursor: ResMut<CursorInfo>,
-    ) {
+) {
     let (cam, cam_transform) = camera_query.single();
     if mouse_button_input.just_pressed(MouseButton::Left) {
         let Some(cursor_pos) = windows.single().cursor_position() else { return; };
@@ -156,21 +156,22 @@ fn update_cursor_info(
 
 fn update_colors(
     mut mats: ResMut<Assets<ColorMaterial>>,
-    material_ids: Query<&Handle<ColorMaterial>>,
+    material_ids: Query<&Handle<ColorMaterial>, With<Selected>>,
     keyboard_input: Res<Input<KeyCode>>,
+    cursor: Res<CursorInfo>,
 ) {
     if keyboard_input.pressed(KeyCode::C) {
         for id in material_ids.iter() {
             let mat = mats.get_mut(id).unwrap();
-            mat.color = Color::hsl(random::<f32>()*360., 1.0, 0.5);
-            }
+            mat.color = Color::hsl(cursor.i.distance(cursor.f)%360., 1.0, 0.5);
+        }
     }
 }
 
 fn toggle_pan(
     mut query: Query<&mut PanCam>,
     keyboard_input: Res<Input<KeyCode>>,
-    ) {
+) {
     if keyboard_input.just_pressed(KeyCode::V) {
         let mut pancam = query.single_mut();
         pancam.enabled = true;
@@ -224,7 +225,7 @@ fn update_selection(
     query: Query<(Entity, &Radius, &Pos), Or<(With<Visible>, With<Selected>)>>,
     cursor: Res<CursorInfo>,
     keyboard_input: Res<Input<KeyCode>>,
-    ) {
+) {
     if mouse_button_input.just_pressed(MouseButton::Left) && keyboard_input.pressed(KeyCode::X) {
         if !keyboard_input.pressed(KeyCode::ShiftRight) {
             for (e, _, _) in query.iter() {
@@ -244,8 +245,9 @@ fn move_selected(
     mouse_button_input: Res<Input<MouseButton>>,
     cursor: Res<CursorInfo>,
     mut query: Query<(&mut Transform, &mut Pos), With<Selected>>,
-    ) {
-    if mouse_button_input.pressed(MouseButton::Left) {
+    keyboard_input: Res<Input<KeyCode>>,
+) {
+    if mouse_button_input.pressed(MouseButton::Left) && keyboard_input.pressed(KeyCode::X) {
         for (mut t, p) in query.iter_mut() {
             t.translation = (p.value.xy() + cursor.f - cursor.i).extend(p.value.z);
             //t.translation.x = p.value.x + cursor.f.x - cursor.i.x;
