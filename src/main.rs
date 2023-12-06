@@ -68,7 +68,8 @@ struct Visible;
 
 
 //in the params for the systems, make sure you have queries for every component
-//(radius, color, position, data, extra, etc) then destructure based on match
+//(radius, color, position, data, extra, etc)
+//very messy idea
 #[derive(Component)]
 struct Connection {
     src: Vec<Entity>,
@@ -97,6 +98,7 @@ fn setup(
         },
         BloomSettings::default(), //enable bloom
         PanCam {
+            enabled: false,
             //limit zooming
             max_scale: Some(80.),
             min_scale: 0.005,
@@ -122,6 +124,7 @@ fn spawn_circles(
         ..default()
         },
         Radius { value: cursor.f.distance(cursor.i)}, //opt?
+        // to keep track of initial position while moving (use local param?)
         Pos { value: cursor.i.extend(depth.value)},
         ));
         depth.value += 0.00001;
@@ -175,7 +178,7 @@ fn toggle_pan(
     }
 }
 
-
+//need to make this conditional
 fn draw_pointer_circle(
     cursor: Res<CursorInfo>,
     mut gizmos: Gizmos,
@@ -195,6 +198,8 @@ fn highlight_selected(
     }
 }
 
+// loop over the visible entities and give them a Visible component
+// so we can query just the visible entities
 fn mark_visible(
     mouse_button_input: Res<Input<MouseButton>>,
     mut commands: Commands,
@@ -212,6 +217,8 @@ fn mark_visible(
     }
 }
 
+// if we click an entity (we check only the visible ones) we deselect any selected ones
+// then select the clicked one (unless shift is held, we add to selection)
 fn update_selection(
     mut commands: Commands,
     mouse_button_input: Res<Input<MouseButton>>,
@@ -234,6 +241,8 @@ fn update_selection(
     }
 }
 
+// move the selected entities by changing the translation of entity directly
+// when mouse is released we store the translation in temporary position component
 fn move_selected(
     mouse_button_input: Res<Input<MouseButton>>,
     cursor: Res<CursorInfo>,

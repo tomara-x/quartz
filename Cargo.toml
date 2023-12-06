@@ -3,7 +3,7 @@ name = "quartz"
 version = "0.1.0"
 edition = "2021"
 authors = ["amy universe <nopenullnilvoid00@gmail.com>"]
-repository = "https://github.com/tomara-x/adhesion"
+repository = "https://github.com/tomara-x/quartz"
 
 [dependencies.bevy]
 version = "0.12.1"
