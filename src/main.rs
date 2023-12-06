@@ -1,3 +1,8 @@
+use quartz::{
+    bloom_settings::*,
+    circles::*,
+};
+
 use bevy::{
     core_pipeline::{
         bloom::{BloomSettings},
@@ -9,11 +14,6 @@ use bevy::{
 use rand::prelude::random;
 use bevy_pancam::{PanCam, PanCamPlugin};
 //use bevy_inspector_egui::quick::WorldInspectorPlugin;
-
-mod bloom_settings;
-use bloom_settings::*;
-mod circles;
-use circles::*;
 
 fn main() {
     App::new()
