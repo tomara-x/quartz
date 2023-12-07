@@ -144,7 +144,7 @@ fn update_selection(
     cursor: Res<CursorInfo>,
     keyboard_input: Res<Input<KeyCode>>,
 ) {
-    if mouse_button_input.just_pressed(MouseButton::Left) && keyboard_input.pressed(KeyCode::X) {
+    if mouse_button_input.just_pressed(MouseButton::Left) {
         if !keyboard_input.pressed(KeyCode::ShiftLeft) {
             for (e, _, _) in query.iter() {
                 commands.entity(e).remove::<Selected>();
@@ -154,6 +154,14 @@ fn update_selection(
             if cursor.i.distance(p.value.xy()) < r.value {
                 commands.entity(e).insert(Selected);
                 break;
+            }
+        }
+    }
+    // darg selection
+    if mouse_button_input.just_released(MouseButton::Left) {
+        for (e, r, p) in query.iter() {
+            if cursor.i.distance(cursor.f) + r.value > cursor.i.distance(p.value.xy()) {
+                commands.entity(e).insert(Selected);
             }
         }
     }

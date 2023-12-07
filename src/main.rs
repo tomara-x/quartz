@@ -8,11 +8,10 @@ use bevy::{
         bloom::{BloomSettings},
         tonemapping::Tonemapping,
     },
-    render::view::VisibleEntities,
     prelude::*};
 
-use rand::prelude::random;
 use bevy_pancam::{PanCam, PanCamPlugin};
+//use rand::prelude::random;
 //use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 fn main() {
