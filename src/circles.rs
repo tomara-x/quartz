@@ -144,24 +144,26 @@ fn update_selection(
     cursor: Res<CursorInfo>,
     keyboard_input: Res<Input<KeyCode>>,
 ) {
-    if mouse_button_input.just_pressed(MouseButton::Left) {
-        if !keyboard_input.pressed(KeyCode::ShiftLeft) {
-            for (e, _, _) in query.iter() {
-                commands.entity(e).remove::<Selected>();
+    if !keyboard_input.pressed(KeyCode::X) && !keyboard_input.pressed(KeyCode::C) {
+        if mouse_button_input.just_pressed(MouseButton::Left) {
+            if !keyboard_input.pressed(KeyCode::ShiftLeft) {
+                for (e, _, _) in query.iter() {
+                    commands.entity(e).remove::<Selected>();
+                }
+            }
+            for (e, r, p) in query.iter() {
+                if cursor.i.distance(p.value.xy()) < r.value {
+                    commands.entity(e).insert(Selected);
+                    break;
+                }
             }
         }
-        for (e, r, p) in query.iter() {
-            if cursor.i.distance(p.value.xy()) < r.value {
-                commands.entity(e).insert(Selected);
-                break;
-            }
-        }
-    }
-    // darg selection
-    if mouse_button_input.just_released(MouseButton::Left) {
-        for (e, r, p) in query.iter() {
-            if cursor.i.distance(cursor.f) + r.value > cursor.i.distance(p.value.xy()) {
-                commands.entity(e).insert(Selected);
+        // darg selection
+        if mouse_button_input.just_released(MouseButton::Left) {
+            for (e, r, p) in query.iter() {
+                if cursor.i.distance(cursor.f) + r.value > cursor.i.distance(p.value.xy()) {
+                    commands.entity(e).insert(Selected);
+                }
             }
         }
     }

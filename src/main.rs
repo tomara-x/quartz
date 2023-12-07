@@ -62,7 +62,7 @@ fn setup(
                 hdr: true,
                 ..default()
             },
-            tonemapping: Tonemapping::TonyMcMapface,
+            tonemapping: Tonemapping::BlenderFilmic,
             transform: Transform::from_translation(Vec3::Z), //push the camera "back" one unit
         ..default()
         },
