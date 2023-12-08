@@ -38,17 +38,27 @@ fn main() {
         .run();
 }
 
-//in the params for the systems, make sure you have queries for every component
-//(radius, color, position, data, extra, etc)
-//very messy idea
+//connections
+enum Target {
+    Color,
+    Pos,
+    Data,
+    Block,
+    Radius,
+}
+
 #[derive(Component)]
-struct Connection {
-    src: Vec<Entity>,
-    dst: Vec<Entity>,
-    src_target: String,
-    dst_target: String,
-    op: String,
-    order: usize,
+struct LinkFrom(Vec<(Entity, Target, Target)>);
+
+// will be used to clear connections after despawning an entity
+#[derive(Component)]
+struct LinkTo(Vec<Entity>);
+
+#[derive(Component)]
+enum Op {
+    Pass,
+    Add,
+    Mult,
 }
 
 fn setup(
@@ -62,7 +72,7 @@ fn setup(
                 hdr: true,
                 ..default()
             },
-            tonemapping: Tonemapping::BlenderFilmic,
+            tonemapping: Tonemapping::TonyMcMapface,
             transform: Transform::from_translation(Vec3::Z), //push the camera "back" one unit
         ..default()
         },
@@ -81,11 +91,11 @@ fn toggle_pan(
     mut query: Query<&mut PanCam>,
     keyboard_input: Res<Input<KeyCode>>,
 ) {
-    if keyboard_input.just_pressed(KeyCode::V) {
+    if keyboard_input.just_pressed(KeyCode::P) {
         let mut pancam = query.single_mut();
         pancam.enabled = true;
     }
-    if keyboard_input.just_released(KeyCode::V) {
+    if keyboard_input.just_released(KeyCode::P) {
         let mut pancam = query.single_mut();
         pancam.enabled = false;
     }

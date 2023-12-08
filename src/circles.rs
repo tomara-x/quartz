@@ -9,7 +9,8 @@ impl Plugin for CirclesPlugin {
         app.insert_resource(Depth {value: -10.});
         app.insert_resource(CursorInfo {i: Vec2::ZERO, f: Vec2::ZERO});
         app.add_systems(Update, spawn_circles);
-        app.add_systems(Update, update_colors);
+        app.add_systems(Update, update_color);
+        app.add_systems(Update, update_radius);
         app.add_systems(Update, draw_pointer_circle);
         app.add_systems(Update,
             (update_cursor_info, mark_visible, update_selection, highlight_selected, move_selected).chain());
@@ -81,7 +82,7 @@ fn update_cursor_info(
     }
 }
 
-fn update_colors(
+fn update_color(
     mut mats: ResMut<Assets<ColorMaterial>>,
     material_ids: Query<&Handle<ColorMaterial>, With<Selected>>,
     keyboard_input: Res<Input<KeyCode>>,
@@ -91,6 +92,21 @@ fn update_colors(
         for id in material_ids.iter() {
             let mat = mats.get_mut(id).unwrap();
             mat.color = Color::hsl(cursor.i.distance(cursor.f)%360., 1.0, 0.5);
+        }
+    }
+}
+
+//FIXME
+fn update_radius(
+    mut meshes: ResMut<Assets<Mesh>>,
+    mesh_ids: Query<&Handle<Mesh>, With<Selected>>,
+    keyboard_input: Res<Input<KeyCode>>,
+    cursor: Res<CursorInfo>,
+) {
+    if keyboard_input.pressed(KeyCode::V) {
+        for id in mesh_ids.iter() {
+            let mesh = meshes.get_mut(id).unwrap();
+            *mesh = shape::Circle::new(cursor.f.distance(cursor.i)).into();
         }
     }
 }
