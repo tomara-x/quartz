@@ -13,7 +13,7 @@ features = [
   "bevy_asset",         # Assets management
   "bevy_audio",         # Builtin audio
   #"bevy_gilrs",         # Gamepad input support
-  #"bevy_scene",         # Scenes management
+  "bevy_scene",         # Scenes management
   "bevy_winit",         # Window management (cross-platform Winit backend)
   "bevy_render",        # Rendering framework core
   "bevy_core_pipeline", # Common rendering abstractions
@@ -41,11 +41,12 @@ rand = "0.8.0"
 bevy_pancam = "0.10.0"
 #bevy-inspector-egui = "0.21.0"
 
-# Enable a small amount of optimization in debug mode
+# smol amount of optimization for our stuff
 [profile.dev]
 opt-level = 1
 
-# Enable high optimizations for dependencies (incl. Bevy), but not for our code:
+# high optimizations and no debug symbols for deps:
 [profile.dev.package."*"]
 opt-level = 3
+debug = false
 
