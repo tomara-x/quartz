@@ -11,8 +11,8 @@ use bevy::{
     prelude::*};
 
 use bevy_pancam::{PanCam, PanCamPlugin};
+use bevy_inspector_egui::quick::WorldInspectorPlugin;
 //use rand::prelude::random;
-//use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 fn main() {
     App::new()
@@ -28,7 +28,7 @@ fn main() {
         .insert_resource(Msaa::Off)
         //PLUGINS
         .add_plugins(PanCamPlugin::default())
-        //.add_plugins(WorldInspectorPlugin::new())
+        .add_plugins(WorldInspectorPlugin::new())
         //INTERNAL PLUGINS
         .add_plugins(BloomSettingsPlugin)
         .add_plugins(CirclesPlugin)

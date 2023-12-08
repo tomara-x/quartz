@@ -1,5 +1,6 @@
 use bevy::{
     render::view::VisibleEntities,
+    sprite::Mesh2dHandle,
     prelude::*};
 
 pub struct CirclesPlugin;
@@ -96,15 +97,14 @@ fn update_color(
     }
 }
 
-//FIXME
 fn update_radius(
     mut meshes: ResMut<Assets<Mesh>>,
-    mesh_ids: Query<&Handle<Mesh>, With<Selected>>,
+    mesh_ids: Query<&Mesh2dHandle, With<Selected>>,
     keyboard_input: Res<Input<KeyCode>>,
     cursor: Res<CursorInfo>,
 ) {
     if keyboard_input.pressed(KeyCode::V) {
-        for id in mesh_ids.iter() {
+        for Mesh2dHandle(id) in mesh_ids.iter() {
             let mesh = meshes.get_mut(id).unwrap();
             *mesh = shape::Circle::new(cursor.f.distance(cursor.i)).into();
         }
