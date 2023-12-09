@@ -43,7 +43,7 @@ fn create_connection(
     cursor: Res<CursorInfo>,
 ) {
     let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
-    if ctrl && mouse_button_input.just_pressed(MouseButton::Left) {
+    if ctrl && mouse_button_input.just_released(MouseButton::Left) {
         for (e, r, p, mut c) in query.iter_mut() {
             if cursor.i.distance(p.value.xy()) < r.value {
                 match c {
@@ -56,12 +56,8 @@ fn create_connection(
                     ()},
                     Some(ref mut connection) => connection.src.push(e),
                 }
-                break;
+                continue;
             }
-        }
-    }
-    if ctrl && mouse_button_input.just_released(MouseButton::Left) {
-        for (e, r, p, mut c) in query.iter_mut() {
             if cursor.f.distance(p.value.xy()) < r.value {
                 match c {
                     None => {commands.entity(e).insert(Connection {
@@ -71,7 +67,7 @@ fn create_connection(
                                 dst_target: Target::Color,
                             });
                     ()},
-                    Some(ref mut connection) => connection.src.push(e),
+                    Some(ref mut connection) => connection.dst.push(e),
                 }
                 println!("{:?}", c);
                 break;
