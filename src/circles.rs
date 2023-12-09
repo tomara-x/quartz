@@ -3,6 +3,8 @@ use bevy::{
     sprite::Mesh2dHandle,
     prelude::*};
 
+use crate::cursor::*;
+
 pub struct CirclesPlugin;
 
 impl Plugin for CirclesPlugin {
@@ -14,32 +16,25 @@ impl Plugin for CirclesPlugin {
         app.add_systems(Update, update_radius);
         app.add_systems(Update, draw_pointer_circle);
         app.add_systems(Update,
-            (update_cursor_info, mark_visible, update_selection, highlight_selected, move_selected).chain());
+            (mark_visible, update_selection, highlight_selected, move_selected).chain());
         app.add_systems(Update, delete_selected);
-        app.add_systems(Update, add_connection_component);
     }
 }
 
 #[derive(Resource)]
 struct Depth { value: f32 }
 
-#[derive(Resource)]
-struct CursorInfo {
-    i: Vec2,
-    f: Vec2,
-}
+#[derive(Component)]
+pub struct Radius { pub value: f32 }
 
 #[derive(Component)]
-struct Radius { value: f32 }
+pub struct Pos { pub value: Vec3 }
 
 #[derive(Component)]
-struct Pos { value: Vec3 }
+pub struct Selected;
 
 #[derive(Component)]
-struct Selected;
-
-#[derive(Component)]
-struct Visible;
+pub struct Visible;
 
 fn spawn_circles(
     mut commands: Commands,
@@ -62,25 +57,6 @@ fn spawn_circles(
         Pos { value: cursor.i.extend(depth.value)},
         ));
         depth.value += 0.00001;
-    }
-}
-
-fn update_cursor_info(
-    mouse_button_input: Res<Input<MouseButton>>,
-    camera_query: Query<(&Camera, &GlobalTransform)>,
-    windows: Query<&Window>,
-    mut cursor: ResMut<CursorInfo>,
-) {
-    let (cam, cam_transform) = camera_query.single();
-    if mouse_button_input.just_pressed(MouseButton::Left) {
-        let Some(cursor_pos) = windows.single().cursor_position() else { return; };
-        let Some(point) = cam.viewport_to_world_2d(cam_transform, cursor_pos) else { return; };
-        cursor.i = point;
-    }
-    if mouse_button_input.pressed(MouseButton::Left) {
-        let Some(cursor_pos) = windows.single().cursor_position() else { return; };
-        let Some(point) = cam.viewport_to_world_2d(cam_transform, cursor_pos) else { return; };
-        cursor.f = point;
     }
 }
 
@@ -220,52 +196,3 @@ fn delete_selected(
     }
 }
 
-
-
-// CONNECTIONS
-//
-
-enum Target {
-    Color,
-    Pos,
-    Data,
-    Block,
-    Radius,
-}
-
-#[derive(Component)]
-struct Connection {
-    src: Vec<Entity>,
-    dst: Vec<Entity>,
-    src_target: Target,
-    dst_target: Target,
-}
-
-//operations as marker components
-#[derive(Component)]
-struct Add;
-#[derive(Component)]
-struct Mult;
-
-fn add_connection_component(
-    keyboard_input: Res<Input<KeyCode>>,
-    mouse_button_input: Res<Input<MouseButton>>,
-    mut commands: Commands,
-    query: Query<(Entity, &Radius, &Pos), With<Visible>>,
-    cursor: Res<CursorInfo>,
-) {
-    let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
-    if ctrl && mouse_button_input.just_pressed(MouseButton::Left) {
-        for (e, r, p) in query.iter() {
-            if cursor.i.distance(p.value.xy()) < r.value {
-                commands.entity(e).insert(Connection {
-                    src: vec![e],
-                    dst: vec![e],
-                    src_target: Target::Color,
-                    dst_target: Target::Color,
-                });
-                break;
-            }
-        }
-    }
-}

@@ -1,6 +1,8 @@
 use quartz::{
     bloom_settings::*,
     circles::*,
+    cursor::*,
+    connections::*,
 };
 
 use bevy::{
@@ -34,6 +36,7 @@ fn main() {
         //INTERNAL PLUGINS
         .add_plugins(BloomSettingsPlugin)
         .add_plugins(CirclesPlugin)
+        .add_plugins(CursorPlugin)
         //SYSTEMS
         .add_systems(Startup, setup)
         .add_systems(Update, toggle_pan)
