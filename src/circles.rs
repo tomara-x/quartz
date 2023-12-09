@@ -16,6 +16,7 @@ impl Plugin for CirclesPlugin {
         app.add_systems(Update,
             (update_cursor_info, mark_visible, update_selection, highlight_selected, move_selected).chain());
         app.add_systems(Update, delete_selected);
+        app.add_systems(Update, add_connection_component);
     }
 }
 
@@ -254,7 +255,17 @@ fn add_connection_component(
     cursor: Res<CursorInfo>,
 ) {
     let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
-    if ctrl && mouse_button_input.pressed(MouseButton::Left) {
-
+    if ctrl && mouse_button_input.just_pressed(MouseButton::Left) {
+        for (e, r, p) in query.iter() {
+            if cursor.i.distance(p.value.xy()) < r.value {
+                commands.entity(e).insert(Connection {
+                    src: vec![e],
+                    dst: vec![e],
+                    src_target: Target::Color,
+                    dst_target: Target::Color,
+                });
+                break;
+            }
+        }
     }
 }
