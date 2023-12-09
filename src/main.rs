@@ -23,6 +23,8 @@ fn main() {
             }),
             ..default()
         }))
+        //States
+        .add_state::<Mode>()
         //RESOURCES
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(Msaa::Off)
@@ -38,27 +40,11 @@ fn main() {
         .run();
 }
 
-//connections
-enum Target {
-    Color,
-    Pos,
-    Data,
-    Block,
-    Radius,
-}
-
-#[derive(Component)]
-struct LinkFrom(Vec<(Entity, Target, Target)>);
-
-// will be used to clear connections after despawning an entity
-#[derive(Component)]
-struct LinkTo(Vec<Entity>);
-
-#[derive(Component)]
-enum Op {
-    Pass,
-    Add,
-    Mult,
+#[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
+enum Mode {
+    #[default]
+    Edit,
+    Run,
 }
 
 fn setup(

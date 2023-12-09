@@ -219,3 +219,42 @@ fn delete_selected(
     }
 }
 
+
+
+// CONNECTIONS
+//
+
+enum Target {
+    Color,
+    Pos,
+    Data,
+    Block,
+    Radius,
+}
+
+#[derive(Component)]
+struct Connection {
+    src: Vec<Entity>,
+    dst: Vec<Entity>,
+    src_target: Target,
+    dst_target: Target,
+}
+
+//operations as marker components
+#[derive(Component)]
+struct Add;
+#[derive(Component)]
+struct Mult;
+
+fn add_connection_component(
+    keyboard_input: Res<Input<KeyCode>>,
+    mouse_button_input: Res<Input<MouseButton>>,
+    mut commands: Commands,
+    query: Query<(Entity, &Radius, &Pos), With<Visible>>,
+    cursor: Res<CursorInfo>,
+) {
+    let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
+    if ctrl && mouse_button_input.pressed(MouseButton::Left) {
+
+    }
+}
