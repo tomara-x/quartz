@@ -14,8 +14,8 @@ impl Plugin for CirclesPlugin {
         app.add_systems(Update, update_color);
         app.add_systems(Update, update_radius);
         app.add_systems(Update, draw_pointer_circle);
-        app.add_systems(Update, mark_visible);
-        app.add_systems(Update, update_selection);
+        app.add_systems(Update, mark_visible.after(update_cursor_info));
+        app.add_systems(Update, update_selection.after(mark_visible));
         app.add_systems(Update, highlight_selected);
         app.add_systems(Update, move_selected.after(update_selection));
         app.add_systems(Update, delete_selected);
