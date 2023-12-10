@@ -47,15 +47,17 @@ fn spawn_circles(
     cursor: Res<CursorInfo>,
 ) {
     if mouse_button_input.just_released(MouseButton::Left) && keyboard_input.pressed(KeyCode::Z) {
-        commands.spawn((ColorMesh2dBundle {
-        mesh: meshes.add(shape::Circle::new(cursor.f.distance(cursor.i)).into()).into(),
-        material: materials.add(ColorMaterial::from(Color::hsl(0., 1.0, 0.5))),
-        transform: Transform::from_translation(cursor.i.extend(depth.value)),
-        ..default()
-        },
-        Radius { value: cursor.f.distance(cursor.i)}, //opt?
-        // to keep track of initial position while moving (use local param?)
-        Pos { value: cursor.i.extend(depth.value)},
+        let radius = cursor.f.distance(cursor.i);
+        commands.spawn((
+            ColorMesh2dBundle {
+                mesh: meshes.add(shape::Circle::new(radius).into()).into(),
+                material: materials.add(ColorMaterial::from(Color::hsl(0., 1.0, 0.5))),
+                transform: Transform::from_translation(cursor.i.extend(depth.value)),
+                ..default()
+            },
+            Radius { value: radius},
+            Pos { value: cursor.i.extend(depth.value)}, //keeps track of initial position while moving
+            Visible, //otherwise it can't be selected til after mark_visible is updated
         ));
         depth.value += 0.00001;
     }
