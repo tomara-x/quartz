@@ -10,13 +10,14 @@ pub struct CirclesPlugin;
 impl Plugin for CirclesPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(Depth {value: -10.});
-        app.insert_resource(CursorInfo {i: Vec2::ZERO, f: Vec2::ZERO});
         app.add_systems(Update, spawn_circles);
         app.add_systems(Update, update_color);
         app.add_systems(Update, update_radius);
         app.add_systems(Update, draw_pointer_circle);
-        app.add_systems(Update,
-            (mark_visible, update_selection, highlight_selected, move_selected).chain());
+        app.add_systems(Update, mark_visible);
+        app.add_systems(Update, update_selection);
+        app.add_systems(Update, highlight_selected);
+        app.add_systems(Update, move_selected.after(update_selection));
         app.add_systems(Update, delete_selected);
     }
 }
@@ -149,6 +150,7 @@ fn update_selection(
                 }
                 break;
             }
+            *clicked_on_circle = false;
         }
     }
     if mouse_button_input.just_released(MouseButton::Left) {
