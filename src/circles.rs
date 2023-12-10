@@ -105,7 +105,7 @@ fn highlight_selected(
     query: Query<(&Radius, &Pos), With<Selected>>,
 ) {
     for (r, p) in query.iter() {
-        gizmos.circle_2d(p.value.xy(), r.value, Color::RED).segments(64);
+        gizmos.circle_2d(p.value.xy(), r.value, Color::BLUE).segments(64);
     }
 }
 
@@ -128,31 +128,50 @@ fn mark_visible(
     }
 }
 
-// if we click an entity (we check only the visible ones) we deselect any selected ones
-// then select the clicked one (unless shift is held, we add to selection)
 fn update_selection(
     mut commands: Commands,
     mouse_button_input: Res<Input<MouseButton>>,
     query: Query<(Entity, &Radius, &Pos), Or<(With<Visible>, With<Selected>)>>,
+    selected: Query<Entity, With<Selected>>,
     cursor: Res<CursorInfo>,
     keyboard_input: Res<Input<KeyCode>>,
+    mut clicked_on_circle: Local<bool>,
 ) {
-    if !keyboard_input.pressed(KeyCode::X) && !keyboard_input.pressed(KeyCode::C) {
-        if mouse_button_input.just_pressed(MouseButton::Left) {
-            if !keyboard_input.pressed(KeyCode::ShiftLeft) {
-                for (e, _, _) in query.iter() {
-                    commands.entity(e).remove::<Selected>();
-                }
-            }
-            for (e, r, p) in query.iter() {
-                if cursor.i.distance(p.value.xy()) < r.value {
+    let mut none_selected = selected.is_empty();
+    let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
+
+    if mouse_button_input.just_pressed(MouseButton::Left) {
+        for (e, r, p) in query.iter() {
+            if cursor.i.distance(p.value.xy()) < r.value {
+                *clicked_on_circle = true;
+                if none_selected {
                     commands.entity(e).insert(Selected);
-                    break;
+                }
+                break;
+            }
+        }
+    }
+    if mouse_button_input.just_released(MouseButton::Left) {
+        if *clicked_on_circle {
+            // some entities are selected and we just clicked on one
+            if !none_selected && cursor.i.distance(cursor.f) < 0.01 {
+                for entity in selected.iter() {
+                    commands.entity(entity).remove::<Selected>();
+                }
+                for (e, r, p) in query.iter() {
+                    if cursor.i.distance(p.value.xy()) < r.value {
+                        commands.entity(e).insert(Selected);
+                        break;
+                    }
                 }
             }
         }
-        // darg selection
-        if mouse_button_input.just_released(MouseButton::Left) {
+        else {
+            // deselect everything
+            for entity in selected.iter() {
+                commands.entity(entity).remove::<Selected>();
+            }
+            // select those in the dragged area
             for (e, r, p) in query.iter() {
                 if cursor.i.distance(cursor.f) + r.value > cursor.i.distance(p.value.xy()) {
                     commands.entity(e).insert(Selected);

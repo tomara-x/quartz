@@ -5,7 +5,7 @@ pub struct CursorPlugin;
 impl Plugin for CursorPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(CursorInfo {i: Vec2::ZERO, f: Vec2::ZERO});
-        app.add_systems(Update, update_cursor_info);
+        app.add_systems(PreUpdate, update_cursor_info);
     }
 }
 

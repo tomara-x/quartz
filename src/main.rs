@@ -44,6 +44,8 @@ fn main() {
         .run();
 }
 
+// circles for all!!
+// spawn in setup and they get their own systems and markers for quick query
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 enum Mode {
     #[default]
