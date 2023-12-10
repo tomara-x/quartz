@@ -129,11 +129,13 @@ fn mark_visible(
     }
 }
 
+//optimize all those distance calls, use a distance squared instead
 fn update_selection(
     mut commands: Commands,
     mouse_button_input: Res<Input<MouseButton>>,
     query: Query<(Entity, &Radius, &Pos), Or<(With<Visible>, With<Selected>)>>,
     selected: Query<Entity, With<Selected>>,
+    selected_query: Query<&Selected>,
     cursor: Res<CursorInfo>,
     keyboard_input: Res<Input<KeyCode>>,
     mut clicked_on_circle: Local<bool>,
@@ -145,8 +147,16 @@ fn update_selection(
         for (e, r, p) in query.iter() {
             if cursor.i.distance(p.value.xy()) < r.value {
                 *clicked_on_circle = true;
-                if none_selected {
-                    commands.entity(e).insert(Selected);
+                // we clicked a circle that wasn't already selected
+                if !selected_query.contains(e) {
+                    if shift { commands.entity(e).insert(Selected); }
+                    else {
+                        // deselect everything
+                        for entity in selected.iter() {
+                            commands.entity(entity).remove::<Selected>();
+                        }
+                        commands.entity(e).insert(Selected);
+                    }
                 }
                 break;
             }
