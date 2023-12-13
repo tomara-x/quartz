@@ -86,6 +86,8 @@ fn update_connected_color(
 ) {
     if mouse_button_input.pressed(MouseButton::Left) {
         for (entity, inputs) in inputs_query.iter() {
+            //the first input's first field (entity index)
+            //then we find that entity id from the resource
             let src_entity = entity_indices.0[inputs.0[0].0];
             let src_mat = mats.get(material_ids.get(src_entity).unwrap()).unwrap();
             let src_color = src_mat.color;
