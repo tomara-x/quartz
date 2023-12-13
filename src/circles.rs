@@ -48,7 +48,7 @@ pub struct Visible;
 
 
 #[derive(Component, Reflect)]
-pub struct Index(usize);
+pub struct Index(pub usize);
 
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
