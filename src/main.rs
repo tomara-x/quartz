@@ -10,7 +10,10 @@ use bevy::{
         bloom::{BloomSettings},
         tonemapping::Tonemapping,
     },
+    tasks::IoTaskPool,
     prelude::*};
+
+use std::{fs::File, io::Write};
 
 use bevy_pancam::{PanCam, PanCamPlugin};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
@@ -41,6 +44,7 @@ fn main() {
         //SYSTEMS
         .add_systems(Startup, setup)
         .add_systems(Update, toggle_pan)
+        .add_systems(Update, save_scene)
         .run();
 }
 
@@ -90,6 +94,29 @@ fn toggle_pan(
     if keyboard_input.just_released(KeyCode::P) {
         let mut pancam = query.single_mut();
         pancam.enabled = false;
+    }
+}
+
+//mess
+fn save_scene(world: &mut World) {
+    let keyboard_input = world.resource::<Input<KeyCode>>();
+    let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
+    if ctrl && keyboard_input.just_pressed(KeyCode::S) {
+        let mut query = world.query_filtered::<Entity, With<Pos>>();
+        let scene = DynamicSceneBuilder::from_world(&world).allow::<Pos>().build();
+
+        let type_registry = world.resource::<AppTypeRegistry>();
+        let serialized_scene = scene.serialize_ron(type_registry).unwrap();
+
+        #[cfg(not(target_arch = "wasm32"))]
+        IoTaskPool::get()
+            .spawn(async move {
+                // Write the scene RON data to file
+                File::create(format!("scene"))
+                    .and_then(|mut file| file.write(serialized_scene.as_bytes()))
+                    .expect("Error while writing scene to file");
+            })
+            .detach();
     }
 }
 

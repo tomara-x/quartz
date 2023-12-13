@@ -7,34 +7,30 @@ pub struct ConnectionsPlugin;
 
 impl Plugin for ConnectionsPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, create_connection);
+        //app.add_systems(Update, create_connection);
     }
 }
 
-#[derive(Debug)]
-enum Target {
-    Color,
-    Pos,
-    Data,
-    Block,
-    Radius,
-}
+// they mirro each other
+#[derive(Component, Debug)]
+struct Inputs(Vec<(Entity, String, String)>);
 
 #[derive(Component, Debug)]
-struct Connection {
-    src: Vec<Entity>,
-    dst: Vec<Entity>,
-    src_target: Target,
-    dst_target: Target,
-}
+struct Outputs(Vec<(Entity, String, String)>);
 
 //operations as marker components
 #[derive(Component)]
-struct Add;
+struct Add; //"inputA" + "inputB" (if an input is block, block output)
 #[derive(Component)]
 struct Mult;
+#[derive(Component)]
+struct Get; //takes a vector to "input" and a num index to "index"
 
-//not working
+// a Ready component for entities
+// query all with no inputs and set them to ready
+// then loop until all are ready
+
+/*
 fn create_connection(
     keyboard_input: Res<Input<KeyCode>>,
     mouse_button_input: Res<Input<MouseButton>>,
@@ -44,8 +40,11 @@ fn create_connection(
 ) {
     let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
     if ctrl && mouse_button_input.just_released(MouseButton::Left) {
+        let Option(source_entity);
+        let Option(sink_entity);
         for (e, r, p, mut c) in query.iter_mut() {
-            if cursor.i.distance(p.value.xy()) < r.value {
+            if cursor.i.distance(p.value.xy()) < r.value { source_entity = e };
+            let sink_entity = if cursor.f.distance(p.value.xy()) < r.value { e };
                 match c {
                     None => {commands.entity(e).insert(Connection {
                                 src: vec![e],
@@ -58,7 +57,6 @@ fn create_connection(
                 }
                 continue;
             }
-            if cursor.f.distance(p.value.xy()) < r.value {
                 match c {
                     None => {commands.entity(e).insert(Connection {
                                 src: vec![],
@@ -75,3 +73,4 @@ fn create_connection(
         }
     }
 }
+*/

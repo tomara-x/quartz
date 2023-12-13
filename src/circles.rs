@@ -9,7 +9,15 @@ pub struct CirclesPlugin;
 
 impl Plugin for CirclesPlugin {
     fn build(&self, app: &mut App) {
-        app.insert_resource(Depth {value: -10.});
+        app.register_type::<Depth>();
+        app.register_type::<Radius>();
+        app.register_type::<Pos>();
+        app.register_type::<Selected>();
+        app.register_type::<Visible>();
+        app.register_type::<Index>();
+        app.register_type::<EntityIndices>();
+        app.insert_resource(Depth(-10.));
+        app.insert_resource(EntityIndices(Vec::new()));
         app.add_systems(Update, spawn_circles);
         app.add_systems(Update, update_color);
         app.add_systems(Update, update_radius);
@@ -22,20 +30,30 @@ impl Plugin for CirclesPlugin {
     }
 }
 
-#[derive(Resource)]
-struct Depth { value: f32 }
+#[derive(Resource, Reflect, Default)]
+#[reflect(Resource)]
+struct Depth(f32);
 
-#[derive(Component)]
+#[derive(Component, Reflect)]
 pub struct Radius { pub value: f32 }
 
-#[derive(Component)]
+#[derive(Component, Reflect)]
 pub struct Pos { pub value: Vec3 }
 
-#[derive(Component)]
+#[derive(Component, Reflect)]
 pub struct Selected;
 
-#[derive(Component)]
+#[derive(Component, Reflect)]
 pub struct Visible;
+
+
+#[derive(Component, Reflect)]
+pub struct Index(usize);
+
+#[derive(Resource, Reflect, Default)]
+#[reflect(Resource)]
+pub struct EntityIndices(Vec<Entity>);
+
 
 fn spawn_circles(
     mut commands: Commands,
@@ -45,21 +63,26 @@ fn spawn_circles(
     mut materials: ResMut<Assets<ColorMaterial>>,
     mut depth: ResMut<Depth>,
     cursor: Res<CursorInfo>,
+    mut index: Local<usize>,
+    mut entity_indices: ResMut<EntityIndices>,
 ) {
     if mouse_button_input.just_released(MouseButton::Left) && keyboard_input.pressed(KeyCode::Z) {
         let radius = cursor.f.distance(cursor.i);
-        commands.spawn((
+        let id = commands.spawn((
             ColorMesh2dBundle {
                 mesh: meshes.add(shape::Circle::new(radius).into()).into(),
                 material: materials.add(ColorMaterial::from(Color::hsl(0., 1.0, 0.5))),
-                transform: Transform::from_translation(cursor.i.extend(depth.value)),
+                transform: Transform::from_translation(cursor.i.extend(depth.0)),
                 ..default()
             },
             Radius { value: radius},
-            Pos { value: cursor.i.extend(depth.value)}, //keeps track of initial position while moving
+            Pos { value: cursor.i.extend(depth.0)}, //keeps track of initial position while moving
             Visible, //otherwise it can't be selected til after mark_visible is updated
-        ));
-        depth.value += 0.00001;
+            Index(*index),
+        )).id();
+        entity_indices.0.push(id);
+        *index += 1;
+        depth.0 += 0.00001;
     }
 }
 
