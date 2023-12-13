@@ -7,6 +7,8 @@ pub struct ConnectionsPlugin;
 
 impl Plugin for ConnectionsPlugin {
     fn build(&self, app: &mut App) {
+        app.register_type::<Inputs>();
+        app.register_type::<Outputs>();
         app.add_systems(Update, connect);
     }
 }
