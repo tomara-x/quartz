@@ -61,20 +61,16 @@ fn connect(
                 let snk_index = index_query.get(snk).unwrap().0;
                 // source has outputs (we push to its outputs vector)
                 if outputs_query.contains(src) {
-                    if let Ok(mut outputs) = outputs_query.get_mut(src) {
-                        outputs.0.push((src_index, 0, 0));
-                    }
+                    outputs_query.get_mut(src).unwrap().0.push((snk_index, 0, 0));
                 }
                 else {
-                    commands.entity(src).insert(Outputs(vec![(src_index, 0, 0)]));
+                    commands.entity(src).insert(Outputs(vec![(snk_index, 0, 0)]));
                 }
                 if inputs_query.contains(snk) {
-                    if let Ok(mut inputs) = inputs_query.get_mut(snk) {
-                        inputs.0.push((snk_index, 0, 0));
-                    }
+                    inputs_query.get_mut(snk).unwrap().0.push((src_index, 0, 0));
                 }
                 else {
-                    commands.entity(snk).insert(Inputs(vec![(snk_index, 0, 0)]));
+                    commands.entity(snk).insert(Inputs(vec![(src_index, 0, 0)]));
                 }
             }
         }
