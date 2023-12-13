@@ -10,6 +10,7 @@ impl Plugin for ConnectionsPlugin {
         app.register_type::<Inputs>();
         app.register_type::<Outputs>();
         app.add_systems(Update, connect);
+        app.add_systems(Update, update_connected_color);
     }
 }
 
@@ -44,7 +45,6 @@ fn connect(
     mut inputs_query: Query<&mut Inputs>,
     mut outputs_query: Query<&mut Outputs>,
     cursor: Res<CursorInfo>,
-    entity_indices: Res<EntityIndices>,
 ) {
     let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
     if ctrl && mouse_button_input.just_released(MouseButton::Left) {
@@ -77,3 +77,20 @@ fn connect(
     }
 }
 
+fn update_connected_color(
+    mouse_button_input: Res<Input<MouseButton>>,
+    mut inputs_query: Query<(Entity, &Inputs)>,
+    entity_indices: Res<EntityIndices>,
+    material_ids: Query<&Handle<ColorMaterial>>,
+    mut mats: ResMut<Assets<ColorMaterial>>,
+) {
+    if mouse_button_input.pressed(MouseButton::Left) {
+        for (entity, inputs) in inputs_query.iter() {
+            let src_entity = entity_indices.0[inputs.0[0].0];
+            let src_mat = mats.get(material_ids.get(src_entity).unwrap()).unwrap();
+            let src_color = src_mat.color;
+            let mut snk_mat = mats.get_mut(material_ids.get(entity).unwrap()).unwrap();
+            snk_mat.color = src_color;
+        }
+    }
+}

@@ -52,7 +52,7 @@ pub struct Index(pub usize);
 
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
-pub struct EntityIndices(Vec<Entity>);
+pub struct EntityIndices(pub Vec<Entity>);
 
 
 fn spawn_circles(
