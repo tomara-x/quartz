@@ -75,7 +75,7 @@ fn connect(
 
 fn update_connected_color(
     mouse_button_input: Res<Input<MouseButton>>,
-    mut inputs_query: Query<(Entity, &Inputs)>,
+    inputs_query: Query<(Entity, &Inputs)>,
     entity_indices: Res<EntityIndices>,
     material_ids: Query<&Handle<ColorMaterial>>,
     mut mats: ResMut<Assets<ColorMaterial>>,
@@ -88,7 +88,7 @@ fn update_connected_color(
                 let src_entity = entity_indices.0[input.0];
                 let src_mat = mats.get(material_ids.get(src_entity).unwrap()).unwrap();
                 let src_color = src_mat.color;
-                let mut snk_mat = mats.get_mut(material_ids.get(entity).unwrap()).unwrap();
+                let snk_mat = mats.get_mut(material_ids.get(entity).unwrap()).unwrap();
                 snk_mat.color = src_color;
             }
         }

@@ -165,7 +165,7 @@ fn update_selection(
     keyboard_input: Res<Input<KeyCode>>,
     mut clicked_on_circle: Local<bool>,
 ) {
-    let mut none_selected = selected.is_empty();
+    let none_selected = selected.is_empty();
     let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
 
     if mouse_button_input.just_pressed(MouseButton::Left) {
@@ -252,7 +252,7 @@ fn delete_selected(
         for (id, index) in query.iter() {
             if let Ok(inputs) = inputs_query.get(id) {
                 for (src, _, _) in &inputs.0 {
-                    let mut src_outputs = &mut outputs_query.get_mut(entity_indices.0[*src]).unwrap().0;
+                    let src_outputs = &mut outputs_query.get_mut(entity_indices.0[*src]).unwrap().0;
                     for i in 0..src_outputs.len() {
                         if src_outputs[i].0 == index.0 { src_outputs.swap_remove(i); }
                     }
@@ -260,7 +260,7 @@ fn delete_selected(
             }
             if let Ok(outputs) = outputs_query.get(id) {
                 for (snk, _, _) in &outputs.0 {
-                    let mut snk_inputs = &mut inputs_query.get_mut(entity_indices.0[*snk]).unwrap().0;
+                    let snk_inputs = &mut inputs_query.get_mut(entity_indices.0[*snk]).unwrap().0;
                     for i in 0..snk_inputs.len() {
                         if snk_inputs[i].0 == index.0 { snk_inputs.swap_remove(i); }
                     }
