@@ -253,17 +253,13 @@ fn delete_selected(
             if let Ok(inputs) = inputs_query.get(id) {
                 for (src, _, _) in &inputs.0 {
                     let src_outputs = &mut outputs_query.get_mut(entity_indices.0[*src]).unwrap().0;
-                    for i in 0..src_outputs.len() {
-                        if src_outputs[i].0 == index.0 { src_outputs.swap_remove(i); }
-                    }
+                    src_outputs.retain(|&x| x.0 != index.0);
                 }
             }
             if let Ok(outputs) = outputs_query.get(id) {
                 for (snk, _, _) in &outputs.0 {
                     let snk_inputs = &mut inputs_query.get_mut(entity_indices.0[*snk]).unwrap().0;
-                    for i in 0..snk_inputs.len() {
-                        if snk_inputs[i].0 == index.0 { snk_inputs.swap_remove(i); }
-                    }
+                    snk_inputs.retain(|&x| x.0 != index.0);
                 }
             }
             commands.entity(id).despawn();
