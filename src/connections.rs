@@ -14,27 +14,23 @@ impl Plugin for ConnectionsPlugin {
     }
 }
 
-// they mirro each other
 // use codes for input types (0 = color, 1 = ...)
+// UMMMMM!!! i don't think the tuples are a good choice! .0 everywhere!
+// try a struct with multiple vecs?
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
-struct Inputs(Vec<(usize, i8, i8)>);
+pub struct Inputs(pub Vec<(usize, i8, i8)>);
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
-struct Outputs(Vec<(usize, i8, i8)>);
+pub struct Outputs(pub Vec<(usize, i8, i8)>);
 
-//operations as marker components
 #[derive(Component)]
-struct Add; //"inputA" + "inputB" (if an input is block, block output)
+struct Add; //indexed inputs and outputs? lazy (good)
 #[derive(Component)]
 struct Mult;
 #[derive(Component)]
-struct Get; //takes a vector to "input" and a num index to "index"
-
-// a Ready component for entities
-// query all with no inputs and set them to ready
-// then loop until all are ready
+struct Get;
 
 fn connect(
     keyboard_input: Res<Input<KeyCode>>,
@@ -88,11 +84,13 @@ fn update_connected_color(
         for (entity, inputs) in inputs_query.iter() {
             //the first input's first field (entity index)
             //then we find that entity id from the resource
-            let src_entity = entity_indices.0[inputs.0[0].0];
-            let src_mat = mats.get(material_ids.get(src_entity).unwrap()).unwrap();
-            let src_color = src_mat.color;
-            let mut snk_mat = mats.get_mut(material_ids.get(entity).unwrap()).unwrap();
-            snk_mat.color = src_color;
+            if let Some(input) = inputs.0.get(0) {
+                let src_entity = entity_indices.0[input.0];
+                let src_mat = mats.get(material_ids.get(src_entity).unwrap()).unwrap();
+                let src_color = src_mat.color;
+                let mut snk_mat = mats.get_mut(material_ids.get(entity).unwrap()).unwrap();
+                snk_mat.color = src_color;
+            }
         }
     }
 }
