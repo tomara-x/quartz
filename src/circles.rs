@@ -191,7 +191,7 @@ fn update_selection(
     if mouse_button_input.just_released(MouseButton::Left) {
         if *clicked_on_circle {
             // some entities are selected and we just clicked (no drag) on one
-            if !none_selected && cursor.i.distance(cursor.f) < 0.01 {
+            if !shift && !none_selected && cursor.i.distance(cursor.f) < 0.01 {
                 for entity in selected.iter() {
                     commands.entity(entity).remove::<Selected>();
                 }
@@ -205,8 +205,10 @@ fn update_selection(
         }
         else {
             // deselect everything
-            for entity in selected.iter() {
-                commands.entity(entity).remove::<Selected>();
+            if !shift {
+                for entity in selected.iter() {
+                    commands.entity(entity).remove::<Selected>();
+                }
             }
             // select those in the dragged area
             for (e, r, p) in query.iter() {
