@@ -11,6 +11,7 @@ impl Plugin for ConnectionsPlugin {
         app.register_type::<Outputs>();
         app.add_systems(Update, connect);
         app.add_systems(Update, update_connected_color);
+        app.add_systems(Update, draw_connections);
     }
 }
 
@@ -19,14 +20,14 @@ impl Plugin for ConnectionsPlugin {
 // try a struct with multiple vecs?
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
-pub struct Inputs(pub Vec<(usize, i8, i8)>);
+pub struct Inputs(pub Vec<(usize, u8, u8)>);
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
-pub struct Outputs(pub Vec<(usize, i8, i8)>);
+pub struct Outputs(pub Vec<(usize, u8, u8)>);
 
 #[derive(Component)]
-struct Add; //indexed inputs and outputs? lazy (good)
+struct Add;
 #[derive(Component)]
 struct Mult;
 #[derive(Component)]
@@ -57,16 +58,16 @@ fn connect(
                 let snk_index = index_query.get(snk).unwrap().0;
                 // source has outputs (we push to its outputs vector)
                 if outputs_query.contains(src) {
-                    outputs_query.get_mut(src).unwrap().0.push((snk_index, 0, 0));
+                    outputs_query.get_mut(src).unwrap().0.push((snk_index, 255, 255));
                 }
                 else {
-                    commands.entity(src).insert(Outputs(vec![(snk_index, 0, 0)]));
+                    commands.entity(src).insert(Outputs(vec![(snk_index, 255, 255)]));
                 }
                 if inputs_query.contains(snk) {
-                    inputs_query.get_mut(snk).unwrap().0.push((src_index, 0, 0));
+                    inputs_query.get_mut(snk).unwrap().0.push((src_index, 255, 255));
                 }
                 else {
-                    commands.entity(snk).insert(Inputs(vec![(src_index, 0, 0)]));
+                    commands.entity(snk).insert(Inputs(vec![(src_index, 255, 255)]));
                 }
             }
         }
@@ -94,3 +95,18 @@ fn update_connected_color(
         }
     }
 }
+
+fn draw_connections(
+    mut gizmos: Gizmos,
+    query: Query<(&Pos, &Inputs), With<Visible>>,
+    pos_query: Query<&Pos>,
+    entity_indices: Res<EntityIndices>,
+) {
+    for (pos, inputs) in query.iter() {
+        for (input, _, _) in &inputs.0 {
+            let src_pos = pos_query.get(entity_indices.0[*input]).unwrap();
+            gizmos.line_2d(pos.value.xy(), src_pos.value.xy(), Color::BLUE);
+        }
+    }
+}
+
