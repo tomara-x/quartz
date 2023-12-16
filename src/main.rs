@@ -2,7 +2,7 @@ use quartz::{
     bloom_settings::*,
     circles::*,
     cursor::*,
-    connections::*,
+    //connections::*,
 };
 
 use bevy::{
@@ -40,7 +40,7 @@ fn main() {
         .add_plugins(BloomSettingsPlugin)
         .add_plugins(CirclesPlugin)
         .add_plugins(CursorPlugin)
-        .add_plugins(ConnectionsPlugin)
+        //.add_plugins(ConnectionsPlugin)
         //SYSTEMS
         .add_systems(Startup, setup)
         .add_systems(Update, toggle_pan)

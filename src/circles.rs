@@ -3,7 +3,7 @@ use bevy::{
     sprite::Mesh2dHandle,
     prelude::*};
 
-use crate::{cursor::*, connections::*};
+use crate::{cursor::*};
 
 pub struct CirclesPlugin;
 
@@ -16,6 +16,8 @@ impl Plugin for CirclesPlugin {
         app.register_type::<Visible>();
         app.register_type::<Index>();
         app.register_type::<EntityIndices>();
+        app.register_type::<Inputs>();
+        app.register_type::<Outputs>();
         app.insert_resource(Depth(-10.));
         app.insert_resource(EntityIndices(Vec::new()));
         app.add_systems(Update, spawn_circles);
@@ -27,8 +29,10 @@ impl Plugin for CirclesPlugin {
         app.add_systems(Update, highlight_selected);
         app.add_systems(Update, move_selected.after(update_selection));
         app.add_systems(Update, delete_selected);
+        app.add_systems(Update, (connect, draw_connections));
     }
 }
+
 
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
@@ -45,7 +49,6 @@ pub struct Selected;
 
 #[derive(Component, Reflect)]
 pub struct Visible;
-
 
 #[derive(Component, Reflect)]
 pub struct Index(pub usize);
@@ -130,7 +133,6 @@ fn update_radius(
         }
     }
 }
-
 
 //need to make this conditional
 fn draw_pointer_circle(
@@ -269,20 +271,109 @@ fn delete_selected(
 ) {
     if keyboard_input.pressed(KeyCode::Delete) {
         for (id, index) in query.iter() {
-            //if let Ok(inputs) = inputs_query.get(id) {
-            //    for (src, _, _) in &inputs.0 {
-            //        let src_outputs = &mut outputs_query.get_mut(entity_indices.0[*src]).unwrap().0;
-            //        src_outputs.retain(|&x| x.0 != index.0);
-            //    }
-            //}
-            //if let Ok(outputs) = outputs_query.get(id) {
-            //    for (snk, _, _) in &outputs.0 {
-            //        let snk_inputs = &mut inputs_query.get_mut(entity_indices.0[*snk]).unwrap().0;
-            //        snk_inputs.retain(|&x| x.0 != index.0);
-            //    }
-            //}
-            commands.entity(id).despawn();
+            if let Ok(inputs) = inputs_query.get(id) {
+                for src in &inputs.0 {
+                    let src_outputs = &mut outputs_query.get_mut(entity_indices.0[*src]).unwrap().0;
+                    src_outputs.retain(|&x| x != index.0);
+                }
+            }
+            if let Ok(outputs) = outputs_query.get(id) {
+                for snk in &outputs.0 {
+                    let snk_inputs = &mut inputs_query.get_mut(entity_indices.0[*snk]).unwrap().0;
+                    snk_inputs.retain(|&x| x != index.0);
+                }
+            }
+            commands.entity(id).despawn_recursive();
         }
     }
 }
+
+
+//-----------------------connections-----------------------
+
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
+struct Inputs(Vec<usize>);
+
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
+struct Outputs(Vec<usize>);
+
+fn connect(
+    keyboard_input: Res<Input<KeyCode>>,
+    mouse_button_input: Res<Input<MouseButton>>,
+    mut commands: Commands,
+    query: Query<(Entity, &Radius, &Pos), With<Visible>>,
+    index_query: Query<&Index>,
+    mut inputs_query: Query<&mut Inputs>,
+    mut outputs_query: Query<&mut Outputs>,
+    cursor: Res<CursorInfo>,
+) {
+    let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
+    if ctrl && mouse_button_input.just_released(MouseButton::Left) {
+        let mut source_entity: Option<Entity> = None;
+        let mut sink_entity: Option<Entity> = None;
+        for (e, r, p) in query.iter() {
+            if cursor.i.distance(p.value.xy()) < r.value { source_entity = Some(e) };
+            if cursor.f.distance(p.value.xy()) < r.value { sink_entity = Some(e) };
+        }
+
+        if let Some(src) = source_entity {
+            if let Some(snk) = sink_entity {
+                let src_index = index_query.get(src).unwrap().0;
+                let snk_index = index_query.get(snk).unwrap().0;
+                // source has outputs (we push to its outputs vector)
+                if let Ok(mut outputs) = outputs_query.get_mut(src) {
+                    outputs.0.push(snk_index);
+                }
+                else {
+                    commands.entity(src).insert(Outputs(vec![snk_index]));
+                }
+                if let Ok(mut inputs) = inputs_query.get_mut(snk) {
+                    inputs.0.push(src_index);
+                }
+                else {
+                    commands.entity(snk).insert(Inputs(vec![src_index]));
+                }
+            }
+        }
+    }
+}
+
+fn draw_connections(
+    mut gizmos: Gizmos,
+    query: Query<(&Transform, &Inputs), With<Visible>>,
+    pos_query: Query<&Transform>,
+    entity_indices: Res<EntityIndices>,
+) {
+    for (pos, inputs) in query.iter() {
+        for input in &inputs.0 {
+            let src_pos = pos_query.get(entity_indices.0[*input]).unwrap();
+            gizmos.line_2d(pos.translation.xy(), src_pos.translation.xy(), Color::BLUE);
+        }
+    }
+}
+
+
+// filtering components to determin behavior of connection
+#[derive(Component)]
+struct ReadColor;
+#[derive(Component)]
+struct WriteColor;
+
+#[derive(Component)]
+struct ReadPos;
+#[derive(Component)]
+struct WritePos;
+
+#[derive(Component)]
+struct ReadRadius;
+#[derive(Component)]
+struct WriteRadius;
+
+#[derive(Component)]
+struct ReadGeneral;
+#[derive(Component)]
+struct WriteGeneral;
+
 
