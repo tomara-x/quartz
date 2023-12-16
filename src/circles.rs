@@ -80,6 +80,17 @@ fn spawn_circles(
             Visible, //otherwise it can't be selected til after mark_visible is updated
             Index(*index),
         )).id();
+
+        // have the circle adopt a text entity
+        let text = commands.spawn(Text2dBundle {
+            text: Text::from_section(
+                index.to_string(),
+                TextStyle::default()
+            ),
+            ..default()
+        }).id();
+        commands.entity(id).add_child(text);
+
         entity_indices.0.push(id);
         *index += 1;
         depth.0 += 0.00001;
@@ -252,18 +263,18 @@ fn delete_selected(
 ) {
     if keyboard_input.pressed(KeyCode::Delete) {
         for (id, index) in query.iter() {
-            if let Ok(inputs) = inputs_query.get(id) {
-                for (src, _, _) in &inputs.0 {
-                    let src_outputs = &mut outputs_query.get_mut(entity_indices.0[*src]).unwrap().0;
-                    src_outputs.retain(|&x| x.0 != index.0);
-                }
-            }
-            if let Ok(outputs) = outputs_query.get(id) {
-                for (snk, _, _) in &outputs.0 {
-                    let snk_inputs = &mut inputs_query.get_mut(entity_indices.0[*snk]).unwrap().0;
-                    snk_inputs.retain(|&x| x.0 != index.0);
-                }
-            }
+            //if let Ok(inputs) = inputs_query.get(id) {
+            //    for (src, _, _) in &inputs.0 {
+            //        let src_outputs = &mut outputs_query.get_mut(entity_indices.0[*src]).unwrap().0;
+            //        src_outputs.retain(|&x| x.0 != index.0);
+            //    }
+            //}
+            //if let Ok(outputs) = outputs_query.get(id) {
+            //    for (snk, _, _) in &outputs.0 {
+            //        let snk_inputs = &mut inputs_query.get_mut(entity_indices.0[*snk]).unwrap().0;
+            //        snk_inputs.retain(|&x| x.0 != index.0);
+            //    }
+            //}
             commands.entity(id).despawn();
         }
     }
