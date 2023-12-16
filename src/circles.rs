@@ -36,13 +36,17 @@ impl Plugin for CirclesPlugin {
 
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
+pub struct EntityIndices(pub Vec<Entity>);
+
+#[derive(Resource, Reflect, Default)]
+#[reflect(Resource)]
 struct Depth(f32);
 
 #[derive(Component, Reflect)]
-pub struct Radius { pub value: f32 }
+pub struct Radius(pub f32);
 
 #[derive(Component, Reflect)]
-pub struct Pos { pub value: Vec3 }
+pub struct Pos(pub Vec3);
 
 #[derive(Component, Reflect)]
 pub struct Selected;
@@ -52,10 +56,6 @@ pub struct Visible;
 
 #[derive(Component, Reflect)]
 pub struct Index(pub usize);
-
-#[derive(Resource, Reflect, Default)]
-#[reflect(Resource)]
-pub struct EntityIndices(pub Vec<Entity>);
 
 
 fn spawn_circles(
@@ -78,8 +78,8 @@ fn spawn_circles(
                 transform: Transform::from_translation(cursor.i.extend(depth.0)),
                 ..default()
             },
-            Radius { value: radius},
-            Pos { value: cursor.i.extend(depth.0)}, //keeps track of initial position while moving
+            Radius(radius),
+            Pos(cursor.i.extend(depth.0)), //keeps track of initial position while moving
             Visible, //otherwise it can't be selected til after mark_visible is updated
             Index(*index),
         )).id();
@@ -129,7 +129,7 @@ fn update_radius(
             let r = cursor.f.distance(cursor.i);
             let mesh = meshes.get_mut(id).unwrap();
             *mesh = shape::Circle::new(r).into();
-            radius_query.get_mut(entity).unwrap().value = r;
+            radius_query.get_mut(entity).unwrap().0 = r;
         }
     }
 }
@@ -150,7 +150,7 @@ fn highlight_selected(
     query: Query<(&Radius, &Transform), With<Selected>>,
 ) {
     for (r, p) in query.iter() {
-        gizmos.circle_2d(p.translation.xy(), r.value, Color::BLUE).segments(64);
+        gizmos.circle_2d(p.translation.xy(), r.0, Color::BLUE).segments(64);
     }
 }
 
@@ -189,7 +189,7 @@ fn update_selection(
 
     if mouse_button_input.just_pressed(MouseButton::Left) {
         for (e, r, p) in query.iter() {
-            if cursor.i.distance(p.value.xy()) < r.value {
+            if cursor.i.distance(p.0.xy()) < r.0 {
                 *clicked_on_circle = true;
                 // we clicked a circle that wasn't already selected
                 if !selected_query.contains(e) {
@@ -215,7 +215,7 @@ fn update_selection(
                     commands.entity(entity).remove::<Selected>();
                 }
                 for (e, r, p) in query.iter() {
-                    if cursor.i.distance(p.value.xy()) < r.value {
+                    if cursor.i.distance(p.0.xy()) < r.0 {
                         commands.entity(e).insert(Selected);
                         break;
                     }
@@ -231,7 +231,7 @@ fn update_selection(
             }
             // select those in the dragged area
             for (e, r, p) in query.iter() {
-                if cursor.i.distance(cursor.f) + r.value > cursor.i.distance(p.value.xy()) {
+                if cursor.i.distance(cursor.f) + r.0 > cursor.i.distance(p.0.xy()) {
                     commands.entity(e).insert(Selected);
                 }
             }
@@ -249,14 +249,14 @@ fn move_selected(
 ) {
     if mouse_button_input.pressed(MouseButton::Left) && keyboard_input.pressed(KeyCode::X) {
         for (mut t, p) in query.iter_mut() {
-            t.translation = (p.value.xy() + cursor.f - cursor.i).extend(p.value.z);
-            //t.translation.x = p.value.x + cursor.f.x - cursor.i.x;
-            //t.translation.y = p.value.y + cursor.f.y - cursor.i.y;
+            t.translation = (p.0.xy() + cursor.f - cursor.i).extend(p.0.z);
+            //t.translation.x = p.0.x + cursor.f.x - cursor.i.x;
+            //t.translation.y = p.0.y + cursor.f.y - cursor.i.y;
         }
     }
     if mouse_button_input.just_released(MouseButton::Left) {
         for (t, mut p) in query.iter_mut() {
-            p.value = t.translation;
+            p.0 = t.translation;
         }
     }
 }
@@ -314,8 +314,8 @@ fn connect(
         let mut source_entity: Option<Entity> = None;
         let mut sink_entity: Option<Entity> = None;
         for (e, r, p) in query.iter() {
-            if cursor.i.distance(p.value.xy()) < r.value { source_entity = Some(e) };
-            if cursor.f.distance(p.value.xy()) < r.value { sink_entity = Some(e) };
+            if cursor.i.distance(p.0.xy()) < r.0 { source_entity = Some(e) };
+            if cursor.f.distance(p.0.xy()) < r.0 { sink_entity = Some(e) };
         }
 
         if let Some(src) = source_entity {
@@ -372,8 +372,23 @@ struct ReadRadius;
 struct WriteRadius;
 
 #[derive(Component)]
-struct ReadGeneral;
+struct ReadG0;
 #[derive(Component)]
-struct WriteGeneral;
+struct WriteG0;
+
+#[derive(Component)]
+struct ReadG1;
+#[derive(Component)]
+struct WriteG2;
+
+#[derive(Component)]
+struct ReadG3;
+#[derive(Component)]
+struct WriteG3;
+
+#[derive(Component)]
+struct ReadG4;
+#[derive(Component)]
+struct WriteG4;
 
 
