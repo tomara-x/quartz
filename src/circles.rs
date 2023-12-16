@@ -87,6 +87,7 @@ fn spawn_circles(
                 index.to_string(),
                 TextStyle::default()
             ),
+            transform: Transform::from_translation(Vec3{z:0.000001, ..default()}),
             ..default()
         }).id();
         commands.entity(id).add_child(text);
