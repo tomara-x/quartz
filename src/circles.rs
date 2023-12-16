@@ -102,8 +102,9 @@ fn update_color(
     material_ids: Query<&Handle<ColorMaterial>, With<Selected>>,
     keyboard_input: Res<Input<KeyCode>>,
     cursor: Res<CursorInfo>,
+    mouse_button_input: Res<Input<MouseButton>>,
 ) {
-    if keyboard_input.pressed(KeyCode::C) {
+    if mouse_button_input.pressed(MouseButton::Left) && keyboard_input.pressed(KeyCode::C) {
         for id in material_ids.iter() {
             let mat = mats.get_mut(id).unwrap();
             mat.color = Color::hsl(cursor.i.distance(cursor.f)%360., 1.0, 0.5);
@@ -113,14 +114,18 @@ fn update_color(
 
 fn update_radius(
     mut meshes: ResMut<Assets<Mesh>>,
-    mesh_ids: Query<&Mesh2dHandle, With<Selected>>,
+    mesh_ids: Query<(Entity, &Mesh2dHandle), With<Selected>>,
     keyboard_input: Res<Input<KeyCode>>,
     cursor: Res<CursorInfo>,
+    mouse_button_input: Res<Input<MouseButton>>,
+    mut radius_query: Query<&mut Radius>,
 ) {
-    if keyboard_input.pressed(KeyCode::V) {
-        for Mesh2dHandle(id) in mesh_ids.iter() {
+    if mouse_button_input.pressed(MouseButton::Left) && keyboard_input.pressed(KeyCode::V) {
+        for (entity, Mesh2dHandle(id)) in mesh_ids.iter() {
+            let r = cursor.f.distance(cursor.i);
             let mesh = meshes.get_mut(id).unwrap();
-            *mesh = shape::Circle::new(cursor.f.distance(cursor.i)).into();
+            *mesh = shape::Circle::new(r).into();
+            radius_query.get_mut(entity).unwrap().value = r;
         }
     }
 }
@@ -139,10 +144,10 @@ fn draw_pointer_circle(
 
 fn highlight_selected(
     mut gizmos: Gizmos,
-    query: Query<(&Radius, &Pos), With<Selected>>,
+    query: Query<(&Radius, &Transform), With<Selected>>,
 ) {
     for (r, p) in query.iter() {
-        gizmos.circle_2d(p.value.xy(), r.value, Color::BLUE).segments(64);
+        gizmos.circle_2d(p.translation.xy(), r.value, Color::BLUE).segments(64);
     }
 }
 
