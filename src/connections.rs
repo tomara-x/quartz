@@ -15,9 +15,6 @@ impl Plugin for ConnectionsPlugin {
     }
 }
 
-// use codes for input types (0 = color, 1 = ...)
-// UMMMMM!!! i don't think the tuples are a good choice! .0 everywhere!
-// try a struct with multiple vecs?
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
 pub struct Inputs(pub Vec<(usize, u8, u8)>);
@@ -25,6 +22,38 @@ pub struct Inputs(pub Vec<(usize, u8, u8)>);
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
 pub struct Outputs(pub Vec<(usize, u8, u8)>);
+
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
+pub struct ColorIns(pub Vec<(usize, u8)>);
+
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
+pub struct ColorOuts(pub Vec<(usize, u8)>);
+
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
+pub struct PosIns(pub Vec<(usize, u8)>);
+
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
+pub struct PosOuts(pub Vec<(usize, u8)>);
+
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
+pub struct RadiusIns(pub Vec<(usize, u8)>);
+
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
+pub struct RadiusOuts(pub Vec<(usize, u8)>);
+
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
+pub struct In0(pub Vec<(usize, u8)>);
+
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
+pub struct Out0(pub Vec<(usize, u8)>);
 
 #[derive(Component)]
 struct Add;
@@ -57,14 +86,14 @@ fn connect(
                 let src_index = index_query.get(src).unwrap().0;
                 let snk_index = index_query.get(snk).unwrap().0;
                 // source has outputs (we push to its outputs vector)
-                if outputs_query.contains(src) {
-                    outputs_query.get_mut(src).unwrap().0.push((snk_index, 255, 255));
+                if let Ok(mut outputs) = outputs_query.get_mut(src) {
+                    outputs.0.push((snk_index, 255, 255));
                 }
                 else {
                     commands.entity(src).insert(Outputs(vec![(snk_index, 255, 255)]));
                 }
-                if inputs_query.contains(snk) {
-                    inputs_query.get_mut(snk).unwrap().0.push((src_index, 255, 255));
+                if let Ok(mut inputs) = inputs_query.get_mut(snk) {
+                    inputs.0.push((src_index, 255, 255));
                 }
                 else {
                     commands.entity(snk).insert(Inputs(vec![(src_index, 255, 255)]));
@@ -98,14 +127,14 @@ fn update_connected_color(
 
 fn draw_connections(
     mut gizmos: Gizmos,
-    query: Query<(&Pos, &Inputs), With<Visible>>,
-    pos_query: Query<&Pos>,
+    query: Query<(&Transform, &Inputs), With<Visible>>,
+    pos_query: Query<&Transform>,
     entity_indices: Res<EntityIndices>,
 ) {
     for (pos, inputs) in query.iter() {
         for (input, _, _) in &inputs.0 {
             let src_pos = pos_query.get(entity_indices.0[*input]).unwrap();
-            gizmos.line_2d(pos.value.xy(), src_pos.value.xy(), Color::BLUE);
+            gizmos.line_2d(pos.translation.xy(), src_pos.translation.xy(), Color::BLUE);
         }
     }
 }
