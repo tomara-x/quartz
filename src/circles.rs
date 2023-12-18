@@ -18,6 +18,9 @@ impl Plugin for CirclesPlugin {
         app.register_type::<EntityIndices>();
         app.register_type::<Inputs>();
         app.register_type::<Outputs>();
+        app.register_type::<Num>();
+        app.register_type::<Arr>();
+        app.register_type::<Order>();
         app.insert_resource(Depth(-10.));
         app.insert_resource(EntityIndices(Vec::new()));
         app.add_systems(Update, spawn_circles);
@@ -30,6 +33,7 @@ impl Plugin for CirclesPlugin {
         app.add_systems(Update, move_selected.after(update_selection));
         app.add_systems(Update, delete_selected);
         app.add_systems(Update, (connect, draw_connections));
+        app.add_systems(Update, update_text);
     }
 }
 
@@ -57,6 +61,9 @@ pub struct Visible;
 #[derive(Component, Reflect)]
 pub struct Index(pub usize);
 
+#[derive(Component, Reflect)]
+struct Order(i32);
+
 
 fn spawn_circles(
     mut commands: Commands,
@@ -82,14 +89,21 @@ fn spawn_circles(
             Pos(cursor.i.extend(depth.0)), //keeps track of initial position while moving
             Visible, //otherwise it can't be selected til after mark_visible is updated
             Index(*index),
+            Order(0),
         )).id();
 
         // have the circle adopt a text entity
         let text = commands.spawn(Text2dBundle {
-            text: Text::from_section(
-                index.to_string(),
-                TextStyle::default()
-            ),
+            text: Text::from_sections([
+                TextSection::new(
+                    index.to_string(),
+                    TextStyle::default(),
+                ),
+                TextSection::new(
+                    0.to_string(),
+                    TextStyle::default()
+                )
+            ]),
             transform: Transform::from_translation(Vec3{z:0.000001, ..default()}),
             ..default()
         }).id();
@@ -101,38 +115,19 @@ fn spawn_circles(
     }
 }
 
-fn update_color(
-    mut mats: ResMut<Assets<ColorMaterial>>,
-    material_ids: Query<&Handle<ColorMaterial>, With<Selected>>,
-    keyboard_input: Res<Input<KeyCode>>,
-    cursor: Res<CursorInfo>,
-    mouse_button_input: Res<Input<MouseButton>>,
+// for debugging
+fn update_text(
+    query: Query<(Entity, &Children), With<Visible>>,
+    order_query: Query<&Order>,
+    mut text_query: Query<&mut Text>,
 ) {
-    if mouse_button_input.pressed(MouseButton::Left) && keyboard_input.pressed(KeyCode::C) {
-        for id in material_ids.iter() {
-            let mat = mats.get_mut(id).unwrap();
-            mat.color = Color::hsl(cursor.i.distance(cursor.f)%360., 1.0, 0.5);
+    for (entity, children) in query.iter() {
+        for child in children {
+            text_query.get_mut(*child).unwrap().sections[1].value = order_query.get(entity).unwrap().0.to_string();
         }
     }
 }
 
-fn update_radius(
-    mut meshes: ResMut<Assets<Mesh>>,
-    mesh_ids: Query<(Entity, &Mesh2dHandle), With<Selected>>,
-    keyboard_input: Res<Input<KeyCode>>,
-    cursor: Res<CursorInfo>,
-    mouse_button_input: Res<Input<MouseButton>>,
-    mut radius_query: Query<&mut Radius>,
-) {
-    if mouse_button_input.pressed(MouseButton::Left) && keyboard_input.pressed(KeyCode::V) {
-        for (entity, Mesh2dHandle(id)) in mesh_ids.iter() {
-            let r = cursor.f.distance(cursor.i);
-            let mesh = meshes.get_mut(id).unwrap();
-            *mesh = shape::Circle::new(r).into();
-            radius_query.get_mut(entity).unwrap().0 = r;
-        }
-    }
-}
 
 //need to make this conditional
 fn draw_pointer_circle(
@@ -239,6 +234,7 @@ fn update_selection(
     }
 }
 
+// add arrow key interaction for those 3?
 // move the selected entities by changing the translation of entity directly
 // when mouse is released we store the translation in temporary position component
 fn move_selected(
@@ -257,6 +253,39 @@ fn move_selected(
     if mouse_button_input.just_released(MouseButton::Left) {
         for (t, mut p) in query.iter_mut() {
             p.0 = t.translation;
+        }
+    }
+}
+
+fn update_color(
+    mut mats: ResMut<Assets<ColorMaterial>>,
+    material_ids: Query<&Handle<ColorMaterial>, With<Selected>>,
+    keyboard_input: Res<Input<KeyCode>>,
+    cursor: Res<CursorInfo>,
+    mouse_button_input: Res<Input<MouseButton>>,
+) {
+    if mouse_button_input.pressed(MouseButton::Left) && keyboard_input.pressed(KeyCode::C) {
+        for id in material_ids.iter() {
+            let mat = mats.get_mut(id).unwrap();
+            mat.color = Color::hsl(cursor.i.distance(cursor.f)%360., 1.0, 0.5);
+        }
+    }
+}
+
+fn update_radius(
+    mut meshes: ResMut<Assets<Mesh>>,
+    mesh_ids: Query<(Entity, &Mesh2dHandle), With<Selected>>,
+    keyboard_input: Res<Input<KeyCode>>,
+    cursor: Res<CursorInfo>,
+    mouse_button_input: Res<Input<MouseButton>>,
+    mut radius_query: Query<&mut Radius>,
+) {
+    if mouse_button_input.pressed(MouseButton::Left) && keyboard_input.pressed(KeyCode::V) {
+        for (entity, Mesh2dHandle(id)) in mesh_ids.iter() {
+            let r = cursor.f.distance(cursor.i);
+            let mesh = meshes.get_mut(id).unwrap();
+            *mesh = shape::Circle::new(r).into();
+            radius_query.get_mut(entity).unwrap().0 = r;
         }
     }
 }
@@ -307,6 +336,7 @@ fn connect(
     index_query: Query<&Index>,
     mut inputs_query: Query<&mut Inputs>,
     mut outputs_query: Query<&mut Outputs>,
+    mut order_query: Query<&mut Order>,
     cursor: Res<CursorInfo>,
 ) {
     let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
@@ -335,6 +365,10 @@ fn connect(
                 else {
                     commands.entity(snk).insert(Inputs(vec![src_index]));
                 }
+
+                // order
+                let src_order = order_query.get(src).unwrap().0;
+                order_query.get_mut(snk).unwrap().0 = src_order + 1;
             }
         }
     }
@@ -390,5 +424,21 @@ struct WriteG3;
 struct ReadG4;
 #[derive(Component)]
 struct WriteG4;
+
+
+
+//-------------------------added-components---------------------------
+
+#[derive(Component, Reflect)]
+struct Num(f32);
+
+#[derive(Component, Reflect)]
+struct Arr(Vec<f32>);
+
+#[derive(Component, Reflect)]
+struct ColorOffset(Color);
+
+#[derive(Component, Reflect)]
+struct PosOffset(Vec3);
 
 
