@@ -255,6 +255,33 @@ fn move_selected(
             p.0 = t.translation;
         }
     }
+    if keyboard_input.pressed(KeyCode::X) {
+        if keyboard_input.pressed(KeyCode::Up) {
+            for (mut t, mut p) in query.iter_mut() {
+                t.translation.y += 1.;
+                p.0.y += 1.;
+            }
+        }
+        if keyboard_input.pressed(KeyCode::Down) {
+            for (mut t, mut p) in query.iter_mut() {
+                t.translation.y -= 1.;
+                p.0.y -= 1.;
+            }
+        }
+        if keyboard_input.pressed(KeyCode::Right) {
+            for (mut t, mut p) in query.iter_mut() {
+                t.translation.x += 1.;
+                p.0.x += 1.;
+            }
+        }
+        if keyboard_input.pressed(KeyCode::Left) {
+            for (mut t, mut p) in query.iter_mut() {
+                t.translation.x -= 1.;
+                p.0.x -= 1.;
+            }
+        }
+    }
+
 }
 
 fn update_color(
