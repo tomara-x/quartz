@@ -234,7 +234,6 @@ fn update_selection(
     }
 }
 
-// add arrow key interaction for those 3?
 // move the selected entities by changing the translation of entity directly
 // when mouse is released we store the translation in temporary position component
 fn move_selected(
@@ -245,9 +244,9 @@ fn move_selected(
 ) {
     if mouse_button_input.pressed(MouseButton::Left) && keyboard_input.pressed(KeyCode::X) {
         for (mut t, p) in query.iter_mut() {
-            t.translation = (p.0.xy() + cursor.f - cursor.i).extend(p.0.z);
-            //t.translation.x = p.0.x + cursor.f.x - cursor.i.x;
-            //t.translation.y = p.0.y + cursor.f.y - cursor.i.y;
+            //t.translation = (p.0.xy() + cursor.f - cursor.i).extend(p.0.z);
+            t.translation.x = p.0.x + cursor.f.x - cursor.i.x;
+            t.translation.y = p.0.y + cursor.f.y - cursor.i.y;
         }
     }
     if mouse_button_input.just_released(MouseButton::Left) {
@@ -295,6 +294,32 @@ fn update_color(
         for id in material_ids.iter() {
             let mat = mats.get_mut(id).unwrap();
             mat.color = Color::hsl(cursor.i.distance(cursor.f)%360., 1.0, 0.5);
+        }
+    }
+    if keyboard_input.pressed(KeyCode::C) {
+        if keyboard_input.pressed(KeyCode::Up) {
+            for id in material_ids.iter() {
+                let mat = mats.get_mut(id).unwrap();
+                mat.color.set_h((mat.color.h() + 1.) % 360.);
+            }
+        }
+        if keyboard_input.pressed(KeyCode::Down) {
+            for id in material_ids.iter() {
+                let mat = mats.get_mut(id).unwrap();
+                mat.color.set_s((mat.color.s() + 0.01) % 2.);
+            }
+        }
+        if keyboard_input.pressed(KeyCode::Right) {
+            for id in material_ids.iter() {
+                let mat = mats.get_mut(id).unwrap();
+                mat.color.set_l((mat.color.l() + 0.01) % 4.);
+            }
+        }
+        if keyboard_input.pressed(KeyCode::Left) {
+            for id in material_ids.iter() {
+                let mat = mats.get_mut(id).unwrap();
+                mat.color.set_a((mat.color.a() + 0.01) % 1.);
+            }
         }
     }
 }
@@ -416,44 +441,6 @@ fn draw_connections(
 }
 
 
-// filtering components to determin behavior of connection
-#[derive(Component)]
-struct ReadColor;
-#[derive(Component)]
-struct WriteColor;
-
-#[derive(Component)]
-struct ReadPos;
-#[derive(Component)]
-struct WritePos;
-
-#[derive(Component)]
-struct ReadRadius;
-#[derive(Component)]
-struct WriteRadius;
-
-#[derive(Component)]
-struct ReadG0;
-#[derive(Component)]
-struct WriteG0;
-
-#[derive(Component)]
-struct ReadG1;
-#[derive(Component)]
-struct WriteG2;
-
-#[derive(Component)]
-struct ReadG3;
-#[derive(Component)]
-struct WriteG3;
-
-#[derive(Component)]
-struct ReadG4;
-#[derive(Component)]
-struct WriteG4;
-
-
-
 //-------------------------added-components---------------------------
 
 #[derive(Component, Reflect)]
@@ -468,4 +455,6 @@ struct ColorOffset(Color);
 #[derive(Component, Reflect)]
 struct PosOffset(Vec3);
 
+#[derive(Component, Reflect)]
+struct RadiusOffset(Vec3);
 
