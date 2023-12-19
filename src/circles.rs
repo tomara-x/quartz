@@ -440,13 +440,13 @@ fn connect(
                 // spawn connection circles
                 let src_raduis = rad_query.get(src).unwrap().0;
                 let snk_raduis = rad_query.get(snk).unwrap().0;
-                let src_trans = cursor.i.extend(0.) - trans_query.get(src).unwrap().translation;
-                let snk_trans = cursor.f.extend(0.) - trans_query.get(snk).unwrap().translation;
+                let src_trans = trans_query.get(src).unwrap().translation;
+                let snk_trans = trans_query.get(snk).unwrap().translation;
 
                 let src_connection = commands.spawn(( ColorMesh2dBundle {
                         mesh: meshes.add(shape::Circle::new(src_raduis * 0.1).into()).into(),
                         material: materials.add(ColorMaterial::from(Color::rgb(0.,0.,0.))),
-                        transform: Transform::from_translation(src_trans),
+                        transform: Transform::from_translation((cursor.i - src_trans.xy()).extend(0.000001)),
                         ..default()
                     },
                     Visible,
@@ -456,7 +456,7 @@ fn connect(
                 let snk_connection = commands.spawn(( ColorMesh2dBundle {
                         mesh: meshes.add(shape::Circle::new(snk_raduis * 0.1).into()).into(),
                         material: materials.add(ColorMaterial::from(Color::rgb(1.,1.,1.))),
-                        transform: Transform::from_translation(snk_trans),
+                        transform: Transform::from_translation((cursor.f - snk_trans.xy()).extend(0.000001)),
                         ..default()
                     },
                     Visible,
