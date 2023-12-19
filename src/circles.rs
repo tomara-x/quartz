@@ -364,7 +364,7 @@ fn delete_selected(
     if keyboard_input.pressed(KeyCode::Delete) {
         for (id, index) in query.iter() {
             if let Ok(inputs) = inputs_query.get(id) {
-                for src in &inputs.0 {
+                for (src, _, _, _) in &inputs.0 {
                     let src_outputs = &mut outputs_query.get_mut(entity_indices.0[*src]).unwrap().0;
                     src_outputs.retain(|&x| x != index.0);
                 }
@@ -372,7 +372,7 @@ fn delete_selected(
             if let Ok(outputs) = outputs_query.get(id) {
                 for snk in &outputs.0 {
                     let snk_inputs = &mut inputs_query.get_mut(entity_indices.0[*snk]).unwrap().0;
-                    snk_inputs.retain(|&x| x != index.0);
+                    snk_inputs.retain(|&x| x.0 != index.0);
                 }
             }
             commands.entity(id).despawn_recursive();
@@ -383,9 +383,10 @@ fn delete_selected(
 
 //-----------------------connections-----------------------
 
+// (entity-id, read-component, input-type, index-for-vec-components)
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
-struct Inputs(Vec<usize>);
+struct Inputs(Vec<(usize, i16, i16, usize)>);
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
@@ -423,10 +424,10 @@ fn connect(
                     commands.entity(src).insert(Outputs(vec![snk_index]));
                 }
                 if let Ok(mut inputs) = inputs_query.get_mut(snk) {
-                    inputs.0.push(src_index);
+                    inputs.0.push((src_index, 0, 0, 0));
                 }
                 else {
-                    commands.entity(snk).insert(Inputs(vec![src_index]));
+                    commands.entity(snk).insert(Inputs(vec![(src_index, 0, 0, 0)]));
                 }
 
                 // order
@@ -444,7 +445,7 @@ fn draw_connections(
     entity_indices: Res<EntityIndices>,
 ) {
     for (pos, inputs) in query.iter() {
-        for input in &inputs.0 {
+        for (input, _, _, _) in &inputs.0 {
             let src_pos = pos_query.get(entity_indices.0[*input]).unwrap();
             gizmos.line_2d(pos.translation.xy(), src_pos.translation.xy(), Color::BLUE);
         }
