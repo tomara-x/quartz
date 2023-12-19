@@ -42,7 +42,7 @@ impl Plugin for CirclesPlugin {
         app.add_systems(Update, move_selected.after(update_selection));
         app.add_systems(Update, delete_selected);
         app.add_systems(Update, (connect, draw_connections));
-        app.add_systems(Update, update_text);
+        //app.add_systems(Update, update_text);
         app.add_systems(Update, attach_data);
         app.add_systems(Update, detach_data);
     }
@@ -127,17 +127,17 @@ fn spawn_circles(
 }
 
 // for debugging
-fn update_text(
-    query: Query<(Entity, &Children), With<Visible>>,
-    order_query: Query<&Order>,
-    mut text_query: Query<&mut Text>,
-) {
-    for (entity, children) in query.iter() {
-        for child in children {
-            text_query.get_mut(*child).unwrap().sections[1].value = order_query.get(entity).unwrap().0.to_string();
-        }
-    }
-}
+//fn update_text(
+//    query: Query<(Entity, &Children), With<Visible>>,
+//    order_query: Query<&Order>,
+//    mut text_query: Query<&mut Text>,
+//) {
+//    for (entity, children) in query.iter() {
+//        for child in children {
+//            text_query.get_mut(*child).unwrap().sections[1].value = order_query.get(entity).unwrap().0.to_string();
+//        }
+//    }
+//}
 
 
 //need to make this conditional
@@ -392,16 +392,23 @@ struct Inputs(Vec<(usize, i16, i16, usize)>);
 #[reflect(Component)]
 struct Outputs(Vec<usize>);
 
+#[derive(Component)]
+struct InputCircle(Entity);
+
 fn connect(
     keyboard_input: Res<Input<KeyCode>>,
     mouse_button_input: Res<Input<MouseButton>>,
     mut commands: Commands,
-    query: Query<(Entity, &Radius, &Pos), With<Visible>>,
+    query: Query<(Entity, &Radius, &Pos), (With<Visible>, With<Index>)>,
     index_query: Query<&Index>,
     mut inputs_query: Query<&mut Inputs>,
     mut outputs_query: Query<&mut Outputs>,
     mut order_query: Query<&mut Order>,
     cursor: Res<CursorInfo>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+    rad_query: Query<&Radius>,
+    trans_query: Query<&Transform>,
 ) {
     let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
     if ctrl && mouse_button_input.just_released(MouseButton::Left) {
@@ -430,6 +437,33 @@ fn connect(
                     commands.entity(snk).insert(Inputs(vec![(src_index, 0, 0, 0)]));
                 }
 
+                // spawn connection circles
+                let src_raduis = rad_query.get(src).unwrap().0;
+                let snk_raduis = rad_query.get(snk).unwrap().0;
+                let src_trans = cursor.i.extend(0.) - trans_query.get(src).unwrap().translation;
+                let snk_trans = cursor.f.extend(0.) - trans_query.get(snk).unwrap().translation;
+
+                let src_connection = commands.spawn(( ColorMesh2dBundle {
+                        mesh: meshes.add(shape::Circle::new(src_raduis * 0.1).into()).into(),
+                        material: materials.add(ColorMaterial::from(Color::rgb(0.,0.,0.))),
+                        transform: Transform::from_translation(src_trans),
+                        ..default()
+                    },
+                    Visible,
+                )).id();
+                commands.entity(src).add_child(src_connection);
+
+                let snk_connection = commands.spawn(( ColorMesh2dBundle {
+                        mesh: meshes.add(shape::Circle::new(snk_raduis * 0.1).into()).into(),
+                        material: materials.add(ColorMaterial::from(Color::rgb(1.,1.,1.))),
+                        transform: Transform::from_translation(snk_trans),
+                        ..default()
+                    },
+                    Visible,
+                    InputCircle(src_connection),
+                )).id();
+                commands.entity(snk).add_child(snk_connection);
+
                 // order
                 let src_order = order_query.get(src).unwrap().0;
                 order_query.get_mut(snk).unwrap().0 = src_order + 1;
@@ -440,17 +474,29 @@ fn connect(
 
 fn draw_connections(
     mut gizmos: Gizmos,
-    query: Query<(&Transform, &Inputs), With<Visible>>,
-    pos_query: Query<&Transform>,
-    entity_indices: Res<EntityIndices>,
+    query: Query<(Entity, &InputCircle), With<Visible>>,
+    trans_query: Query<&GlobalTransform>,
 ) {
-    for (pos, inputs) in query.iter() {
-        for (input, _, _, _) in &inputs.0 {
-            let src_pos = pos_query.get(entity_indices.0[*input]).unwrap();
-            gizmos.line_2d(pos.translation.xy(), src_pos.translation.xy(), Color::BLUE);
-        }
+    for (snk, src) in query.iter() {
+        let src_pos = trans_query.get(src.0).unwrap().translation().xy();
+        let snk_pos = trans_query.get(snk).unwrap().translation().xy();
+        gizmos.line_2d(src_pos, snk_pos, Color::PINK);
     }
 }
+
+//fn draw_connections(
+//    mut gizmos: Gizmos,
+//    query: Query<(&Transform, &Inputs), With<Visible>>,
+//    pos_query: Query<&Transform>,
+//    entity_indices: Res<EntityIndices>,
+//) {
+//    for (pos, inputs) in query.iter() {
+//        for (input, _, _, _) in &inputs.0 {
+//            let src_pos = pos_query.get(entity_indices.0[*input]).unwrap();
+//            gizmos.line_2d(pos.translation.xy(), src_pos.translation.xy(), Color::BLUE);
+//        }
+//    }
+//}
 
 
 //-------------------------added-components---------------------------
