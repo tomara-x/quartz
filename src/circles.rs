@@ -3,7 +3,7 @@ use bevy::{
     sprite::Mesh2dHandle,
     prelude::*};
 
-use crate::{cursor::*};
+use crate::{cursor::*, connections::*};
 
 pub struct CirclesPlugin;
 
@@ -20,15 +20,6 @@ impl Plugin for CirclesPlugin {
         app.register_type::<Order>();
         app.register_type::<EntityIndices>();
 
-        app.register_type::<Inputs>();
-        app.register_type::<Outputs>();
-
-        app.register_type::<Num>();
-        app.register_type::<Arr>();
-        app.register_type::<ColorOffset>();
-        app.register_type::<PosOffset>();
-        app.register_type::<RadiusOffset>();
-
         app.insert_resource(Depth(-10.));
         app.insert_resource(EntityIndices(Vec::new()));
 
@@ -41,10 +32,7 @@ impl Plugin for CirclesPlugin {
         app.add_systems(Update, highlight_selected);
         app.add_systems(Update, move_selected.after(update_selection));
         app.add_systems(Update, delete_selected);
-        app.add_systems(Update, (connect, draw_connections));
         app.add_systems(Update, update_text);
-        app.add_systems(Update, attach_data);
-        app.add_systems(Update, detach_data);
     }
 }
 
@@ -73,7 +61,7 @@ pub struct Visible;
 pub struct Index(pub usize);
 
 #[derive(Component, Reflect)]
-struct Order(i32);
+pub struct Order(pub i32);
 
 
 fn spawn_circles(
@@ -387,215 +375,4 @@ fn delete_selected(
         }
     }
 }
-
-
-//-----------------------connections-----------------------
-
-// (entity-id, read-component, input-type, index-for-vec-components)
-#[derive(Component, Reflect, Default)]
-#[reflect(Component)]
-struct Inputs(Vec<(usize, i16, i16, usize)>);
-
-#[derive(Component, Reflect, Default)]
-#[reflect(Component)]
-struct Outputs(Vec<usize>);
-
-#[derive(Component)]
-struct InputCircle(Entity);
-
-#[derive(Component)]
-struct OutputCircle(Entity);
-
-fn connect(
-    keyboard_input: Res<Input<KeyCode>>,
-    mouse_button_input: Res<Input<MouseButton>>,
-    mut commands: Commands,
-    query: Query<(Entity, &Radius, &Pos), (With<Visible>, With<Index>)>,
-    index_query: Query<&Index>,
-    mut inputs_query: Query<&mut Inputs>,
-    mut outputs_query: Query<&mut Outputs>,
-    mut order_query: Query<&mut Order>,
-    cursor: Res<CursorInfo>,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-    rad_query: Query<&Radius>,
-    trans_query: Query<&Transform>,
-) {
-    let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
-    if ctrl && mouse_button_input.just_released(MouseButton::Left) {
-        let mut source_entity: Option<Entity> = None;
-        let mut sink_entity: Option<Entity> = None;
-        for (e, r, p) in query.iter() {
-            if cursor.i.distance(p.0.xy()) < r.0 { source_entity = Some(e) };
-            if cursor.f.distance(p.0.xy()) < r.0 { sink_entity = Some(e) };
-        }
-
-        if let Some(src) = source_entity {
-            if let Some(snk) = sink_entity {
-                let src_index = index_query.get(src).unwrap().0;
-                let snk_index = index_query.get(snk).unwrap().0;
-                // source has outputs (we push to its outputs vector)
-                if let Ok(mut outputs) = outputs_query.get_mut(src) {
-                    outputs.0.push(snk_index);
-                }
-                else {
-                    commands.entity(src).insert(Outputs(vec![snk_index]));
-                }
-                if let Ok(mut inputs) = inputs_query.get_mut(snk) {
-                    inputs.0.push((src_index, 0, 0, 0));
-                }
-                else {
-                    commands.entity(snk).insert(Inputs(vec![(src_index, 0, 0, 0)]));
-                }
-
-                // spawn connection circles
-                let src_radius = rad_query.get(src).unwrap().0;
-                let snk_radius = rad_query.get(snk).unwrap().0;
-                let src_trans = trans_query.get(src).unwrap().translation;
-                let snk_trans = trans_query.get(snk).unwrap().translation;
-
-                let src_connection = commands.spawn(( ColorMesh2dBundle {
-                        mesh: meshes.add(shape::Circle::new(src_radius * 0.1).into()).into(),
-                        material: materials.add(ColorMaterial::from(Color::rgb(0.,0.,0.))),
-                        transform: Transform::from_translation((cursor.i - src_trans.xy()).extend(0.000001)),
-                        ..default()
-                    },
-                    Visible,
-                    //Pos((cursor.i - src_trans.xy()).extend(0.000001)),
-                    //Radius(src_radius * 0.1),
-                )).id();
-                commands.entity(src).add_child(src_connection);
-
-                let snk_connection = commands.spawn(( ColorMesh2dBundle {
-                        mesh: meshes.add(shape::Circle::new(snk_radius * 0.1).into()).into(),
-                        material: materials.add(ColorMaterial::from(Color::rgb(1.,1.,1.))),
-                        transform: Transform::from_translation((cursor.f - snk_trans.xy()).extend(0.000001)),
-                        ..default()
-                    },
-                    Visible,
-                    //Pos((cursor.f - snk_trans.xy()).extend(0.000001)),
-                    //Radius(snk_radius * 0.1),
-                    InputCircle(src_connection),
-                )).id();
-                commands.entity(snk).add_child(snk_connection);
-                commands.entity(src_connection).insert(OutputCircle(snk_connection));
-
-                // order
-                let src_order = order_query.get(src).unwrap().0;
-                order_query.get_mut(snk).unwrap().0 = src_order + 1;
-            }
-        }
-    }
-}
-
-fn draw_connections(
-    mut gizmos: Gizmos,
-    query: Query<(Entity, &InputCircle), With<Visible>>,
-    trans_query: Query<&GlobalTransform>,
-) {
-    for (snk, src) in query.iter() {
-        let src_pos = trans_query.get(src.0).unwrap().translation().xy();
-        let snk_pos = trans_query.get(snk).unwrap().translation().xy();
-        gizmos.line_2d(src_pos, snk_pos, Color::PINK);
-    }
-}
-
-//fn draw_connections(
-//    mut gizmos: Gizmos,
-//    query: Query<(&Transform, &Inputs), With<Visible>>,
-//    pos_query: Query<&Transform>,
-//    entity_indices: Res<EntityIndices>,
-//) {
-//    for (pos, inputs) in query.iter() {
-//        for (input, _, _, _) in &inputs.0 {
-//            let src_pos = pos_query.get(entity_indices.0[*input]).unwrap();
-//            gizmos.line_2d(pos.translation.xy(), src_pos.translation.xy(), Color::BLUE);
-//        }
-//    }
-//}
-
-
-//-------------------------added-components---------------------------
-
-#[derive(Component, Reflect)]
-struct Num(f32);
-
-#[derive(Component, Reflect)]
-struct Arr(Vec<f32>);
-
-#[derive(Component, Reflect)]
-struct ColorOffset(Color);
-
-#[derive(Component, Reflect)]
-struct PosOffset(Vec3);
-
-#[derive(Component, Reflect)]
-struct RadiusOffset(f32);
-
-fn attach_data(
-    keyboard_input: Res<Input<KeyCode>>,
-    query: Query<Entity, With<Selected>>,
-    mut commands: Commands,
-) {
-    if keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]) {
-        if keyboard_input.just_pressed(KeyCode::Key1) {
-            for e in query.iter() {
-                commands.entity(e).insert(Num(0.0));
-            }
-        }
-        if keyboard_input.just_pressed(KeyCode::Key2) {
-            for e in query.iter() {
-                commands.entity(e).insert(Arr(vec![0.,1.,2.,4.]));
-            }
-        }
-        if keyboard_input.just_pressed(KeyCode::Key3) {
-            for e in query.iter() {
-                commands.entity(e).insert(ColorOffset(Color::hsl(0.0,1.0,0.5)));
-            }
-        }
-        if keyboard_input.just_pressed(KeyCode::Key4) {
-            for e in query.iter() {
-                commands.entity(e).insert(PosOffset(Vec3::ONE));
-            }
-        }
-        if keyboard_input.just_pressed(KeyCode::Key5) {
-            for e in query.iter() {
-                commands.entity(e).insert(RadiusOffset(1.));
-            }
-        }
-    }
-}
-
-fn detach_data(
-    keyboard_input: Res<Input<KeyCode>>,
-    query: Query<Entity, With<Selected>>,
-    mut commands: Commands,
-) {
-    if keyboard_input.just_pressed(KeyCode::Key1) {
-        for e in query.iter() {
-            commands.entity(e).remove::<Num>();
-        }
-    }
-    if keyboard_input.just_pressed(KeyCode::Key2) {
-        for e in query.iter() {
-            commands.entity(e).remove::<Arr>();
-        }
-    }
-    if keyboard_input.just_pressed(KeyCode::Key3) {
-        for e in query.iter() {
-            commands.entity(e).remove::<ColorOffset>();
-        }
-    }
-    if keyboard_input.just_pressed(KeyCode::Key4) {
-        for e in query.iter() {
-            commands.entity(e).remove::<PosOffset>();
-        }
-    }
-    if keyboard_input.just_pressed(KeyCode::Key5) {
-        for e in query.iter() {
-            commands.entity(e).remove::<RadiusOffset>();
-        }
-    }
-}
-
 
