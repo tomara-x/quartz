@@ -107,7 +107,7 @@ fn spawn_circles(
         let text = commands.spawn(Text2dBundle {
             text: Text::from_sections([
                 TextSection::new(
-                    index.to_string(),
+                    index.to_string() + "\n",
                     TextStyle::default(),
                 ),
                 TextSection::new(
@@ -352,14 +352,16 @@ fn update_radius(
 
 fn delete_selected(
     keyboard_input: Res<Input<KeyCode>>,
-    query: Query<(Entity, &Index), With<Selected>>,
+    query: Query<(Entity, &Index, &Children), With<Selected>>,
     mut inputs_query: Query<&mut Inputs>,
     mut outputs_query: Query<&mut Outputs>,
     entity_indices: Res<EntityIndices>,
     mut commands: Commands,
+    input_circle: Query<&InputCircle>,
+    output_circle: Query<&OutputCircle>,
 ) {
     if keyboard_input.pressed(KeyCode::Delete) {
-        for (id, index) in query.iter() {
+        for (id, index, children) in query.iter() {
             if let Ok(inputs) = inputs_query.get(id) {
                 for (src, _, _, _) in &inputs.0 {
                     let src_outputs = &mut outputs_query.get_mut(entity_indices.0[*src]).unwrap().0;
@@ -370,6 +372,15 @@ fn delete_selected(
                 for snk in &outputs.0 {
                     let snk_inputs = &mut inputs_query.get_mut(entity_indices.0[*snk]).unwrap().0;
                     snk_inputs.retain(|&x| x.0 != index.0);
+                }
+            }
+            // despawn corresponding connection circle
+            for child in children.iter() {
+                if let Ok(i) = input_circle.get(*child) {
+                    commands.entity(i.0).despawn();
+                }
+                if let Ok(i) = output_circle.get(*child) {
+                    commands.entity(i.0).despawn();
                 }
             }
             commands.entity(id).despawn_recursive();
@@ -391,6 +402,9 @@ struct Outputs(Vec<usize>);
 
 #[derive(Component)]
 struct InputCircle(Entity);
+
+#[derive(Component)]
+struct OutputCircle(Entity);
 
 fn connect(
     keyboard_input: Res<Input<KeyCode>>,
@@ -460,6 +474,7 @@ fn connect(
                     InputCircle(src_connection),
                 )).id();
                 commands.entity(snk).add_child(snk_connection);
+                commands.entity(src_connection).insert(OutputCircle(snk_connection));
 
                 // order
                 let src_order = order_query.get(src).unwrap().0;
