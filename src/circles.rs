@@ -345,11 +345,12 @@ fn delete_selected(
     mut outputs_query: Query<&mut Outputs>,
     entity_indices: Res<EntityIndices>,
     mut commands: Commands,
-    input_circle: Query<&WhiteHole>,
-    output_circle: Query<&BlackHole>,
+    white_hole_query: Query<&WhiteHole>,
+    black_hole_query: Query<&BlackHole>,
 ) {
     if keyboard_input.pressed(KeyCode::Delete) {
         for (id, index, children) in query.iter() {
+            // delete any connections to the entity being deleted
             if let Ok(inputs) = inputs_query.get(id) {
                 for (src, _, _, _) in &inputs.0 {
                     let src_outputs = &mut outputs_query.get_mut(entity_indices.0[*src]).unwrap().0;
@@ -362,12 +363,12 @@ fn delete_selected(
                     snk_inputs.retain(|&x| x.0 != index.0);
                 }
             }
-            // despawn corresponding connection circles
+            // despawn corresponding black/white holes
             for child in children.iter() {
-                if let Ok(i) = input_circle.get(*child) {
+                if let Ok(i) = white_hole_query.get(*child) {
                     commands.entity(i.0).despawn();
                 }
-                if let Ok(i) = output_circle.get(*child) {
+                if let Ok(i) = black_hole_query.get(*child) {
                     commands.entity(i.0).despawn();
                 }
             }
