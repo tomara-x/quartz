@@ -374,7 +374,7 @@ fn delete_selected(
                     snk_inputs.retain(|&x| x.0 != index.0);
                 }
             }
-            // despawn corresponding connection circle
+            // despawn corresponding connection circles
             for child in children.iter() {
                 if let Ok(i) = input_circle.get(*child) {
                     commands.entity(i.0).despawn();
@@ -449,28 +449,32 @@ fn connect(
                 }
 
                 // spawn connection circles
-                let src_raduis = rad_query.get(src).unwrap().0;
-                let snk_raduis = rad_query.get(snk).unwrap().0;
+                let src_radius = rad_query.get(src).unwrap().0;
+                let snk_radius = rad_query.get(snk).unwrap().0;
                 let src_trans = trans_query.get(src).unwrap().translation;
                 let snk_trans = trans_query.get(snk).unwrap().translation;
 
                 let src_connection = commands.spawn(( ColorMesh2dBundle {
-                        mesh: meshes.add(shape::Circle::new(src_raduis * 0.1).into()).into(),
+                        mesh: meshes.add(shape::Circle::new(src_radius * 0.1).into()).into(),
                         material: materials.add(ColorMaterial::from(Color::rgb(0.,0.,0.))),
                         transform: Transform::from_translation((cursor.i - src_trans.xy()).extend(0.000001)),
                         ..default()
                     },
                     Visible,
+                    //Pos((cursor.i - src_trans.xy()).extend(0.000001)),
+                    //Radius(src_radius * 0.1),
                 )).id();
                 commands.entity(src).add_child(src_connection);
 
                 let snk_connection = commands.spawn(( ColorMesh2dBundle {
-                        mesh: meshes.add(shape::Circle::new(snk_raduis * 0.1).into()).into(),
+                        mesh: meshes.add(shape::Circle::new(snk_radius * 0.1).into()).into(),
                         material: materials.add(ColorMaterial::from(Color::rgb(1.,1.,1.))),
                         transform: Transform::from_translation((cursor.f - snk_trans.xy()).extend(0.000001)),
                         ..default()
                     },
                     Visible,
+                    //Pos((cursor.f - snk_trans.xy()).extend(0.000001)),
+                    //Radius(snk_radius * 0.1),
                     InputCircle(src_connection),
                 )).id();
                 commands.entity(snk).add_child(snk_connection);
