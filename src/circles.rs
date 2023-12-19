@@ -42,7 +42,7 @@ impl Plugin for CirclesPlugin {
         app.add_systems(Update, move_selected.after(update_selection));
         app.add_systems(Update, delete_selected);
         app.add_systems(Update, (connect, draw_connections));
-        //app.add_systems(Update, update_text);
+        app.add_systems(Update, update_text);
         app.add_systems(Update, attach_data);
         app.add_systems(Update, detach_data);
     }
@@ -127,17 +127,14 @@ fn spawn_circles(
 }
 
 // for debugging
-//fn update_text(
-//    query: Query<(Entity, &Children), With<Visible>>,
-//    order_query: Query<&Order>,
-//    mut text_query: Query<&mut Text>,
-//) {
-//    for (entity, children) in query.iter() {
-//        for child in children {
-//            text_query.get_mut(*child).unwrap().sections[1].value = order_query.get(entity).unwrap().0.to_string();
-//        }
-//    }
-//}
+fn update_text(
+    mut query: Query<(&mut Text, &Parent), With<Visible>>,
+    order_query: Query<&Order>,
+) {
+    for (mut text, parent) in query.iter_mut() {
+        text.sections[1].value = order_query.get(**parent).unwrap().0.to_string();
+    }
+}
 
 
 //need to make this conditional
