@@ -345,8 +345,8 @@ fn delete_selected(
     mut outputs_query: Query<&mut Outputs>,
     entity_indices: Res<EntityIndices>,
     mut commands: Commands,
-    input_circle: Query<&InputCircle>,
-    output_circle: Query<&OutputCircle>,
+    input_circle: Query<&WhiteHole>,
+    output_circle: Query<&BlackHole>,
 ) {
     if keyboard_input.pressed(KeyCode::Delete) {
         for (id, index, children) in query.iter() {

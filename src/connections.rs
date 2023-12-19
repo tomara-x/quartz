@@ -25,10 +25,10 @@ pub struct Inputs(pub Vec<(usize, i16, i16, usize)>);
 pub struct Outputs(pub Vec<usize>);
 
 #[derive(Component)]
-pub struct InputCircle(pub Entity);
+pub struct WhiteHole(pub Entity);
 
 #[derive(Component)]
-pub struct OutputCircle(pub Entity);
+pub struct BlackHole(pub Entity);
 
 fn connect(
     keyboard_input: Res<Input<KeyCode>>,
@@ -99,10 +99,10 @@ fn connect(
                     Visible,
                     //Pos((cursor.f - snk_trans.xy()).extend(0.000001)),
                     //Radius(snk_radius * 0.1),
-                    InputCircle(src_connection),
+                    WhiteHole(src_connection),
                 )).id();
                 commands.entity(snk).add_child(snk_connection);
-                commands.entity(src_connection).insert(OutputCircle(snk_connection));
+                commands.entity(src_connection).insert(BlackHole(snk_connection));
 
                 // order
                 let src_order = order_query.get(src).unwrap().0;
@@ -114,7 +114,7 @@ fn connect(
 
 fn draw_connections(
     mut gizmos: Gizmos,
-    query: Query<(Entity, &InputCircle), With<Visible>>,
+    query: Query<(Entity, &WhiteHole), With<Visible>>,
     trans_query: Query<&GlobalTransform>,
 ) {
     for (snk, src) in query.iter() {
