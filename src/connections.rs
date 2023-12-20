@@ -9,7 +9,7 @@ impl Plugin for ConnectionsPlugin {
     fn build(&self, app: &mut App) {
         app.register_type::<Inputs>();
         app.register_type::<Outputs>();
-        app.add_systems(Update, connect);
+        app.add_systems(Update, connect.run_if(in_state(Mode::Connect)));
         //app.add_systems(Update, update_connected_color);
         app.add_systems(Update, draw_connections);
     }
@@ -31,7 +31,6 @@ pub struct WhiteHole(pub Entity);
 pub struct BlackHole(pub Entity);
 
 fn connect(
-    keyboard_input: Res<Input<KeyCode>>,
     mouse_button_input: Res<Input<MouseButton>>,
     mut commands: Commands,
     query: Query<(Entity, &Radius, &Transform), (With<Visible>, With<Index>)>,
@@ -45,8 +44,7 @@ fn connect(
     rad_query: Query<&Radius>,
     trans_query: Query<&Transform>,
 ) {
-    let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
-    if ctrl && mouse_button_input.just_released(MouseButton::Left) {
+    if mouse_button_input.just_released(MouseButton::Left) {
         let mut source_entity: Option<Entity> = None;
         let mut sink_entity: Option<Entity> = None;
         for (e, r, t) in query.iter() {

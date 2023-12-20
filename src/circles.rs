@@ -9,6 +9,8 @@ pub struct CirclesPlugin;
 
 impl Plugin for CirclesPlugin {
     fn build(&self, app: &mut App) {
+        app.add_state::<Mode>();
+
         app.register_type::<Radius>();
         app.register_type::<Pos>();
 
@@ -23,16 +25,17 @@ impl Plugin for CirclesPlugin {
         app.insert_resource(Depth(-10.));
         app.insert_resource(EntityIndices(Vec::new()));
 
-        app.add_systems(Update, spawn_circles);
-        app.add_systems(Update, update_color);
-        app.add_systems(Update, update_radius);
+        app.add_systems(Update, spawn_circles.run_if(in_state(Mode::Draw)));
+        app.add_systems(Update, update_color.run_if(in_state(Mode::Edit)));
+        app.add_systems(Update, update_radius.run_if(in_state(Mode::Edit)));
         app.add_systems(Update, draw_pointer_circle);
         app.add_systems(Update, mark_visible.after(update_cursor_info));
-        app.add_systems(Update, update_selection.after(mark_visible));
-        app.add_systems(Update, move_selected.after(update_selection));
-        app.add_systems(Update, highlight_selected);
-        app.add_systems(Update, delete_selected);
+        app.add_systems(Update, update_selection.after(mark_visible).run_if(in_state(Mode::Edit)));
+        app.add_systems(Update, move_selected.after(update_selection).run_if(in_state(Mode::Edit)));
+        app.add_systems(Update, highlight_selected.run_if(in_state(Mode::Edit)));
+        app.add_systems(Update, delete_selected.run_if(in_state(Mode::Edit)));
         app.add_systems(Update, update_text);
+        app.add_systems(Update, switch_mode);
     }
 }
 
@@ -63,11 +66,28 @@ pub struct Index(pub usize);
 #[derive(Component, Reflect)]
 pub struct Order(pub i32);
 
+#[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
+pub enum Mode {
+    #[default]
+    Draw,
+    Connect,
+    Edit,
+}
+
+fn switch_mode(
+    mut next_state: ResMut<NextState<Mode>>,
+    keyboard_input: Res<Input<KeyCode>>,
+) {
+    if keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]) {
+        if keyboard_input.just_pressed(KeyCode::Key1) { next_state.set(Mode::Draw); }
+        if keyboard_input.just_pressed(KeyCode::Key2) { next_state.set(Mode::Connect); }
+        if keyboard_input.just_pressed(KeyCode::Key3) { next_state.set(Mode::Edit); }
+    }
+}
 
 fn spawn_circles(
     mut commands: Commands,
     mouse_button_input: Res<Input<MouseButton>>,
-    keyboard_input: Res<Input<KeyCode>>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     mut depth: ResMut<Depth>,
@@ -75,7 +95,7 @@ fn spawn_circles(
     mut index: Local<usize>,
     mut entity_indices: ResMut<EntityIndices>,
 ) {
-    if mouse_button_input.just_released(MouseButton::Left) && keyboard_input.pressed(KeyCode::Z) {
+    if mouse_button_input.just_released(MouseButton::Left) {
         let radius = cursor.f.distance(cursor.i);
         let id = commands.spawn((
             ColorMesh2dBundle {
@@ -124,24 +144,26 @@ fn update_text(
     }
 }
 
-
-//need to make this conditional
 fn draw_pointer_circle(
     cursor: Res<CursorInfo>,
     mut gizmos: Gizmos,
+    time: Res<Time>,
     mouse_button_input: Res<Input<MouseButton>>,
 ) {
     if mouse_button_input.pressed(MouseButton::Left) {
-        gizmos.circle_2d(cursor.i, cursor.f.distance(cursor.i), Color::GREEN).segments(64);
+        let color = Color::hsl((time.elapsed_seconds() * 100.) % 360., 1.0, 0.5);
+        gizmos.circle_2d(cursor.i, cursor.f.distance(cursor.i), color).segments(64);
     }
 }
 
 fn highlight_selected(
     mut gizmos: Gizmos,
+    time: Res<Time>,
     query: Query<(&Radius, &GlobalTransform), With<Selected>>,
 ) {
     for (r, t) in query.iter() {
-        gizmos.circle_2d(t.translation().xy(), r.0, Color::BLUE).segments(64);
+        let color = Color::hsl((time.elapsed_seconds() * 100.) % 360., 1.0, 0.5);
+        gizmos.circle_2d(t.translation().xy(), r.0, color).segments(64);
     }
 }
 
@@ -236,20 +258,14 @@ fn move_selected(
     mut query: Query<&mut Transform, With<Selected>>,
     keyboard_input: Res<Input<KeyCode>>,
 ) {
-    //states, amy, states..
-    if mouse_button_input.pressed(MouseButton::Left)
-    && !mouse_button_input.just_pressed(MouseButton::Left)
-    && !keyboard_input.pressed(KeyCode::ControlRight)
-    && !keyboard_input.pressed(KeyCode::ControlLeft)
-    && !keyboard_input.pressed(KeyCode::C)
-    && !keyboard_input.pressed(KeyCode::Z)
-    && !keyboard_input.pressed(KeyCode::V) {
-        for mut t in query.iter_mut() {
-            t.translation.x += cursor.d.x;
-            t.translation.y += cursor.d.y;
+    if keyboard_input.pressed(KeyCode::Key1) {
+        if mouse_button_input.pressed(MouseButton::Left) &&
+        !mouse_button_input.just_pressed(MouseButton::Left) {
+            for mut t in query.iter_mut() {
+                t.translation.x += cursor.d.x;
+                t.translation.y += cursor.d.y;
+            }
         }
-    }
-    if keyboard_input.pressed(KeyCode::X) {
         if keyboard_input.pressed(KeyCode::Up) {
             for mut t in query.iter_mut() { t.translation.y += 1.; }
         }
@@ -263,7 +279,6 @@ fn move_selected(
             for mut t in query.iter_mut() { t.translation.x -= 1.; }
         }
     }
-
 }
 
 fn update_color(
@@ -273,13 +288,14 @@ fn update_color(
     cursor: Res<CursorInfo>,
     mouse_button_input: Res<Input<MouseButton>>,
 ) {
-    if mouse_button_input.pressed(MouseButton::Left) && keyboard_input.pressed(KeyCode::C) {
-        for id in material_ids.iter() {
-            let mat = mats.get_mut(id).unwrap();
-            mat.color = Color::hsl(cursor.i.distance(cursor.f)%360., 1.0, 0.5);
+    if keyboard_input.pressed(KeyCode::Key2) {
+        if mouse_button_input.pressed(MouseButton::Left) &&
+        !mouse_button_input.just_pressed(MouseButton::Left) {
+            for id in material_ids.iter() {
+                let mat = mats.get_mut(id).unwrap();
+                mat.color = Color::hsl(cursor.i.distance(cursor.f)%360., 1.0, 0.5);
+            }
         }
-    }
-    if keyboard_input.pressed(KeyCode::C) {
         if keyboard_input.pressed(KeyCode::Up) {
             for id in material_ids.iter() {
                 let mat = mats.get_mut(id).unwrap();
@@ -315,12 +331,31 @@ fn update_radius(
     mouse_button_input: Res<Input<MouseButton>>,
     mut radius_query: Query<&mut Radius>,
 ) {
-    if mouse_button_input.pressed(MouseButton::Left) && keyboard_input.pressed(KeyCode::V) {
-        for (entity, Mesh2dHandle(id)) in mesh_ids.iter() {
-            let r = cursor.f.distance(cursor.i);
-            let mesh = meshes.get_mut(id).unwrap();
-            *mesh = shape::Circle::new(r).into();
-            radius_query.get_mut(entity).unwrap().0 = r;
+    if keyboard_input.pressed(KeyCode::Key3) {
+        if mouse_button_input.pressed(MouseButton::Left) &&
+        !mouse_button_input.just_pressed(MouseButton::Left) {
+            for (entity, Mesh2dHandle(id)) in mesh_ids.iter() {
+                let r = cursor.f.distance(cursor.i);
+                let mesh = meshes.get_mut(id).unwrap();
+                *mesh = shape::Circle::new(r).into();
+                radius_query.get_mut(entity).unwrap().0 = r;
+            }
+        }
+        if keyboard_input.pressed(KeyCode::Up) {
+            for (entity, Mesh2dHandle(id)) in mesh_ids.iter() {
+                let r = radius_query.get_mut(entity).unwrap().0 + 1.;
+                radius_query.get_mut(entity).unwrap().0 = r;
+                let mesh = meshes.get_mut(id).unwrap();
+                *mesh = shape::Circle::new(r).into();
+            }
+        }
+        if keyboard_input.pressed(KeyCode::Down) {
+            for (entity, Mesh2dHandle(id)) in mesh_ids.iter() {
+                let r = radius_query.get_mut(entity).unwrap().0 - 1.;
+                radius_query.get_mut(entity).unwrap().0 = r;
+                let mesh = meshes.get_mut(id).unwrap();
+                *mesh = shape::Circle::new(r).into();
+            }
         }
     }
 }

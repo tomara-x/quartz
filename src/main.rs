@@ -29,8 +29,6 @@ fn main() {
             }),
             ..default()
         }))
-        //States
-        //.add_state::<Mode>()
         //RESOURCES
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(Msaa::Sample4)
@@ -49,15 +47,6 @@ fn main() {
         //.add_systems(Update, save_scene)
         .run();
 }
-
-// circles for all!!
-// spawn in setup and they get their own systems and markers for quick query
-//#[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
-//enum Mode {
-//    #[default]
-//    Edit,
-//    Run,
-//}
 
 fn setup(
     mut commands: Commands,

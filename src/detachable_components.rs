@@ -12,8 +12,8 @@ impl Plugin for DetachableComponentsPlugin {
         app.register_type::<ColorOffset>();
         app.register_type::<PosOffset>();
         app.register_type::<RadiusOffset>();
-        app.add_systems(Update, attach_data);
-        app.add_systems(Update, detach_data);
+        app.add_systems(Update, attach_data.run_if(in_state(Mode::Edit)));
+        app.add_systems(Update, detach_data.run_if(in_state(Mode::Edit)));
     }
 }
 
@@ -38,27 +38,27 @@ fn attach_data(
     mut commands: Commands,
 ) {
     if keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]) {
-        if keyboard_input.just_pressed(KeyCode::Key1) {
+        if keyboard_input.just_pressed(KeyCode::N) {
             for e in query.iter() {
                 commands.entity(e).insert(Num(0.0));
             }
         }
-        if keyboard_input.just_pressed(KeyCode::Key2) {
+        if keyboard_input.just_pressed(KeyCode::A) {
             for e in query.iter() {
                 commands.entity(e).insert(Arr(vec![0.,1.,2.,4.]));
             }
         }
-        if keyboard_input.just_pressed(KeyCode::Key3) {
+        if keyboard_input.just_pressed(KeyCode::C) {
             for e in query.iter() {
                 commands.entity(e).insert(ColorOffset(Color::hsl(0.0,1.0,0.5)));
             }
         }
-        if keyboard_input.just_pressed(KeyCode::Key4) {
+        if keyboard_input.just_pressed(KeyCode::P) {
             for e in query.iter() {
                 commands.entity(e).insert(PosOffset(Vec3::ONE));
             }
         }
-        if keyboard_input.just_pressed(KeyCode::Key5) {
+        if keyboard_input.just_pressed(KeyCode::R) {
             for e in query.iter() {
                 commands.entity(e).insert(RadiusOffset(1.));
             }
