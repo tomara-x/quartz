@@ -43,7 +43,7 @@ fn main() {
         .add_plugins(DetachableComponentsPlugin)
         //SYSTEMS
         .add_systems(Startup, setup)
-        .add_systems(Update, toggle_pan)
+        .add_systems(Update, toggle_pan.run_if(in_state(Mode::Edit)))
         //.add_systems(Update, save_scene)
         .run();
 }
@@ -78,11 +78,11 @@ fn toggle_pan(
     mut query: Query<&mut PanCam>,
     keyboard_input: Res<Input<KeyCode>>,
 ) {
-    if keyboard_input.just_pressed(KeyCode::P) {
+    if keyboard_input.just_pressed(KeyCode::Space) {
         let mut pancam = query.single_mut();
         pancam.enabled = true;
     }
-    if keyboard_input.just_released(KeyCode::P) {
+    if keyboard_input.just_released(KeyCode::Space) {
         let mut pancam = query.single_mut();
         pancam.enabled = false;
     }

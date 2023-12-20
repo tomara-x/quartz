@@ -28,7 +28,7 @@ impl Plugin for CirclesPlugin {
         app.add_systems(Update, spawn_circles.run_if(in_state(Mode::Draw)));
         app.add_systems(Update, update_color.run_if(in_state(Mode::Edit)));
         app.add_systems(Update, update_radius.run_if(in_state(Mode::Edit)));
-        app.add_systems(Update, draw_pointer_circle);
+        app.add_systems(Update, draw_pointer_circle.run_if(not(in_state(Mode::Connect))));
         app.add_systems(Update, mark_visible.after(update_cursor_info));
         app.add_systems(Update, update_selection.after(mark_visible).run_if(in_state(Mode::Edit)));
         app.add_systems(Update, move_selected.after(update_selection).run_if(in_state(Mode::Edit)));
