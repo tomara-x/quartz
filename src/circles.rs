@@ -293,7 +293,11 @@ fn update_color(
         !mouse_button_input.just_pressed(MouseButton::Left) {
             for id in material_ids.iter() {
                 let mat = mats.get_mut(id).unwrap();
-                mat.color = Color::hsl(cursor.i.distance(cursor.f)%360., 1.0, 0.5);
+                // need it to be locking tho, so you can go back and forth
+                if cursor.d.x > 0. { mat.color.set_h((mat.color.h() + cursor.d.x) % 360.); }
+                if cursor.d.x < 0. { mat.color.set_s((mat.color.s() - (cursor.d.x / 100.)) % 1.); }
+                if cursor.d.y > 0. { mat.color.set_l((mat.color.l() + (cursor.d.y / 100.)) % 1.); }
+                if cursor.d.y < 0. { mat.color.set_a((mat.color.a() - (cursor.d.y / 100.)) % 1.); }
             }
         }
         if keyboard_input.pressed(KeyCode::Up) {
