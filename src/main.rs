@@ -33,7 +33,7 @@ fn main() {
         //.add_state::<Mode>()
         //RESOURCES
         .insert_resource(ClearColor(Color::BLACK))
-        .insert_resource(Msaa::Off)
+        .insert_resource(Msaa::Sample4)
         //PLUGINS
         .add_plugins(PanCamPlugin::default())
         .add_plugins(WorldInspectorPlugin::new())
