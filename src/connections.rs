@@ -30,6 +30,17 @@ pub struct WhiteHole(pub Entity);
 #[derive(Component)]
 pub struct BlackHole(pub Entity);
 
+struct Connections {
+    // inputs[4] -> inputs of entity 4
+    // inputs[4][3] -> inputs of entity 4 connected to entity 3
+    // inputs[4][3][2] -> inputs of 4 coming from 3 through input 2
+    // outputs[3][4][2] -> outputs of 3 going to 4 through output 2
+    inputs: Vec< Option<Vec< Option<Vec< Option<Vec<usize>> >> >>>,
+    outputs: Vec< Option<Vec< Option<Vec< Option<Vec<usize>> >> >>>,
+}
+
+
+
 fn connect(
     mouse_button_input: Res<Input<MouseButton>>,
     mut commands: Commands,
