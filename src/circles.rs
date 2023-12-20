@@ -29,8 +29,8 @@ impl Plugin for CirclesPlugin {
         app.add_systems(Update, draw_pointer_circle);
         app.add_systems(Update, mark_visible.after(update_cursor_info));
         app.add_systems(Update, update_selection.after(mark_visible));
-        app.add_systems(Update, highlight_selected);
         app.add_systems(Update, move_selected.after(update_selection));
+        app.add_systems(Update, highlight_selected);
         app.add_systems(Update, delete_selected);
         app.add_systems(Update, update_text);
     }
@@ -138,10 +138,10 @@ fn draw_pointer_circle(
 
 fn highlight_selected(
     mut gizmos: Gizmos,
-    query: Query<(&Radius, &Transform), With<Selected>>,
+    query: Query<(&Radius, &GlobalTransform), With<Selected>>,
 ) {
-    for (r, p) in query.iter() {
-        gizmos.circle_2d(p.translation.xy(), r.0, Color::BLUE).segments(64);
+    for (r, t) in query.iter() {
+        gizmos.circle_2d(t.translation().xy(), r.0, Color::BLUE).segments(64);
     }
 }
 
@@ -168,7 +168,7 @@ fn mark_visible(
 fn update_selection(
     mut commands: Commands,
     mouse_button_input: Res<Input<MouseButton>>,
-    query: Query<(Entity, &Radius, &Pos), Or<(With<Visible>, With<Selected>)>>,
+    query: Query<(Entity, &Radius, &GlobalTransform), Or<(With<Visible>, With<Selected>)>>,
     selected: Query<Entity, With<Selected>>,
     selected_query: Query<&Selected>,
     cursor: Res<CursorInfo>,
@@ -179,8 +179,8 @@ fn update_selection(
     let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
 
     if mouse_button_input.just_pressed(MouseButton::Left) {
-        for (e, r, p) in query.iter() {
-            if cursor.i.distance(p.0.xy()) < r.0 {
+        for (e, r, t) in query.iter() {
+            if cursor.i.distance(t.translation().xy()) < r.0 {
                 *clicked_on_circle = true;
                 // we clicked a circle that wasn't already selected
                 if !selected_query.contains(e) {
@@ -205,8 +205,8 @@ fn update_selection(
                 for entity in selected.iter() {
                     commands.entity(entity).remove::<Selected>();
                 }
-                for (e, r, p) in query.iter() {
-                    if cursor.i.distance(p.0.xy()) < r.0 {
+                for (e, r, t) in query.iter() {
+                    if cursor.i.distance(t.translation().xy()) < r.0 {
                         commands.entity(e).insert(Selected);
                         break;
                     }
@@ -221,8 +221,8 @@ fn update_selection(
                 }
             }
             // select those in the dragged area
-            for (e, r, p) in query.iter() {
-                if cursor.i.distance(cursor.f) + r.0 > cursor.i.distance(p.0.xy()) {
+            for (e, r, t) in query.iter() {
+                if cursor.i.distance(cursor.f) + r.0 > cursor.i.distance(t.translation().xy()) {
                     commands.entity(e).insert(Selected);
                 }
             }
@@ -230,50 +230,37 @@ fn update_selection(
     }
 }
 
-// move the selected entities by changing the translation of entity directly
-// when mouse is released we store the translation in temporary position component
 fn move_selected(
     mouse_button_input: Res<Input<MouseButton>>,
     cursor: Res<CursorInfo>,
-    mut query: Query<(&mut Transform, &mut Pos), With<Selected>>,
+    mut query: Query<&mut Transform, With<Selected>>,
     keyboard_input: Res<Input<KeyCode>>,
 ) {
-    if mouse_button_input.pressed(MouseButton::Left) && keyboard_input.pressed(KeyCode::X) {
-        for (mut t, p) in query.iter_mut() {
-            //t.translation = (p.0.xy() + cursor.f - cursor.i).extend(p.0.z);
-            t.translation.x = p.0.x + cursor.f.x - cursor.i.x;
-            t.translation.y = p.0.y + cursor.f.y - cursor.i.y;
-        }
-    }
-    if mouse_button_input.just_released(MouseButton::Left) {
-        for (t, mut p) in query.iter_mut() {
-            p.0 = t.translation;
+    //states, amy, states..
+    if mouse_button_input.pressed(MouseButton::Left)
+    && !mouse_button_input.just_pressed(MouseButton::Left)
+    && !keyboard_input.pressed(KeyCode::ControlRight)
+    && !keyboard_input.pressed(KeyCode::ControlLeft)
+    && !keyboard_input.pressed(KeyCode::C)
+    && !keyboard_input.pressed(KeyCode::Z)
+    && !keyboard_input.pressed(KeyCode::V) {
+        for mut t in query.iter_mut() {
+            t.translation.x += cursor.d.x;
+            t.translation.y += cursor.d.y;
         }
     }
     if keyboard_input.pressed(KeyCode::X) {
         if keyboard_input.pressed(KeyCode::Up) {
-            for (mut t, mut p) in query.iter_mut() {
-                t.translation.y += 1.;
-                p.0.y += 1.;
-            }
+            for mut t in query.iter_mut() { t.translation.y += 1.; }
         }
         if keyboard_input.pressed(KeyCode::Down) {
-            for (mut t, mut p) in query.iter_mut() {
-                t.translation.y -= 1.;
-                p.0.y -= 1.;
-            }
+            for mut t in query.iter_mut() { t.translation.y -= 1.; }
         }
         if keyboard_input.pressed(KeyCode::Right) {
-            for (mut t, mut p) in query.iter_mut() {
-                t.translation.x += 1.;
-                p.0.x += 1.;
-            }
+            for mut t in query.iter_mut() { t.translation.x += 1.; }
         }
         if keyboard_input.pressed(KeyCode::Left) {
-            for (mut t, mut p) in query.iter_mut() {
-                t.translation.x -= 1.;
-                p.0.x -= 1.;
-            }
+            for mut t in query.iter_mut() { t.translation.x -= 1.; }
         }
     }
 

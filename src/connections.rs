@@ -34,7 +34,7 @@ fn connect(
     keyboard_input: Res<Input<KeyCode>>,
     mouse_button_input: Res<Input<MouseButton>>,
     mut commands: Commands,
-    query: Query<(Entity, &Radius, &Pos), (With<Visible>, With<Index>)>,
+    query: Query<(Entity, &Radius, &Transform), (With<Visible>, With<Index>)>,
     index_query: Query<&Index>,
     mut inputs_query: Query<&mut Inputs>,
     mut outputs_query: Query<&mut Outputs>,
@@ -49,9 +49,9 @@ fn connect(
     if ctrl && mouse_button_input.just_released(MouseButton::Left) {
         let mut source_entity: Option<Entity> = None;
         let mut sink_entity: Option<Entity> = None;
-        for (e, r, p) in query.iter() {
-            if cursor.i.distance(p.0.xy()) < r.0 { source_entity = Some(e) };
-            if cursor.f.distance(p.0.xy()) < r.0 { sink_entity = Some(e) };
+        for (e, r, t) in query.iter() {
+            if cursor.i.distance(t.translation.xy()) < r.0 { source_entity = Some(e) };
+            if cursor.f.distance(t.translation.xy()) < r.0 { sink_entity = Some(e) };
         }
 
         if let Some(src) = source_entity {
@@ -85,8 +85,7 @@ fn connect(
                         ..default()
                     },
                     Visible,
-                    //Pos((cursor.i - src_trans.xy()).extend(0.000001)),
-                    //Radius(src_radius * 0.1),
+                    Radius(src_radius * 0.1),
                 )).id();
                 commands.entity(src).add_child(src_connection);
 
@@ -97,8 +96,7 @@ fn connect(
                         ..default()
                     },
                     Visible,
-                    //Pos((cursor.f - snk_trans.xy()).extend(0.000001)),
-                    //Radius(snk_radius * 0.1),
+                    Radius(snk_radius * 0.1),
                     WhiteHole(src_connection),
                 )).id();
                 commands.entity(snk).add_child(snk_connection);
