@@ -30,15 +30,15 @@ pub struct WhiteHole(pub Entity);
 #[derive(Component)]
 pub struct BlackHole(pub Entity);
 
-struct Connections {
-    // inputs[4] -> inputs of entity 4
-    // inputs[4][3] -> inputs of entity 4 connected to entity 3
-    // inputs[4][3][2] -> inputs of 4 coming from 3 through input 2
-    // outputs[3][4][2] -> outputs of 3 going to 4 through output 2
-    inputs: Vec< Option<Vec< Option<Vec< Option<Vec<usize>> >> >>>,
-    outputs: Vec< Option<Vec< Option<Vec< Option<Vec<usize>> >> >>>,
-}
+// inputs.0[4] -> inputs coming through input 4
+// inputs.0[4][3] -> input coming through input 4 from entity 3
+//                  (the index of output of entity 4 that we read from)
+struct Inputs(Vec< Option<Vec< usize >> >);
 
+// outputs.0[3] outputs going through output 3
+// outputs.0[3][4] output going through output 3 to entity 4
+//                  (the index we "write" to)
+struct Outputs(Vec< Option<Vec< usize >> >);
 
 
 fn connect(
