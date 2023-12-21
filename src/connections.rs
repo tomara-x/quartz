@@ -9,6 +9,8 @@ impl Plugin for ConnectionsPlugin {
     fn build(&self, app: &mut App) {
         app.register_type::<Inputs>();
         app.register_type::<Outputs>();
+        app.register_type::<Connections>();
+        app.init_resource::<Connections>();
         app.add_systems(Update, connect.run_if(in_state(Mode::Connect)));
         //app.add_systems(Update, update_connected_color);
         app.add_systems(Update, draw_connections);
@@ -30,16 +32,14 @@ pub struct WhiteHole(pub Entity);
 #[derive(Component)]
 pub struct BlackHole(pub Entity);
 
-// inputs.0[4] -> inputs coming through input 4
-// inputs.0[4][3] -> input coming through input 4 from entity 3
-//                  (the index of output of entity 4 that we read from)
-struct Inputs(Vec< Option<Vec< usize >> >);
-
-// outputs.0[3] outputs going through output 3
-// outputs.0[3][4] output going through output 3 to entity 4
-//                  (the index we "write" to)
-struct Outputs(Vec< Option<Vec< usize >> >);
-
+// Connections.to[0][3] connections going to entity 0 through input 3
+// Connections.to[0][3] -> [(3, 5),...] (entity 3's 5th output)
+#[derive(Resource, Reflect, Default)]
+#[reflect(Resource)]
+struct Connections {
+    pub to: Vec< Option<Vec< Option<Vec<(usize,usize)> > > > >,
+    pub from: Vec< Option<Vec< Option<Vec<(usize,usize)> > > > >,
+}
 
 fn connect(
     mouse_button_input: Res<Input<MouseButton>>,
