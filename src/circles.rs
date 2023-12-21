@@ -193,48 +193,36 @@ fn update_selection(
     selected_query: Query<&Selected>,
     cursor: Res<CursorInfo>,
     keyboard_input: Res<Input<KeyCode>>,
-    mut clicked_on_circle: Local<bool>,
+    mut top_clicked_circle: Local<Option<(Entity, f32)>>,
 ) {
-    let none_selected = selected.is_empty();
     let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
-
     if mouse_button_input.just_pressed(MouseButton::Left) {
         for (e, r, t) in query.iter() {
-            if cursor.i.distance(t.translation().xy()) < r.0 {
-                *clicked_on_circle = true;
-                // we clicked a circle that wasn't already selected
-                if !selected_query.contains(e) {
-                    if shift { commands.entity(e).insert(Selected); }
-                    else {
-                        // deselect everything
-                        for entity in selected.iter() {
-                            commands.entity(entity).remove::<Selected>();
-                        }
-                        commands.entity(e).insert(Selected);
-                    }
+            if top_clicked_circle.is_some() {
+                if t.translation().z > top_clicked_circle.unwrap().1 &&
+                    cursor.i.distance(t.translation().xy()) < r.0 {
+                    *top_clicked_circle = Some((e, t.translation().z));
                 }
-                break;
+            } else {
+                if cursor.i.distance(t.translation().xy()) < r.0 {
+                    *top_clicked_circle = Some((e, t.translation().z));
+                }
             }
-            *clicked_on_circle = false;
+        }
+        if let Some(top) = *top_clicked_circle {
+            if !selected_query.contains(top.0) {
+                if shift { commands.entity(top.0).insert(Selected); }
+                else {
+                    for entity in selected.iter() {
+                        commands.entity(entity).remove::<Selected>();
+                    }
+                    commands.entity(top.0).insert(Selected);
+                }
+            }
         }
     }
     if mouse_button_input.just_released(MouseButton::Left) {
-        if *clicked_on_circle {
-            // some entities are selected and we just clicked (no drag) on one
-            if !shift && !none_selected && cursor.i.distance(cursor.f) < 0.01 {
-                for entity in selected.iter() {
-                    commands.entity(entity).remove::<Selected>();
-                }
-                for (e, r, t) in query.iter() {
-                    if cursor.i.distance(t.translation().xy()) < r.0 {
-                        commands.entity(e).insert(Selected);
-                        break;
-                    }
-                }
-            }
-        }
-        else {
-            // deselect everything
+        if top_clicked_circle.is_none() {
             if !shift {
                 for entity in selected.iter() {
                     commands.entity(entity).remove::<Selected>();
@@ -247,6 +235,7 @@ fn update_selection(
                 }
             }
         }
+        *top_clicked_circle = None;
     }
 }
 
