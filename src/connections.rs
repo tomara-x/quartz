@@ -7,17 +7,21 @@ pub struct ConnectionsPlugin;
 
 impl Plugin for ConnectionsPlugin {
     fn build(&self, app: &mut App) {
-        app.register_type::<Inputs>();
-        app.register_type::<Outputs>();
         app.register_type::<Connections>();
         app.init_resource::<Connections>();
         app.add_systems(Update, connect.run_if(in_state(Mode::Connect)));
         //app.add_systems(Update, update_connected_color);
         app.add_systems(Update, draw_connections);
+        app.add_systems(Update, draw_connecting_line.run_if(in_state(Mode::Connect)));
     }
 }
 
-// (entity-id, read-component, input-type, index-for-vec-components)
+//#[derive(Component)]
+//pub struct WhiteHole(pub usize);
+
+//#[derive(Component)]
+//pub struct BlackHole(pub usize);
+
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
 pub struct Inputs(pub Vec<(usize, i16, i16, usize)>);
@@ -28,9 +32,10 @@ pub struct Outputs(pub Vec<usize>);
 
 #[derive(Component)]
 pub struct WhiteHole(pub Entity);
-
+ 
 #[derive(Component)]
 pub struct BlackHole(pub Entity);
+
 
 // Connections.to[0][3] connections going to entity 0 through input 3
 // Connections.to[0][3] -> [(3, 5),...] (entity 3's 5th output)
@@ -45,9 +50,10 @@ fn connect(
     mouse_button_input: Res<Input<MouseButton>>,
     mut commands: Commands,
     query: Query<(Entity, &Radius, &Transform), (With<Visible>, With<Index>)>,
-    index_query: Query<&Index>,
+    connections: Res<Connections>,
     mut inputs_query: Query<&mut Inputs>,
     mut outputs_query: Query<&mut Outputs>,
+    index_query: Query<&Index>,
     mut order_query: Query<&mut Order>,
     cursor: Res<CursorInfo>,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -122,12 +128,26 @@ fn connect(
 fn draw_connections(
     mut gizmos: Gizmos,
     query: Query<(Entity, &WhiteHole), With<Visible>>,
+    time: Res<Time>,
     trans_query: Query<&GlobalTransform>,
 ) {
     for (snk, src) in query.iter() {
         let src_pos = trans_query.get(src.0).unwrap().translation().xy();
         let snk_pos = trans_query.get(snk).unwrap().translation().xy();
-        gizmos.line_2d(src_pos, snk_pos, Color::PINK);
+        let color = Color::hsl((time.elapsed_seconds() * 100.) % 360., 1.0, 0.5);
+        gizmos.line_2d(src_pos, snk_pos, color);
+    }
+}
+
+fn draw_connecting_line(
+    mut gizmos: Gizmos,
+    time: Res<Time>,
+    mouse_button_input: Res<Input<MouseButton>>,
+    cursor: Res<CursorInfo>,
+) {
+    if mouse_button_input.pressed(MouseButton::Left) {
+        let color = Color::hsl((time.elapsed_seconds() * 100.) % 360., 1.0, 0.5);
+        gizmos.line_2d(cursor.i, cursor.f, color);
     }
 }
 
