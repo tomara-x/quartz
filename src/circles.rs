@@ -142,21 +142,6 @@ fn spawn_circles(
     }
 }
 
-// better way to do this?
-fn update_order_text(
-    mut query: Query<(&mut Text, &Parent), With<Visible>>,
-    order_query: Query<&Order>,
-    keyboard_input: Res<Input<KeyCode>>,
-) {
-    if keyboard_input.any_just_pressed([KeyCode::Up, KeyCode::Down]) {
-        for (mut text, parent) in query.iter_mut() {
-            if let Ok(order) = order_query.get(**parent) {
-                text.sections[1].value = order.0.to_string();
-            }
-        }
-    }
-}
-
 fn draw_pointer_circle(
     cursor: Res<CursorInfo>,
     mut gizmos: Gizmos,
@@ -396,6 +381,20 @@ fn update_order (
         }
         if keyboard_input.just_pressed(KeyCode::Down) {
             for mut order in query.iter_mut() { if order.0 > 0 { order.0 -= 1; } }
+        }
+    }
+}
+
+fn update_order_text(
+    mut query: Query<(&mut Text, &Parent), With<Visible>>,
+    order_query: Query<&Order>,
+    keyboard_input: Res<Input<KeyCode>>,
+) {
+    if keyboard_input.any_just_pressed([KeyCode::Up, KeyCode::Down]) {
+        for (mut text, parent) in query.iter_mut() {
+            if let Ok(order) = order_query.get(**parent) {
+                text.sections[1].value = order.0.to_string();
+            }
         }
     }
 }
