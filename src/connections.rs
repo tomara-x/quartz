@@ -92,7 +92,7 @@ fn connect(
             // spawn connection circles
             let black_hole = commands.spawn(( ColorMesh2dBundle {
                     mesh: meshes.add(shape::Circle::new(src_radius * 0.1).into()).into(),
-                    material: materials.add(ColorMaterial::from(Color::rgb(0.,0.,0.))),
+                    material: materials.add(ColorMaterial::from(Color::BLACK)),
                     transform: Transform::from_translation((cursor.i - src_trans.xy()).extend(0.000001)),
                     ..default()
                 },
@@ -112,7 +112,7 @@ fn connect(
 
             let white_hole = commands.spawn(( ColorMesh2dBundle {
                     mesh: meshes.add(shape::Circle::new(snk_radius * 0.1).into()).into(),
-                    material: materials.add(ColorMaterial::from(Color::rgb(1.,1.,1.))),
+                    material: materials.add(ColorMaterial::from(Color::WHITE)),
                     transform: Transform::from_translation((cursor.f - snk_trans.xy()).extend(0.000001)),
                     ..default()
                 },
