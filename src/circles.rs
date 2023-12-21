@@ -390,36 +390,34 @@ fn update_order_text(
 
 fn delete_selected(
     keyboard_input: Res<Input<KeyCode>>,
-    query: Query<(Entity, &Index, &Children), With<Selected>>,
-    entity_indices: Res<EntityIndices>,
+    query: Query<(Entity, &Children), With<Selected>>,
+    connection_indices: Res<ConnectionIndices>,
     mut commands: Commands,
     white_hole_query: Query<&WhiteHole>,
     black_hole_query: Query<&BlackHole>,
 ) {
     if keyboard_input.pressed(KeyCode::Delete) {
-        for (id, index, children) in query.iter() {
-            // delete any connections to the entity being deleted
-            //if let Ok(inputs) = inputs_query.get(id) {
-            //    for (src, _, _, _) in &inputs.0 {
-            //        let src_outputs = &mut outputs_query.get_mut(entity_indices.0[*src]).unwrap().0;
-            //        src_outputs.retain(|&x| x != index.0);
-            //    }
-            //}
-            //if let Ok(outputs) = outputs_query.get(id) {
-            //    for snk in &outputs.0 {
-            //        let snk_inputs = &mut inputs_query.get_mut(entity_indices.0[*snk]).unwrap().0;
-            //        snk_inputs.retain(|&x| x.0 != index.0);
-            //    }
-            //}
-            // despawn corresponding black/white holes
-            //for child in children.iter() {
-            //    if let Ok(i) = white_hole_query.get(*child) {
-            //        commands.entity(i.0).despawn();
-            //    }
-            //    if let Ok(i) = black_hole_query.get(*child) {
-            //        commands.entity(i.0).despawn();
-            //    }
-            //}
+        for (id, children) in query.iter() {
+            // if the circle we're deleting is a connection
+            if let Ok(black_hole) = black_hole_query.get(id) {
+                let white_hole = connection_indices.0[black_hole.white_hole];
+                commands.entity(white_hole).despawn_recursive();
+            } else if let Ok(white_hole) = white_hole_query.get(id) {
+                let black_hole = connection_indices.0[white_hole.black_hole];
+                commands.entity(black_hole).despawn_recursive();
+            } else {
+                // not a connection, despawn the holes on the other side
+                for child in children.iter() {
+                    if let Ok(black_hole) = black_hole_query.get(*child) {
+                        let white_hole = connection_indices.0[black_hole.white_hole];
+                        commands.entity(white_hole).despawn_recursive();
+                    }
+                    if let Ok(white_hole) = white_hole_query.get(*child) {
+                        let black_hole = connection_indices.0[white_hole.black_hole];
+                        commands.entity(black_hole).despawn_recursive();
+                    }
+                }
+            }
             commands.entity(id).despawn_recursive();
         }
     }
