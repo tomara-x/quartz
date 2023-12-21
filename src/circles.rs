@@ -281,43 +281,34 @@ fn update_color(
         !mouse_button_input.just_pressed(MouseButton::Left) {
             for id in material_ids.iter() {
                 let mat = mats.get_mut(id).unwrap();
-                // need it to be locking tho, so you can go back and forth
-                if cursor.f.x - cursor.i.x > 0. {
-                    mat.color.set_h((mat.color.h() + cursor.d.x) % 360.);
-                }
-                if cursor.f.x - cursor.i.x < 0. {
-                    mat.color.set_s((mat.color.s() - (cursor.d.x / 100.)) % 1.);
-                }
-                if cursor.f.y - cursor.i.y > 0. {
-                    mat.color.set_l((mat.color.l() + (cursor.d.y / 100.)) % 1.);
-                }
-                if cursor.f.y - cursor.i.y < 0. {
-                    mat.color.set_a((mat.color.a() - (cursor.d.y / 100.)) % 1.);
-                }
+                mat.color.set_h((mat.color.h() + cursor.d.x).rem_euclid(360.));
             }
         }
+
+        let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
+        let increment = if shift { 0.01 } else { -0.01 };
         if keyboard_input.pressed(KeyCode::Up) {
             for id in material_ids.iter() {
                 let mat = mats.get_mut(id).unwrap();
-                mat.color.set_h((mat.color.h() + 1.) % 360.);
+                mat.color.set_h((mat.color.h() + increment * 100.).rem_euclid(360.));
             }
         }
         if keyboard_input.pressed(KeyCode::Down) {
             for id in material_ids.iter() {
                 let mat = mats.get_mut(id).unwrap();
-                mat.color.set_s((mat.color.s() + 0.01) % 2.);
+                mat.color.set_s((mat.color.s() + increment).rem_euclid(2.));
             }
         }
         if keyboard_input.pressed(KeyCode::Right) {
             for id in material_ids.iter() {
                 let mat = mats.get_mut(id).unwrap();
-                mat.color.set_l((mat.color.l() + 0.01) % 4.);
+                mat.color.set_l((mat.color.l() + increment).rem_euclid(4.));
             }
         }
         if keyboard_input.pressed(KeyCode::Left) {
             for id in material_ids.iter() {
                 let mat = mats.get_mut(id).unwrap();
-                mat.color.set_a((mat.color.a() + 0.01) % 1.);
+                mat.color.set_a((mat.color.a() + increment).rem_euclid(1.));
             }
         }
     }
