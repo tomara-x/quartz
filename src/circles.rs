@@ -21,9 +21,12 @@ impl Plugin for CirclesPlugin {
         app.register_type::<Index>();
         app.register_type::<Order>();
         app.register_type::<EntityIndices>();
+        app.register_type::<MaxUsedIndex>();
 
+        // test high depth
         app.insert_resource(Depth(-10.));
-        app.insert_resource(EntityIndices(Vec::new()));
+        app.init_resource::<EntityIndices>();
+        app.init_resource::<MaxUsedIndex>();
 
         app.add_systems(Update, spawn_circles.run_if(in_state(Mode::Draw)));
         app.add_systems(Update, update_color.run_if(in_state(Mode::Edit)));
@@ -34,7 +37,8 @@ impl Plugin for CirclesPlugin {
         app.add_systems(Update, move_selected.after(update_selection).run_if(in_state(Mode::Edit)));
         app.add_systems(Update, highlight_selected.run_if(in_state(Mode::Edit)));
         app.add_systems(Update, delete_selected.run_if(in_state(Mode::Edit)));
-        app.add_systems(Update, update_text);
+        app.add_systems(Update, update_order.run_if(in_state(Mode::Edit)));
+        app.add_systems(Update, update_order_text.run_if(in_state(Mode::Edit)).after(update_order));
         app.add_systems(Update, switch_mode);
     }
 }
@@ -43,6 +47,10 @@ impl Plugin for CirclesPlugin {
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
 pub struct EntityIndices(pub Vec<Entity>);
+
+#[derive(Resource, Reflect, Default)]
+#[reflect(Resource)]
+pub struct MaxUsedIndex(pub usize);
 
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
@@ -64,7 +72,7 @@ pub struct Visible;
 pub struct Index(pub usize);
 
 #[derive(Component, Reflect)]
-pub struct Order(pub i32);
+pub struct Order(pub usize);
 
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 pub enum Mode {
@@ -92,7 +100,7 @@ fn spawn_circles(
     mut materials: ResMut<Assets<ColorMaterial>>,
     mut depth: ResMut<Depth>,
     cursor: Res<CursorInfo>,
-    mut index: Local<usize>,
+    mut index: ResMut<MaxUsedIndex>,
     mut entity_indices: ResMut<EntityIndices>,
 ) {
     if mouse_button_input.just_released(MouseButton::Left) {
@@ -107,7 +115,7 @@ fn spawn_circles(
             Radius(radius),
             Pos(cursor.i.extend(depth.0)), //keeps track of initial position while moving
             Visible, //otherwise it can't be selected til after mark_visible is updated
-            Index(*index),
+            Index(index.0),
             Order(0),
         )).id();
 
@@ -115,7 +123,7 @@ fn spawn_circles(
         let text = commands.spawn(Text2dBundle {
             text: Text::from_sections([
                 TextSection::new(
-                    index.to_string() + "\n",
+                    index.0.to_string() + "\n",
                     TextStyle::default(),
                 ),
                 TextSection::new(
@@ -129,18 +137,23 @@ fn spawn_circles(
         commands.entity(id).add_child(text);
 
         entity_indices.0.push(id);
-        *index += 1;
+        index.0 += 1;
         depth.0 += 0.00001;
     }
 }
 
-// for debugging
-fn update_text(
+// better way to do this?
+fn update_order_text(
     mut query: Query<(&mut Text, &Parent), With<Visible>>,
     order_query: Query<&Order>,
+    keyboard_input: Res<Input<KeyCode>>,
 ) {
-    for (mut text, parent) in query.iter_mut() {
-        text.sections[1].value = order_query.get(**parent).unwrap().0.to_string();
+    if keyboard_input.any_just_pressed([KeyCode::Up, KeyCode::Down]) {
+        for (mut text, parent) in query.iter_mut() {
+            if let Ok(order) = order_query.get(**parent) {
+                text.sections[1].value = order.0.to_string();
+            }
+        }
     }
 }
 
@@ -294,10 +307,18 @@ fn update_color(
             for id in material_ids.iter() {
                 let mat = mats.get_mut(id).unwrap();
                 // need it to be locking tho, so you can go back and forth
-                if cursor.d.x > 0. { mat.color.set_h((mat.color.h() + cursor.d.x) % 360.); }
-                if cursor.d.x < 0. { mat.color.set_s((mat.color.s() - (cursor.d.x / 100.)) % 1.); }
-                if cursor.d.y > 0. { mat.color.set_l((mat.color.l() + (cursor.d.y / 100.)) % 1.); }
-                if cursor.d.y < 0. { mat.color.set_a((mat.color.a() - (cursor.d.y / 100.)) % 1.); }
+                if cursor.f.x - cursor.i.x > 0. {
+                    mat.color.set_h((mat.color.h() + cursor.d.x) % 360.);
+                }
+                if cursor.f.x - cursor.i.x < 0. {
+                    mat.color.set_s((mat.color.s() - (cursor.d.x / 100.)) % 1.);
+                }
+                if cursor.f.y - cursor.i.y > 0. {
+                    mat.color.set_l((mat.color.l() + (cursor.d.y / 100.)) % 1.);
+                }
+                if cursor.f.y - cursor.i.y < 0. {
+                    mat.color.set_a((mat.color.a() - (cursor.d.y / 100.)) % 1.);
+                }
             }
         }
         if keyboard_input.pressed(KeyCode::Up) {
@@ -364,11 +385,23 @@ fn update_radius(
     }
 }
 
+fn update_order (
+    keyboard_input: Res<Input<KeyCode>>,
+    mut query: Query<&mut Order, With<Selected>>,
+) {
+    if keyboard_input.pressed(KeyCode::Key4) {
+        if keyboard_input.just_pressed(KeyCode::Up) {
+            for mut order in query.iter_mut() { order.0 += 1; }
+        }
+        if keyboard_input.just_pressed(KeyCode::Down) {
+            for mut order in query.iter_mut() { if order.0 > 0 { order.0 -= 1; } }
+        }
+    }
+}
+
 fn delete_selected(
     keyboard_input: Res<Input<KeyCode>>,
     query: Query<(Entity, &Index, &Children), With<Selected>>,
-    mut inputs_query: Query<&mut Inputs>,
-    mut outputs_query: Query<&mut Outputs>,
     entity_indices: Res<EntityIndices>,
     mut commands: Commands,
     white_hole_query: Query<&WhiteHole>,
@@ -377,27 +410,27 @@ fn delete_selected(
     if keyboard_input.pressed(KeyCode::Delete) {
         for (id, index, children) in query.iter() {
             // delete any connections to the entity being deleted
-            if let Ok(inputs) = inputs_query.get(id) {
-                for (src, _, _, _) in &inputs.0 {
-                    let src_outputs = &mut outputs_query.get_mut(entity_indices.0[*src]).unwrap().0;
-                    src_outputs.retain(|&x| x != index.0);
-                }
-            }
-            if let Ok(outputs) = outputs_query.get(id) {
-                for snk in &outputs.0 {
-                    let snk_inputs = &mut inputs_query.get_mut(entity_indices.0[*snk]).unwrap().0;
-                    snk_inputs.retain(|&x| x.0 != index.0);
-                }
-            }
+            //if let Ok(inputs) = inputs_query.get(id) {
+            //    for (src, _, _, _) in &inputs.0 {
+            //        let src_outputs = &mut outputs_query.get_mut(entity_indices.0[*src]).unwrap().0;
+            //        src_outputs.retain(|&x| x != index.0);
+            //    }
+            //}
+            //if let Ok(outputs) = outputs_query.get(id) {
+            //    for snk in &outputs.0 {
+            //        let snk_inputs = &mut inputs_query.get_mut(entity_indices.0[*snk]).unwrap().0;
+            //        snk_inputs.retain(|&x| x.0 != index.0);
+            //    }
+            //}
             // despawn corresponding black/white holes
-            for child in children.iter() {
-                if let Ok(i) = white_hole_query.get(*child) {
-                    commands.entity(i.0).despawn();
-                }
-                if let Ok(i) = black_hole_query.get(*child) {
-                    commands.entity(i.0).despawn();
-                }
-            }
+            //for child in children.iter() {
+            //    if let Ok(i) = white_hole_query.get(*child) {
+            //        commands.entity(i.0).despawn();
+            //    }
+            //    if let Ok(i) = black_hole_query.get(*child) {
+            //        commands.entity(i.0).despawn();
+            //    }
+            //}
             commands.entity(id).despawn_recursive();
         }
     }
