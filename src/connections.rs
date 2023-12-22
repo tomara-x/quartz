@@ -52,10 +52,6 @@ pub struct BlackHole {
     pub connection_type: usize,
 }
 
-#[derive(Component, Reflect, Default)]
-#[reflect(Component)]
-pub struct Hole;
-
 fn connect(
     mouse_button_input: Res<Input<MouseButton>>,
     mut commands: Commands,
@@ -101,7 +97,6 @@ fn connect(
                 },
                 Visible,
                 Radius(src_radius * 0.1),
-                Hole,
                 BlackHole {
                     index: max_connection_index.0,
                     parent: src_index,
@@ -123,7 +118,6 @@ fn connect(
                 },
                 Visible,
                 Radius(snk_radius * 0.1),
-                Hole,
                 WhiteHole {
                     index: max_connection_index.0,
                     parent: snk_index,
