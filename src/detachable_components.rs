@@ -19,23 +19,23 @@ impl Plugin for DetachableComponentsPlugin {
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
-pub struct Num(f32);
+pub struct Num(pub f32);
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
-pub struct Arr(Vec<f32>);
+pub struct Arr(pub Vec<f32>);
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
-pub struct ColorOffset(Color);
+pub struct ColorOffset(pub Color);
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
-pub struct PosOffset(Vec3);
+pub struct PosOffset(pub Vec3);
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
-pub struct RadiusOffset(f32);
+pub struct RadiusOffset(pub f32);
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
