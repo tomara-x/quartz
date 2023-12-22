@@ -39,16 +39,7 @@ pub struct RadiusOffset(pub f32);
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
-pub enum BloomControl {
-    #[default]
-    Intensity,
-    LFBoost,
-    LFBCurvature,
-    HPFreq,
-    CompositeMode,
-    PrefilterThreshold,
-    PrefilterThresholdSoftness,
-}
+pub struct BloomControl;
 
 
 fn attach_detach_data(
@@ -119,7 +110,7 @@ fn attach_detach_data(
             }
         } else {
             if let Ok(e) = query.get_single() {
-                commands.entity(e).insert(BloomControl::Intensity);
+                commands.entity(e).insert(BloomControl);
             }
         }
     }

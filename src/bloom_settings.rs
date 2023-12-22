@@ -17,37 +17,35 @@ impl Plugin for BloomSettingsPlugin {
 
 
 fn update_bloom_settings(
-    control: Query<(&BloomControl, &Children)>,
+    query: Query<&Children, With<BloomControl>>,
     mut bloom: Query<&mut BloomSettings, With<Camera>>,
     black_hole_query: Query<&BlackHole>,
     white_hole_query: Query<&WhiteHole>,
     connection_indices: Res<ConnectionIndices>,
     entity_indices: ResMut<EntityIndices>,
-    num_query: Query<&Num>,
+    rad_query: Query<&Radius>,
 ) {
     let mut bloom_settings = bloom.single_mut();
-    for (control, children) in control.iter() {
+    for children in query.iter() {
         for child in children {
             if let Ok(white_hole) = white_hole_query.get(*child) {
-                if white_hole.connection_type == 9 {
-                    let black_hole = black_hole_query.get(connection_indices.0[white_hole.black_hole]).unwrap();
-                    if black_hole.connection_type == 9 {
-                        if let Ok(input) = num_query.get(entity_indices.0[black_hole.parent]) {
-                            match control {
-                                BloomControl::Intensity => bloom_settings.intensity = input.0,
-                                BloomControl::LFBoost => bloom_settings.low_frequency_boost = input.0,
-                                BloomControl::LFBCurvature => bloom_settings.low_frequency_boost_curvature = input.0,
-                                BloomControl::HPFreq => bloom_settings.high_pass_frequency = input.0,
-                                BloomControl::CompositeMode => bloom_settings.composite_mode = if input.0 > 0.5 {
-                                    BloomCompositeMode::Additive } else { BloomCompositeMode::EnergyConserving },
-                                BloomControl::PrefilterThreshold => bloom_settings.prefilter_settings.threshold = input.0,
-                                BloomControl::PrefilterThresholdSoftness => bloom_settings.prefilter_settings.
-                                    threshold_softness = input.0,
-                            }
+                let black_hole = black_hole_query.get(connection_indices.0[white_hole.black_hole]).unwrap();
+                if black_hole.connection_type == 9 {
+                    if let Ok(input) = rad_query.get(entity_indices.0[black_hole.parent]) {
+                        let input = input.0 / 100.;
+                        match white_hole.connection_type {
+                            9 => bloom_settings.intensity = input,
+                            10 => bloom_settings.low_frequency_boost = input,
+                            11 => bloom_settings.low_frequency_boost_curvature = input,
+                            12 => bloom_settings.high_pass_frequency = input,
+                            13 => bloom_settings.composite_mode = if input > 0.5 { BloomCompositeMode::Additive }
+                            else { BloomCompositeMode::EnergyConserving },
+                            14 => bloom_settings.prefilter_settings.threshold = input,
+                            15 => bloom_settings.prefilter_settings.threshold_softness = input,
+                            _ => {},
                         }
                     }
                 }
-            break;
             }
         }
     }
