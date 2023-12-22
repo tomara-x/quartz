@@ -195,15 +195,19 @@ fn update_connection_type (
 ) {
     if keyboard_input.pressed(KeyCode::Key5) {
         if keyboard_input.just_pressed(KeyCode::Up) {
-            for mut hole in black_hole_query.iter_mut() { hole.connection_type += 1; }
-            for mut hole in white_hole_query.iter_mut() { hole.connection_type += 1; }
+            for mut hole in black_hole_query.iter_mut() {
+                hole.connection_type = hole.connection_type.saturating_add(1);
+            }
+            for mut hole in white_hole_query.iter_mut() {
+                hole.connection_type = hole.connection_type.saturating_add(1);
+            }
         }
         if keyboard_input.just_pressed(KeyCode::Down) {
             for mut hole in black_hole_query.iter_mut() {
-                if hole.connection_type > 0 { hole.connection_type -= 1; }
+                hole.connection_type = hole.connection_type.saturating_sub(1);
             }
             for mut hole in white_hole_query.iter_mut() {
-                if hole.connection_type > 0 { hole.connection_type -= 1; }
+                hole.connection_type = hole.connection_type.saturating_sub(1);
             }
         }
     }
