@@ -5,6 +5,8 @@ use bevy::{
     prelude::*,
 };
 
+use crate::{connections::*, circles::*, detachable_components::*};
+
 pub struct BloomSettingsPlugin;
 
 impl Plugin for BloomSettingsPlugin {
@@ -12,6 +14,7 @@ impl Plugin for BloomSettingsPlugin {
         app.add_systems(Update, update_bloom_settings);
     }
 }
+
 
 fn update_bloom_settings(
     mut bloom: Query<&mut BloomSettings, With<Camera>>,

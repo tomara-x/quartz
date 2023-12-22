@@ -12,33 +12,48 @@ impl Plugin for DetachableComponentsPlugin {
         app.register_type::<ColorOffset>();
         app.register_type::<PosOffset>();
         app.register_type::<RadiusOffset>();
+        app.register_type::<BloomControl>();
         app.add_systems(Update, attach_detach_data.run_if(in_state(Mode::Edit)));
     }
 }
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
-struct Num(f32);
+pub struct Num(f32);
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
-struct Arr(Vec<f32>);
+pub struct Arr(Vec<f32>);
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
-struct ColorOffset(Color);
+pub struct ColorOffset(Color);
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
-struct PosOffset(Vec3);
+pub struct PosOffset(Vec3);
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
-struct RadiusOffset(f32);
+pub struct RadiusOffset(f32);
+
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
+pub enum BloomControl {
+    #[default]
+    Intensity,
+    LFBoost,
+    LFBCurvature,
+    HPFreq,
+    CompositeMode,
+    PrefilterThreshold,
+    PrefilterThresholdSoftness,
+}
+
 
 fn attach_detach_data(
     keyboard_input: Res<Input<KeyCode>>,
-    query: Query<Entity, With<Selected>>,
+    query: Query<Entity, (With<Selected>, With<Order>)>,
     mut commands: Commands,
 ) {
     let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
@@ -94,6 +109,17 @@ fn attach_detach_data(
         } else {
             for e in query.iter() {
                 commands.entity(e).insert(RadiusOffset(1.));
+            }
+        }
+    }
+    if keyboard_input.just_pressed(KeyCode::Q) {
+        if shift {
+            if let Ok(e) = query.get_single() {
+                commands.entity(e).remove::<BloomControl>();
+            }
+        } else {
+            if let Ok(e) = query.get_single() {
+                commands.entity(e).insert(BloomControl::Intensity);
             }
         }
     }
