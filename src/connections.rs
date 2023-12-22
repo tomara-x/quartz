@@ -11,7 +11,6 @@ impl Plugin for ConnectionsPlugin {
         app.register_type::<MaxUsedConnectionIndex>();
         app.register_type::<WhiteHole>();
         app.register_type::<BlackHole>();
-        app.register_type::<ConnectionType>();
         app.init_resource::<ConnectionIndices>();
         app.init_resource::<MaxUsedConnectionIndex>();
         app.add_systems(Update, connect.run_if(in_state(Mode::Connect)));
@@ -39,6 +38,8 @@ pub struct WhiteHole {
     pub index: usize,
     pub parent: usize,
     pub black_hole: usize,
+    pub black_hole_parent: usize,
+    pub connection_type: usize,
 }
 
 #[derive(Component, Reflect, Default)]
@@ -47,11 +48,13 @@ pub struct BlackHole {
     pub index: usize,
     pub parent: usize,
     pub white_hole: usize,
+    pub white_hole_parent: usize,
+    pub connection_type: usize,
 }
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
-pub struct ConnectionType(usize);
+pub struct Hole;
 
 fn connect(
     mouse_button_input: Res<Input<MouseButton>>,
@@ -98,12 +101,14 @@ fn connect(
                 },
                 Visible,
                 Radius(src_radius * 0.1),
+                Hole,
                 BlackHole {
                     index: max_connection_index.0,
                     parent: src_index,
                     white_hole: max_connection_index.0 + 1,
+                    white_hole_parent: snk_index,
+                    connection_type: 0,
                 },
-                ConnectionType(0),
             )).id();
             commands.entity(src).add_child(black_hole);
 
@@ -118,12 +123,14 @@ fn connect(
                 },
                 Visible,
                 Radius(snk_radius * 0.1),
+                Hole,
                 WhiteHole {
                     index: max_connection_index.0,
                     parent: snk_index,
                     black_hole: max_connection_index.0 - 1,
+                    black_hole_parent: src_index,
+                    connection_type: 0,
                 },
-                ConnectionType(0),
             )).id();
             commands.entity(snk).add_child(white_hole);
 
@@ -189,27 +196,38 @@ fn draw_connecting_line(
 
 fn update_connection_type (
     keyboard_input: Res<Input<KeyCode>>,
-    mut query: Query<&mut ConnectionType, With<Selected>>,
+    mut black_hole_query: Query<&mut BlackHole, With<Selected>>,
+    mut white_hole_query: Query<&mut WhiteHole, With<Selected>>,
 ) {
     if keyboard_input.pressed(KeyCode::Key5) {
         if keyboard_input.just_pressed(KeyCode::Up) {
-            for mut connection in query.iter_mut() { connection.0 += 1; }
+            for mut hole in black_hole_query.iter_mut() { hole.connection_type += 1; }
+            for mut hole in white_hole_query.iter_mut() { hole.connection_type += 1; }
         }
         if keyboard_input.just_pressed(KeyCode::Down) {
-            for mut connection in query.iter_mut() { if connection.0 > 0 { connection.0 -= 1; } }
+            for mut hole in black_hole_query.iter_mut() {
+                if hole.connection_type > 0 { hole.connection_type -= 1; }
+            }
+            for mut hole in white_hole_query.iter_mut() {
+                if hole.connection_type > 0 { hole.connection_type -= 1; }
+            }
         }
     }
 }
 
 fn update_connection_type_text(
     mut query: Query<(&mut Text, &Parent), With<Visible>>,
-    connection_type_query: Query<&ConnectionType>,
     keyboard_input: Res<Input<KeyCode>>,
+    black_hole_query: Query<&BlackHole>,
+    white_hole_query: Query<&WhiteHole>,
 ) {
     if keyboard_input.any_just_pressed([KeyCode::Up, KeyCode::Down]) {
         for (mut text, parent) in query.iter_mut() {
-            if let Ok(connection) = connection_type_query.get(**parent) {
-                text.sections[0].value = connection.0.to_string();
+            if let Ok(hole) = black_hole_query.get(**parent) {
+                text.sections[0].value = hole.connection_type.to_string();
+            }
+            if let Ok(hole) = white_hole_query.get(**parent) {
+                text.sections[0].value = hole.connection_type.to_string();
             }
         }
     }
