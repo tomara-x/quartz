@@ -44,7 +44,7 @@ fn main() {
         //SYSTEMS
         .add_systems(Startup, setup)
         .add_systems(Update, toggle_pan.run_if(in_state(Mode::Edit)))
-        //.add_systems(Update, save_scene)
+        .add_systems(Update, save_scene)
         .run();
 }
 
@@ -88,26 +88,24 @@ fn toggle_pan(
     }
 }
 
-//scene saving mess
-//fn save_scene(world: &mut World) {
+// own file format?
+// query the info needed to respawn the same entities on load
+// switching?
+// creating multiple worlds, switching between them, and saving/loading them
+fn save_scene(
+    circle_ids: Res<CircleIds>, //actually won't need this
+    ) {
 //    let keyboard_input = world.resource::<Input<KeyCode>>();
 //    let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
 //    if ctrl && keyboard_input.just_pressed(KeyCode::S) {
-//        let mut query = world.query_filtered::<Entity, With<Pos>>();
-//        let scene = DynamicSceneBuilder::from_world(&world).allow::<Pos>().build();
-//
-//        let type_registry = world.resource::<AppTypeRegistry>();
-//        let serialized_scene = scene.serialize_ron(type_registry).unwrap();
-//
 //        #[cfg(not(target_arch = "wasm32"))]
 //        IoTaskPool::get()
 //            .spawn(async move {
-//                // Write the scene RON data to file
 //                File::create(format!("scene"))
 //                    .and_then(|mut file| file.write(serialized_scene.as_bytes()))
 //                    .expect("Error while writing scene to file");
 //            })
 //            .detach();
 //    }
-//}
+}
 
