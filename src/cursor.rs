@@ -44,7 +44,7 @@ pub fn update_cursor_info(
     }
     if mouse_button_input.just_released(MouseButton::Left) {
         cursor.d = Vec2::ZERO;
-        *last_pos = Vec2::ZERO;
+        *last_pos = -cursor.f; // so on the pressed frame we don't get a delta
     }
 }
 
