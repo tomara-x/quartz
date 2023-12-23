@@ -24,7 +24,7 @@ fn update_bloom_settings(
     rad_query: Query<&Radius>,
 ) {
     let mut bloom_settings = bloom.single_mut();
-    for children in query.iter() {
+    if let Ok(children) = query.get_single() {
         for child in children {
             if let Ok(white_hole) = white_hole_query.get(*child) {
                 let black_hole = black_hole_query.get(white_hole.bh).unwrap();
