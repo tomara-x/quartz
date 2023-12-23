@@ -17,10 +17,8 @@ impl Plugin for ConnectionsPlugin {
         //app.add_systems(Update, update_connected_color);
         app.add_systems(Update, draw_connections);
         app.add_systems(Update, draw_connecting_line.run_if(in_state(Mode::Connect)));
-        app.add_systems(Update, update_connection_type.run_if(in_state(Mode::Edit)));
-        app.add_systems(Update, update_connection_type_text
-                                    .run_if(in_state(Mode::Edit))
-                                    .after(update_connection_type));
+        app.add_systems(Update, update_link_type.run_if(in_state(Mode::Edit)));
+        app.add_systems(Update, update_link_type_text.run_if(in_state(Mode::Edit)).after(update_link_type));
     }
 }
 
@@ -32,24 +30,56 @@ pub struct ConnectionIds(pub Vec<Entity>);
 #[reflect(Resource)]
 pub struct MaxUsedConnectionIndex(pub usize);
 
-#[derive(Component, Reflect, Default)]
+#[derive(Component, Reflect)]
 #[reflect(Component)]
 pub struct WhiteHole {
+    pub id: Entity,
     pub index: usize,
-    pub parent: usize,
-    pub black_hole: usize,
-    pub black_hole_parent: usize,
-    pub connection_type: usize,
+    pub parent: Entity,
+    pub parent_index: usize,
+    pub bh: Entity,
+    pub bh_index: usize,
+    pub link_type: usize,
 }
 
-#[derive(Component, Reflect, Default)]
+#[derive(Component, Reflect)]
 #[reflect(Component)]
 pub struct BlackHole {
+    pub id: Entity,
     pub index: usize,
-    pub parent: usize,
-    pub white_hole: usize,
-    pub white_hole_parent: usize,
-    pub connection_type: usize,
+    pub parent: Entity,
+    pub parent_index: usize,
+    pub wh: Entity,
+    pub wh_index: usize,
+    pub link_type: usize,
+}
+
+// i'll be back
+impl Default for WhiteHole {
+    fn default() -> Self {
+        WhiteHole {
+            id: Entity::from_raw(0),
+            index: 0,
+            parent: Entity::from_raw(0),
+            parent_index: 0,
+            bh: Entity::from_raw(0),
+            bh_index: 0,
+            link_type: 0,
+        }
+    }
+}
+impl Default for BlackHole {
+    fn default() -> Self {
+        BlackHole {
+            id: Entity::from_raw(0),
+            index: 0,
+            parent: Entity::from_raw(0),
+            parent_index: 0,
+            wh: Entity::from_raw(0),
+            wh_index: 0,
+            link_type: 0,
+        }
+    }
 }
 
 fn connect(
@@ -88,7 +118,7 @@ fn connect(
             let src_trans = trans_query.get(src).unwrap().translation;
             let snk_trans = trans_query.get(snk).unwrap().translation;
 
-            // spawn connection circles
+            // spawn circles
             let black_hole = commands.spawn(( ColorMesh2dBundle {
                     mesh: meshes.add(shape::Circle::new(src_radius * 0.1).into()).into(),
                     material: materials.add(ColorMaterial::from(Color::BLACK)),
@@ -97,19 +127,7 @@ fn connect(
                 },
                 Visible,
                 Radius(src_radius * 0.1),
-                BlackHole {
-                    index: max_connection_index.0,
-                    parent: src_index,
-                    white_hole: max_connection_index.0 + 1,
-                    white_hole_parent: snk_index,
-                    connection_type: 0,
-                },
             )).id();
-            commands.entity(src).add_child(black_hole);
-
-            connection_ids.0.push(black_hole);
-            max_connection_index.0 += 1;
-
             let white_hole = commands.spawn(( ColorMesh2dBundle {
                     mesh: meshes.add(shape::Circle::new(snk_radius * 0.1).into()).into(),
                     material: materials.add(ColorMaterial::from(Color::WHITE)),
@@ -118,20 +136,40 @@ fn connect(
                 },
                 Visible,
                 Radius(snk_radius * 0.1),
-                WhiteHole {
-                    index: max_connection_index.0,
-                    parent: snk_index,
-                    black_hole: max_connection_index.0 - 1,
-                    black_hole_parent: src_index,
-                    connection_type: 0,
-                },
             )).id();
+
+            // insert connection info
+            commands.entity(black_hole).insert(
+                BlackHole {
+                    id: black_hole,
+                    index: max_connection_index.0,
+                    parent: src,
+                    parent_index: src_index,
+                    wh: white_hole,
+                    wh_index: max_connection_index.0 + 1,
+                    link_type: 0,
+                });
+            commands.entity(white_hole).insert(
+                WhiteHole {
+                    id: white_hole,
+                    index: max_connection_index.0 + 1,
+                    parent: snk,
+                    parent_index: snk_index,
+                    bh: black_hole,
+                    bh_index: max_connection_index.0,
+                    link_type: 0,
+                });
+
+            // add to parents
+            commands.entity(src).add_child(black_hole);
             commands.entity(snk).add_child(white_hole);
 
+            // save ids
             connection_ids.0.push(white_hole);
-            max_connection_index.0 += 1;
+            connection_ids.0.push(black_hole);
+            max_connection_index.0 += 2;
 
-            // give them connection type text
+            // add link type text
             let black_hole_text = commands.spawn(Text2dBundle {
                 text: Text::from_section(
                     0.to_string(),
@@ -151,10 +189,6 @@ fn connect(
                 ..default()
                 }).id();
             commands.entity(white_hole).add_child(white_hole_text);
-
-            // order
-            //let src_order = order_query.get(src).unwrap().0;
-            //order_query.get_mut(snk).unwrap().0 = src_order + 1;
         }
     }
 }
@@ -164,13 +198,10 @@ fn draw_connections(
     black_hole_query: Query<&BlackHole>,
     time: Res<Time>,
     trans_query: Query<&GlobalTransform>,
-    connection_ids: Res<ConnectionIds>
 ) {
-    for blackhole in black_hole_query.iter() {
-        let src_id = connection_ids.0[blackhole.index];
-        let snk_id = connection_ids.0[blackhole.white_hole];
-        let src_pos = trans_query.get(src_id).unwrap().translation().xy();
-        let snk_pos = trans_query.get(snk_id).unwrap().translation().xy();
+    for black_hole in black_hole_query.iter() {
+        let src_pos = trans_query.get(black_hole.id).unwrap().translation().xy();
+        let snk_pos = trans_query.get(black_hole.wh).unwrap().translation().xy();
         let color = Color::hsl((time.elapsed_seconds() * 100.) % 360., 1.0, 0.5);
         gizmos.line_2d(src_pos, snk_pos, color);
     }
@@ -188,7 +219,7 @@ fn draw_connecting_line(
     }
 }
 
-fn update_connection_type (
+fn update_link_type (
     keyboard_input: Res<Input<KeyCode>>,
     mut black_hole_query: Query<&mut BlackHole, With<Selected>>,
     mut white_hole_query: Query<&mut WhiteHole, With<Selected>>,
@@ -196,24 +227,24 @@ fn update_connection_type (
     if keyboard_input.pressed(KeyCode::Key5) {
         if keyboard_input.just_pressed(KeyCode::Up) {
             for mut hole in black_hole_query.iter_mut() {
-                hole.connection_type = hole.connection_type.saturating_add(1);
+                hole.link_type = hole.link_type.saturating_add(1);
             }
             for mut hole in white_hole_query.iter_mut() {
-                hole.connection_type = hole.connection_type.saturating_add(1);
+                hole.link_type = hole.link_type.saturating_add(1);
             }
         }
         if keyboard_input.just_pressed(KeyCode::Down) {
             for mut hole in black_hole_query.iter_mut() {
-                hole.connection_type = hole.connection_type.saturating_sub(1);
+                hole.link_type = hole.link_type.saturating_sub(1);
             }
             for mut hole in white_hole_query.iter_mut() {
-                hole.connection_type = hole.connection_type.saturating_sub(1);
+                hole.link_type = hole.link_type.saturating_sub(1);
             }
         }
     }
 }
 
-fn update_connection_type_text(
+fn update_link_type_text(
     mut query: Query<(&mut Text, &Parent), With<Visible>>,
     keyboard_input: Res<Input<KeyCode>>,
     black_hole_query: Query<&BlackHole>,
@@ -222,10 +253,10 @@ fn update_connection_type_text(
     if keyboard_input.any_just_pressed([KeyCode::Up, KeyCode::Down]) {
         for (mut text, parent) in query.iter_mut() {
             if let Ok(hole) = black_hole_query.get(**parent) {
-                text.sections[0].value = hole.connection_type.to_string();
+                text.sections[0].value = hole.link_type.to_string();
             }
             if let Ok(hole) = white_hole_query.get(**parent) {
-                text.sections[0].value = hole.connection_type.to_string();
+                text.sections[0].value = hole.link_type.to_string();
             }
         }
     }

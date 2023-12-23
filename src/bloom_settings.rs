@@ -21,19 +21,17 @@ fn update_bloom_settings(
     mut bloom: Query<&mut BloomSettings, With<Camera>>,
     black_hole_query: Query<&BlackHole>,
     white_hole_query: Query<&WhiteHole>,
-    connection_ids: Res<ConnectionIds>,
-    circle_ids: ResMut<CircleIds>,
     rad_query: Query<&Radius>,
 ) {
     let mut bloom_settings = bloom.single_mut();
     for children in query.iter() {
         for child in children {
             if let Ok(white_hole) = white_hole_query.get(*child) {
-                let black_hole = black_hole_query.get(connection_ids.0[white_hole.black_hole]).unwrap();
-                if black_hole.connection_type == 9 {
-                    if let Ok(input) = rad_query.get(circle_ids.0[black_hole.parent]) {
+                let black_hole = black_hole_query.get(white_hole.bh).unwrap();
+                if black_hole.link_type == 3 {
+                    if let Ok(input) = rad_query.get(black_hole.parent) {
                         let input = input.0 / 100.;
-                        match white_hole.connection_type {
+                        match white_hole.link_type {
                             9 => bloom_settings.intensity = input,
                             10 => bloom_settings.low_frequency_boost = input,
                             11 => bloom_settings.low_frequency_boost_curvature = input,

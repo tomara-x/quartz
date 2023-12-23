@@ -377,7 +377,6 @@ fn update_order_text(
 fn delete_selected(
     keyboard_input: Res<Input<KeyCode>>,
     query: Query<(Entity, &Children), With<Selected>>,
-    connection_ids: Res<ConnectionIds>,
     mut commands: Commands,
     white_hole_query: Query<&WhiteHole>,
     black_hole_query: Query<&BlackHole>,
@@ -386,21 +385,17 @@ fn delete_selected(
         for (id, children) in query.iter() {
             // if the circle we're deleting is a connection
             if let Ok(black_hole) = black_hole_query.get(id) {
-                let white_hole = connection_ids.0[black_hole.white_hole];
-                commands.entity(white_hole).despawn_recursive();
+                commands.entity(black_hole.wh).despawn_recursive();
             } else if let Ok(white_hole) = white_hole_query.get(id) {
-                let black_hole = connection_ids.0[white_hole.black_hole];
-                commands.entity(black_hole).despawn_recursive();
+                commands.entity(white_hole.bh).despawn_recursive();
             } else {
                 // not a connection, despawn the holes on the other side
                 for child in children.iter() {
                     if let Ok(black_hole) = black_hole_query.get(*child) {
-                        let white_hole = connection_ids.0[black_hole.white_hole];
-                        commands.entity(white_hole).despawn_recursive();
+                        commands.entity(black_hole.wh).despawn_recursive();
                     }
                     if let Ok(white_hole) = white_hole_query.get(*child) {
-                        let black_hole = connection_ids.0[white_hole.black_hole];
-                        commands.entity(black_hole).despawn_recursive();
+                        commands.entity(white_hole.bh).despawn_recursive();
                     }
                 }
             }
