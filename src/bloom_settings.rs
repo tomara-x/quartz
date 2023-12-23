@@ -17,16 +17,17 @@ impl Plugin for BloomSettingsPlugin {
 
 
 fn update_bloom_settings(
-    query: Query<&Children, With<BloomControl>>,
+    children_query: Query<&Children>,
+    query: Query<Entity, With<BloomControl>>,
     mut bloom: Query<&mut BloomSettings, With<Camera>>,
     black_hole_query: Query<&BlackHole>,
     white_hole_query: Query<&WhiteHole>,
     rad_query: Query<&Radius>,
 ) {
     let mut bloom_settings = bloom.single_mut();
-    if let Ok(children) = query.get_single() {
-        for child in children {
-            if let Ok(white_hole) = white_hole_query.get(*child) {
+    for id in query.iter() {
+        for child in children_query.iter_descendants(id) {
+            if let Ok(white_hole) = white_hole_query.get(child) {
                 let black_hole = black_hole_query.get(white_hole.bh).unwrap();
                 if black_hole.link_type == 3 {
                     if let Ok(input) = rad_query.get(black_hole.parent) {
