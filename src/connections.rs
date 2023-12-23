@@ -7,11 +7,11 @@ pub struct ConnectionsPlugin;
 
 impl Plugin for ConnectionsPlugin {
     fn build(&self, app: &mut App) {
-        app.register_type::<ConnectionIndices>();
+        app.register_type::<ConnectionIds>();
         app.register_type::<MaxUsedConnectionIndex>();
         app.register_type::<WhiteHole>();
         app.register_type::<BlackHole>();
-        app.init_resource::<ConnectionIndices>();
+        app.init_resource::<ConnectionIds>();
         app.init_resource::<MaxUsedConnectionIndex>();
         app.add_systems(Update, connect.run_if(in_state(Mode::Connect)));
         //app.add_systems(Update, update_connected_color);
@@ -26,7 +26,7 @@ impl Plugin for ConnectionsPlugin {
 
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
-pub struct ConnectionIndices(pub Vec<Entity>);
+pub struct ConnectionIds(pub Vec<Entity>);
 
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
@@ -62,7 +62,7 @@ fn connect(
     mut materials: ResMut<Assets<ColorMaterial>>,
     rad_query: Query<&Radius>,
     trans_query: Query<&Transform>,
-    mut connection_indices: ResMut<ConnectionIndices>,
+    mut connection_ids: ResMut<ConnectionIds>,
     mut max_connection_index: ResMut<MaxUsedConnectionIndex>,
 ) {
     if mouse_button_input.just_released(MouseButton::Left) {
@@ -107,7 +107,7 @@ fn connect(
             )).id();
             commands.entity(src).add_child(black_hole);
 
-            connection_indices.0.push(black_hole);
+            connection_ids.0.push(black_hole);
             max_connection_index.0 += 1;
 
             let white_hole = commands.spawn(( ColorMesh2dBundle {
@@ -128,7 +128,7 @@ fn connect(
             )).id();
             commands.entity(snk).add_child(white_hole);
 
-            connection_indices.0.push(white_hole);
+            connection_ids.0.push(white_hole);
             max_connection_index.0 += 1;
 
             // give them connection type text
@@ -164,11 +164,11 @@ fn draw_connections(
     black_hole_query: Query<&BlackHole>,
     time: Res<Time>,
     trans_query: Query<&GlobalTransform>,
-    connection_indices: Res<ConnectionIndices>
+    connection_ids: Res<ConnectionIds>
 ) {
     for blackhole in black_hole_query.iter() {
-        let src_id = connection_indices.0[blackhole.index];
-        let snk_id = connection_indices.0[blackhole.white_hole];
+        let src_id = connection_ids.0[blackhole.index];
+        let snk_id = connection_ids.0[blackhole.white_hole];
         let src_pos = trans_query.get(src_id).unwrap().translation().xy();
         let snk_pos = trans_query.get(snk_id).unwrap().translation().xy();
         let color = Color::hsl((time.elapsed_seconds() * 100.) % 360., 1.0, 0.5);

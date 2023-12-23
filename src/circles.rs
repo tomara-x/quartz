@@ -19,12 +19,12 @@ impl Plugin for CirclesPlugin {
         app.register_type::<Depth>();
         app.register_type::<Index>();
         app.register_type::<Order>();
-        app.register_type::<EntityIndices>();
+        app.register_type::<CircleIds>();
         app.register_type::<MaxUsedIndex>();
 
         // test high depth
         app.insert_resource(Depth(-10.));
-        app.init_resource::<EntityIndices>();
+        app.init_resource::<CircleIds>();
         app.init_resource::<MaxUsedIndex>();
 
         app.add_systems(Update, spawn_circles.run_if(in_state(Mode::Draw)));
@@ -45,7 +45,7 @@ impl Plugin for CirclesPlugin {
 
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
-pub struct EntityIndices(pub Vec<Entity>);
+pub struct CircleIds(pub Vec<Entity>);
 
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
@@ -97,7 +97,7 @@ fn spawn_circles(
     mut depth: ResMut<Depth>,
     cursor: Res<CursorInfo>,
     mut index: ResMut<MaxUsedIndex>,
-    mut entity_indices: ResMut<EntityIndices>,
+    mut circle_ids: ResMut<CircleIds>,
 ) {
     if mouse_button_input.just_released(MouseButton::Left) {
         let radius = cursor.f.distance(cursor.i);
@@ -131,7 +131,7 @@ fn spawn_circles(
         }).id();
         commands.entity(id).add_child(text);
 
-        entity_indices.0.push(id);
+        circle_ids.0.push(id);
         index.0 += 1;
         depth.0 += 0.00001;
     }
@@ -377,7 +377,7 @@ fn update_order_text(
 fn delete_selected(
     keyboard_input: Res<Input<KeyCode>>,
     query: Query<(Entity, &Children), With<Selected>>,
-    connection_indices: Res<ConnectionIndices>,
+    connection_ids: Res<ConnectionIds>,
     mut commands: Commands,
     white_hole_query: Query<&WhiteHole>,
     black_hole_query: Query<&BlackHole>,
@@ -386,20 +386,20 @@ fn delete_selected(
         for (id, children) in query.iter() {
             // if the circle we're deleting is a connection
             if let Ok(black_hole) = black_hole_query.get(id) {
-                let white_hole = connection_indices.0[black_hole.white_hole];
+                let white_hole = connection_ids.0[black_hole.white_hole];
                 commands.entity(white_hole).despawn_recursive();
             } else if let Ok(white_hole) = white_hole_query.get(id) {
-                let black_hole = connection_indices.0[white_hole.black_hole];
+                let black_hole = connection_ids.0[white_hole.black_hole];
                 commands.entity(black_hole).despawn_recursive();
             } else {
                 // not a connection, despawn the holes on the other side
                 for child in children.iter() {
                     if let Ok(black_hole) = black_hole_query.get(*child) {
-                        let white_hole = connection_indices.0[black_hole.white_hole];
+                        let white_hole = connection_ids.0[black_hole.white_hole];
                         commands.entity(white_hole).despawn_recursive();
                     }
                     if let Ok(white_hole) = white_hole_query.get(*child) {
-                        let black_hole = connection_indices.0[white_hole.black_hole];
+                        let black_hole = connection_ids.0[white_hole.black_hole];
                         commands.entity(black_hole).despawn_recursive();
                     }
                 }
