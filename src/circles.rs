@@ -12,7 +12,6 @@ impl Plugin for CirclesPlugin {
         app.add_state::<Mode>();
 
         app.register_type::<Radius>();
-        app.register_type::<Pos>();
 
         app.register_type::<Selected>();
         app.register_type::<Visible>();
@@ -58,9 +57,6 @@ struct Depth(f32);
 
 #[derive(Component, Reflect)]
 pub struct Radius(pub f32);
-
-#[derive(Component, Reflect)]
-pub struct Pos(pub Vec3);
 
 #[derive(Component, Reflect)]
 pub struct Selected;
@@ -113,7 +109,6 @@ fn spawn_circles(
                 ..default()
             },
             Radius(radius),
-            Pos(cursor.i.extend(depth.0)), //keeps track of initial position while moving
             Visible, //otherwise it can't be selected til after mark_visible is updated
             Index(index.0),
             Order(0),
