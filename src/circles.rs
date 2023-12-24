@@ -8,40 +8,41 @@ use crate::{cursor::*, connections::*};
 pub struct CirclesPlugin;
 
 impl Plugin for CirclesPlugin {
-    fn build(&self, app: &mut App) {
-        app.add_state::<Mode>();
+    fn build(&self, app: &mut App) { app
+        .add_state::<Mode>()
 
-        app.register_type::<Radius>();
+        .register_type::<Radius>()
 
-        app.register_type::<Selected>();
-        app.register_type::<Visible>();
+        .register_type::<Selected>()
+        .register_type::<Visible>()
 
-        app.register_type::<Depth>();
-        app.register_type::<Index>();
-        app.register_type::<Order>();
-        app.register_type::<Num>();
-        app.register_type::<Arr>();
-        app.register_type::<Offset>();
-        app.register_type::<CircleIds>();
-        app.register_type::<MaxUsedIndex>();
+        .register_type::<Depth>()
+        .register_type::<Index>()
+        .register_type::<Order>()
+        .register_type::<Num>()
+        .register_type::<Arr>()
+        .register_type::<Offset>()
+        .register_type::<CircleIds>()
+        .register_type::<MaxUsedIndex>()
 
         // test high depth
-        app.insert_resource(Depth(-10.));
-        app.init_resource::<CircleIds>();
-        app.init_resource::<MaxUsedIndex>();
+        .insert_resource(Depth(-10.))
+        .init_resource::<CircleIds>()
+        .init_resource::<MaxUsedIndex>()
 
-        app.add_systems(Update, spawn_circles.run_if(in_state(Mode::Draw)));
-        app.add_systems(Update, draw_pointer_circle.run_if(not(in_state(Mode::Connect))));
-        app.add_systems(Update, mark_visible.after(update_cursor_info));
-        app.add_systems(Update, update_selection.after(mark_visible).run_if(in_state(Mode::Edit)));
-        app.add_systems(Update, move_selected.after(update_selection).run_if(in_state(Mode::Edit)));
-        app.add_systems(Update, update_color.after(update_selection).run_if(in_state(Mode::Edit)));
-        app.add_systems(Update, update_radius.after(update_selection).run_if(in_state(Mode::Edit)));
-        app.add_systems(Update, highlight_selected.run_if(in_state(Mode::Edit)));
-        app.add_systems(Update, delete_selected.run_if(in_state(Mode::Edit)));
-        app.add_systems(Update, update_order.run_if(in_state(Mode::Edit)));
-        app.add_systems(Update, update_order_text.run_if(in_state(Mode::Edit)).after(update_order));
-        app.add_systems(Update, switch_mode);
+        .add_systems(Update, spawn_circles.run_if(in_state(Mode::Draw)))
+        .add_systems(Update, draw_pointer_circle.run_if(not(in_state(Mode::Connect))))
+        .add_systems(Update, mark_visible.after(update_cursor_info))
+        .add_systems(Update, update_selection.after(mark_visible).run_if(in_state(Mode::Edit)))
+        .add_systems(Update, move_selected.after(update_selection).run_if(in_state(Mode::Edit)))
+        .add_systems(Update, update_color.after(update_selection).run_if(in_state(Mode::Edit)))
+        .add_systems(Update, update_radius.after(update_selection).run_if(in_state(Mode::Edit)))
+        .add_systems(Update, highlight_selected.run_if(in_state(Mode::Edit)))
+        .add_systems(Update, delete_selected.run_if(in_state(Mode::Edit)))
+        .add_systems(Update, update_order.run_if(in_state(Mode::Edit)))
+        .add_systems(Update, update_order_text.run_if(in_state(Mode::Edit)).after(update_order))
+        .add_systems(Update, switch_mode)
+        ;
     }
 }
 

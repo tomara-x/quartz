@@ -3,9 +3,10 @@ use bevy::{prelude::*};
 pub struct CursorPlugin;
 
 impl Plugin for CursorPlugin {
-    fn build(&self, app: &mut App) {
-        app.insert_resource(CursorInfo::default());
-        app.add_systems(Update, update_cursor_info);
+    fn build(&self, app: &mut App) { app
+        .insert_resource(CursorInfo::default())
+        .add_systems(Update, update_cursor_info)
+        ;
     }
 }
 

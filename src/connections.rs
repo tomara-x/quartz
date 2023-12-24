@@ -6,19 +6,20 @@ use crate::{circles::*, cursor::*};
 pub struct ConnectionsPlugin;
 
 impl Plugin for ConnectionsPlugin {
-    fn build(&self, app: &mut App) {
-        app.register_type::<ConnectionIds>();
-        app.register_type::<MaxUsedConnectionIndex>();
-        app.register_type::<WhiteHole>();
-        app.register_type::<BlackHole>();
-        app.init_resource::<ConnectionIds>();
-        app.init_resource::<MaxUsedConnectionIndex>();
-        app.add_systems(Update, connect.run_if(in_state(Mode::Connect)));
-        //app.add_systems(Update, update_connected_color);
-        app.add_systems(Update, draw_connections);
-        app.add_systems(Update, draw_connecting_line.run_if(in_state(Mode::Connect)));
-        app.add_systems(Update, update_link_type.run_if(in_state(Mode::Edit)));
-        app.add_systems(Update, update_link_type_text.run_if(in_state(Mode::Edit)).after(update_link_type));
+    fn build(&self, app: &mut App) { app
+        .register_type::<ConnectionIds>()
+        .register_type::<MaxUsedConnectionIndex>()
+        .register_type::<WhiteHole>()
+        .register_type::<BlackHole>()
+        .init_resource::<ConnectionIds>()
+        .init_resource::<MaxUsedConnectionIndex>()
+        .add_systems(Update, connect.run_if(in_state(Mode::Connect)))
+        //.add_systems(Update, update_connected_color)
+        .add_systems(Update, draw_connections)
+        .add_systems(Update, draw_connecting_line.run_if(in_state(Mode::Connect)))
+        .add_systems(Update, update_link_type.run_if(in_state(Mode::Edit)))
+        .add_systems(Update, update_link_type_text.run_if(in_state(Mode::Edit)).after(update_link_type))
+        ;
     }
 }
 
