@@ -11,15 +11,15 @@ pub struct ProcessPlugin;
 
 impl Plugin for ProcessPlugin {
     fn build(&self, app: &mut App) { app
-        .init_resource::<BloomCircleId>()
+        .insert_resource(BloomCircleId(Entity::from_raw(0)))
         .add_systems(Startup, spawn_bloom_circle)
         .add_systems(Update, update_bloom_settings)
         ;
     }
 }
 
-#[derive(Resource, Default)]
-struct BloomCircleId(Option<Entity>);
+#[derive(Resource)]
+struct BloomCircleId(Entity);
 
 fn spawn_bloom_circle(
     mut commands: Commands,
@@ -61,7 +61,7 @@ fn spawn_bloom_circle(
         ..default()
     }).id();
     commands.entity(id).add_child(text);
-    resource.0 = Some(id);
+    resource.0 = id;
 }
 
 
@@ -74,25 +74,24 @@ fn update_bloom_settings(
     rad_query: Query<&Radius>,
 ) {
     let mut bloom_settings = bloom.single_mut();
-    if let Some(id) = id.0 {
-        for child in children_query.iter_descendants(id) {
-            if let Ok(white_hole) = white_hole_query.get(child) {
-                let black_hole = black_hole_query.get(white_hole.bh).unwrap();
-                if black_hole.link_type == 3 {
-                    if let Ok(input) = rad_query.get(black_hole.parent) {
-                        let input = input.0 / 100.;
-                        match white_hole.link_type {
-                            9 => bloom_settings.intensity = input,
-                            10 => bloom_settings.low_frequency_boost = input,
-                            11 => bloom_settings.low_frequency_boost_curvature = input,
-                            12 => bloom_settings.high_pass_frequency = input,
-                            13 => bloom_settings.composite_mode = if input > 0.5 {
-                                BloomCompositeMode::Additive
-                            } else { BloomCompositeMode::EnergyConserving },
-                            14 => bloom_settings.prefilter_settings.threshold = input,
-                            15 => bloom_settings.prefilter_settings.threshold_softness = input,
-                            _ => {},
-                        }
+    // why doesn't iter_descendants need error checking?
+    for child in children_query.iter_descendants(id.0) {
+        if let Ok(white_hole) = white_hole_query.get(child) {
+            let black_hole = black_hole_query.get(white_hole.bh).unwrap();
+            if black_hole.link_type == 3 {
+                if let Ok(input) = rad_query.get(black_hole.parent) {
+                    let input = input.0 / 100.;
+                    match white_hole.link_type {
+                        9 => bloom_settings.intensity = input,
+                        10 => bloom_settings.low_frequency_boost = input,
+                        11 => bloom_settings.low_frequency_boost_curvature = input,
+                        12 => bloom_settings.high_pass_frequency = input,
+                        13 => bloom_settings.composite_mode = if input > 0.5 {
+                            BloomCompositeMode::Additive
+                        } else { BloomCompositeMode::EnergyConserving },
+                        14 => bloom_settings.prefilter_settings.threshold = input,
+                        15 => bloom_settings.prefilter_settings.threshold_softness = input,
+                        _ => {},
                     }
                 }
             }
