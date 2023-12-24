@@ -25,6 +25,9 @@ enum Vop {
 
 fn assign_op() {}
 
+// updating color/position/radius from inputs and applying offset go here
+// maybe in separate systems tho, cause it applies to all entities with inputs
+
 fn visual(
     children_query: Query<&Children>,
     query: Query<(Entity, &Vop)>,

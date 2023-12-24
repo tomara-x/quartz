@@ -18,7 +18,7 @@ impl Plugin for ConnectionsPlugin {
         .add_systems(Update, draw_connections)
         .add_systems(Update, draw_connecting_line.run_if(in_state(Mode::Connect)))
         .add_systems(Update, update_link_type.run_if(in_state(Mode::Edit)))
-        .add_systems(Update, update_link_type_text.run_if(in_state(Mode::Edit)).after(update_link_type))
+        .add_systems(Update, update_text.run_if(in_state(Mode::Edit)))
         ;
     }
 }
@@ -225,40 +225,37 @@ fn update_link_type (
     mut black_hole_query: Query<&mut BlackHole, With<Selected>>,
     mut white_hole_query: Query<&mut WhiteHole, With<Selected>>,
 ) {
-    if keyboard_input.pressed(KeyCode::Key5) {
-        if keyboard_input.just_pressed(KeyCode::Up) {
-            for mut hole in black_hole_query.iter_mut() {
-                hole.link_type = hole.link_type.saturating_add(1);
-            }
-            for mut hole in white_hole_query.iter_mut() {
-                hole.link_type = hole.link_type.saturating_add(1);
-            }
+    let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
+    if shift && keyboard_input.just_pressed(KeyCode::Up) {
+        for mut hole in black_hole_query.iter_mut() {
+            hole.link_type = hole.link_type.saturating_add(1);
         }
-        if keyboard_input.just_pressed(KeyCode::Down) {
-            for mut hole in black_hole_query.iter_mut() {
-                hole.link_type = hole.link_type.saturating_sub(1);
-            }
-            for mut hole in white_hole_query.iter_mut() {
-                hole.link_type = hole.link_type.saturating_sub(1);
-            }
+        for mut hole in white_hole_query.iter_mut() {
+            hole.link_type = hole.link_type.saturating_add(1);
+        }
+    }
+    if shift && keyboard_input.just_pressed(KeyCode::Down) {
+        for mut hole in black_hole_query.iter_mut() {
+            hole.link_type = hole.link_type.saturating_sub(1);
+        }
+        for mut hole in white_hole_query.iter_mut() {
+            hole.link_type = hole.link_type.saturating_sub(1);
         }
     }
 }
 
-fn update_link_type_text(
+fn update_text(
     mut query: Query<(&mut Text, &Parent), With<Visible>>,
     keyboard_input: Res<Input<KeyCode>>,
     black_hole_query: Query<&BlackHole>,
     white_hole_query: Query<&WhiteHole>,
 ) {
-    if keyboard_input.any_just_pressed([KeyCode::Up, KeyCode::Down]) {
-        for (mut text, parent) in query.iter_mut() {
-            if let Ok(hole) = black_hole_query.get(**parent) {
-                text.sections[0].value = hole.link_type.to_string();
-            }
-            if let Ok(hole) = white_hole_query.get(**parent) {
-                text.sections[0].value = hole.link_type.to_string();
-            }
+    for (mut text, parent) in query.iter_mut() {
+        if let Ok(hole) = black_hole_query.get(**parent) {
+            text.sections[0].value = hole.link_type.to_string();
+        }
+        if let Ok(hole) = white_hole_query.get(**parent) {
+            text.sections[0].value = hole.link_type.to_string();
         }
     }
 }

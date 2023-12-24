@@ -37,10 +37,11 @@ impl Plugin for CirclesPlugin {
         .add_systems(Update, move_selected.after(update_selection).run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_color.after(update_selection).run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_radius.after(update_selection).run_if(in_state(Mode::Edit)))
+        .add_systems(Update, update_num.after(update_selection).run_if(in_state(Mode::Edit)))
         .add_systems(Update, highlight_selected.run_if(in_state(Mode::Edit)))
         .add_systems(Update, delete_selected.run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_order.run_if(in_state(Mode::Edit)))
-        .add_systems(Update, update_order_text.run_if(in_state(Mode::Edit)).after(update_order))
+        .add_systems(Update, update_text.run_if(in_state(Mode::Edit)))
         .add_systems(Update, switch_mode)
         ;
     }
@@ -137,13 +138,17 @@ fn spawn_circles(
         let text = commands.spawn(Text2dBundle {
             text: Text::from_sections([
                 TextSection::new(
-                    index.0.to_string() + "\n",
+                    "index: ".to_string() + &index.0.to_string() + "\n",
                     TextStyle::default(),
+                ),
+                TextSection::new(
+                    "order: ".to_string() + &0.to_string() + "\n",
+                    TextStyle::default()
                 ),
                 TextSection::new(
                     0.to_string(),
                     TextStyle::default()
-                )
+                ),
             ]),
             transform: Transform::from_translation(Vec3{z:0.000001, ..default()}),
             ..default()
@@ -365,30 +370,48 @@ fn update_radius(
     }
 }
 
+fn update_num(
+    mut query: Query<&mut Num, With<Selected>>,
+    keyboard_input: Res<Input<KeyCode>>,
+    cursor: Res<CursorInfo>,
+    mouse_button_input: Res<Input<MouseButton>>,
+) {
+    if keyboard_input.pressed(KeyCode::Key4) {
+        if mouse_button_input.pressed(MouseButton::Left) &&
+        !mouse_button_input.just_pressed(MouseButton::Left) {
+            for mut n in query.iter_mut() {
+                n.0 += cursor.d.y;
+            }
+        }
+    }
+}
+            
+
 fn update_order (
     keyboard_input: Res<Input<KeyCode>>,
     mut query: Query<&mut Order, With<Selected>>,
 ) {
-    if keyboard_input.pressed(KeyCode::Key4) {
-        if keyboard_input.just_pressed(KeyCode::Up) {
-            for mut order in query.iter_mut() { order.0 += 1; }
-        }
-        if keyboard_input.just_pressed(KeyCode::Down) {
-            for mut order in query.iter_mut() { if order.0 > 0 { order.0 -= 1; } }
-        }
+    let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
+    if shift && keyboard_input.just_pressed(KeyCode::Up) {
+        for mut order in query.iter_mut() { order.0 += 1; }
+    }
+    if shift && keyboard_input.just_pressed(KeyCode::Down) {
+        for mut order in query.iter_mut() { if order.0 > 0 { order.0 -= 1; } }
     }
 }
 
-fn update_order_text(
+fn update_text(
     mut query: Query<(&mut Text, &Parent), With<Visible>>,
     order_query: Query<&Order>,
-    keyboard_input: Res<Input<KeyCode>>,
+    num_query: Query<&Num>,
+    mouse_button_input: Res<Input<MouseButton>>,
 ) {
-    if keyboard_input.any_just_pressed([KeyCode::Up, KeyCode::Down]) {
-        for (mut text, parent) in query.iter_mut() {
-            if let Ok(order) = order_query.get(**parent) {
-                text.sections[1].value = order.0.to_string();
-            }
+    for (mut text, parent) in query.iter_mut() {
+        if let Ok(order) = order_query.get(**parent) {
+            text.sections[1].value = "order: ".to_string() + &order.0.to_string() + "\n";
+        }
+        if let Ok(num) = num_query.get(**parent) {
+            text.sections[2].value = num.0.to_string();
         }
     }
 }
