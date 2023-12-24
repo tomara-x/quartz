@@ -173,7 +173,7 @@ fn mark_visible(
             commands.entity(e).remove::<Visible>();
         }
         let vis = visible.single();
-        for e in &vis.entities {
+        for e in vis.iter() {
             commands.entity(*e).insert(Visible);
         }
     }
