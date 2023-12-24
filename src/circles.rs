@@ -28,7 +28,7 @@ impl Plugin for CirclesPlugin {
         // test high depth
         .insert_resource(Depth(-10.))
         .init_resource::<CircleIds>()
-        .init_resource::<MaxUsedIndex>()
+        .insert_resource(MaxUsedIndex(1))
 
         .add_systems(Update, spawn_circles.run_if(in_state(Mode::Draw)))
         .add_systems(Update, draw_pointer_circle.run_if(not(in_state(Mode::Connect))))
@@ -48,16 +48,16 @@ impl Plugin for CirclesPlugin {
 }
 
 #[derive(Component, Reflect)]
-pub struct Num(f32);
+pub struct Num(pub f32);
 
 #[derive(Component, Reflect)]
-pub struct Arr(Vec<f32>);
+pub struct Arr(pub Vec<f32>);
 
 #[derive(Component, Reflect)]
 pub struct Offset {
-    trans: Vec3,
-    color: Color,
-    radius: f32,
+    pub trans: Vec3,
+    pub color: Color,
+    pub radius: f32,
 }
 
 #[derive(Resource, Reflect, Default)]

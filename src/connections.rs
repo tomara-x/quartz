@@ -31,6 +31,7 @@ pub struct ConnectionIds(pub Vec<Entity>);
 #[reflect(Resource)]
 pub struct MaxUsedConnectionIndex(pub usize);
 
+// hole enum?
 #[derive(Component, Reflect)]
 #[reflect(Component)]
 pub struct WhiteHole {
