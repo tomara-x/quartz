@@ -19,6 +19,9 @@ impl Plugin for CirclesPlugin {
         app.register_type::<Depth>();
         app.register_type::<Index>();
         app.register_type::<Order>();
+        app.register_type::<Num>();
+        app.register_type::<Arr>();
+        app.register_type::<Offset>();
         app.register_type::<CircleIds>();
         app.register_type::<MaxUsedIndex>();
 
@@ -42,6 +45,18 @@ impl Plugin for CirclesPlugin {
     }
 }
 
+#[derive(Component, Reflect)]
+pub struct Num(f32);
+
+#[derive(Component, Reflect)]
+pub struct Arr(Vec<f32>);
+
+#[derive(Component, Reflect)]
+pub struct Offset {
+    trans: Vec3,
+    color: Color,
+    radius: f32,
+}
 
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
@@ -112,6 +127,9 @@ fn spawn_circles(
             Visible, //otherwise it can't be selected til after mark_visible is updated
             Index(index.0),
             Order(0),
+            Num(0.),
+            Arr(Vec::new()),
+            Offset {trans:Vec3::ZERO, color:Color::BLACK, radius:0.},
         )).id();
 
         // have the circle adopt a text entity

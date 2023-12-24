@@ -5,16 +5,21 @@ use bevy::{
     prelude::*,
 };
 
-use crate::{connections::*, circles::*, detachable_components::*};
+use crate::{connections::*, circles::*};
 
-pub struct BloomSettingsPlugin;
+pub struct ProcessPlugin;
 
-impl Plugin for BloomSettingsPlugin {
+impl Plugin for ProcessPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Update, update_bloom_settings);
     }
 }
 
+
+#[derive(Component)]
+struct BloomControl;
+
+fn assign_operation() {}
 
 fn update_bloom_settings(
     children_query: Query<&Children>,

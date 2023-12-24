@@ -1,9 +1,8 @@
 use quartz::{
-    bloom_settings::*,
     circles::*,
     cursor::*,
     connections::*,
-    detachable_components::*,
+    process::*,
 };
 
 use bevy::{
@@ -36,11 +35,10 @@ fn main() {
         .add_plugins(PanCamPlugin::default())
         .add_plugins(WorldInspectorPlugin::new())
         //INTERNAL PLUGINS
-        .add_plugins(BloomSettingsPlugin)
         .add_plugins(CirclesPlugin)
         .add_plugins(CursorPlugin)
         .add_plugins(ConnectionsPlugin)
-        .add_plugins(DetachableComponentsPlugin)
+        .add_plugins(ProcessPlugin)
         //SYSTEMS
         .add_systems(Startup, setup)
         .add_systems(Update, toggle_pan.run_if(in_state(Mode::Edit)))
