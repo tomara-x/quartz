@@ -93,11 +93,15 @@ fn toggle_pan(
 // switching?
 // creating multiple worlds, switching between them, and saving/loading them
 fn save_scene(
-    circle_ids: Res<CircleIds>, //actually won't need this
+    circles_query: Query<&GlobalTransform, With<Order>>,
+    keyboard_input: Res<Input<KeyCode>>,
     ) {
-//    let keyboard_input = world.resource::<Input<KeyCode>>();
-//    let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
-//    if ctrl && keyboard_input.just_pressed(KeyCode::S) {
+    let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
+    if ctrl && keyboard_input.just_pressed(KeyCode::S) {
+        for circle in circles_query.iter() {
+            info!("{:?}", circle.translation());
+        }
+    }
 //        #[cfg(not(target_arch = "wasm32"))]
 //        IoTaskPool::get()
 //            .spawn(async move {
