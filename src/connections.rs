@@ -260,25 +260,3 @@ fn update_text(
     }
 }
 
-//fn update_connected_color(
-//    mouse_button_input: Res<Input<MouseButton>>,
-//    inputs_query: Query<(Entity, &Inputs)>,
-//    entity_indices: Res<EntityIndices>,
-//    material_ids: Query<&Handle<ColorMaterial>>,
-//    mut mats: ResMut<Assets<ColorMaterial>>,
-//) {
-//    if mouse_button_input.pressed(MouseButton::Left) {
-//        for (entity, inputs) in inputs_query.iter() {
-//            //the first input's first field (entity index)
-//            //then we find that entity id from the resource
-//            if let Some(input) = inputs.0.get(0) {
-//                let src_entity = entity_indices.0[input.0];
-//                let src_mat = mats.get(material_ids.get(src_entity).unwrap()).unwrap();
-//                let src_color = src_mat.color;
-//                let snk_mat = mats.get_mut(material_ids.get(entity).unwrap()).unwrap();
-//                snk_mat.color = src_color;
-//            }
-//        }
-//    }
-//}
-
