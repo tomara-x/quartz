@@ -12,7 +12,7 @@ default-features = false
 features = [
   "multi-threaded",     # Run with multithreading
   "bevy_asset",         # Assets management
-  "bevy_audio",         # Builtin audio
+  #"bevy_audio",         # Builtin audio
   #"bevy_gilrs",         # Gamepad input support
   "bevy_scene",         # Scenes management
   "bevy_winit",         # Window management (cross-platform Winit backend)
@@ -40,6 +40,8 @@ features = [
 [dependencies]
 rand = "0.8.0"
 bevy_pancam = "0.10.0"
+bevy_fundsp = "0.4.0"
+bevy_kira_audio = "0.18.0"
 bevy-inspector-egui = {version = "0.21.0",  default-features = false}
 
 # smol amount of optimization for our stuff
