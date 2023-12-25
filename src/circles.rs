@@ -363,7 +363,7 @@ fn update_num(
                 // that our value has changed
                 for child in children.iter() {
                     if let Ok(black_hole) = black_hole_query.get(*child) {
-                        if black_hole.link_type == 4 {
+                        if black_hole.link_type == -4 {
                             white_hole_query.get_mut(black_hole.wh).unwrap().changed = true;
                         }
                     }

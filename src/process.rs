@@ -14,6 +14,7 @@ impl Plugin for ProcessPlugin {
         .insert_resource(BloomCircleId(Entity::from_raw(0)))
         .add_systems(Startup, spawn_bloom_circle)
         .add_systems(Update, update_bloom_settings)
+        .add_systems(Update, update_num)
         ;
     }
 }
@@ -77,14 +78,14 @@ fn update_bloom_settings(
             let black_hole = black_hole_query.get(white_hole.bh).unwrap();
             let input = num_query.get(black_hole.parent).unwrap().0 / 100.;
             match (black_hole.link_type, white_hole.link_type) {
-                (4, 9) => bloom_settings.intensity = input,
-                (4, 10) => bloom_settings.low_frequency_boost = input,
-                (4, 11) => bloom_settings.low_frequency_boost_curvature = input,
-                (4, 12) => bloom_settings.high_pass_frequency = input,
-                (4, 13) => bloom_settings.composite_mode = if input > 0.5 {
+                (-4, 1) => bloom_settings.intensity = input,
+                (-4, 2) => bloom_settings.low_frequency_boost = input,
+                (-4, 3) => bloom_settings.low_frequency_boost_curvature = input,
+                (-4, 4) => bloom_settings.high_pass_frequency = input,
+                (-4, 5) => bloom_settings.composite_mode = if input > 0.5 {
                 BloomCompositeMode::Additive } else { BloomCompositeMode::EnergyConserving },
-                (4, 14) => bloom_settings.prefilter_settings.threshold = input,
-                (4, 15) => bloom_settings.prefilter_settings.threshold_softness = input,
+                (-4, 6) => bloom_settings.prefilter_settings.threshold = input,
+                (-4, 7) => bloom_settings.prefilter_settings.threshold_softness = input,
                 _ => {},
             }
         }
@@ -94,6 +95,31 @@ fn update_bloom_settings(
 // updating color/position/radius from inputs and applying offset go here
 // maybe in separate systems tho, cause it applies to all entities with inputs
 
-//fn update_position(
-//    mut query: Query<&mut Transform, With<Selected>>,
-//) {
+fn update_num(
+    query: Query<(Entity, &Children)>,
+    black_hole_query: Query<&BlackHole>,
+    mut white_hole_query: Query<&mut WhiteHole>,
+    mut num_query: Query<&mut Num>,
+) {
+    for (e, children) in query.iter() {
+        for child in children.iter() {
+            if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+                if !white_hole.changed { continue; }
+                white_hole.changed = false;
+                let black_hole = black_hole_query.get(white_hole.bh).unwrap();
+                let input = num_query.get(black_hole.parent).unwrap().0;
+                if black_hole.link_type == -4 && white_hole.link_type == -4 {
+                    num_query.get_mut(e).unwrap().0 = input;
+                    // now we have to let anything connected to this circle know about this change
+                    for child in children.iter() {
+                        if let Ok(black_hole) = black_hole_query.get(*child) {
+                            if black_hole.link_type == -4 {
+                                white_hole_query.get_mut(black_hole.wh).unwrap().changed = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
