@@ -36,7 +36,6 @@ fn spawn_bloom_circle(
         },
         Radius(100.),
         Visible,
-        Index(0),
         Order(0),
         Num(0.),
         Arr(Vec::new()),
@@ -45,11 +44,7 @@ fn spawn_bloom_circle(
     let text = commands.spawn(Text2dBundle {
         text: Text::from_sections([
             TextSection::new(
-                "0\n",
-                TextStyle::default(),
-            ),
-            TextSection::new(
-                "0\n",
+                "order: 0\n",
                 TextStyle::default()
             ),
             TextSection::new(

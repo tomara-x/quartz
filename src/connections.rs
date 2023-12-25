@@ -7,10 +7,6 @@ pub struct ConnectionsPlugin;
 
 impl Plugin for ConnectionsPlugin {
     fn build(&self, app: &mut App) { app
-        .register_type::<ConnectionIds>()
-        .register_type::<MaxUsedConnectionIndex>()
-        .init_resource::<ConnectionIds>()
-        .init_resource::<MaxUsedConnectionIndex>()
         .add_systems(Update, connect.run_if(in_state(Mode::Connect)))
         .add_systems(Update, draw_connections)
         .add_systems(Update, draw_connecting_line.run_if(in_state(Mode::Connect)))
@@ -20,23 +16,12 @@ impl Plugin for ConnectionsPlugin {
     }
 }
 
-#[derive(Resource, Reflect, Default)]
-#[reflect(Resource)]
-pub struct ConnectionIds(pub Vec<Entity>);
-
-#[derive(Resource, Reflect, Default)]
-#[reflect(Resource)]
-pub struct MaxUsedConnectionIndex(pub usize);
-
 // hole enum?
 #[derive(Component)]
 pub struct WhiteHole {
     pub id: Entity,
-    pub index: usize,
     pub parent: Entity,
-    pub parent_index: usize,
     pub bh: Entity,
-    pub bh_index: usize,
     pub link_type: i32,
     pub changed: bool,
 }
@@ -44,11 +29,8 @@ pub struct WhiteHole {
 #[derive(Component)]
 pub struct BlackHole {
     pub id: Entity,
-    pub index: usize,
     pub parent: Entity,
-    pub parent_index: usize,
     pub wh: Entity,
-    pub wh_index: usize,
     pub link_type: i32,
 }
 
@@ -56,14 +38,11 @@ fn connect(
     mouse_button_input: Res<Input<MouseButton>>,
     mut commands: Commands,
     query: Query<(Entity, &Radius, &Transform), (With<Visible>, With<Order>)>,
-    index_query: Query<&Index>,
     cursor: Res<CursorInfo>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     rad_query: Query<&Radius>,
     trans_query: Query<&Transform>,
-    mut connection_ids: ResMut<ConnectionIds>,
-    mut max_connection_index: ResMut<MaxUsedConnectionIndex>,
 ) {
     if mouse_button_input.just_released(MouseButton::Left) {
         let mut source_entity: Option<Entity> = None;
@@ -81,8 +60,6 @@ fn connect(
         }
 
         if let (Some(src), Some(snk)) = (source_entity, sink_entity) {
-            let src_index = index_query.get(src).unwrap().0;
-            let snk_index = index_query.get(snk).unwrap().0;
             let src_radius = rad_query.get(src).unwrap().0;
             let snk_radius = rad_query.get(snk).unwrap().0;
             let src_trans = trans_query.get(src).unwrap().translation;
@@ -112,21 +89,15 @@ fn connect(
             commands.entity(black_hole).insert(
                 BlackHole {
                     id: black_hole,
-                    index: max_connection_index.0,
                     parent: src,
-                    parent_index: src_index,
                     wh: white_hole,
-                    wh_index: max_connection_index.0 + 1,
                     link_type: 0,
                 });
             commands.entity(white_hole).insert(
                 WhiteHole {
                     id: white_hole,
-                    index: max_connection_index.0 + 1,
                     parent: snk,
-                    parent_index: snk_index,
                     bh: black_hole,
-                    bh_index: max_connection_index.0,
                     link_type: 0,
                     changed: false,
                 });
@@ -134,11 +105,6 @@ fn connect(
             // add to parents
             commands.entity(src).add_child(black_hole);
             commands.entity(snk).add_child(white_hole);
-
-            // save ids
-            connection_ids.0.push(white_hole);
-            connection_ids.0.push(black_hole);
-            max_connection_index.0 += 2;
 
             // add link type text
             let black_hole_text = commands.spawn(Text2dBundle {

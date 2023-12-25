@@ -17,18 +17,13 @@ impl Plugin for CirclesPlugin {
         .register_type::<Visible>()
 
         .register_type::<Depth>()
-        .register_type::<Index>()
         .register_type::<Order>()
         .register_type::<Num>()
         .register_type::<Arr>()
         .register_type::<Offset>()
-        .register_type::<CircleIds>()
-        .register_type::<MaxUsedIndex>()
 
         // test high depth
         .insert_resource(Depth(-10.))
-        .init_resource::<CircleIds>()
-        .insert_resource(MaxUsedIndex(1))
 
         .add_systems(Update, spawn_circles.run_if(in_state(Mode::Draw)))
         .add_systems(Update, draw_pointer_circle.run_if(not(in_state(Mode::Connect))))
@@ -62,14 +57,6 @@ pub struct Offset {
 
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
-pub struct CircleIds(pub Vec<Entity>);
-
-#[derive(Resource, Reflect, Default)]
-#[reflect(Resource)]
-pub struct MaxUsedIndex(pub usize);
-
-#[derive(Resource, Reflect, Default)]
-#[reflect(Resource)]
 struct Depth(f32);
 
 #[derive(Component, Reflect)]
@@ -80,9 +67,6 @@ pub struct Selected;
 
 #[derive(Component, Reflect)]
 pub struct Visible;
-
-#[derive(Component, Reflect)]
-pub struct Index(pub usize);
 
 #[derive(Component, Reflect)]
 pub struct Order(pub usize);
@@ -113,8 +97,6 @@ fn spawn_circles(
     mut materials: ResMut<Assets<ColorMaterial>>,
     mut depth: ResMut<Depth>,
     cursor: Res<CursorInfo>,
-    mut index: ResMut<MaxUsedIndex>,
-    mut circle_ids: ResMut<CircleIds>,
 ) {
     if mouse_button_input.just_released(MouseButton::Left) {
         let radius = cursor.f.distance(cursor.i);
@@ -127,7 +109,6 @@ fn spawn_circles(
             },
             Radius(radius),
             Visible, //otherwise it can't be selected til after mark_visible is updated
-            Index(index.0),
             Order(0),
             Num(0.),
             Arr(Vec::new()),
@@ -137,10 +118,6 @@ fn spawn_circles(
         // have the circle adopt a text entity
         let text = commands.spawn(Text2dBundle {
             text: Text::from_sections([
-                TextSection::new(
-                    "index: ".to_string() + &index.0.to_string() + "\n",
-                    TextStyle::default(),
-                ),
                 TextSection::new(
                     "order: ".to_string() + &0.to_string() + "\n",
                     TextStyle::default()
@@ -155,8 +132,6 @@ fn spawn_circles(
         }).id();
         commands.entity(id).add_child(text);
 
-        circle_ids.0.push(id);
-        index.0 += 1;
         depth.0 += 0.00001;
     }
 }
@@ -407,10 +382,10 @@ fn update_text(
 ) {
     for (mut text, parent) in query.iter_mut() {
         if let Ok(order) = order_query.get(**parent) {
-            text.sections[1].value = "order: ".to_string() + &order.0.to_string() + "\n";
+            text.sections[0].value = "order: ".to_string() + &order.0.to_string() + "\n";
         }
         if let Ok(num) = num_query.get(**parent) {
-            text.sections[2].value = num.0.to_string();
+            text.sections[1].value = num.0.to_string();
         }
     }
 }
