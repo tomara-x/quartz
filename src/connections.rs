@@ -37,7 +37,7 @@ pub struct WhiteHole {
     pub parent_index: usize,
     pub bh: Entity,
     pub bh_index: usize,
-    pub link_type: usize,
+    pub link_type: i32,
     pub changed: bool,
 }
 
@@ -49,7 +49,7 @@ pub struct BlackHole {
     pub parent_index: usize,
     pub wh: Entity,
     pub wh_index: usize,
-    pub link_type: usize,
+    pub link_type: i32,
 }
 
 fn connect(
@@ -128,6 +128,7 @@ fn connect(
                     bh: black_hole,
                     bh_index: max_connection_index.0,
                     link_type: 0,
+                    changed: false,
                 });
 
             // add to parents
@@ -196,20 +197,12 @@ fn update_link_type (
 ) {
     let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
     if shift && keyboard_input.just_pressed(KeyCode::Up) {
-        for mut hole in black_hole_query.iter_mut() {
-            hole.link_type = hole.link_type.saturating_add(1);
-        }
-        for mut hole in white_hole_query.iter_mut() {
-            hole.link_type = hole.link_type.saturating_add(1);
-        }
+        for mut hole in black_hole_query.iter_mut() { hole.link_type += 1; }
+        for mut hole in white_hole_query.iter_mut() { hole.link_type += 1; }
     }
     if shift && keyboard_input.just_pressed(KeyCode::Down) {
-        for mut hole in black_hole_query.iter_mut() {
-            hole.link_type = hole.link_type.saturating_sub(1);
-        }
-        for mut hole in white_hole_query.iter_mut() {
-            hole.link_type = hole.link_type.saturating_sub(1);
-        }
+        for mut hole in black_hole_query.iter_mut() { hole.link_type -= 1; }
+        for mut hole in white_hole_query.iter_mut() { hole.link_type -= 1; }
     }
 }
 
