@@ -132,8 +132,8 @@ fn update_color(
     for (e, children) in query.iter() {
         for child in children.iter() {
             if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
-                if !white_hole.changed { continue; }
-                white_hole.changed = false;
+                //if !white_hole.changed { continue; }
+                //white_hole.changed = false;
                 let black_hole = black_hole_query.get(white_hole.bh).unwrap();
                 if black_hole.link_type == -2 && white_hole.link_type == -2 {
                     let id = material_ids.get(black_hole.parent).unwrap();
