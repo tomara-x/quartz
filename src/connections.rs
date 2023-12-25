@@ -12,7 +12,6 @@ impl Plugin for ConnectionsPlugin {
         .init_resource::<ConnectionIds>()
         .init_resource::<MaxUsedConnectionIndex>()
         .add_systems(Update, connect.run_if(in_state(Mode::Connect)))
-        //.add_systems(Update, update_connected_color)
         .add_systems(Update, draw_connections)
         .add_systems(Update, draw_connecting_line.run_if(in_state(Mode::Connect)))
         .add_systems(Update, update_link_type.run_if(in_state(Mode::Edit)))
@@ -39,6 +38,7 @@ pub struct WhiteHole {
     pub bh: Entity,
     pub bh_index: usize,
     pub link_type: usize,
+    pub changed: bool,
 }
 
 #[derive(Component)]
