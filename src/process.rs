@@ -72,7 +72,7 @@ fn update_bloom_settings(
     // why doesn't iter_descendants need error checking?
     for child in children_query.iter_descendants(id.0) {
         if let Ok(mut white_hole) = white_hole_query.get_mut(child) {
-            if !white_hole.changed { return; }
+            if !white_hole.changed { continue; }
             white_hole.changed = false;
             let black_hole = black_hole_query.get(white_hole.bh).unwrap();
             let input = num_query.get(black_hole.parent).unwrap().0 / 100.;
