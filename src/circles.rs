@@ -404,7 +404,6 @@ fn update_text(
     mut query: Query<(&mut Text, &Parent), With<Visible>>,
     order_query: Query<&Order>,
     num_query: Query<&Num>,
-    mouse_button_input: Res<Input<MouseButton>>,
 ) {
     for (mut text, parent) in query.iter_mut() {
         if let Ok(order) = order_query.get(**parent) {

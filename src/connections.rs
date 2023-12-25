@@ -247,7 +247,6 @@ fn update_link_type (
 
 fn update_text(
     mut query: Query<(&mut Text, &Parent), With<Visible>>,
-    keyboard_input: Res<Input<KeyCode>>,
     black_hole_query: Query<&BlackHole>,
     white_hole_query: Query<&WhiteHole>,
 ) {
