@@ -358,7 +358,7 @@ fn update_num(
         !mouse_button_input.just_pressed(MouseButton::Left) {
             for (mut n, children) in query.iter_mut() {
                 // change the number
-                n.0 += cursor.d.y;
+                n.0 += cursor.d.y / 10.;
                 // inform any white holes connected through link 4 black holes
                 // that our value has changed
                 for child in children.iter() {
