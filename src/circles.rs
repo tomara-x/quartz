@@ -346,16 +346,28 @@ fn update_radius(
 }
 
 fn update_num(
-    mut query: Query<&mut Num, With<Selected>>,
+    mut query: Query<(&mut Num, &Children), With<Selected>>,
     keyboard_input: Res<Input<KeyCode>>,
     cursor: Res<CursorInfo>,
     mouse_button_input: Res<Input<MouseButton>>,
+    mut white_hole_query: Query<&mut WhiteHole>,
+    black_hole_query: Query<&BlackHole>,
 ) {
     if keyboard_input.pressed(KeyCode::Key4) {
         if mouse_button_input.pressed(MouseButton::Left) &&
         !mouse_button_input.just_pressed(MouseButton::Left) {
-            for mut n in query.iter_mut() {
+            for (mut n, children) in query.iter_mut() {
+                // change the number
                 n.0 += cursor.d.y;
+                // inform any white holes connected through link 4 black holes
+                // that our value has changed
+                for child in children.iter() {
+                    if let Ok(black_hole) = black_hole_query.get(*child) {
+                        if black_hole.link_type == 4 {
+                            white_hole_query.get_mut(black_hole.wh).unwrap().changed = true;
+                        }
+                    }
+                }
             }
         }
     }

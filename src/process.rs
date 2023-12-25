@@ -64,14 +64,16 @@ fn update_bloom_settings(
     children_query: Query<&Children>,
     mut bloom: Query<&mut BloomSettings, With<Camera>>,
     black_hole_query: Query<&BlackHole>,
-    white_hole_query: Query<&WhiteHole>,
+    mut white_hole_query: Query<&mut WhiteHole>,
     id: Res<BloomCircleId>,
     num_query: Query<&Num>,
 ) {
     let mut bloom_settings = bloom.single_mut();
     // why doesn't iter_descendants need error checking?
     for child in children_query.iter_descendants(id.0) {
-        if let Ok(white_hole) = white_hole_query.get(child) {
+        if let Ok(mut white_hole) = white_hole_query.get_mut(child) {
+            if !white_hole.changed { return; }
+            white_hole.changed = false;
             let black_hole = black_hole_query.get(white_hole.bh).unwrap();
             let input = num_query.get(black_hole.parent).unwrap().0 / 100.;
             match (black_hole.link_type, white_hole.link_type) {
