@@ -9,8 +9,6 @@ impl Plugin for ConnectionsPlugin {
     fn build(&self, app: &mut App) { app
         .register_type::<ConnectionIds>()
         .register_type::<MaxUsedConnectionIndex>()
-        .register_type::<WhiteHole>()
-        .register_type::<BlackHole>()
         .init_resource::<ConnectionIds>()
         .init_resource::<MaxUsedConnectionIndex>()
         .add_systems(Update, connect.run_if(in_state(Mode::Connect)))
@@ -32,8 +30,7 @@ pub struct ConnectionIds(pub Vec<Entity>);
 pub struct MaxUsedConnectionIndex(pub usize);
 
 // hole enum?
-#[derive(Component, Reflect)]
-#[reflect(Component)]
+#[derive(Component)]
 pub struct WhiteHole {
     pub id: Entity,
     pub index: usize,
@@ -44,8 +41,7 @@ pub struct WhiteHole {
     pub link_type: usize,
 }
 
-#[derive(Component, Reflect)]
-#[reflect(Component)]
+#[derive(Component)]
 pub struct BlackHole {
     pub id: Entity,
     pub index: usize,
@@ -54,34 +50,6 @@ pub struct BlackHole {
     pub wh: Entity,
     pub wh_index: usize,
     pub link_type: usize,
-}
-
-// i'll be back
-impl Default for WhiteHole {
-    fn default() -> Self {
-        WhiteHole {
-            id: Entity::from_raw(0),
-            index: 0,
-            parent: Entity::from_raw(0),
-            parent_index: 0,
-            bh: Entity::from_raw(0),
-            bh_index: 0,
-            link_type: 0,
-        }
-    }
-}
-impl Default for BlackHole {
-    fn default() -> Self {
-        BlackHole {
-            id: Entity::from_raw(0),
-            index: 0,
-            parent: Entity::from_raw(0),
-            parent_index: 0,
-            wh: Entity::from_raw(0),
-            wh_index: 0,
-            link_type: 0,
-        }
-    }
 }
 
 fn connect(
