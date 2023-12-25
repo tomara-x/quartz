@@ -265,42 +265,52 @@ fn move_selected(
 
 fn update_color(
     mut mats: ResMut<Assets<ColorMaterial>>,
-    material_ids: Query<&Handle<ColorMaterial>, With<Selected>>,
+    material_ids: Query<(&Handle<ColorMaterial>, &Children), With<Selected>>,
     keyboard_input: Res<Input<KeyCode>>,
     cursor: Res<CursorInfo>,
     mouse_button_input: Res<Input<MouseButton>>,
+    mut white_hole_query: Query<&mut WhiteHole>,
+    black_hole_query: Query<&BlackHole>,
 ) {
     if keyboard_input.pressed(KeyCode::Key2) {
         if mouse_button_input.pressed(MouseButton::Left) &&
         !mouse_button_input.just_pressed(MouseButton::Left) {
-            for id in material_ids.iter() {
+            for (id, children) in material_ids.iter() {
                 let mat = mats.get_mut(id).unwrap();
                 mat.color.set_h((mat.color.h() + cursor.d.x).rem_euclid(360.));
+                // mark change
+                for child in children.iter() {
+                    if let Ok(black_hole) = black_hole_query.get(*child) {
+                        if black_hole.link_type == -2 {
+                            white_hole_query.get_mut(black_hole.wh).unwrap().changed = true;
+                        }
+                    }
+                }
             }
         }
 
         let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
         let increment = if shift { 0.01 } else { -0.01 };
         if keyboard_input.pressed(KeyCode::Up) {
-            for id in material_ids.iter() {
+            for (id, _) in material_ids.iter() {
                 let mat = mats.get_mut(id).unwrap();
                 mat.color.set_h((mat.color.h() + increment * 100.).rem_euclid(360.));
             }
         }
         if keyboard_input.pressed(KeyCode::Down) {
-            for id in material_ids.iter() {
+            for (id, _) in material_ids.iter() {
                 let mat = mats.get_mut(id).unwrap();
                 mat.color.set_s((mat.color.s() + increment).rem_euclid(2.));
             }
         }
         if keyboard_input.pressed(KeyCode::Right) {
-            for id in material_ids.iter() {
+            for (id, _) in material_ids.iter() {
                 let mat = mats.get_mut(id).unwrap();
                 mat.color.set_l((mat.color.l() + increment).rem_euclid(4.));
             }
         }
         if keyboard_input.pressed(KeyCode::Left) {
-            for id in material_ids.iter() {
+            for (id, _) in material_ids.iter() {
                 let mat = mats.get_mut(id).unwrap();
                 mat.color.set_a((mat.color.a() + increment).rem_euclid(1.));
             }

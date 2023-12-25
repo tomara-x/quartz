@@ -14,6 +14,7 @@ impl Plugin for ProcessPlugin {
         .insert_resource(BloomCircleId(Entity::from_raw(0)))
         .add_systems(Startup, spawn_bloom_circle)
         .add_systems(Update, update_bloom_settings)
+        .add_systems(Update, update_color)
         .add_systems(Update, update_num)
         ;
     }
@@ -92,9 +93,6 @@ fn update_bloom_settings(
     }
 }
 
-// updating color/position/radius from inputs and applying offset go here
-// maybe in separate systems tho, cause it applies to all entities with inputs
-
 fn update_num(
     query: Query<(Entity, &Children)>,
     black_hole_query: Query<&BlackHole>,
@@ -114,6 +112,37 @@ fn update_num(
                     for child in children.iter() {
                         if let Ok(black_hole) = black_hole_query.get(*child) {
                             if black_hole.link_type == -4 {
+                                white_hole_query.get_mut(black_hole.wh).unwrap().changed = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+fn update_color(
+    query: Query<(Entity, &Children)>,
+    black_hole_query: Query<&BlackHole>,
+    mut white_hole_query: Query<&mut WhiteHole>,
+    mut mats: ResMut<Assets<ColorMaterial>>,
+    material_ids: Query<&Handle<ColorMaterial>>,
+) {
+    for (e, children) in query.iter() {
+        for child in children.iter() {
+            if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+                if !white_hole.changed { continue; }
+                white_hole.changed = false;
+                let black_hole = black_hole_query.get(white_hole.bh).unwrap();
+                if black_hole.link_type == -2 && white_hole.link_type == -2 {
+                    let id = material_ids.get(black_hole.parent).unwrap();
+                    let mat = mats.get(id).unwrap();
+                    let input = mat.color;
+                    mats.get_mut(material_ids.get(e).unwrap()).unwrap().color = input;
+                    for child in children.iter() {
+                        if let Ok(black_hole) = black_hole_query.get(*child) {
+                            if black_hole.link_type == -2 {
                                 white_hole_query.get_mut(black_hole.wh).unwrap().changed = true;
                             }
                         }
