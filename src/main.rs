@@ -14,6 +14,8 @@ use bevy_pancam::{PanCam, PanCamPlugin};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 //use rand::prelude::random;
 
+use std::time::{Duration, Instant};
+
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
@@ -61,13 +63,44 @@ fn main() {
         .add_systems(Update, update_link_type.run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_link_type_text.run_if(in_state(Mode::Edit)))
 
-        .insert_resource(BloomCircleId(Entity::from_raw(0)))
-        .add_systems(Startup, spawn_bloom_circle)
-        .add_systems(Update, update_bloom_settings)
-        .add_systems(Update, update_color_from_input)
-        .add_systems(Update, update_num_from_input)
+        //.insert_resource(BloomCircleId(Entity::from_raw(0)))
+        //.add_systems(Startup, spawn_bloom_circle)
+        //.add_systems(Update, update_bloom_settings)
+        //.add_systems(Update, update_color_from_input)
+        //.add_systems(Update, update_num_from_input)
+        //
+        .add_event::<MessageEvent>()
+        .add_systems(Update, send_mess)
+        // runs after to be sure to receive the events on the frame they were sent
+        .add_systems(Update, receive_mess.after(send_mess).run_if(on_event::<MessageEvent>()))
         .run();
 }
+
+#[derive(Event, Debug)]
+struct MessageEvent {
+    message: f32,
+}
+fn send_mess(
+    time: Res<Time<Real>>,
+    mut mess: EventWriter<MessageEvent>,
+    keyboard_input: Res<Input<KeyCode>>,
+) {
+    if keyboard_input.just_pressed(KeyCode::M) {
+        info!("from snd {:?}", time.elapsed_seconds());
+        mess.send(MessageEvent { message: 0. } );
+    }
+}
+
+fn receive_mess(
+    time: Res<Time<Real>>,
+    mut mess: EventReader<MessageEvent>,
+) {
+    for _ in mess.read() {
+        // not actually reading the event, just printing the time to see when this is called
+        info!("from rcv {:?}", time.elapsed_seconds());
+    }
+}
+
 
 fn setup(
     mut commands: Commands,
@@ -751,6 +784,7 @@ fn update_link_type_text(
 
 // ------------------- process -----------------------
 
+/*
 #[derive(Resource)]
 struct BloomCircleId(Entity);
 
@@ -839,6 +873,7 @@ fn update_num_from_input(
                 if black_hole.link_type == -4 && white_hole.link_type == -4 {
                     num_query.get_mut(e).unwrap().0 = input;
                     // now we have to let anything connected to this circle know about this change
+                    // MACRO THIS!
                     for child in children.iter() {
                         if let Ok(black_hole) = black_hole_query.get(*child) {
                             if black_hole.link_type == -4 {
@@ -882,4 +917,5 @@ fn update_color_from_input(
         }
     }
 }
+*/
 
