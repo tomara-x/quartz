@@ -23,36 +23,25 @@ fn main() {
             }),
             ..default()
         }))
-        //RESOURCES
-        .insert_resource(ClearColor(Color::BLACK))
-        .insert_resource(Msaa::Sample4)
-        //PLUGINS
         .add_plugins(PanCamPlugin::default())
         .add_plugins(WorldInspectorPlugin::new())
-        //SYSTEMS
+
+        .insert_resource(ClearColor(Color::BLACK))
+        .insert_resource(Msaa::Sample4)
+
         .add_systems(Startup, setup)
-        .add_systems(Update, toggle_pan.run_if(in_state(Mode::Edit)))
+        
+        .add_systems(Update, toggle_pan) //make sure space !pressed in spawn and connect
+        .add_state::<Mode>()
+        .add_systems(Update, switch_mode)
         .add_systems(Update, save_scene)
 
         .insert_resource(CursorInfo::default())
         .add_systems(Update, update_cursor_info)
 
-        .add_state::<Mode>()
-
-        .register_type::<Radius>()
-
-        .register_type::<Selected>()
-        .register_type::<Visible>()
-
-        .register_type::<Depth>()
-        .register_type::<Order>()
-        .register_type::<Num>()
-        .register_type::<Arr>()
-        .register_type::<Offset>()
 
         // test high depth
         .insert_resource(Depth(-10.))
-
         .add_systems(Update, spawn_circles.run_if(in_state(Mode::Draw)))
         .add_systems(Update, draw_pointer_circle.run_if(not(in_state(Mode::Connect))))
         .add_systems(Update, mark_visible.after(update_cursor_info))
@@ -65,7 +54,6 @@ fn main() {
         .add_systems(Update, delete_selected.run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_order.run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_order_text.run_if(in_state(Mode::Edit)))
-        .add_systems(Update, switch_mode)
 
         .add_systems(Update, connect.run_if(in_state(Mode::Connect)))
         .add_systems(Update, draw_connections)
@@ -208,33 +196,32 @@ fn update_cursor_info(
 
 // ------------- circles ------------------------
 
-#[derive(Component, Reflect)]
+#[derive(Component)]
 struct Num(f32);
 
-#[derive(Component, Reflect)]
+#[derive(Component)]
 struct Arr(Vec<f32>);
 
-#[derive(Component, Reflect)]
+#[derive(Component)]
 struct Offset {
     trans: Vec3,
     color: Color,
     radius: f32,
 }
 
-#[derive(Resource, Reflect, Default)]
-#[reflect(Resource)]
+#[derive(Resource)]
 struct Depth(f32);
 
-#[derive(Component, Reflect)]
+#[derive(Component)]
 struct Radius(f32);
 
-#[derive(Component, Reflect)]
+#[derive(Component)]
 struct Selected;
 
-#[derive(Component, Reflect)]
+#[derive(Component)]
 struct Visible;
 
-#[derive(Component, Reflect)]
+#[derive(Component)]
 struct Order(usize);
 
 fn spawn_circles(
@@ -426,13 +413,13 @@ fn update_color(
                 let mat = mats.get_mut(id).unwrap();
                 mat.color.set_h((mat.color.h() + cursor.d.x).rem_euclid(360.));
                 // mark change
-                for child in children.iter() {
-                    if let Ok(black_hole) = black_hole_query.get(*child) {
-                        if black_hole.link_type == -2 {
-                            white_hole_query.get_mut(black_hole.wh).unwrap().changed = true;
-                        }
-                    }
-                }
+                //for child in children.iter() {
+                //    if let Ok(black_hole) = black_hole_query.get(*child) {
+                //        if black_hole.link_type == -2 {
+                //            white_hole_query.get_mut(black_hole.wh).unwrap().changed = true;
+                //        }
+                //    }
+                //}
             }
         }
 
@@ -518,13 +505,13 @@ fn update_num(
                 n.0 += cursor.d.y / 10.;
                 // inform any white holes connected through link 4 black holes
                 // that our value has changed
-                for child in children.iter() {
-                    if let Ok(black_hole) = black_hole_query.get(*child) {
-                        if black_hole.link_type == -4 {
-                            white_hole_query.get_mut(black_hole.wh).unwrap().changed = true;
-                        }
-                    }
-                }
+                //for child in children.iter() {
+                //    if let Ok(black_hole) = black_hole_query.get(*child) {
+                //        if black_hole.link_type == -4 {
+                //            white_hole_query.get_mut(black_hole.wh).unwrap().changed = true;
+                //        }
+                //    }
+                //}
             }
         }
     }
