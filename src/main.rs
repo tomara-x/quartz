@@ -68,13 +68,45 @@ fn main() {
         //.add_systems(Update, update_bloom_settings)
         //.add_systems(Update, update_color_from_input)
         //.add_systems(Update, update_num_from_input)
-        //
+
+        // event stuff
         .add_event::<MessageEvent>()
         .add_systems(Update, send_mess)
         // runs after to be sure to receive the events on the frame they were sent
         .add_systems(Update, receive_mess.after(send_mess).run_if(on_event::<MessageEvent>()))
+
+        // sorting stuff
+        .register_type::<Queue>()
+        .init_resource::<Queue>()
+        .add_systems(Update, sort_by_order) // should only be triggered when needed
+
         .run();
 }
+
+
+#[derive(Resource, Reflect, Default)]
+#[reflect(Resource)]
+struct Queue(Vec<Vec<Entity>>); //you sure about that name? you're sydlexic!
+
+// this will be triggered by events (spawn, delete, order change)
+fn sort_by_order(
+    query: Query<(Entity, &Order)>,
+    mut max_order: Local<usize>,
+    mut queue: ResMut<Queue>,
+) {
+    *max_order = 0;
+    queue.0.clear();
+    queue.0.push(Vec::new());
+    for (entity, order) in query.iter() {
+        if order.0 > *max_order {
+            queue.0.resize(order.0+1, Vec::new());
+            *max_order = order.0;
+        }
+        queue.0[order.0].push(entity);
+    }
+}
+
+
 
 #[derive(Event, Debug)]
 struct MessageEvent {
@@ -88,19 +120,18 @@ fn send_mess(
     if keyboard_input.just_pressed(KeyCode::M) {
         info!("from snd {:?}", time.elapsed_seconds());
         mess.send(MessageEvent { message: 0. } );
+        mess.send(MessageEvent { message: 1. } );
     }
 }
-
 fn receive_mess(
     time: Res<Time<Real>>,
     mut mess: EventReader<MessageEvent>,
 ) {
-    for _ in mess.read() {
-        // not actually reading the event, just printing the time to see when this is called
+    for m in mess.read() {
         info!("from rcv {:?}", time.elapsed_seconds());
+        info!("{:?}", m);
     }
 }
-
 
 fn setup(
     mut commands: Commands,
@@ -286,12 +317,16 @@ fn spawn_circles(
         let text = commands.spawn(Text2dBundle {
             text: Text::from_sections([
                 TextSection::new(
-                    "order: ".to_string() + &0.to_string() + "\n",
-                    TextStyle::default()
+                    id.index().to_string() + "v" + &id.generation().to_string() + "\n",
+                    TextStyle::default(),
                 ),
                 TextSection::new(
-                    0.to_string(),
-                    TextStyle::default()
+                    "order: 0\n",
+                    TextStyle::default(),
+                ),
+                TextSection::new(
+                    "0",
+                    TextStyle::default(),
                 ),
             ]),
             transform: Transform::from_translation(Vec3{z:0.000001, ..default()}),
@@ -571,10 +606,10 @@ fn update_order_text(
 ) {
     for (mut text, parent) in query.iter_mut() {
         if let Ok(order) = order_query.get(**parent) {
-            text.sections[0].value = "order: ".to_string() + &order.0.to_string() + "\n";
+            text.sections[1].value = "order: ".to_string() + &order.0.to_string() + "\n";
         }
         if let Ok(num) = num_query.get(**parent) {
-            text.sections[1].value = num.0.to_string();
+            text.sections[2].value = num.0.to_string();
         }
     }
 }
