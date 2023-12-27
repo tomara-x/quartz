@@ -41,7 +41,6 @@ fn main() {
         .insert_resource(CursorInfo::default())
         .add_systems(Update, update_cursor_info)
 
-
         // test high depth
         .insert_resource(Depth(-10.))
         .add_systems(Update, draw_pointer_circle.run_if(not(in_state(Mode::Connect))))
@@ -77,7 +76,6 @@ fn main() {
         .add_event::<OrderChange>()
         .run();
 }
-
 
 fn setup(
     mut commands: Commands,
@@ -186,6 +184,43 @@ fn sort_by_order(
             *max_order = order.0;
         }
         queue.0[order.0].push(entity);
+    }
+}
+
+fn update_order (
+    keyboard_input: Res<Input<KeyCode>>,
+    mut query: Query<&mut Order, With<Selected>>,
+    mut order_change: EventWriter<OrderChange>,
+) {
+    let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
+    if shift && keyboard_input.just_pressed(KeyCode::Up) {
+        for mut order in query.iter_mut() {
+            order.0 += 1;
+            order_change.send_default();
+        }
+    }
+    if shift && keyboard_input.just_pressed(KeyCode::Down) {
+        for mut order in query.iter_mut() {
+            if order.0 > 0 {
+                order.0 -= 1;
+                order_change.send_default();
+            }
+        }
+    }
+}
+
+fn update_order_text(
+    mut query: Query<(&mut Text, &Parent), With<Visible>>,
+    order_query: Query<&Order>,
+    num_query: Query<&Num>,
+) {
+    for (mut text, parent) in query.iter_mut() {
+        if let Ok(order) = order_query.get(**parent) {
+            text.sections[1].value = "order: ".to_string() + &order.0.to_string() + "\n";
+        }
+        if let Ok(num) = num_query.get(**parent) {
+            text.sections[2].value = num.0.to_string();
+        }
     }
 }
 
@@ -565,43 +600,6 @@ fn update_num(
     }
 }
             
-
-fn update_order (
-    keyboard_input: Res<Input<KeyCode>>,
-    mut query: Query<&mut Order, With<Selected>>,
-    mut order_change: EventWriter<OrderChange>,
-) {
-    let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
-    if shift && keyboard_input.just_pressed(KeyCode::Up) {
-        for mut order in query.iter_mut() {
-            order.0 += 1;
-            order_change.send_default();
-        }
-    }
-    if shift && keyboard_input.just_pressed(KeyCode::Down) {
-        for mut order in query.iter_mut() {
-            if order.0 > 0 {
-                order.0 -= 1;
-                order_change.send_default();
-            }
-        }
-    }
-}
-
-fn update_order_text(
-    mut query: Query<(&mut Text, &Parent), With<Visible>>,
-    order_query: Query<&Order>,
-    num_query: Query<&Num>,
-) {
-    for (mut text, parent) in query.iter_mut() {
-        if let Ok(order) = order_query.get(**parent) {
-            text.sections[1].value = "order: ".to_string() + &order.0.to_string() + "\n";
-        }
-        if let Ok(num) = num_query.get(**parent) {
-            text.sections[2].value = num.0.to_string();
-        }
-    }
-}
 
 fn delete_selected(
     keyboard_input: Res<Input<KeyCode>>,
