@@ -557,6 +557,21 @@ fn move_selected(
     }
 }
 
+fn mark_changed(
+    n: i32,
+    children: &Children,
+    bh_query: &Query<&BlackHole>,
+    wh_query: &mut Query<&mut WhiteHole>,
+) {
+    for child in children.iter() {
+        if let Ok(black_hole) = bh_query.get(*child) {
+            if black_hole.link_type == n {
+                wh_query.get_mut(black_hole.wh).unwrap().changed = true;
+            }
+        }
+    }
+}
+
 fn update_color(
     mut mats: ResMut<Assets<ColorMaterial>>,
     material_ids: Query<(&Handle<ColorMaterial>, &Children), With<Selected>>,
@@ -573,13 +588,7 @@ fn update_color(
                 let mat = mats.get_mut(id).unwrap();
                 mat.color.set_h((mat.color.h() + cursor.d.x).rem_euclid(360.));
                 // mark change
-                //for child in children.iter() {
-                //    if let Ok(black_hole) = black_hole_query.get(*child) {
-                //        if black_hole.link_type == -2 {
-                //            white_hole_query.get_mut(black_hole.wh).unwrap().changed = true;
-                //        }
-                //    }
-                //}
+                mark_changed(-2, children, &black_hole_query, &mut white_hole_query);
             }
         }
 
