@@ -106,14 +106,30 @@ fn process(
     mut white_hole_query: Query<&mut WhiteHole>,
     op_query: Query<&Op>,
     mut bloom: Query<&mut BloomSettings, With<Camera>>,
-    num_query: Query<&Num>,
+    mut num_query: Query<&mut Num>,
     mut mats: ResMut<Assets<ColorMaterial>>,
     material_ids: Query<&Handle<ColorMaterial>>,
 ) {
     for order in queue.0.iter() {
         for id in order {
             match op_query.get(*id).unwrap() {
-                Op::Yes => {},
+                Op::Yes => {
+                    // input to num
+                    if let Ok(children) = children_query.get(*id) {
+                        for child in children.iter() {
+                            if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+                                if !white_hole.changed { continue; }
+                                white_hole.changed = false;
+                                let black_hole = black_hole_query.get(white_hole.bh).unwrap();
+                                let input = num_query.get(black_hole.parent).unwrap().0;
+                                if black_hole.link_type == -4 && white_hole.link_type == -4 {
+                                    num_query.get_mut(*id).unwrap().0 = input;
+                                    mark_changed(-4, children, &black_hole_query, &mut white_hole_query);
+                                }
+                            }
+                        }
+                    }
+                },
                 Op::BloomControl => {
                     let mut bloom_settings = bloom.single_mut();
                     if let Ok(children) = children_query.get(*id) {
@@ -137,46 +153,29 @@ fn process(
                             }
                         }
                     }
+                },
+            }
+
+            // color
+            if let Ok(children) = children_query.get(*id) {
+                for child in children.iter() {
+                    if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+                        if !white_hole.changed { continue; }
+                        white_hole.changed = false;
+                        let black_hole = black_hole_query.get(white_hole.bh).unwrap();
+                        if black_hole.link_type == -2 && white_hole.link_type == -2 {
+                            let mat_id = material_ids.get(black_hole.parent).unwrap();
+                            let mat = mats.get(mat_id).unwrap();
+                            let input = mat.color;
+                            mats.get_mut(material_ids.get(*id).unwrap()).unwrap().color = input;
+                            mark_changed(-2, children, &black_hole_query, &mut white_hole_query);
+                        }
+                    }
                 }
             }
         }
     }
 }
-
-// these go in the yes op
-
-//fn update_num_from_input(
-//for (e, children) in query.iter() {
-//    for child in children.iter() {
-//        if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
-//            if !white_hole.changed { continue; }
-//            white_hole.changed = false;
-//            let black_hole = black_hole_query.get(white_hole.bh).unwrap();
-//            let input = num_query.get(black_hole.parent).unwrap().0;
-//            if black_hole.link_type == -4 && white_hole.link_type == -4 {
-//                num_query.get_mut(e).unwrap().0 = input;
-//                // now we have to let anything connected to this circle know about this change
-//                // MACRO THIS!
-//                for child in children.iter() {
-//                    if let Ok(black_hole) = black_hole_query.get(*child) {
-//                        if black_hole.link_type == -4 {
-//                            white_hole_query.get_mut(black_hole.wh).unwrap().changed = true; }}}}}}}}
-//fn update_color_from_input(
-//for (e, children) in query.iter() {
-//    for child in children.iter() {
-//        if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
-//            //if !white_hole.changed { continue; }
-//            //white_hole.changed = false;
-//            let black_hole = black_hole_query.get(white_hole.bh).unwrap();
-//            if black_hole.link_type == -2 && white_hole.link_type == -2 {
-//                let id = material_ids.get(black_hole.parent).unwrap();
-//                let mat = mats.get(id).unwrap();
-//                let input = mat.color;
-//                mats.get_mut(material_ids.get(e).unwrap()).unwrap().color = input;
-//                for child in children.iter() {
-//                    if let Ok(black_hole) = black_hole_query.get(*child) {
-//                        if black_hole.link_type == -2 {
-//                            white_hole_query.get_mut(black_hole.wh).unwrap().changed = true; }}}}}}}}
 
 
 // ----------------------- main --------------------------
