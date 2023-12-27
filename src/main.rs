@@ -124,6 +124,9 @@ fn process(
         }
     }
 }
+
+// these go in the yes op
+
 //fn update_num_from_input(
 //for (e, children) in query.iter() {
 //    for child in children.iter() {
@@ -258,15 +261,17 @@ fn sort_by_order(
     mut max_order: Local<usize>,
     mut queue: ResMut<Queue>,
 ) {
-    *max_order = 0;
+    *max_order = 1;
     queue.0.clear();
-    queue.0.push(Vec::new()); //actually skip order 0
+    queue.0.push(Vec::new());
     for (entity, order) in query.iter() {
-        if order.0 > *max_order {
-            queue.0.resize(order.0+1, Vec::new());
-            *max_order = order.0;
+        if order.0 > 0 {
+            if order.0 > *max_order {
+                queue.0.resize(order.0, Vec::new());
+                *max_order = order.0;
+            }
+            queue.0[order.0 - 1].push(entity); //order 1 at index 0
         }
-        queue.0[order.0].push(entity);
     }
 }
 
