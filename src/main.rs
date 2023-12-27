@@ -33,7 +33,7 @@ fn main() {
 
         .add_systems(Startup, setup)
         
-        .add_systems(Update, toggle_pan) //make sure space !pressed in spawn and connect
+        .add_systems(Update, toggle_pan)
         .add_state::<Mode>()
         .add_systems(Update, switch_mode)
         .add_systems(Update, save_scene)
@@ -67,13 +67,7 @@ fn main() {
         //.add_systems(Update, update_color_from_input)
         //.add_systems(Update, update_num_from_input)
 
-        // event stuff
-        .add_event::<MessageEvent>()
-        .add_systems(Update, send_mess)
-        // runs after to be sure to receive the events on the frame they were sent
-        .add_systems(Update, receive_mess.after(send_mess).run_if(on_event::<MessageEvent>()))
-
-        // sorting stuff
+        // order
         .add_systems(Update, (spawn_circles.run_if(in_state(Mode::Draw)),
                               delete_selected.run_if(in_state(Mode::Edit)),
                               apply_deferred, //to make sure the commands are applied
@@ -84,58 +78,6 @@ fn main() {
         .run();
 }
 
-
-#[derive(Resource, Reflect, Default)]
-#[reflect(Resource)]
-struct Queue(Vec<Vec<Entity>>); //you sure about that name? you're sydlexic!
-
-#[derive(Event, Default)]
-struct OrderChange;
-
-// this will be triggered by events (spawn, delete, order change)
-fn sort_by_order(
-    query: Query<(Entity, &Order)>,
-    mut max_order: Local<usize>,
-    mut queue: ResMut<Queue>,
-) {
-    *max_order = 0;
-    queue.0.clear();
-    queue.0.push(Vec::new());
-    for (entity, order) in query.iter() {
-        if order.0 > *max_order {
-            queue.0.resize(order.0+1, Vec::new());
-            *max_order = order.0;
-        }
-        queue.0[order.0].push(entity);
-    }
-}
-
-
-
-#[derive(Event, Debug)]
-struct MessageEvent {
-    message: f32,
-}
-fn send_mess(
-    time: Res<Time<Real>>,
-    mut mess: EventWriter<MessageEvent>,
-    keyboard_input: Res<Input<KeyCode>>,
-) {
-    if keyboard_input.just_pressed(KeyCode::M) {
-        info!("from snd {:?}", time.elapsed_seconds());
-        mess.send(MessageEvent { message: 0. } );
-        mess.send(MessageEvent { message: 1. } );
-    }
-}
-fn receive_mess(
-    time: Res<Time<Real>>,
-    mut mess: EventReader<MessageEvent>,
-) {
-    for m in mess.read() {
-        info!("from rcv {:?}", time.elapsed_seconds());
-        info!("{:?}", m);
-    }
-}
 
 fn setup(
     mut commands: Commands,
@@ -221,6 +163,32 @@ fn save_scene(
 //    }
 }
 
+// ---------------------- order ------------------------
+
+#[derive(Resource, Reflect, Default)]
+#[reflect(Resource)]
+struct Queue(Vec<Vec<Entity>>);
+
+#[derive(Event, Default)]
+struct OrderChange;
+
+fn sort_by_order(
+    query: Query<(Entity, &Order)>,
+    mut max_order: Local<usize>,
+    mut queue: ResMut<Queue>,
+) {
+    *max_order = 0;
+    queue.0.clear();
+    queue.0.push(Vec::new());
+    for (entity, order) in query.iter() {
+        if order.0 > *max_order {
+            queue.0.resize(order.0+1, Vec::new());
+            *max_order = order.0;
+        }
+        queue.0[order.0].push(entity);
+    }
+}
+
 // ---------------------- cursor ------------------------
 
 // initial, final, delta
@@ -300,8 +268,10 @@ fn spawn_circles(
     mut depth: ResMut<Depth>,
     cursor: Res<CursorInfo>,
     mut order_change: EventWriter<OrderChange>,
+    keyboard_input: Res<Input<KeyCode>>,
 ) {
-    if mouse_button_input.just_released(MouseButton::Left) {
+    if mouse_button_input.just_released(MouseButton::Left) &&
+    !keyboard_input.pressed(KeyCode::Space) {
         let radius = cursor.f.distance(cursor.i);
         let id = commands.spawn((
             ColorMesh2dBundle {
@@ -350,8 +320,10 @@ fn draw_pointer_circle(
     mut gizmos: Gizmos,
     time: Res<Time>,
     mouse_button_input: Res<Input<MouseButton>>,
+    keyboard_input: Res<Input<KeyCode>>,
 ) {
-    if mouse_button_input.pressed(MouseButton::Left) {
+    if mouse_button_input.pressed(MouseButton::Left) &&
+    !keyboard_input.pressed(KeyCode::Space) {
         let color = Color::hsl((time.elapsed_seconds() * 100.) % 360., 1.0, 0.5);
         gizmos.circle_2d(cursor.i, cursor.f.distance(cursor.i), color).segments(64);
     }
@@ -398,6 +370,7 @@ fn update_selection(
     keyboard_input: Res<Input<KeyCode>>,
     mut top_clicked_circle: Local<Option<(Entity, f32)>>,
 ) {
+    if keyboard_input.pressed(KeyCode::Space) { return; }
     let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
     if mouse_button_input.just_pressed(MouseButton::Left) {
         for (e, r, t) in query.iter() {
@@ -691,8 +664,10 @@ fn connect(
     mut materials: ResMut<Assets<ColorMaterial>>,
     rad_query: Query<&Radius>,
     trans_query: Query<&Transform>,
+    keyboard_input: Res<Input<KeyCode>>,
 ) {
-    if mouse_button_input.just_released(MouseButton::Left) {
+    if mouse_button_input.just_released(MouseButton::Left) &&
+    !keyboard_input.pressed(KeyCode::Space) {
         let mut source_entity: Option<Entity> = None;
         let mut sink_entity: Option<Entity> = None;
         for (e, r, t) in query.iter() {
@@ -797,8 +772,10 @@ fn draw_connecting_line(
     time: Res<Time>,
     mouse_button_input: Res<Input<MouseButton>>,
     cursor: Res<CursorInfo>,
+    keyboard_input: Res<Input<KeyCode>>,
 ) {
-    if mouse_button_input.pressed(MouseButton::Left) {
+    if mouse_button_input.pressed(MouseButton::Left) &&
+    !keyboard_input.pressed(KeyCode::Space) {
         let color = Color::hsl((time.elapsed_seconds() * 100.) % 360., 1.0, 0.5);
         gizmos.line_2d(cursor.i, cursor.f, color);
     }
