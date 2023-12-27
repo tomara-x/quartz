@@ -8,13 +8,12 @@ use bevy::{
     //tasks::IoTaskPool,
     prelude::*};
 
-//use std::{fs::File, io::Write};
-
 use bevy_pancam::{PanCam, PanCamPlugin};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
-//use rand::prelude::random;
 
-use std::time::{Duration, Instant};
+//use std::{fs::File, io::Write};
+//use std::time::{Duration, Instant};
+//use rand::prelude::random;
 
 fn main() {
     App::new()
@@ -192,14 +191,13 @@ fn update_order (
     mut query: Query<&mut Order, With<Selected>>,
     mut order_change: EventWriter<OrderChange>,
 ) {
-    let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
-    if shift && keyboard_input.just_pressed(KeyCode::Up) {
+    if keyboard_input.just_pressed(KeyCode::BracketRight) {
         for mut order in query.iter_mut() {
             order.0 += 1;
             order_change.send_default();
         }
     }
-    if shift && keyboard_input.just_pressed(KeyCode::Down) {
+    if keyboard_input.just_pressed(KeyCode::BracketLeft) {
         for mut order in query.iter_mut() {
             if order.0 > 0 {
                 order.0 -= 1;
@@ -784,12 +782,11 @@ fn update_link_type (
     mut black_hole_query: Query<&mut BlackHole, With<Selected>>,
     mut white_hole_query: Query<&mut WhiteHole, With<Selected>>,
 ) {
-    let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
-    if shift && keyboard_input.just_pressed(KeyCode::Up) {
+    if keyboard_input.just_pressed(KeyCode::Period) {
         for mut hole in black_hole_query.iter_mut() { hole.link_type += 1; }
         for mut hole in white_hole_query.iter_mut() { hole.link_type += 1; }
     }
-    if shift && keyboard_input.just_pressed(KeyCode::Down) {
+    if keyboard_input.just_pressed(KeyCode::Comma) {
         for mut hole in black_hole_query.iter_mut() { hole.link_type -= 1; }
         for mut hole in white_hole_query.iter_mut() { hole.link_type -= 1; }
     }
@@ -811,6 +808,14 @@ fn update_link_type_text(
 }
 
 // ------------------- process -----------------------
+
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
+enum Op {
+    #[default]
+    Yes,
+    BloomControl,
+}
 
 /*
 #[derive(Resource)]
