@@ -100,22 +100,24 @@ fn process(
                 Op::Yes => {},
                 Op::BloomControl => {
                     let mut bloom_settings = bloom.single_mut();
-                    for child in children_query.iter_descendants(*id) {
-                        if let Ok(mut white_hole) = white_hole_query.get_mut(child) {
-                            if !white_hole.changed { continue; }
-                            white_hole.changed = false;
-                            let black_hole = black_hole_query.get(white_hole.bh).unwrap();
-                            let input = num_query.get(black_hole.parent).unwrap().0 / 100.;
-                            match (black_hole.link_type, white_hole.link_type) {
-                                (-4, 1) => bloom_settings.intensity = input,
-                                (-4, 2) => bloom_settings.low_frequency_boost = input,
-                                (-4, 3) => bloom_settings.low_frequency_boost_curvature = input,
-                                (-4, 4) => bloom_settings.high_pass_frequency = input,
-                                (-4, 5) => bloom_settings.composite_mode = if input > 0.5 {
-                                BloomCompositeMode::Additive } else { BloomCompositeMode::EnergyConserving },
-                                (-4, 6) => bloom_settings.prefilter_settings.threshold = input,
-                                (-4, 7) => bloom_settings.prefilter_settings.threshold_softness = input,
-                                _ => {},
+                    if let Ok(children) = children_query.get(*id) {
+                        for child in children {
+                            if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+                                if !white_hole.changed { continue; }
+                                white_hole.changed = false;
+                                let black_hole = black_hole_query.get(white_hole.bh).unwrap();
+                                let input = num_query.get(black_hole.parent).unwrap().0 / 100.;
+                                match (black_hole.link_type, white_hole.link_type) {
+                                    (-4, 1) => bloom_settings.intensity = input,
+                                    (-4, 2) => bloom_settings.low_frequency_boost = input,
+                                    (-4, 3) => bloom_settings.low_frequency_boost_curvature = input,
+                                    (-4, 4) => bloom_settings.high_pass_frequency = input,
+                                    (-4, 5) => bloom_settings.composite_mode = if input > 0.5 {
+                                    BloomCompositeMode::Additive } else { BloomCompositeMode::EnergyConserving },
+                                    (-4, 6) => bloom_settings.prefilter_settings.threshold = input,
+                                    (-4, 7) => bloom_settings.prefilter_settings.threshold_softness = input,
+                                    _ => {},
+                                }
                             }
                         }
                     }
