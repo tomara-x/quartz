@@ -422,8 +422,6 @@ fn spawn_circles(
         commands.entity(id).add_child(text);
 
         depth.0 += 0.00001;
-
-        order_change.send_default();
     }
 }
 
