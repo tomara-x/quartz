@@ -112,6 +112,7 @@ fn process(
     mut radius_query: Query<&mut Radius>,
     mut meshes: ResMut<Assets<Mesh>>,
     mesh_ids: Query<&Mesh2dHandle>,
+    mut trans_query: Query<&mut Transform>,
 ) {
     for order in queue.0.iter() {
         for id in order {
@@ -147,6 +148,14 @@ fn process(
                                     _ => {},
                                 }
                             },
+                        }
+                        // trans
+                        if bh_link_type == -1 && wh_link_type == -1 {
+                            let input = trans_query.get(black_hole.parent).unwrap().translation;
+                            let mut t = trans_query.get_mut(*id).unwrap();
+                            t.translation.x = input.x;
+                            t.translation.y = input.y;
+                            mark_changed(-1, children, &black_hole_query, &mut white_hole_query);
                         }
                         // color
                         if bh_link_type == -2 && wh_link_type == -2 {
@@ -541,29 +550,44 @@ fn update_selection(
 fn move_selected(
     mouse_button_input: Res<Input<MouseButton>>,
     cursor: Res<CursorInfo>,
-    mut query: Query<&mut Transform, With<Selected>>,
+    mut query: Query<(&mut Transform, &Children), With<Selected>>,
     keyboard_input: Res<Input<KeyCode>>,
+    black_hole_query: Query<&BlackHole>,
+    mut white_hole_query: Query<&mut WhiteHole>,
 ) {
     if keyboard_input.pressed(KeyCode::Key1) {
         if mouse_button_input.pressed(MouseButton::Left) &&
         //lol because the update to entities isn't read until the next frame
         !mouse_button_input.just_pressed(MouseButton::Left) {
-            for mut t in query.iter_mut() {
+            for (mut t, children) in query.iter_mut() {
                 t.translation.x += cursor.d.x;
                 t.translation.y += cursor.d.y;
+                mark_changed(-1, children, &black_hole_query, &mut white_hole_query);
             }
         }
         if keyboard_input.pressed(KeyCode::Up) {
-            for mut t in query.iter_mut() { t.translation.y += 1.; }
+            for (mut t, children) in query.iter_mut() {
+                t.translation.y += 1.;
+                mark_changed(-1, children, &black_hole_query, &mut white_hole_query);
+            }
         }
         if keyboard_input.pressed(KeyCode::Down) {
-            for mut t in query.iter_mut() { t.translation.y -= 1.; }
+            for (mut t, children) in query.iter_mut() {
+                t.translation.y -= 1.;
+                mark_changed(-1, children, &black_hole_query, &mut white_hole_query);
+            }
         }
         if keyboard_input.pressed(KeyCode::Right) {
-            for mut t in query.iter_mut() { t.translation.x += 1.; }
+            for (mut t, children) in query.iter_mut() {
+                t.translation.x += 1.;
+                mark_changed(-1, children, &black_hole_query, &mut white_hole_query);
+            }
         }
         if keyboard_input.pressed(KeyCode::Left) {
-            for mut t in query.iter_mut() { t.translation.x -= 1.; }
+            for (mut t, children) in query.iter_mut() {
+                t.translation.x -= 1.;
+                mark_changed(-1, children, &black_hole_query, &mut white_hole_query);
+            }
         }
     }
 }
