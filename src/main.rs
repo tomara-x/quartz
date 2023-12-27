@@ -73,6 +73,22 @@ fn main() {
         .run();
 }
 
+
+fn mark_changed(
+    n: i32,
+    children: &Children,
+    bh_query: &Query<&BlackHole>,
+    wh_query: &mut Query<&mut WhiteHole>,
+) {
+    for child in children.iter() {
+        if let Ok(black_hole) = bh_query.get(*child) {
+            if black_hole.link_type == n {
+                wh_query.get_mut(black_hole.wh).unwrap().changed = true;
+            }
+        }
+    }
+}
+
 // ------------------- process -----------------------
 
 #[derive(Component, Reflect, Default)]
@@ -557,21 +573,6 @@ fn move_selected(
     }
 }
 
-fn mark_changed(
-    n: i32,
-    children: &Children,
-    bh_query: &Query<&BlackHole>,
-    wh_query: &mut Query<&mut WhiteHole>,
-) {
-    for child in children.iter() {
-        if let Ok(black_hole) = bh_query.get(*child) {
-            if black_hole.link_type == n {
-                wh_query.get_mut(black_hole.wh).unwrap().changed = true;
-            }
-        }
-    }
-}
-
 fn update_color(
     mut mats: ResMut<Assets<ColorMaterial>>,
     material_ids: Query<(&Handle<ColorMaterial>, &Children), With<Selected>>,
@@ -672,15 +673,9 @@ fn update_num(
             for (mut n, children) in query.iter_mut() {
                 // change the number
                 n.0 += cursor.d.y / 10.;
-                // inform any white holes connected through link 4 black holes
+                // inform any white holes connected through link -4 black holes
                 // that our value has changed
-                for child in children.iter() {
-                    if let Ok(black_hole) = black_hole_query.get(*child) {
-                        if black_hole.link_type == -4 {
-                            white_hole_query.get_mut(black_hole.wh).unwrap().changed = true;
-                        }
-                    }
-                }
+                mark_changed(-4, children, &black_hole_query, &mut white_hole_query);
             }
         }
     }
