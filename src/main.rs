@@ -109,6 +109,9 @@ fn process(
     mut num_query: Query<&mut Num>,
     mut mats: ResMut<Assets<ColorMaterial>>,
     material_ids: Query<&Handle<ColorMaterial>>,
+    mut radius_query: Query<&mut Radius>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mesh_ids: Query<&Mesh2dHandle>,
 ) {
     for order in queue.0.iter() {
         for id in order {
@@ -152,6 +155,16 @@ fn process(
                             let input = mat.color;
                             mats.get_mut(material_ids.get(*id).unwrap()).unwrap().color = input;
                             mark_changed(-2, children, &black_hole_query, &mut white_hole_query);
+                        }
+                        // radius
+                        if bh_link_type == -3 && wh_link_type == -3 {
+                            if let Ok(Mesh2dHandle(mesh_id)) = mesh_ids.get(*id) {
+                                let input = radius_query.get(black_hole.parent).unwrap().0;
+                                radius_query.get_mut(*id).unwrap().0 = input;
+                                let mesh = meshes.get_mut(mesh_id).unwrap();
+                                *mesh = shape::Circle::new(input).into();
+                            }
+                            mark_changed(-3, children, &black_hole_query, &mut white_hole_query);
                         }
                     }
                 }
@@ -606,36 +619,41 @@ fn update_color(
 
 fn update_radius(
     mut meshes: ResMut<Assets<Mesh>>,
-    mesh_ids: Query<(Entity, &Mesh2dHandle), With<Selected>>,
+    mesh_ids: Query<(Entity, &Children, &Mesh2dHandle), With<Selected>>,
     keyboard_input: Res<Input<KeyCode>>,
     cursor: Res<CursorInfo>,
     mouse_button_input: Res<Input<MouseButton>>,
     mut radius_query: Query<&mut Radius>,
+    mut white_hole_query: Query<&mut WhiteHole>,
+    black_hole_query: Query<&BlackHole>,
 ) {
     if keyboard_input.pressed(KeyCode::Key3) {
         if mouse_button_input.pressed(MouseButton::Left) &&
         !mouse_button_input.just_pressed(MouseButton::Left) {
-            for (entity, Mesh2dHandle(id)) in mesh_ids.iter() {
+            for (entity, children, Mesh2dHandle(id)) in mesh_ids.iter() {
                 let r = cursor.f.distance(cursor.i);
                 let mesh = meshes.get_mut(id).unwrap();
                 *mesh = shape::Circle::new(r).into();
                 radius_query.get_mut(entity).unwrap().0 = r;
+                mark_changed(-3, children, &black_hole_query, &mut white_hole_query);
             }
         }
         if keyboard_input.pressed(KeyCode::Up) {
-            for (entity, Mesh2dHandle(id)) in mesh_ids.iter() {
+            for (entity, children, Mesh2dHandle(id)) in mesh_ids.iter() {
                 let r = radius_query.get_mut(entity).unwrap().0 + 1.;
                 radius_query.get_mut(entity).unwrap().0 = r;
                 let mesh = meshes.get_mut(id).unwrap();
                 *mesh = shape::Circle::new(r).into();
+                mark_changed(-3, children, &black_hole_query, &mut white_hole_query);
             }
         }
         if keyboard_input.pressed(KeyCode::Down) {
-            for (entity, Mesh2dHandle(id)) in mesh_ids.iter() {
+            for (entity, children, Mesh2dHandle(id)) in mesh_ids.iter() {
                 let r = radius_query.get_mut(entity).unwrap().0 - 1.;
                 radius_query.get_mut(entity).unwrap().0 = r;
                 let mesh = meshes.get_mut(id).unwrap();
                 *mesh = shape::Circle::new(r).into();
+                mark_changed(-3, children, &black_hole_query, &mut white_hole_query);
             }
         }
     }
