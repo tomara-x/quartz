@@ -51,7 +51,8 @@ fn main() {
         .add_systems(Update, update_num.after(update_selection).run_if(in_state(Mode::Edit)))
         .add_systems(Update, highlight_selected.run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_order.run_if(in_state(Mode::Edit)))
-        .add_systems(Update, update_order_text.run_if(in_state(Mode::Edit)))
+        .add_systems(Update, update_op.run_if(in_state(Mode::Edit)))
+        .add_systems(Update, update_circle_text.run_if(in_state(Mode::Edit)))
 
         .add_systems(Update, connect.run_if(in_state(Mode::Connect)))
         .add_systems(Update, draw_connections)
@@ -59,11 +60,7 @@ fn main() {
         .add_systems(Update, update_link_type.run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_link_type_text.run_if(in_state(Mode::Edit)))
 
-        //.insert_resource(BloomCircleId(Entity::from_raw(0)))
-        //.add_systems(Startup, spawn_bloom_circle)
-        //.add_systems(Update, update_bloom_settings)
-        //.add_systems(Update, update_color_from_input)
-        //.add_systems(Update, update_num_from_input)
+        //.add_systems(Update, process)
 
         // order
         .add_systems(Update, (spawn_circles.run_if(in_state(Mode::Draw)),
@@ -75,6 +72,130 @@ fn main() {
         .add_event::<OrderChange>()
         .run();
 }
+
+// ------------------- process -----------------------
+
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
+enum Op {
+    #[default]
+    Yes,
+    BloomControl,
+}
+
+/*
+fn spawn_bloom_circle(
+    mut commands: Commands,
+    mut resource: ResMut<BloomCircleId>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+) {
+    let id = commands.spawn((
+        ColorMesh2dBundle {
+            mesh: meshes.add(shape::Circle::new(100.).into()).into(),
+            material: materials.add(ColorMaterial::from(Color::hsl(300., 1.0, 0.5))),
+            transform: Transform::from_translation(Vec3{x:0., y:0., z:-11.}),
+            ..default()
+        },
+        Radius(100.),
+        Visible,
+        Order(0),
+        Num(0.),
+        Arr(Vec::new()),
+        Offset {trans:Vec3::ZERO, color:Color::BLACK, radius:0.},
+    )).id();
+    let text = commands.spawn(Text2dBundle {
+        text: Text::from_sections([
+            TextSection::new(
+                "order: 0\n",
+                TextStyle::default()
+            ),
+            TextSection::new(
+                "0\n",
+                TextStyle::default()
+            ),
+        ]),
+        transform: Transform::from_translation(Vec3{z:0.000001, ..default()}),
+        ..default()
+    }).id();
+    commands.entity(id).add_child(text);
+    resource.0 = id;
+}
+
+fn update_bloom_settings(
+    children_query: Query<&Children>,
+    mut bloom: Query<&mut BloomSettings, With<Camera>>,
+    black_hole_query: Query<&BlackHole>,
+    mut white_hole_query: Query<&mut WhiteHole>,
+    id: Res<BloomCircleId>,
+    num_query: Query<&Num>,
+) {
+    let mut bloom_settings = bloom.single_mut();
+    // why doesn't iter_descendants need error checking?
+    for child in children_query.iter_descendants(id.0) {
+        if let Ok(mut white_hole) = white_hole_query.get_mut(child) {
+            if !white_hole.changed { continue; }
+            white_hole.changed = false;
+            let black_hole = black_hole_query.get(white_hole.bh).unwrap();
+            let input = num_query.get(black_hole.parent).unwrap().0 / 100.;
+            match (black_hole.link_type, white_hole.link_type) {
+                (-4, 1) => bloom_settings.intensity = input,
+                (-4, 2) => bloom_settings.low_frequency_boost = input,
+                (-4, 3) => bloom_settings.low_frequency_boost_curvature = input,
+                (-4, 4) => bloom_settings.high_pass_frequency = input,
+                (-4, 5) => bloom_settings.composite_mode = if input > 0.5 {
+                BloomCompositeMode::Additive } else { BloomCompositeMode::EnergyConserving },
+                (-4, 6) => bloom_settings.prefilter_settings.threshold = input,
+                (-4, 7) => bloom_settings.prefilter_settings.threshold_softness = input,
+                _ => {},
+            }
+        }
+    }
+}
+fn update_num_from_input(
+    query: Query<(Entity, &Children)>,
+    black_hole_query: Query<&BlackHole>,
+    mut white_hole_query: Query<&mut WhiteHole>,
+    mut num_query: Query<&mut Num>, ) {
+    for (e, children) in query.iter() {
+        for child in children.iter() {
+            if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+                if !white_hole.changed { continue; }
+                white_hole.changed = false;
+                let black_hole = black_hole_query.get(white_hole.bh).unwrap();
+                let input = num_query.get(black_hole.parent).unwrap().0;
+                if black_hole.link_type == -4 && white_hole.link_type == -4 {
+                    num_query.get_mut(e).unwrap().0 = input;
+                    // now we have to let anything connected to this circle know about this change
+                    // MACRO THIS!
+                    for child in children.iter() {
+                        if let Ok(black_hole) = black_hole_query.get(*child) {
+                            if black_hole.link_type == -4 {
+                                white_hole_query.get_mut(black_hole.wh).unwrap().changed = true; }}}}}}}}
+fn update_color_from_input(
+    query: Query<(Entity, &Children)>,
+    black_hole_query: Query<&BlackHole>,
+    mut white_hole_query: Query<&mut WhiteHole>,
+    mut mats: ResMut<Assets<ColorMaterial>>,
+    material_ids: Query<&Handle<ColorMaterial>>, ) {
+    for (e, children) in query.iter() {
+        for child in children.iter() {
+            if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+                //if !white_hole.changed { continue; }
+                //white_hole.changed = false;
+                let black_hole = black_hole_query.get(white_hole.bh).unwrap();
+                if black_hole.link_type == -2 && white_hole.link_type == -2 {
+                    let id = material_ids.get(black_hole.parent).unwrap();
+                    let mat = mats.get(id).unwrap();
+                    let input = mat.color;
+                    mats.get_mut(material_ids.get(e).unwrap()).unwrap().color = input;
+                    for child in children.iter() {
+                        if let Ok(black_hole) = black_hole_query.get(*child) {
+                            if black_hole.link_type == -2 {
+                                white_hole_query.get_mut(black_hole.wh).unwrap().changed = true; }}}}}}}}
+*/
+
+// ----------------------- main --------------------------
 
 fn setup(
     mut commands: Commands,
@@ -207,21 +328,6 @@ fn update_order (
     }
 }
 
-fn update_order_text(
-    mut query: Query<(&mut Text, &Parent), With<Visible>>,
-    order_query: Query<&Order>,
-    num_query: Query<&Num>,
-) {
-    for (mut text, parent) in query.iter_mut() {
-        if let Ok(order) = order_query.get(**parent) {
-            text.sections[1].value = "order: ".to_string() + &order.0.to_string() + "\n";
-        }
-        if let Ok(num) = num_query.get(**parent) {
-            text.sections[2].value = num.0.to_string();
-        }
-    }
-}
-
 // ---------------------- cursor ------------------------
 
 // initial, final, delta
@@ -319,6 +425,7 @@ fn spawn_circles(
             Num(0.),
             Arr(Vec::new()),
             Offset {trans:Vec3::ZERO, color:Color::BLACK, radius:0.},
+            Op::Yes,
         )).id();
 
         // have the circle adopt a text entity
@@ -330,6 +437,10 @@ fn spawn_circles(
                 ),
                 TextSection::new(
                     "order: 0\n",
+                    TextStyle::default(),
+                ),
+                TextSection::new(
+                    "op: yaas\n",
                     TextStyle::default(),
                 ),
                 TextSection::new(
@@ -597,7 +708,40 @@ fn update_num(
         }
     }
 }
-            
+
+fn update_op(
+    mut query: Query<&mut Op, With<Selected>>,
+    keyboard_input: Res<Input<KeyCode>>,
+) {
+    if keyboard_input.just_pressed(KeyCode::O) {
+        for mut op in query.iter_mut() { *op = Op::Yes; }
+    }
+    if keyboard_input.just_pressed(KeyCode::P) {
+        for mut op in query.iter_mut() { *op = Op::BloomControl; }
+    }
+}
+
+fn update_circle_text(
+    mut query: Query<(&mut Text, &Parent), With<Visible>>,
+    order_query: Query<&Order>,
+    num_query: Query<&Num>,
+    op_query: Query<&Op>,
+) {
+    for (mut text, parent) in query.iter_mut() {
+        if let Ok(order) = order_query.get(**parent) {
+            text.sections[1].value = "order: ".to_string() + &order.0.to_string() + "\n";
+        }
+        if let Ok(op) = op_query.get(**parent) {
+            text.sections[2].value = match op {
+                Op::Yes => "op: yaas\n".to_string(),
+                Op::BloomControl => "op: BloomControl\n".to_string(),
+            };
+        }
+        if let Ok(num) = num_query.get(**parent) {
+            text.sections[3].value = num.0.to_string();
+        }
+    }
+}
 
 fn delete_selected(
     keyboard_input: Res<Input<KeyCode>>,
@@ -807,148 +951,4 @@ fn update_link_type_text(
     }
 }
 
-// ------------------- process -----------------------
-
-#[derive(Component, Reflect, Default)]
-#[reflect(Component)]
-enum Op {
-    #[default]
-    Yes,
-    BloomControl,
-}
-
-/*
-#[derive(Resource)]
-struct BloomCircleId(Entity);
-
-fn spawn_bloom_circle(
-    mut commands: Commands,
-    mut resource: ResMut<BloomCircleId>,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-) {
-    let id = commands.spawn((
-        ColorMesh2dBundle {
-            mesh: meshes.add(shape::Circle::new(100.).into()).into(),
-            material: materials.add(ColorMaterial::from(Color::hsl(300., 1.0, 0.5))),
-            transform: Transform::from_translation(Vec3{x:0., y:0., z:-11.}),
-            ..default()
-        },
-        Radius(100.),
-        Visible,
-        Order(0),
-        Num(0.),
-        Arr(Vec::new()),
-        Offset {trans:Vec3::ZERO, color:Color::BLACK, radius:0.},
-    )).id();
-    let text = commands.spawn(Text2dBundle {
-        text: Text::from_sections([
-            TextSection::new(
-                "order: 0\n",
-                TextStyle::default()
-            ),
-            TextSection::new(
-                "0\n",
-                TextStyle::default()
-            ),
-        ]),
-        transform: Transform::from_translation(Vec3{z:0.000001, ..default()}),
-        ..default()
-    }).id();
-    commands.entity(id).add_child(text);
-    resource.0 = id;
-}
-
-fn update_bloom_settings(
-    children_query: Query<&Children>,
-    mut bloom: Query<&mut BloomSettings, With<Camera>>,
-    black_hole_query: Query<&BlackHole>,
-    mut white_hole_query: Query<&mut WhiteHole>,
-    id: Res<BloomCircleId>,
-    num_query: Query<&Num>,
-) {
-    let mut bloom_settings = bloom.single_mut();
-    // why doesn't iter_descendants need error checking?
-    for child in children_query.iter_descendants(id.0) {
-        if let Ok(mut white_hole) = white_hole_query.get_mut(child) {
-            if !white_hole.changed { continue; }
-            white_hole.changed = false;
-            let black_hole = black_hole_query.get(white_hole.bh).unwrap();
-            let input = num_query.get(black_hole.parent).unwrap().0 / 100.;
-            match (black_hole.link_type, white_hole.link_type) {
-                (-4, 1) => bloom_settings.intensity = input,
-                (-4, 2) => bloom_settings.low_frequency_boost = input,
-                (-4, 3) => bloom_settings.low_frequency_boost_curvature = input,
-                (-4, 4) => bloom_settings.high_pass_frequency = input,
-                (-4, 5) => bloom_settings.composite_mode = if input > 0.5 {
-                BloomCompositeMode::Additive } else { BloomCompositeMode::EnergyConserving },
-                (-4, 6) => bloom_settings.prefilter_settings.threshold = input,
-                (-4, 7) => bloom_settings.prefilter_settings.threshold_softness = input,
-                _ => {},
-            }
-        }
-    }
-}
-
-fn update_num_from_input(
-    query: Query<(Entity, &Children)>,
-    black_hole_query: Query<&BlackHole>,
-    mut white_hole_query: Query<&mut WhiteHole>,
-    mut num_query: Query<&mut Num>,
-) {
-    for (e, children) in query.iter() {
-        for child in children.iter() {
-            if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
-                if !white_hole.changed { continue; }
-                white_hole.changed = false;
-                let black_hole = black_hole_query.get(white_hole.bh).unwrap();
-                let input = num_query.get(black_hole.parent).unwrap().0;
-                if black_hole.link_type == -4 && white_hole.link_type == -4 {
-                    num_query.get_mut(e).unwrap().0 = input;
-                    // now we have to let anything connected to this circle know about this change
-                    // MACRO THIS!
-                    for child in children.iter() {
-                        if let Ok(black_hole) = black_hole_query.get(*child) {
-                            if black_hole.link_type == -4 {
-                                white_hole_query.get_mut(black_hole.wh).unwrap().changed = true;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-fn update_color_from_input(
-    query: Query<(Entity, &Children)>,
-    black_hole_query: Query<&BlackHole>,
-    mut white_hole_query: Query<&mut WhiteHole>,
-    mut mats: ResMut<Assets<ColorMaterial>>,
-    material_ids: Query<&Handle<ColorMaterial>>,
-) {
-    for (e, children) in query.iter() {
-        for child in children.iter() {
-            if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
-                //if !white_hole.changed { continue; }
-                //white_hole.changed = false;
-                let black_hole = black_hole_query.get(white_hole.bh).unwrap();
-                if black_hole.link_type == -2 && white_hole.link_type == -2 {
-                    let id = material_ids.get(black_hole.parent).unwrap();
-                    let mat = mats.get(id).unwrap();
-                    let input = mat.color;
-                    mats.get_mut(material_ids.get(e).unwrap()).unwrap().color = input;
-                    for child in children.iter() {
-                        if let Ok(black_hole) = black_hole_query.get(*child) {
-                            if black_hole.link_type == -2 {
-                                white_hole_query.get_mut(black_hole.wh).unwrap().changed = true;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-*/
 
