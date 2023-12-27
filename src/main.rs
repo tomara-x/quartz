@@ -44,7 +44,6 @@ fn main() {
 
         // test high depth
         .insert_resource(Depth(-10.))
-        .add_systems(Update, spawn_circles.run_if(in_state(Mode::Draw)))
         .add_systems(Update, draw_pointer_circle.run_if(not(in_state(Mode::Connect))))
         .add_systems(Update, mark_visible.after(update_cursor_info))
         .add_systems(Update, update_selection.after(mark_visible).run_if(in_state(Mode::Edit)))
@@ -53,7 +52,6 @@ fn main() {
         .add_systems(Update, update_radius.after(update_selection).run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_num.after(update_selection).run_if(in_state(Mode::Edit)))
         .add_systems(Update, highlight_selected.run_if(in_state(Mode::Edit)))
-        .add_systems(Update, delete_selected.run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_order.run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_order_text.run_if(in_state(Mode::Edit)))
 
@@ -76,10 +74,13 @@ fn main() {
         .add_systems(Update, receive_mess.after(send_mess).run_if(on_event::<MessageEvent>()))
 
         // sorting stuff
+        .add_systems(Update, (spawn_circles.run_if(in_state(Mode::Draw)),
+                              delete_selected.run_if(in_state(Mode::Edit)),
+                              apply_deferred, //to make sure the commands are applied
+                              sort_by_order.run_if(on_event::<OrderChange>())).chain())
         .register_type::<Queue>()
         .init_resource::<Queue>()
-        .add_systems(Update, sort_by_order) // should only be triggered when needed
-
+        .add_event::<OrderChange>()
         .run();
 }
 
@@ -87,6 +88,9 @@ fn main() {
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
 struct Queue(Vec<Vec<Entity>>); //you sure about that name? you're sydlexic!
+
+#[derive(Event, Default)]
+struct OrderChange;
 
 // this will be triggered by events (spawn, delete, order change)
 fn sort_by_order(
@@ -295,6 +299,7 @@ fn spawn_circles(
     mut materials: ResMut<Assets<ColorMaterial>>,
     mut depth: ResMut<Depth>,
     cursor: Res<CursorInfo>,
+    mut order_change: EventWriter<OrderChange>,
 ) {
     if mouse_button_input.just_released(MouseButton::Left) {
         let radius = cursor.f.distance(cursor.i);
@@ -335,6 +340,8 @@ fn spawn_circles(
         commands.entity(id).add_child(text);
 
         depth.0 += 0.00001;
+
+        order_change.send_default();
     }
 }
 
@@ -589,13 +596,22 @@ fn update_num(
 fn update_order (
     keyboard_input: Res<Input<KeyCode>>,
     mut query: Query<&mut Order, With<Selected>>,
+    mut order_change: EventWriter<OrderChange>,
 ) {
     let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
     if shift && keyboard_input.just_pressed(KeyCode::Up) {
-        for mut order in query.iter_mut() { order.0 += 1; }
+        for mut order in query.iter_mut() {
+            order.0 += 1;
+            order_change.send_default();
+        }
     }
     if shift && keyboard_input.just_pressed(KeyCode::Down) {
-        for mut order in query.iter_mut() { if order.0 > 0 { order.0 -= 1; } }
+        for mut order in query.iter_mut() {
+            if order.0 > 0 {
+                order.0 -= 1;
+                order_change.send_default();
+            }
+        }
     }
 }
 
@@ -620,6 +636,7 @@ fn delete_selected(
     mut commands: Commands,
     white_hole_query: Query<&WhiteHole>,
     black_hole_query: Query<&BlackHole>,
+    mut order_change: EventWriter<OrderChange>,
 ) {
     if keyboard_input.pressed(KeyCode::Delete) {
         for (id, children) in query.iter() {
@@ -640,6 +657,7 @@ fn delete_selected(
                 }
             }
             commands.entity(id).despawn_recursive();
+            order_change.send_default();
         }
     }
 }
