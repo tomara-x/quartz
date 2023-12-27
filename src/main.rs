@@ -678,6 +678,18 @@ fn update_num(
                 mark_changed(-4, children, &black_hole_query, &mut white_hole_query);
             }
         }
+        if keyboard_input.pressed(KeyCode::Up) {
+            for (mut n, children) in query.iter_mut() {
+                n.0 += 0.01;
+                mark_changed(-4, children, &black_hole_query, &mut white_hole_query);
+            }
+        }
+        if keyboard_input.pressed(KeyCode::Down) {
+            for (mut n, children) in query.iter_mut() {
+                n.0 -= 0.01;
+                mark_changed(-4, children, &black_hole_query, &mut white_hole_query);
+            }
+        }
     }
 }
 
