@@ -367,6 +367,7 @@ struct Num(f32);
 #[derive(Component)]
 struct Arr(Vec<f32>);
 
+#[allow(dead_code)]
 #[derive(Component)]
 struct Offset {
     trans: Vec3,
@@ -396,7 +397,6 @@ fn spawn_circles(
     mut materials: ResMut<Assets<ColorMaterial>>,
     mut depth: ResMut<Depth>,
     cursor: Res<CursorInfo>,
-    mut order_change: EventWriter<OrderChange>,
     keyboard_input: Res<Input<KeyCode>>,
 ) {
     if mouse_button_input.just_released(MouseButton::Left) &&
@@ -786,6 +786,7 @@ fn delete_selected(
 // ------------------- connections -------------------
 
 // hole enum?
+#[allow(dead_code)]
 #[derive(Component)]
 struct WhiteHole {
     id: Entity,
