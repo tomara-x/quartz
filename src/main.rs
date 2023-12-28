@@ -114,67 +114,65 @@ fn process(
     mesh_ids: Query<&Mesh2dHandle>,
     mut trans_query: Query<&mut Transform>,
 ) {
-    for order in queue.0.iter() {
-        for id in order {
-            if let Ok(children) = children_query.get(*id) {
-                for child in children {
-                    if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
-                        if !white_hole.changed { continue; }
-                        white_hole.changed = false;
-                        let black_hole = black_hole_query.get(white_hole.bh).unwrap();
-                        let wh_link_type = white_hole.link_type;
-                        let bh_link_type = black_hole.link_type;
-                        match op_query.get(*id).unwrap() {
-                            Op::Yes => {
-                                // input to num
-                                let input = num_query.get(black_hole.parent).unwrap().0;
-                                if bh_link_type == -4 && wh_link_type == -4 {
-                                    num_query.get_mut(*id).unwrap().0 = input;
-                                    mark_changed(-4, children, &black_hole_query, &mut white_hole_query);
-                                }
-                            },
-                            Op::BloomControl => {
-                                let mut bloom_settings = bloom.single_mut();
-                                let input = num_query.get(black_hole.parent).unwrap().0 / 100.;
-                                match (bh_link_type, wh_link_type) {
-                                    (-4, 1) => bloom_settings.intensity = input,
-                                    (-4, 2) => bloom_settings.low_frequency_boost = input,
-                                    (-4, 3) => bloom_settings.low_frequency_boost_curvature = input,
-                                    (-4, 4) => bloom_settings.high_pass_frequency = input,
-                                    (-4, 5) => bloom_settings.composite_mode = if input > 0.5 {
-                                    BloomCompositeMode::Additive } else { BloomCompositeMode::EnergyConserving },
-                                    (-4, 6) => bloom_settings.prefilter_settings.threshold = input,
-                                    (-4, 7) => bloom_settings.prefilter_settings.threshold_softness = input,
-                                    _ => {},
-                                }
-                            },
-                        }
-                        // trans
-                        if bh_link_type == -1 && wh_link_type == -1 {
-                            let input = trans_query.get(black_hole.parent).unwrap().translation;
-                            let mut t = trans_query.get_mut(*id).unwrap();
-                            t.translation.x = input.x;
-                            t.translation.y = input.y;
-                            mark_changed(-1, children, &black_hole_query, &mut white_hole_query);
-                        }
-                        // color
-                        if bh_link_type == -2 && wh_link_type == -2 {
-                            let mat_id = material_ids.get(black_hole.parent).unwrap();
-                            let mat = mats.get(mat_id).unwrap();
-                            let input = mat.color;
-                            mats.get_mut(material_ids.get(*id).unwrap()).unwrap().color = input;
-                            mark_changed(-2, children, &black_hole_query, &mut white_hole_query);
-                        }
-                        // radius
-                        if bh_link_type == -3 && wh_link_type == -3 {
-                            if let Ok(Mesh2dHandle(mesh_id)) = mesh_ids.get(*id) {
-                                let input = radius_query.get(black_hole.parent).unwrap().0;
-                                radius_query.get_mut(*id).unwrap().0 = input;
-                                let mesh = meshes.get_mut(mesh_id).unwrap();
-                                *mesh = shape::Circle::new(input).into();
+    for id in queue.0.iter().flatten() {
+        if let Ok(children) = children_query.get(*id) {
+            for child in children {
+                if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+                    if !white_hole.changed { continue; }
+                    white_hole.changed = false;
+                    let black_hole = black_hole_query.get(white_hole.bh).unwrap();
+                    let wh_link_type = white_hole.link_type;
+                    let bh_link_type = black_hole.link_type;
+                    match op_query.get(*id).unwrap() {
+                        Op::Yes => {
+                            // input to num
+                            let input = num_query.get(black_hole.parent).unwrap().0;
+                            if bh_link_type == -4 && wh_link_type == -4 {
+                                num_query.get_mut(*id).unwrap().0 = input;
+                                mark_changed(-4, children, &black_hole_query, &mut white_hole_query);
                             }
-                            mark_changed(-3, children, &black_hole_query, &mut white_hole_query);
+                        },
+                        Op::BloomControl => {
+                            let mut bloom_settings = bloom.single_mut();
+                            let input = num_query.get(black_hole.parent).unwrap().0 / 100.;
+                            match (bh_link_type, wh_link_type) {
+                                (-4, 1) => bloom_settings.intensity = input,
+                                (-4, 2) => bloom_settings.low_frequency_boost = input,
+                                (-4, 3) => bloom_settings.low_frequency_boost_curvature = input,
+                                (-4, 4) => bloom_settings.high_pass_frequency = input,
+                                (-4, 5) => bloom_settings.composite_mode = if input > 0.5 {
+                                BloomCompositeMode::Additive } else { BloomCompositeMode::EnergyConserving },
+                                (-4, 6) => bloom_settings.prefilter_settings.threshold = input,
+                                (-4, 7) => bloom_settings.prefilter_settings.threshold_softness = input,
+                                _ => {},
+                            }
+                        },
+                    }
+                    // trans
+                    if bh_link_type == -1 && wh_link_type == -1 {
+                        let input = trans_query.get(black_hole.parent).unwrap().translation;
+                        let mut t = trans_query.get_mut(*id).unwrap();
+                        t.translation.x = input.x;
+                        t.translation.y = input.y;
+                        mark_changed(-1, children, &black_hole_query, &mut white_hole_query);
+                    }
+                    // color
+                    if bh_link_type == -2 && wh_link_type == -2 {
+                        let mat_id = material_ids.get(black_hole.parent).unwrap();
+                        let mat = mats.get(mat_id).unwrap();
+                        let input = mat.color;
+                        mats.get_mut(material_ids.get(*id).unwrap()).unwrap().color = input;
+                        mark_changed(-2, children, &black_hole_query, &mut white_hole_query);
+                    }
+                    // radius
+                    if bh_link_type == -3 && wh_link_type == -3 {
+                        if let Ok(Mesh2dHandle(mesh_id)) = mesh_ids.get(*id) {
+                            let input = radius_query.get(black_hole.parent).unwrap().0;
+                            radius_query.get_mut(*id).unwrap().0 = input;
+                            let mesh = meshes.get_mut(mesh_id).unwrap();
+                            *mesh = shape::Circle::new(input).into();
                         }
+                        mark_changed(-3, children, &black_hole_query, &mut white_hole_query);
                     }
                 }
             }
