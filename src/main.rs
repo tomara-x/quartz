@@ -1,4 +1,5 @@
 use bevy::{
+    //ecs::system::SystemParam,
     render::view::VisibleEntities,
     sprite::Mesh2dHandle,
     core_pipeline::{
@@ -74,19 +75,16 @@ fn main() {
 }
 
 
-fn mark_changed(
-    n: i32,
-    children: &Children,
-    bh_query: &Query<&BlackHole>,
-    wh_query: &mut Query<&mut WhiteHole>,
-) {
-    for child in children.iter() {
-        if let Ok(black_hole) = bh_query.get(*child) {
-            if black_hole.link_type == n {
-                wh_query.get_mut(black_hole.wh).unwrap().changed = true;
+macro_rules! mark_changed {
+    ($n:expr, $children:expr, $bh_query:expr, $wh_query:expr) => {
+        for child in $children.iter() {
+            if let Ok(black_hole) = $bh_query.get(*child) {
+                if black_hole.link_type == $n {
+                    $wh_query.get_mut(black_hole.wh).unwrap().changed = true;
+                }
             }
         }
-    }
+    };
 }
 
 // ------------------- process -----------------------
@@ -116,63 +114,79 @@ fn process(
 ) {
     for id in queue.0.iter().flatten() {
         let children = children_query.get(*id).unwrap();
-        for child in children {
-            if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
-                if !white_hole.changed { continue; }
-                white_hole.changed = false;
-                let black_hole = black_hole_query.get(white_hole.bh).unwrap();
-                let wh_link_type = white_hole.link_type;
-                let bh_link_type = black_hole.link_type;
-                match op_query.get(*id).unwrap() {
-                    Op::Yes => {
-                        // input to num
-                        let input = num_query.get(black_hole.parent).unwrap().0;
-                        if bh_link_type == -4 && wh_link_type == -4 {
-                            num_query.get_mut(*id).unwrap().0 = input;
-                            mark_changed(-4, children, &black_hole_query, &mut white_hole_query);
+        match op_query.get(*id).unwrap() {
+            Op::Yes => {
+                // input to num
+                for child in children {
+                    if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+                        if white_hole.changed {
+                            let black_hole = black_hole_query.get(white_hole.bh).unwrap();
+                            if black_hole.link_type == -4 && white_hole.link_type == -4 {
+                                white_hole.changed = false;
+                                let input = num_query.get(black_hole.parent).unwrap().0;
+                                num_query.get_mut(*id).unwrap().0 = input;
+                                mark_changed!(-4, children, black_hole_query, white_hole_query);
+                            }
                         }
-                    },
-                    Op::BloomControl => {
-                        let mut bloom_settings = bloom.single_mut();
+                    }
+                }
+            },
+            Op::BloomControl => {
+                let mut bloom_settings = bloom.single_mut();
+                for child in children {
+                    if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+                        if !white_hole.changed { continue; }
+                        white_hole.changed = false;
+                        let black_hole = black_hole_query.get(white_hole.bh).unwrap();
                         let input = num_query.get(black_hole.parent).unwrap().0 / 100.;
-                        match (bh_link_type, wh_link_type) {
+                        match (black_hole.link_type, white_hole.link_type) {
                             (-4, 1) => bloom_settings.intensity = input,
                             (-4, 2) => bloom_settings.low_frequency_boost = input,
                             (-4, 3) => bloom_settings.low_frequency_boost_curvature = input,
                             (-4, 4) => bloom_settings.high_pass_frequency = input,
-                            (-4, 5) => bloom_settings.composite_mode = if input > 0.5 {
+                            (-4, 5) => bloom_settings.composite_mode = if input > 0. {
                             BloomCompositeMode::Additive } else { BloomCompositeMode::EnergyConserving },
                             (-4, 6) => bloom_settings.prefilter_settings.threshold = input,
                             (-4, 7) => bloom_settings.prefilter_settings.threshold_softness = input,
                             _ => {},
                         }
-                    },
-                }
-                // trans
-                if bh_link_type == -1 && wh_link_type == -1 {
-                    let input = trans_query.get(black_hole.parent).unwrap().translation;
-                    let mut t = trans_query.get_mut(*id).unwrap();
-                    t.translation.x = input.x;
-                    t.translation.y = input.y;
-                    mark_changed(-1, children, &black_hole_query, &mut white_hole_query);
-                }
-                // color
-                if bh_link_type == -2 && wh_link_type == -2 {
-                    let mat_id = material_ids.get(black_hole.parent).unwrap();
-                    let mat = mats.get(mat_id).unwrap();
-                    let input = mat.color;
-                    mats.get_mut(material_ids.get(*id).unwrap()).unwrap().color = input;
-                    mark_changed(-2, children, &black_hole_query, &mut white_hole_query);
-                }
-                // radius
-                if bh_link_type == -3 && wh_link_type == -3 {
-                    if let Ok(Mesh2dHandle(mesh_id)) = mesh_ids.get(*id) {
-                        let input = radius_query.get(black_hole.parent).unwrap().0;
-                        radius_query.get_mut(*id).unwrap().0 = input;
-                        let mesh = meshes.get_mut(mesh_id).unwrap();
-                        *mesh = shape::Circle::new(input).into();
                     }
-                    mark_changed(-3, children, &black_hole_query, &mut white_hole_query);
+                }
+            },
+        }
+        for child in children {
+            if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+                if !white_hole.changed { continue; }
+                white_hole.changed = false;
+                let black_hole = black_hole_query.get(white_hole.bh).unwrap();
+                match (black_hole.link_type, white_hole.link_type) {
+                    // trans
+                    (-1, -1) => {
+                        let input = trans_query.get(black_hole.parent).unwrap().translation;
+                        let mut t = trans_query.get_mut(*id).unwrap();
+                        t.translation.x = input.x;
+                        t.translation.y = input.y;
+                        mark_changed!(-1, children, black_hole_query, white_hole_query);
+                    },
+                    // color
+                    (-2, -2) => {
+                        let mat_id = material_ids.get(black_hole.parent).unwrap();
+                        let mat = mats.get(mat_id).unwrap();
+                        let input = mat.color;
+                        mats.get_mut(material_ids.get(*id).unwrap()).unwrap().color = input;
+                        mark_changed!(-2, children, black_hole_query, white_hole_query);
+                    },
+                    // radius
+                    (-3, -3) => {
+                        if let Ok(Mesh2dHandle(mesh_id)) = mesh_ids.get(*id) {
+                            let input = radius_query.get(black_hole.parent).unwrap().0;
+                            radius_query.get_mut(*id).unwrap().0 = input;
+                            let mesh = meshes.get_mut(mesh_id).unwrap();
+                            *mesh = shape::Circle::new(input).into();
+                        }
+                        mark_changed!(-3, children, black_hole_query, white_hole_query);
+                    },
+                    _ => {},
                 }
             }
         }
@@ -559,31 +573,31 @@ fn move_selected(
             for (mut t, children) in query.iter_mut() {
                 t.translation.x += cursor.d.x;
                 t.translation.y += cursor.d.y;
-                mark_changed(-1, children, &black_hole_query, &mut white_hole_query);
+                mark_changed!(-1, children, black_hole_query, white_hole_query);
             }
         }
         if keyboard_input.pressed(KeyCode::Up) {
             for (mut t, children) in query.iter_mut() {
                 t.translation.y += 1.;
-                mark_changed(-1, children, &black_hole_query, &mut white_hole_query);
+                mark_changed!(-1, children, black_hole_query, white_hole_query);
             }
         }
         if keyboard_input.pressed(KeyCode::Down) {
             for (mut t, children) in query.iter_mut() {
                 t.translation.y -= 1.;
-                mark_changed(-1, children, &black_hole_query, &mut white_hole_query);
+                mark_changed!(-1, children, black_hole_query, white_hole_query);
             }
         }
         if keyboard_input.pressed(KeyCode::Right) {
             for (mut t, children) in query.iter_mut() {
                 t.translation.x += 1.;
-                mark_changed(-1, children, &black_hole_query, &mut white_hole_query);
+                mark_changed!(-1, children, black_hole_query, white_hole_query);
             }
         }
         if keyboard_input.pressed(KeyCode::Left) {
             for (mut t, children) in query.iter_mut() {
                 t.translation.x -= 1.;
-                mark_changed(-1, children, &black_hole_query, &mut white_hole_query);
+                mark_changed!(-1, children, black_hole_query, white_hole_query);
             }
         }
     }
@@ -605,7 +619,7 @@ fn update_color(
                 let mat = mats.get_mut(id).unwrap();
                 mat.color.set_h((mat.color.h() + cursor.d.x).rem_euclid(360.));
                 // mark change
-                mark_changed(-2, children, &black_hole_query, &mut white_hole_query);
+                mark_changed!(-2, children, black_hole_query, white_hole_query);
             }
         }
 
@@ -656,7 +670,7 @@ fn update_radius(
                 let mesh = meshes.get_mut(id).unwrap();
                 *mesh = shape::Circle::new(r).into();
                 radius_query.get_mut(entity).unwrap().0 = r;
-                mark_changed(-3, children, &black_hole_query, &mut white_hole_query);
+                mark_changed!(-3, children, black_hole_query, white_hole_query);
             }
         }
         if keyboard_input.pressed(KeyCode::Up) {
@@ -665,7 +679,7 @@ fn update_radius(
                 radius_query.get_mut(entity).unwrap().0 = r;
                 let mesh = meshes.get_mut(id).unwrap();
                 *mesh = shape::Circle::new(r).into();
-                mark_changed(-3, children, &black_hole_query, &mut white_hole_query);
+                mark_changed!(-3, children, black_hole_query, white_hole_query);
             }
         }
         if keyboard_input.pressed(KeyCode::Down) {
@@ -674,7 +688,7 @@ fn update_radius(
                 radius_query.get_mut(entity).unwrap().0 = r;
                 let mesh = meshes.get_mut(id).unwrap();
                 *mesh = shape::Circle::new(r).into();
-                mark_changed(-3, children, &black_hole_query, &mut white_hole_query);
+                mark_changed!(-3, children, black_hole_query, white_hole_query);
             }
         }
     }
@@ -696,19 +710,19 @@ fn update_num(
                 n.0 += cursor.d.y / 10.;
                 // inform any white holes connected through link -4 black holes
                 // that our value has changed
-                mark_changed(-4, children, &black_hole_query, &mut white_hole_query);
+                mark_changed!(-4, children, black_hole_query, white_hole_query);
             }
         }
         if keyboard_input.pressed(KeyCode::Up) {
             for (mut n, children) in query.iter_mut() {
                 n.0 += 0.01;
-                mark_changed(-4, children, &black_hole_query, &mut white_hole_query);
+                mark_changed!(-4, children, black_hole_query, white_hole_query);
             }
         }
         if keyboard_input.pressed(KeyCode::Down) {
             for (mut n, children) in query.iter_mut() {
                 n.0 -= 0.01;
-                mark_changed(-4, children, &black_hole_query, &mut white_hole_query);
+                mark_changed!(-4, children, black_hole_query, white_hole_query);
             }
         }
     }
