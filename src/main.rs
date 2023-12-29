@@ -136,19 +136,21 @@ fn process(
                 for child in children {
                     if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
                         if !white_hole.changed { continue; }
-                        white_hole.changed = false;
                         let black_hole = black_hole_query.get(white_hole.bh).unwrap();
-                        let input = num_query.get(black_hole.parent).unwrap().0 / 100.;
-                        match (black_hole.link_type, white_hole.link_type) {
-                            (-4, 1) => bloom_settings.intensity = input,
-                            (-4, 2) => bloom_settings.low_frequency_boost = input,
-                            (-4, 3) => bloom_settings.low_frequency_boost_curvature = input,
-                            (-4, 4) => bloom_settings.high_pass_frequency = input,
-                            (-4, 5) => bloom_settings.composite_mode = if input > 0. {
-                            BloomCompositeMode::Additive } else { BloomCompositeMode::EnergyConserving },
-                            (-4, 6) => bloom_settings.prefilter_settings.threshold = input,
-                            (-4, 7) => bloom_settings.prefilter_settings.threshold_softness = input,
-                            _ => {},
+                        if black_hole.link_type == -4 && (1..8).contains(&white_hole.link_type) {
+                            white_hole.changed = false;
+                            let input = num_query.get(black_hole.parent).unwrap().0 / 100.;
+                            match white_hole.link_type {
+                                1 => bloom_settings.intensity = input,
+                                2 => bloom_settings.low_frequency_boost = input,
+                                3 => bloom_settings.low_frequency_boost_curvature = input,
+                                4 => bloom_settings.high_pass_frequency = input,
+                                5 => bloom_settings.composite_mode = if input > 0. {
+                                BloomCompositeMode::Additive } else { BloomCompositeMode::EnergyConserving },
+                                6 => bloom_settings.prefilter_settings.threshold = input,
+                                7 => bloom_settings.prefilter_settings.threshold_softness = input,
+                                _ => {},
+                            }
                         }
                     }
                 }
@@ -157,11 +159,11 @@ fn process(
         for child in children {
             if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
                 if !white_hole.changed { continue; }
-                white_hole.changed = false;
                 let black_hole = black_hole_query.get(white_hole.bh).unwrap();
                 match (black_hole.link_type, white_hole.link_type) {
                     // trans
                     (-1, -1) => {
+                        white_hole.changed = false;
                         let input = trans_query.get(black_hole.parent).unwrap().translation;
                         let mut t = trans_query.get_mut(*id).unwrap();
                         t.translation.x = input.x;
@@ -170,6 +172,7 @@ fn process(
                     },
                     // color
                     (-2, -2) => {
+                        white_hole.changed = false;
                         let mat_id = material_ids.get(black_hole.parent).unwrap();
                         let mat = mats.get(mat_id).unwrap();
                         let input = mat.color;
@@ -178,6 +181,7 @@ fn process(
                     },
                     // radius
                     (-3, -3) => {
+                        white_hole.changed = false;
                         if let Ok(Mesh2dHandle(mesh_id)) = mesh_ids.get(*id) {
                             let input = radius_query.get(black_hole.parent).unwrap().0;
                             radius_query.get_mut(*id).unwrap().0 = input;
