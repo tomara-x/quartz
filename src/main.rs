@@ -71,6 +71,8 @@ fn main() {
         .add_event::<OrderChange>()
 
         .add_systems(Update, process.after(sort_by_order))
+        
+        .register_type::<Offset>()
         .run();
 }
 
@@ -106,6 +108,7 @@ fn process(
     mut meshes: ResMut<Assets<Mesh>>,
     mesh_ids: Query<&Mesh2dHandle>,
     mut trans_query: Query<&mut Transform>,
+    offset_query: Query<&Offset>,
 ) {
     for id in queue.0.iter().flatten() {
         let children = children_query.get(*id).unwrap();
@@ -129,6 +132,8 @@ fn process(
                                     3 => t.translation.z = input,
                                     _ => {},
                                 }
+                                // position has changed
+                                mark_changed!(-1, children, black_hole_query, white_hole_query);
                             }
                         }
                     }
@@ -186,8 +191,10 @@ fn process(
                         white_hole.changed = false;
                         let input = trans_query.get(black_hole.parent).unwrap().translation;
                         let mut t = trans_query.get_mut(*id).unwrap();
-                        t.translation.x = input.x;
-                        t.translation.y = input.y;
+                        let offset = offset_query.get(*id).unwrap().trans;
+                        t.translation.x = input.x + offset.x;
+                        t.translation.y = input.y + offset.y;
+                        t.translation.z = input.z + offset.z;
                         mark_changed!(-1, children, black_hole_query, white_hole_query);
                     },
                     // color
@@ -408,8 +415,8 @@ struct Num(f32);
 #[derive(Component)]
 struct Arr(Vec<f32>);
 
-#[allow(dead_code)]
-#[derive(Component)]
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
 struct Offset {
     trans: Vec3,
     color: Color,
