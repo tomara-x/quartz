@@ -89,13 +89,8 @@ macro_rules! mark_changed {
 
 // ------------------- process -----------------------
 
-#[derive(Component, Reflect, Default)]
-#[reflect(Component)]
-enum Op {
-    #[default]
-    Yes,
-    BloomControl,
-}
+#[derive(Component)]
+struct Op(i32);
 
 fn process(
     queue: Res<Queue>,
@@ -114,8 +109,8 @@ fn process(
 ) {
     for id in queue.0.iter().flatten() {
         let children = children_query.get(*id).unwrap();
-        match op_query.get(*id).unwrap() {
-            Op::Yes => {
+        match op_query.get(*id).unwrap().0 {
+            0 => { // pass
                 // input to num
                 for child in children {
                     if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
@@ -131,7 +126,7 @@ fn process(
                     }
                 }
             },
-            Op::BloomControl => {
+            1 => { // bloom control
                 let mut bloom_settings = bloom.single_mut();
                 for child in children {
                     if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
@@ -155,6 +150,7 @@ fn process(
                     }
                 }
             },
+            _ => {},
         }
         for child in children {
             if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
@@ -430,7 +426,7 @@ fn spawn_circles(
             Num(0.),
             Arr(Vec::new()),
             Offset {trans:Vec3::ZERO, color:Color::BLACK, radius:0.},
-            Op::Yes,
+            Op(0),
         )).id();
 
         // have the circle adopt a text entity
@@ -737,10 +733,10 @@ fn update_op(
     keyboard_input: Res<Input<KeyCode>>,
 ) {
     if keyboard_input.just_pressed(KeyCode::O) {
-        for mut op in query.iter_mut() { *op = Op::Yes; }
+        for mut op in query.iter_mut() { op.0 -= 1; }
     }
     if keyboard_input.just_pressed(KeyCode::P) {
-        for mut op in query.iter_mut() { *op = Op::BloomControl; }
+        for mut op in query.iter_mut() { op.0 += 1; }
     }
 }
 
@@ -755,9 +751,10 @@ fn update_circle_text(
             text.sections[1].value = "order: ".to_string() + &order.0.to_string() + "\n";
         }
         if let Ok(op) = op_query.get(**parent) {
-            text.sections[2].value = match op {
-                Op::Yes => "op: yaas\n".to_string(),
-                Op::BloomControl => "op: BloomControl\n".to_string(),
+            text.sections[2].value = match op.0 {
+                0 => "op: yaas\n".to_string(),
+                1 => "op: BloomControl\n".to_string(),
+                _ => op.0.to_string() + "\n",
             };
         }
         if let Ok(num) = num_query.get(**parent) {
