@@ -220,7 +220,7 @@ fn process(
             2 => { // get
                 for child in children {
                     if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
-                        //if white_hole.changed {
+                        if white_hole.changed {
                             let black_hole = black_hole_query.get(white_hole.bh).unwrap();
                             if black_hole.link_type >= 0 && white_hole.link_type == -4 {
                                 white_hole.changed = false;
@@ -230,7 +230,32 @@ fn process(
                                     mark_changed!(-4, children, black_hole_query, white_hole_query);
                                 }
                             }
-                        //}
+                        }
+                    }
+                }
+            },
+            3 => { // trans/color/radius/(maybe offset?) to outputs
+                for child in children {
+                    if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+                        if white_hole.changed {
+                            let black_hole = black_hole_query.get(white_hole.bh).unwrap();
+                            if white_hole.link_type == 1 && (-7..0).contains(&black_hole.link_type) {
+                                white_hole.changed = false;
+                                let mut arr = &mut arr_query.get_mut(*id).unwrap().0;
+                                let t = trans_query.get(black_hole.parent).unwrap().translation;
+                                match black_hole.link_type {
+                                    -1 => { *arr = vec!(t.x, t.y, t.z); },
+                                    _ => {},
+                                }
+
+                                // let all connections know about this change
+                                for child in children.iter() {
+                                    if let Ok(black_hole) = black_hole_query.get(*child) {
+                                        white_hole_query.get_mut(black_hole.wh).unwrap().changed = true;
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             },
