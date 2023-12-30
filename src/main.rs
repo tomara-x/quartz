@@ -114,7 +114,23 @@ fn process(
     for id in queue.0.iter().flatten() {
         let children = children_query.get(*id).unwrap();
         match op_query.get(*id).unwrap().0 {
-            -3 => {
+            -3 => { // float to radius
+                for child in children {
+                    if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+                        if white_hole.changed {
+                            let black_hole = black_hole_query.get(white_hole.bh).unwrap();
+                            if black_hole.link_type == -4 && white_hole.link_type == 1 {
+                                white_hole.changed = false;
+                                let input = num_query.get(black_hole.parent).unwrap().0;
+                                let Mesh2dHandle(mesh_id) = mesh_ids.get(*id).unwrap();
+                                radius_query.get_mut(*id).unwrap().0 = input;
+                                let mesh = meshes.get_mut(mesh_id).unwrap();
+                                *mesh = shape::Circle::new(input).into();
+                                mark_changed!(-3, children, black_hole_query, white_hole_query);
+                            }
+                        }
+                    }
+                }
             },
             -2 => { // 4 floats to color
                 for child in children {
@@ -132,6 +148,7 @@ fn process(
                                     4 => { mats.get_mut(mat_id).unwrap().color.set_a(input); },
                                     _ => {},
                                 }
+                                mark_changed!(-2, children, black_hole_query, white_hole_query);
                             }
                         }
                     }
@@ -848,6 +865,8 @@ fn update_circle_text(
         }
         if let Ok(op) = op_query.get(**parent) {
             text.sections[2].value = match op.0 {
+                -3 => "op: toRadius\n".to_string(),
+                -2 => "op: toColor\n".to_string(),
                 -1 => "op: toTrans\n".to_string(),
                 0 => "op: yaas\n".to_string(),
                 1 => "op: BloomControl\n".to_string(),
