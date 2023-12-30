@@ -108,7 +108,7 @@ fn process(
     mut meshes: ResMut<Assets<Mesh>>,
     mesh_ids: Query<&Mesh2dHandle>,
     mut trans_query: Query<&mut Transform>,
-    offset_query: Query<&Offset>,
+    mut offset_query: Query<&mut Offset>,
 ) {
     for id in queue.0.iter().flatten() {
         let children = children_query.get(*id).unwrap();
@@ -186,8 +186,7 @@ fn process(
                 if !white_hole.changed { continue; }
                 let black_hole = black_hole_query.get(white_hole.bh).unwrap();
                 match (black_hole.link_type, white_hole.link_type) {
-                    // trans
-                    (-1, -1) => {
+                    (-1, -1) => { //trans
                         white_hole.changed = false;
                         let input = trans_query.get(black_hole.parent).unwrap().translation;
                         let mut t = trans_query.get_mut(*id).unwrap();
@@ -197,8 +196,7 @@ fn process(
                         t.translation.z = input.z + offset.z;
                         mark_changed!(-1, children, black_hole_query, white_hole_query);
                     },
-                    // color
-                    (-2, -2) => {
+                    (-2, -2) => { // color
                         white_hole.changed = false;
                         let mat_id = material_ids.get(black_hole.parent).unwrap();
                         let offset = offset_query.get(*id).unwrap().color;
@@ -207,8 +205,7 @@ fn process(
                         mats.get_mut(material_ids.get(*id).unwrap()).unwrap().color = input + offset;
                         mark_changed!(-2, children, black_hole_query, white_hole_query);
                     },
-                    // radius
-                    (-3, -3) => {
+                    (-3, -3) => { // radius
                         white_hole.changed = false;
                         if let Ok(Mesh2dHandle(mesh_id)) = mesh_ids.get(*id) {
                             let offset = offset_query.get(*id).unwrap().radius;
@@ -219,6 +216,23 @@ fn process(
                         }
                         mark_changed!(-3, children, black_hole_query, white_hole_query);
                     },
+                    (-1, -6) => { // position to trans offset
+                        white_hole.changed = false;
+                        let input = trans_query.get(black_hole.parent).unwrap().translation;
+                        offset_query.get_mut(*id).unwrap().trans = input;
+                    },
+                    (-2, -7) => { // color to color offset
+                        white_hole.changed = false;
+                        let mat_id = material_ids.get(black_hole.parent).unwrap();
+                        let mat = mats.get(mat_id).unwrap();
+                        let input = mat.color;
+                        offset_query.get_mut(*id).unwrap().color = input;
+                    },
+                    (-3, -8) => { // radius to radius offset
+                        white_hole.changed = false;
+                        let input = radius_query.get(black_hole.parent).unwrap().0;
+                        offset_query.get_mut(*id).unwrap().radius = input;
+                    }
                     _ => {},
                 }
             }
