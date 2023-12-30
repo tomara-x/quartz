@@ -54,6 +54,7 @@ fn main() {
         .add_systems(Update, update_order.run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_op.run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_circle_text.run_if(in_state(Mode::Edit)))
+        .add_systems(Update, select_all.run_if(in_state(Mode::Edit)))
 
         .add_systems(Update, connect.run_if(in_state(Mode::Connect)))
         .add_systems(Update, draw_connections)
@@ -614,6 +615,23 @@ fn update_selection(
             }
         }
         *top_clicked_circle = None;
+    }
+}
+
+fn select_all(
+    mut commands: Commands,
+    order_query: Query<Entity, With<Order>>,
+    connection_query: Query<Entity, Or<(With<BlackHole>, With<WhiteHole>)>>,
+    keyboard_input: Res<Input<KeyCode>>,
+) {
+    let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
+    let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
+    if ctrl && keyboard_input.pressed(KeyCode::A) {
+        if shift {
+            for e in connection_query.iter() { commands.entity(e).insert(Selected); }
+        } else {
+            for e in order_query.iter() { commands.entity(e).insert(Selected); }
+        }
     }
 }
 
