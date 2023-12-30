@@ -241,13 +241,23 @@ fn process(
                             let black_hole = black_hole_query.get(white_hole.bh).unwrap();
                             if white_hole.link_type == 1 && (-7..0).contains(&black_hole.link_type) {
                                 white_hole.changed = false;
-                                let mut arr = &mut arr_query.get_mut(*id).unwrap().0;
-                                let t = trans_query.get(black_hole.parent).unwrap().translation;
+                                let arr = &mut arr_query.get_mut(*id).unwrap().0;
                                 match black_hole.link_type {
-                                    -1 => { *arr = vec!(t.x, t.y, t.z); },
+                                    -1 => {
+                                        let t = trans_query.get(black_hole.parent).unwrap().translation;
+                                        *arr = t.to_array().into();
+                                    },
+                                    -2 => {
+                                        let mat_id = material_ids.get(black_hole.parent).unwrap();
+                                        let c = mats.get(mat_id).unwrap().color;
+                                        *arr = c.as_hsla_f32().into();
+                                    },
+                                    -3 => {
+                                        let r = radius_query.get(black_hole.parent).unwrap().0;
+                                        *arr = [r].into();
+                                    }
                                     _ => {},
                                 }
-
                                 // let all connections know about this change
                                 for child in children.iter() {
                                     if let Ok(black_hole) = black_hole_query.get(*child) {
@@ -914,6 +924,7 @@ fn update_circle_text(
                 0 => "op: yaas\n".to_string(),
                 1 => "op: BloomControl\n".to_string(),
                 2 => "op: Get\n".to_string(),
+                3 => "op: fromTCR\n".to_string(),
                 _ => op.0.to_string() + "\n",
             };
         }
