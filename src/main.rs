@@ -201,19 +201,21 @@ fn process(
                     (-2, -2) => {
                         white_hole.changed = false;
                         let mat_id = material_ids.get(black_hole.parent).unwrap();
+                        let offset = offset_query.get(*id).unwrap().color;
                         let mat = mats.get(mat_id).unwrap();
                         let input = mat.color;
-                        mats.get_mut(material_ids.get(*id).unwrap()).unwrap().color = input;
+                        mats.get_mut(material_ids.get(*id).unwrap()).unwrap().color = input + offset;
                         mark_changed!(-2, children, black_hole_query, white_hole_query);
                     },
                     // radius
                     (-3, -3) => {
                         white_hole.changed = false;
                         if let Ok(Mesh2dHandle(mesh_id)) = mesh_ids.get(*id) {
+                            let offset = offset_query.get(*id).unwrap().radius;
                             let input = radius_query.get(black_hole.parent).unwrap().0;
-                            radius_query.get_mut(*id).unwrap().0 = input;
+                            radius_query.get_mut(*id).unwrap().0 = input + offset;
                             let mesh = meshes.get_mut(mesh_id).unwrap();
-                            *mesh = shape::Circle::new(input).into();
+                            *mesh = shape::Circle::new(input + offset).into();
                         }
                         mark_changed!(-3, children, black_hole_query, white_hole_query);
                     },
