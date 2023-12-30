@@ -496,6 +496,7 @@ fn draw_pointer_circle(
     keyboard_input: Res<Input<KeyCode>>,
 ) {
     if mouse_button_input.pressed(MouseButton::Left) &&
+    ! mouse_button_input.just_pressed(MouseButton::Left) &&
     !keyboard_input.pressed(KeyCode::Space) {
         let color = Color::hsl((time.elapsed_seconds() * 100.) % 360., 1.0, 0.5);
         gizmos.circle_2d(cursor.i, cursor.f.distance(cursor.i), color).segments(64);
