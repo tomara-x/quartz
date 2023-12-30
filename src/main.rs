@@ -99,7 +99,7 @@ fn process(
     children_query: Query<&Children>,
     black_hole_query: Query<&BlackHole>,
     mut white_hole_query: Query<&mut WhiteHole>,
-    op_query: Query<&Op>,
+    mut op_query: Query<&mut Op>,
     mut bloom: Query<&mut BloomSettings, With<Camera>>,
     mut num_query: Query<&mut Num>,
     mut mats: ResMut<Assets<ColorMaterial>>,
@@ -216,6 +216,11 @@ fn process(
                         }
                         mark_changed!(-3, children, black_hole_query, white_hole_query);
                     },
+                    (-4, -5) => { // number to op
+                        white_hole.changed = false;
+                        let input = num_query.get(black_hole.parent).unwrap().0;
+                        op_query.get_mut(*id).unwrap().0 = input as i32;
+                    }
                     (-1, -6) => { // position to trans offset
                         white_hole.changed = false;
                         let input = trans_query.get(black_hole.parent).unwrap().translation;
