@@ -110,6 +110,30 @@ fn process(
     for id in queue.0.iter().flatten() {
         let children = children_query.get(*id).unwrap();
         match op_query.get(*id).unwrap().0 {
+            -3 => {
+            },
+            -2 => {
+            },
+            -1 => { // 3 floats to position
+                for child in children {
+                    if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+                        if white_hole.changed {
+                            let black_hole = black_hole_query.get(white_hole.bh).unwrap();
+                            if black_hole.link_type == -4 && (1..4).contains(&white_hole.link_type) {
+                                white_hole.changed = false;
+                                let input = num_query.get(black_hole.parent).unwrap().0;
+                                let mut t = trans_query.get_mut(*id).unwrap();
+                                match white_hole.link_type {
+                                    1 => t.translation.x = input,
+                                    2 => t.translation.y = input,
+                                    3 => t.translation.z = input,
+                                    _ => {},
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             0 => { // pass
                 // input to num
                 for child in children {
@@ -752,6 +776,7 @@ fn update_circle_text(
         }
         if let Ok(op) = op_query.get(**parent) {
             text.sections[2].value = match op.0 {
+                -1 => "op: toTrans\n".to_string(),
                 0 => "op: yaas\n".to_string(),
                 1 => "op: BloomControl\n".to_string(),
                 _ => op.0.to_string() + "\n",
