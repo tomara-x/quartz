@@ -235,7 +235,13 @@ fn setup(
             transform: Transform::from_translation(Vec3::Z), //push the camera "back" one unit
         ..default()
         },
-        BloomSettings::default(), //enable bloom
+        BloomSettings {
+            intensity: 0.5,
+            low_frequency_boost: 0.6,
+            low_frequency_boost_curvature: 0.4,
+            composite_mode: BloomCompositeMode::Additive,
+            ..default()
+        },
         PanCam {
             enabled: false,
             //limit zooming
@@ -458,19 +464,19 @@ fn spawn_circles(
             text: Text::from_sections([
                 TextSection::new(
                     id.index().to_string() + "v" + &id.generation().to_string() + "\n",
-                    TextStyle::default(),
+                    TextStyle { color: Color::BLACK, ..default() },
                 ),
                 TextSection::new(
                     "order: 0\n",
-                    TextStyle::default(),
+                    TextStyle { color: Color::BLACK, ..default() },
                 ),
                 TextSection::new(
                     "op: yaas\n",
-                    TextStyle::default(),
+                    TextStyle { color: Color::BLACK, ..default() },
                 ),
                 TextSection::new(
                     "0",
-                    TextStyle::default(),
+                    TextStyle { color: Color::BLACK, ..default() },
                 ),
             ]),
             transform: Transform::from_translation(Vec3{z:0.000001, ..default()}),
