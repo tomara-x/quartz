@@ -110,6 +110,7 @@ fn process(
     mesh_ids: Query<&Mesh2dHandle>,
     mut trans_query: Query<&mut Transform>,
     mut offset_query: Query<&mut Offset>,
+    mut arr_query: Query<&mut Arr>,
 ) {
     for id in queue.0.iter().flatten() {
         let children = children_query.get(*id).unwrap();
@@ -213,6 +214,23 @@ fn process(
                                 _ => {},
                             }
                         }
+                    }
+                }
+            },
+            2 => { // get
+                for child in children {
+                    if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+                        //if white_hole.changed {
+                            let black_hole = black_hole_query.get(white_hole.bh).unwrap();
+                            if black_hole.link_type >= 0 && white_hole.link_type == -4 {
+                                white_hole.changed = false;
+                                let arr = &arr_query.get(black_hole.parent).unwrap().0;
+                                if let Some(input) = arr.get(black_hole.link_type as usize) {
+                                    num_query.get_mut(*id).unwrap().0 = *input;
+                                    mark_changed!(-4, children, black_hole_query, white_hole_query);
+                                }
+                            }
+                        //}
                     }
                 }
             },
@@ -519,7 +537,7 @@ fn spawn_circles(
             Visible, //otherwise it can't be selected til after mark_visible is updated
             Order(0),
             Num(0.),
-            Arr(Vec::new()),
+            Arr(vec!(42., 105., 420., 1729.)),
             Offset {trans:Vec3::ZERO, color:Color::BLACK, radius:0.},
             Op(0),
         )).id();
@@ -870,6 +888,7 @@ fn update_circle_text(
                 -1 => "op: toTrans\n".to_string(),
                 0 => "op: yaas\n".to_string(),
                 1 => "op: BloomControl\n".to_string(),
+                2 => "op: Get\n".to_string(),
                 _ => op.0.to_string() + "\n",
             };
         }
