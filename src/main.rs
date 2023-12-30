@@ -116,7 +116,26 @@ fn process(
         match op_query.get(*id).unwrap().0 {
             -3 => {
             },
-            -2 => {
+            -2 => { // 4 floats to color
+                for child in children {
+                    if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+                        if white_hole.changed {
+                            let black_hole = black_hole_query.get(white_hole.bh).unwrap();
+                            if black_hole.link_type == -4 && (1..5).contains(&white_hole.link_type) {
+                                white_hole.changed = false;
+                                let input = num_query.get(black_hole.parent).unwrap().0;
+                                let mat_id = material_ids.get(*id).unwrap();
+                                match white_hole.link_type {
+                                    1 => { mats.get_mut(mat_id).unwrap().color.set_h(input); },
+                                    2 => { mats.get_mut(mat_id).unwrap().color.set_s(input); },
+                                    3 => { mats.get_mut(mat_id).unwrap().color.set_l(input); },
+                                    4 => { mats.get_mut(mat_id).unwrap().color.set_a(input); },
+                                    _ => {},
+                                }
+                            }
+                        }
+                    }
+                }
             },
             -1 => { // 3 floats to position
                 for child in children {
