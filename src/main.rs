@@ -234,12 +234,12 @@ fn process(
                     }
                 }
             },
-            3 => { // trans/color/radius/(maybe offset?) to outputs
+            3 => { // trans/color/radius to outputs
                 for child in children {
                     if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
                         if white_hole.changed {
                             let black_hole = black_hole_query.get(white_hole.bh).unwrap();
-                            if white_hole.link_type == 1 && (-7..0).contains(&black_hole.link_type) {
+                            if white_hole.link_type == 1 && (-3..0).contains(&black_hole.link_type) {
                                 white_hole.changed = false;
                                 let arr = &mut arr_query.get_mut(*id).unwrap().0;
                                 match black_hole.link_type {
