@@ -2,7 +2,7 @@ use bevy::{
     sprite::Mesh2dHandle,
     core_pipeline::{
         bloom::{BloomCompositeMode, BloomSettings},
-        //tonemapping::Tonemapping,
+        tonemapping::Tonemapping,
         },
     prelude::*};
 
@@ -55,6 +55,7 @@ pub fn process(
     mut trans_query: Query<&mut Transform>,
     mut offset_query: Query<&mut Offset>,
     mut arr_query: Query<&mut Arr>,
+    mut tonemapping: Query<&mut Tonemapping, With<Camera>>,
 ) {
     for id in queue.0.iter().flatten() {
         let children = children_query.get(*id).unwrap();
@@ -161,7 +162,31 @@ pub fn process(
                     }
                 }
             },
-            2 => { // get
+            2 => { // tone mapping
+                let mut tm = tonemapping.single_mut();
+                for child in children {
+                    if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+                        if !white_hole.changed { continue; }
+                        let black_hole = black_hole_query.get(white_hole.bh).unwrap();
+                        if black_hole.link_type == -4 && white_hole.link_type == 1 {
+                            white_hole.changed = false;
+                            let input = num_query.get(black_hole.parent).unwrap().0;
+                            match input as usize {
+                                0 => *tm = Tonemapping::None,
+                                1 => *tm = Tonemapping::Reinhard,
+                                2 => *tm = Tonemapping::ReinhardLuminance,
+                                3 => *tm = Tonemapping::AcesFitted,
+                                4 => *tm = Tonemapping::AgX,
+                                5 => *tm = Tonemapping::SomewhatBoringDisplayTransform,
+                                6 => *tm = Tonemapping::TonyMcMapface,
+                                7 => *tm = Tonemapping::BlenderFilmic,
+                                _ => {},
+                            }
+                        }
+                    }
+                }
+            },
+            3 => { // get
                 for child in children {
                     if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
                         if white_hole.changed {
@@ -178,7 +203,7 @@ pub fn process(
                     }
                 }
             },
-            3 => { // trans/color/radius to outputs
+            4 => { // trans/color/radius to outputs
                 for child in children {
                     if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
                         if white_hole.changed {

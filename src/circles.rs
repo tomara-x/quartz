@@ -454,8 +454,9 @@ pub fn update_circle_text(
                 -1 => "op: toTrans\n".to_string(),
                 0 => "op: yaas\n".to_string(),
                 1 => "op: BloomControl\n".to_string(),
-                2 => "op: Get\n".to_string(),
-                3 => "op: fromTCR\n".to_string(),
+                2 => "op: Tonemapping\n".to_string(),
+                3 => "op: Get\n".to_string(),
+                4 => "op: fromTCR\n".to_string(),
                 _ => op.0.to_string() + "\n",
             };
         }
