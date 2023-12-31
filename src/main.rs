@@ -18,6 +18,9 @@ use bevy_kira_audio::prelude as kira;
 //use std::time::{Duration, Instant};
 //use rand::prelude::random;
 
+mod components;
+use components::*;
+
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
@@ -92,9 +95,6 @@ macro_rules! mark_changed {
 }
 
 // ------------------- process -----------------------
-
-#[derive(Component)]
-struct Op(i32);
 
 fn process(
     queue: Res<Queue>,
@@ -385,13 +385,6 @@ fn toggle_pan(
     }
 }
 
-#[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
-enum Mode {
-    #[default]
-    Draw,
-    Connect,
-    Edit,
-}
 
 fn switch_mode(
     mut next_state: ResMut<NextState<Mode>>,
@@ -431,12 +424,7 @@ fn save_scene(
 
 // ---------------------- order ------------------------
 
-#[derive(Resource, Reflect, Default)]
-#[reflect(Resource)]
-struct Queue(Vec<Vec<Entity>>);
 
-#[derive(Event, Default)]
-struct OrderChange;
 
 fn sort_by_order(
     query: Query<(Entity, &Order)>,
@@ -480,13 +468,6 @@ fn update_order (
 
 // ---------------------- cursor ------------------------
 
-// initial, final, delta
-#[derive(Resource, Default)]
-struct CursorInfo {
-    i: Vec2,
-    f: Vec2,
-    d: Vec2,
-}
 
 fn update_cursor_info(
     mouse_button_input: Res<Input<MouseButton>>,
@@ -520,34 +501,6 @@ fn update_cursor_info(
 }
 
 // ------------- circles ------------------------
-
-#[derive(Component)]
-struct Num(f32);
-
-#[derive(Component)]
-struct Arr(Vec<f32>);
-
-#[derive(Component)]
-struct Offset {
-    trans: Vec3,
-    color: Color,
-    radius: f32,
-}
-
-#[derive(Resource)]
-struct Depth(f32);
-
-#[derive(Component)]
-struct Radius(f32);
-
-#[derive(Component)]
-struct Selected;
-
-#[derive(Component)]
-struct Visible;
-
-#[derive(Component)]
-struct Order(usize);
 
 fn spawn_circles(
     mut commands: Commands,
@@ -1024,25 +977,6 @@ fn delete_selected(
 }
 
 // ------------------- connections -------------------
-
-// hole enum?
-#[allow(dead_code)]
-#[derive(Component)]
-struct WhiteHole {
-    id: Entity,
-    parent: Entity,
-    bh: Entity,
-    link_type: i32,
-    changed: bool,
-}
-
-#[derive(Component)]
-struct BlackHole {
-    id: Entity,
-    parent: Entity,
-    wh: Entity,
-    link_type: i32,
-}
 
 fn connect(
     mouse_button_input: Res<Input<MouseButton>>,
