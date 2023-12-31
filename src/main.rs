@@ -11,6 +11,8 @@ use bevy::{
 
 use bevy_pancam::{PanCam, PanCamPlugin};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
+use bevy_fundsp::prelude as dsp;
+use bevy_kira_audio::prelude as kira;
 
 //use std::{fs::File, io::Write};
 //use std::time::{Duration, Instant};
@@ -55,6 +57,7 @@ fn main() {
         .add_systems(Update, update_op.run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_circle_text.run_if(in_state(Mode::Edit)))
         .add_systems(Update, select_all.run_if(in_state(Mode::Edit)))
+        .add_systems(Update, duplicate_selected.run_if(in_state(Mode::Edit)))
 
         .add_systems(Update, connect.run_if(in_state(Mode::Connect)))
         .add_systems(Update, draw_connections)
@@ -72,8 +75,6 @@ fn main() {
         .add_event::<OrderChange>()
 
         .add_systems(Update, process.after(sort_by_order))
-        
-        .register_type::<Offset>()
         .run();
 }
 
@@ -526,8 +527,7 @@ struct Num(f32);
 #[derive(Component)]
 struct Arr(Vec<f32>);
 
-#[derive(Component, Reflect, Default)]
-#[reflect(Component)]
+#[derive(Component)]
 struct Offset {
     trans: Vec3,
     color: Color,
@@ -720,6 +720,63 @@ fn select_all(
             for e in connection_query.iter() { commands.entity(e).insert(Selected); }
         } else {
             for e in order_query.iter() { commands.entity(e).insert(Selected); }
+        }
+    }
+}
+
+fn duplicate_selected(
+    mut commands: Commands,
+    query: Query<(Entity, &Radius, &Handle<ColorMaterial>,
+    &Transform, &Order, &Num, &Arr, &Offset, &Op), With<Selected>>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+    keyboard_input: Res<Input<KeyCode>>,
+) {
+    let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
+    if ctrl && keyboard_input.just_pressed(KeyCode::D) {
+        for (e, radius, mat_id, trans, order, num, arr, offset, op) in query.iter() {
+            commands.entity(e).remove::<Selected>();
+            let color = materials.get(mat_id).unwrap().color;
+            let id = commands.spawn((
+                ColorMesh2dBundle {
+                    mesh: meshes.add(shape::Circle::new(radius.0).into()).into(),
+                    material: materials.add(ColorMaterial::from(color)),
+                    transform: Transform::from_translation(
+                        Vec3 {z: trans.translation.z + 1., ..trans.translation }),
+                    ..default()
+                },
+                Radius(radius.0),
+                Visible,
+                Selected,
+                Order(order.0),
+                Num(num.0),
+                Arr(arr.0.clone().into()),
+                Offset {trans: offset.trans, color: offset.color, radius: offset.radius},
+                Op(op.0),
+            )).id();
+            let text = commands.spawn(Text2dBundle {
+                text: Text::from_sections([
+                    TextSection::new(
+                        id.index().to_string() + "v" + &id.generation().to_string() + "\n",
+                        TextStyle { color: Color::BLACK, ..default() },
+                    ),
+                    TextSection::new(
+                        "order: 0\n",
+                        TextStyle { color: Color::BLACK, ..default() },
+                    ),
+                    TextSection::new(
+                        "op: yaas\n",
+                        TextStyle { color: Color::BLACK, ..default() },
+                    ),
+                    TextSection::new(
+                        "0",
+                        TextStyle { color: Color::BLACK, ..default() },
+                    ),
+                ]),
+                transform: Transform::from_translation(Vec3{z:0.000001, ..default()}),
+                ..default()
+            }).id();
+            commands.entity(id).add_child(text);
         }
     }
 }
