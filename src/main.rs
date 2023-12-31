@@ -9,23 +9,18 @@ use bevy::{
 
 use bevy_pancam::{PanCam, PanCamPlugin};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
-use bevy_fundsp::prelude as dsp;
-use bevy_kira_audio::prelude as kira;
+use {bevy_fundsp::prelude::*, bevy_kira_audio::prelude::*};
 
 //use std::{fs::File, io::Write};
 //use std::time::{Duration, Instant};
 //use rand::prelude::random;
 
 mod components;
-use components::*;
 mod process;
-use process::*;
 mod cursor;
-use cursor::*;
 mod connections;
-use connections::*;
 mod circles;
-use circles::*;
+use {components::*, process::*, cursor::*, connections::*, circles::*,};
 
 fn main() {
     App::new()
@@ -36,6 +31,9 @@ fn main() {
             }),
             ..default()
         }))
+        .add_plugins(AudioPlugin)
+        //.add_plugins(DspPlugin::default())
+
         .add_plugins(PanCamPlugin::default())
         .add_plugins(WorldInspectorPlugin::new())
 
