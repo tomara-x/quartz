@@ -1,7 +1,5 @@
 use bevy::{
     //ecs::system::SystemParam,
-    render::view::VisibleEntities,
-    sprite::Mesh2dHandle,
     core_pipeline::{
         bloom::{BloomCompositeMode, BloomSettings},
         tonemapping::Tonemapping,

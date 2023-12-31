@@ -1,10 +1,6 @@
 use bevy::{
     render::view::VisibleEntities,
     sprite::Mesh2dHandle,
-    core_pipeline::{
-        bloom::{BloomCompositeMode, BloomSettings},
-        tonemapping::Tonemapping,
-        },
     prelude::*};
 
 use crate::components::*;

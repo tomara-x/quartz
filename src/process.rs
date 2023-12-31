@@ -2,7 +2,7 @@ use bevy::{
     sprite::Mesh2dHandle,
     core_pipeline::{
         bloom::{BloomCompositeMode, BloomSettings},
-        tonemapping::Tonemapping,
+        //tonemapping::Tonemapping,
         },
     prelude::*};
 
