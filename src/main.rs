@@ -9,7 +9,6 @@ use bevy::{
 
 use bevy_pancam::{PanCam, PanCamPlugin};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
-use {bevy_fundsp::prelude::*, bevy_kira_audio::prelude::*};
 
 //use std::{fs::File, io::Write};
 //use std::time::{Duration, Instant};
@@ -80,32 +79,7 @@ fn main() {
 
         .add_systems(Update, process.after(sort_by_order))
 
-        .add_plugins(AudioPlugin)
-        .add_plugins(DspPlugin::default())
-        .add_dsp_source(white_noise, SourceType::Static { duration: 60.0 })
-        .add_systems(Startup, play_noise)
-
         .run();
-}
-
-fn white_noise() -> impl AudioUnit32 {
-    let mut net = Net32::new(0, 1);
-    let id = net.push(Box::new(sine_hz(440.) * 0.1));
-    net.pipe_output(id);
-    net
-}
-
-fn play_noise(
-    mut assets: ResMut<Assets<AudioSource>>,
-    dsp_manager: Res<DspManager>,
-    audio: Res<Audio>,
-) {
-    let source = dsp_manager
-        .get_graph(white_noise)
-        .unwrap_or_else(|| panic!("DSP source not found!"));
-    let audio_source = DefaultBackend::convert_to_audio_source(source.clone());
-    let audio_source = assets.add(audio_source);
-    audio.play(audio_source);
 }
 
 fn setup(

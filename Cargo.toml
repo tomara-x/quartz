@@ -40,8 +40,6 @@ features = [
 [dependencies]
 rand = "0.8.0"
 bevy_pancam = "0.10.0"
-bevy_fundsp = {version = "0.5.0", default-features = false, features = ["kira"], path = "../bevy_fundsp"}
-bevy_kira_audio = "0.18.0"
 bevy-inspector-egui = {version = "0.21.0",  default-features = false}
 
 # smol amount of optimization for our stuff
