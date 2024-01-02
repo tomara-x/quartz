@@ -89,7 +89,10 @@ fn main() {
 }
 
 fn white_noise() -> impl AudioUnit32 {
-    white() >> split::<U2>() * 0.1
+    let mut net = Net32::new(0, 1);
+    let id = net.push(Box::new(sine_hz(440.) * 0.1));
+    net.pipe_output(id);
+    net
 }
 
 fn play_noise(
