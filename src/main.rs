@@ -94,7 +94,7 @@ fn setup(
                 ..default()
             },
             tonemapping: Tonemapping::TonyMcMapface,
-            transform: Transform::from_translation(Vec3::Z), //push the camera "back" one unit
+            transform: Transform::from_translation(Vec3::Z),
         ..default()
         },
         BloomSettings {
@@ -106,7 +106,6 @@ fn setup(
         },
         PanCam {
             enabled: false,
-            //limit zooming
             max_scale: Some(80.),
             min_scale: 0.005,
             ..default()
@@ -140,10 +139,6 @@ fn switch_mode(
     }
 }
 
-// own file format?
-// query the info needed to respawn the same entities on load
-// switching?
-// creating multiple worlds, switching between them, and saving/loading them
 fn save_scene(
     circles_query: Query<&GlobalTransform, With<Order>>,
     keyboard_input: Res<Input<KeyCode>>,
