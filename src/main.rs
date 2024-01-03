@@ -4,6 +4,8 @@ use bevy::{
         bloom::{BloomCompositeMode, BloomSettings},
         tonemapping::Tonemapping,
         },
+    utils::Duration,
+    winit::{WinitSettings, UpdateMode},
     //tasks::IoTaskPool,
     prelude::*};
 
@@ -30,6 +32,16 @@ fn main() {
             }),
             ..default()
         }))
+        .insert_resource(WinitSettings {
+            focused_mode: UpdateMode::ReactiveLowPower {
+                wait: Duration::from_secs_f64(1.0 / 5.0),
+            },
+            unfocused_mode: UpdateMode::ReactiveLowPower {
+                wait: Duration::from_secs_f64(1.0 / 5.0),
+            },
+            ..default()
+        })
+
         .add_plugins(PanCamPlugin::default())
         .add_plugins(WorldInspectorPlugin::new())
 
