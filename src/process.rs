@@ -267,7 +267,9 @@ pub fn process(
                         let offset = access.offset_query.get(*id).unwrap().color;
                         let mat = access.mats.get(mat_id).unwrap();
                         let input = mat.color;
-                        access.mats.get_mut(access.material_ids.get(*id).unwrap()).unwrap().color = input + offset;
+                        access.mats.get_mut(
+                            access.material_ids.get(*id).unwrap()
+                        ).unwrap().color = input + offset;
                         mark_changed!(-2, children, black_hole_query, white_hole_query);
                     },
                     (-3, -3) => { // radius
