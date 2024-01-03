@@ -90,6 +90,8 @@ fn main() {
 
         .add_systems(Update, process.after(sort_by_order))
 
+        .add_systems(Startup, ext_thread)
+
         .run();
 }
 

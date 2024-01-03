@@ -27,6 +27,18 @@ macro_rules! mark_changed {
     };
 }
 
+pub fn ext_thread(mut commands: Commands) {
+    let (tx, rx) = bounded::<f32>(10);
+    std::thread::spawn(move || {
+        loop {
+            if let Ok(input) = rx.recv() {
+                println!("{}", input);
+            }
+        }
+    });
+    commands.insert_resource(StreamSender(tx));
+}
+
 pub fn sort_by_order(
     query: Query<(Entity, &Order)>,
     mut max_order: Local<usize>,
@@ -68,6 +80,7 @@ pub fn process(
     black_hole_query: Query<&BlackHole>,
     mut white_hole_query: Query<&mut WhiteHole>,
     mut access: Access,
+    stream_sender: Res<StreamSender>,
 ) {
     for id in queue.0.iter().flatten() {
         let children = children_query.get(*id).unwrap();
@@ -251,14 +264,6 @@ pub fn process(
                 }
             },
             5 => {
-                let (tx, rx) = bounded::<f32>(10);
-                std::thread::spawn(move || {
-                    loop {
-                        if let Ok(input) = rx.recv() {
-                            println!("{}", input);
-                        }
-                    }
-                });
                 for child in children {
                     if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
                         if white_hole.changed {
@@ -266,7 +271,7 @@ pub fn process(
                             if white_hole.link_type == 1 && black_hole.link_type == -4 {
                                 white_hole.changed = false;
                                 let input = access.num_query.get(black_hole.parent).unwrap().0;
-                                tx.send(input).unwrap();
+                                stream_sender.0.send(input).unwrap();
                             }
                         }
                     }

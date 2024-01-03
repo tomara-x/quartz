@@ -1,4 +1,5 @@
 use bevy::{prelude::*};
+use crossbeam_channel::Sender;
 // -------------------- components --------------------
 #[derive(Component)]
 pub struct Op(pub i32);
@@ -71,6 +72,9 @@ pub struct CursorInfo {
 
 #[derive(Resource)]
 pub struct Depth(pub f32);
+
+#[derive(Resource, Deref)]
+pub struct StreamSender(pub Sender<f32>);
 
 // -------------------- events --------------------
 #[derive(Event, Default)]
