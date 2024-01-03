@@ -40,6 +40,8 @@ features = [
 [dependencies]
 rand = "0.8.0"
 bevy_pancam = "0.10.0"
+crossbeam-channel = "0.5.10"
+knyst = "0.4.3"
 bevy-inspector-egui = {version = "0.21.0",  default-features = false}
 
 # smol amount of optimization for our stuff

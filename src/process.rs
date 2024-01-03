@@ -7,6 +7,12 @@ use bevy::{
         },
     prelude::*};
 
+use crossbeam_channel::{bounded, Receiver};
+use knyst::{
+    audio_backend::{CpalBackend, CpalBackendOptions},
+    prelude::*,
+};
+
 use crate::components::*;
 
 macro_rules! mark_changed {
@@ -239,6 +245,28 @@ pub fn process(
                                         white_hole_query.get_mut(black_hole.wh).unwrap().changed = true;
                                     }
                                 }
+                            }
+                        }
+                    }
+                }
+            },
+            5 => {
+                let (tx, rx) = bounded::<f32>(10);
+                std::thread::spawn(move || {
+                    loop {
+                        if let Ok(input) = rx.recv() {
+                            println!("{}", input);
+                        }
+                    }
+                });
+                for child in children {
+                    if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+                        if white_hole.changed {
+                            let black_hole = black_hole_query.get(white_hole.bh).unwrap();
+                            if white_hole.link_type == 1 && black_hole.link_type == -4 {
+                                white_hole.changed = false;
+                                let input = access.num_query.get(black_hole.parent).unwrap().0;
+                                tx.send(input).unwrap();
                             }
                         }
                     }
