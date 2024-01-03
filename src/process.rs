@@ -1,4 +1,5 @@
 use bevy::{
+    ecs::system::SystemParam,
     sprite::Mesh2dHandle,
     core_pipeline::{
         bloom::{BloomCompositeMode, BloomSettings},
@@ -39,27 +40,32 @@ pub fn sort_by_order(
     }
 }
 
+#[derive(SystemParam)]
+pub struct Access<'w, 's> {
+    op_query: Query<'w, 's, &'static mut Op>,
+    bloom: Query<'w, 's, & 'static mut BloomSettings, With<Camera>>,
+    num_query: Query<'w, 's, &'static mut Num>,
+    mats: ResMut<'w, Assets<ColorMaterial>>,
+    material_ids: Query<'w, 's, &'static Handle<ColorMaterial>>,
+    radius_query: Query<'w, 's, &'static mut Radius>,
+    meshes: ResMut<'w, Assets<Mesh>>,
+    mesh_ids: Query<'w, 's, &'static Mesh2dHandle>,
+    trans_query: Query<'w, 's, &'static mut Transform>,
+    offset_query: Query<'w, 's, &'static mut Offset>,
+    arr_query: Query<'w, 's, &'static mut Arr>,
+    tonemapping: Query<'w, 's, &'static mut Tonemapping, With<Camera>>,
+}
+
 pub fn process(
     queue: Res<Queue>,
     children_query: Query<&Children>,
     black_hole_query: Query<&BlackHole>,
     mut white_hole_query: Query<&mut WhiteHole>,
-    mut op_query: Query<&mut Op>,
-    mut bloom: Query<&mut BloomSettings, With<Camera>>,
-    mut num_query: Query<&mut Num>,
-    mut mats: ResMut<Assets<ColorMaterial>>,
-    material_ids: Query<&Handle<ColorMaterial>>,
-    mut radius_query: Query<&mut Radius>,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mesh_ids: Query<&Mesh2dHandle>,
-    mut trans_query: Query<&mut Transform>,
-    mut offset_query: Query<&mut Offset>,
-    mut arr_query: Query<&mut Arr>,
-    mut tonemapping: Query<&mut Tonemapping, With<Camera>>,
+    mut access: Access,
 ) {
     for id in queue.0.iter().flatten() {
         let children = children_query.get(*id).unwrap();
-        match op_query.get(*id).unwrap().0 {
+        match access.op_query.get(*id).unwrap().0 {
             -3 => { // float to radius
                 for child in children {
                     if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
@@ -67,10 +73,10 @@ pub fn process(
                             let black_hole = black_hole_query.get(white_hole.bh).unwrap();
                             if black_hole.link_type == -4 && white_hole.link_type == 1 {
                                 white_hole.changed = false;
-                                let input = num_query.get(black_hole.parent).unwrap().0;
-                                let Mesh2dHandle(mesh_id) = mesh_ids.get(*id).unwrap();
-                                radius_query.get_mut(*id).unwrap().0 = input;
-                                let mesh = meshes.get_mut(mesh_id).unwrap();
+                                let input = access.num_query.get(black_hole.parent).unwrap().0;
+                                let Mesh2dHandle(mesh_id) = access.mesh_ids.get(*id).unwrap();
+                                access.radius_query.get_mut(*id).unwrap().0 = input;
+                                let mesh = access.meshes.get_mut(mesh_id).unwrap();
                                 *mesh = shape::Circle::new(input).into();
                                 mark_changed!(-3, children, black_hole_query, white_hole_query);
                             }
@@ -85,13 +91,13 @@ pub fn process(
                             let black_hole = black_hole_query.get(white_hole.bh).unwrap();
                             if black_hole.link_type == -4 && (1..5).contains(&white_hole.link_type) {
                                 white_hole.changed = false;
-                                let input = num_query.get(black_hole.parent).unwrap().0;
-                                let mat_id = material_ids.get(*id).unwrap();
+                                let input = access.num_query.get(black_hole.parent).unwrap().0;
+                                let mat_id = access.material_ids.get(*id).unwrap();
                                 match white_hole.link_type {
-                                    1 => { mats.get_mut(mat_id).unwrap().color.set_h(input); },
-                                    2 => { mats.get_mut(mat_id).unwrap().color.set_s(input); },
-                                    3 => { mats.get_mut(mat_id).unwrap().color.set_l(input); },
-                                    4 => { mats.get_mut(mat_id).unwrap().color.set_a(input); },
+                                    1 => { access.mats.get_mut(mat_id).unwrap().color.set_h(input); },
+                                    2 => { access.mats.get_mut(mat_id).unwrap().color.set_s(input); },
+                                    3 => { access.mats.get_mut(mat_id).unwrap().color.set_l(input); },
+                                    4 => { access.mats.get_mut(mat_id).unwrap().color.set_a(input); },
                                     _ => {},
                                 }
                                 mark_changed!(-2, children, black_hole_query, white_hole_query);
@@ -107,8 +113,8 @@ pub fn process(
                             let black_hole = black_hole_query.get(white_hole.bh).unwrap();
                             if black_hole.link_type == -4 && (1..4).contains(&white_hole.link_type) {
                                 white_hole.changed = false;
-                                let input = num_query.get(black_hole.parent).unwrap().0;
-                                let mut t = trans_query.get_mut(*id).unwrap();
+                                let input = access.num_query.get(black_hole.parent).unwrap().0;
+                                let mut t = access.trans_query.get_mut(*id).unwrap();
                                 match white_hole.link_type {
                                     1 => t.translation.x = input,
                                     2 => t.translation.y = input,
@@ -130,8 +136,8 @@ pub fn process(
                             let black_hole = black_hole_query.get(white_hole.bh).unwrap();
                             if black_hole.link_type == -4 && white_hole.link_type == -4 {
                                 white_hole.changed = false;
-                                let input = num_query.get(black_hole.parent).unwrap().0;
-                                num_query.get_mut(*id).unwrap().0 = input;
+                                let input = access.num_query.get(black_hole.parent).unwrap().0;
+                                access.num_query.get_mut(*id).unwrap().0 = input;
                                 mark_changed!(-4, children, black_hole_query, white_hole_query);
                             }
                         }
@@ -139,14 +145,14 @@ pub fn process(
                 }
             },
             1 => { // bloom control
-                let mut bloom_settings = bloom.single_mut();
+                let mut bloom_settings = access.bloom.single_mut();
                 for child in children {
                     if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
                         if !white_hole.changed { continue; }
                         let black_hole = black_hole_query.get(white_hole.bh).unwrap();
                         if black_hole.link_type == -4 && (1..8).contains(&white_hole.link_type) {
                             white_hole.changed = false;
-                            let input = num_query.get(black_hole.parent).unwrap().0 / 100.;
+                            let input = access.num_query.get(black_hole.parent).unwrap().0 / 100.;
                             match white_hole.link_type {
                                 1 => bloom_settings.intensity = input,
                                 2 => bloom_settings.low_frequency_boost = input,
@@ -163,14 +169,14 @@ pub fn process(
                 }
             },
             2 => { // tone mapping
-                let mut tm = tonemapping.single_mut();
+                let mut tm = access.tonemapping.single_mut();
                 for child in children {
                     if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
                         if !white_hole.changed { continue; }
                         let black_hole = black_hole_query.get(white_hole.bh).unwrap();
                         if black_hole.link_type == -4 && white_hole.link_type == 1 {
                             white_hole.changed = false;
-                            let input = num_query.get(black_hole.parent).unwrap().0;
+                            let input = access.num_query.get(black_hole.parent).unwrap().0;
                             match input as usize {
                                 0 => *tm = Tonemapping::None,
                                 1 => *tm = Tonemapping::Reinhard,
@@ -193,9 +199,9 @@ pub fn process(
                             let black_hole = black_hole_query.get(white_hole.bh).unwrap();
                             if black_hole.link_type >= 0 && white_hole.link_type == -4 {
                                 white_hole.changed = false;
-                                let arr = &arr_query.get(black_hole.parent).unwrap().0;
+                                let arr = &access.arr_query.get(black_hole.parent).unwrap().0;
                                 if let Some(input) = arr.get(black_hole.link_type as usize) {
-                                    num_query.get_mut(*id).unwrap().0 = *input;
+                                    access.num_query.get_mut(*id).unwrap().0 = *input;
                                     mark_changed!(-4, children, black_hole_query, white_hole_query);
                                 }
                             }
@@ -210,19 +216,19 @@ pub fn process(
                             let black_hole = black_hole_query.get(white_hole.bh).unwrap();
                             if white_hole.link_type == 1 && (-3..0).contains(&black_hole.link_type) {
                                 white_hole.changed = false;
-                                let arr = &mut arr_query.get_mut(*id).unwrap().0;
+                                let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
                                 match black_hole.link_type {
                                     -1 => {
-                                        let t = trans_query.get(black_hole.parent).unwrap().translation;
+                                        let t = access.trans_query.get(black_hole.parent).unwrap().translation;
                                         *arr = t.to_array().into();
                                     },
                                     -2 => {
-                                        let mat_id = material_ids.get(black_hole.parent).unwrap();
-                                        let c = mats.get(mat_id).unwrap().color;
+                                        let mat_id = access.material_ids.get(black_hole.parent).unwrap();
+                                        let c = access.mats.get(mat_id).unwrap().color;
                                         *arr = c.as_hsla_f32().into();
                                     },
                                     -3 => {
-                                        let r = radius_query.get(black_hole.parent).unwrap().0;
+                                        let r = access.radius_query.get(black_hole.parent).unwrap().0;
                                         *arr = [r].into();
                                     }
                                     _ => {},
@@ -247,9 +253,9 @@ pub fn process(
                 match (black_hole.link_type, white_hole.link_type) {
                     (-1, -1) => { //trans
                         white_hole.changed = false;
-                        let input = trans_query.get(black_hole.parent).unwrap().translation;
-                        let mut t = trans_query.get_mut(*id).unwrap();
-                        let offset = offset_query.get(*id).unwrap().trans;
+                        let input = access.trans_query.get(black_hole.parent).unwrap().translation;
+                        let mut t = access.trans_query.get_mut(*id).unwrap();
+                        let offset = access.offset_query.get(*id).unwrap().trans;
                         t.translation.x = input.x + offset.x;
                         t.translation.y = input.y + offset.y;
                         t.translation.z = input.z + offset.z;
@@ -257,45 +263,45 @@ pub fn process(
                     },
                     (-2, -2) => { // color
                         white_hole.changed = false;
-                        let mat_id = material_ids.get(black_hole.parent).unwrap();
-                        let offset = offset_query.get(*id).unwrap().color;
-                        let mat = mats.get(mat_id).unwrap();
+                        let mat_id = access.material_ids.get(black_hole.parent).unwrap();
+                        let offset = access.offset_query.get(*id).unwrap().color;
+                        let mat = access.mats.get(mat_id).unwrap();
                         let input = mat.color;
-                        mats.get_mut(material_ids.get(*id).unwrap()).unwrap().color = input + offset;
+                        access.mats.get_mut(access.material_ids.get(*id).unwrap()).unwrap().color = input + offset;
                         mark_changed!(-2, children, black_hole_query, white_hole_query);
                     },
                     (-3, -3) => { // radius
                         white_hole.changed = false;
-                        if let Ok(Mesh2dHandle(mesh_id)) = mesh_ids.get(*id) {
-                            let offset = offset_query.get(*id).unwrap().radius;
-                            let input = radius_query.get(black_hole.parent).unwrap().0;
-                            radius_query.get_mut(*id).unwrap().0 = input + offset;
-                            let mesh = meshes.get_mut(mesh_id).unwrap();
+                        if let Ok(Mesh2dHandle(mesh_id)) = access.mesh_ids.get(*id) {
+                            let offset = access.offset_query.get(*id).unwrap().radius;
+                            let input = access.radius_query.get(black_hole.parent).unwrap().0;
+                            access.radius_query.get_mut(*id).unwrap().0 = input + offset;
+                            let mesh = access.meshes.get_mut(mesh_id).unwrap();
                             *mesh = shape::Circle::new(input + offset).into();
                         }
                         mark_changed!(-3, children, black_hole_query, white_hole_query);
                     },
                     (-4, -5) => { // number to op
                         white_hole.changed = false;
-                        let input = num_query.get(black_hole.parent).unwrap().0;
-                        op_query.get_mut(*id).unwrap().0 = input as i32;
+                        let input = access.num_query.get(black_hole.parent).unwrap().0;
+                        access.op_query.get_mut(*id).unwrap().0 = input as i32;
                     }
                     (-1, -6) => { // position to trans offset
                         white_hole.changed = false;
-                        let input = trans_query.get(black_hole.parent).unwrap().translation;
-                        offset_query.get_mut(*id).unwrap().trans = input;
+                        let input = access.trans_query.get(black_hole.parent).unwrap().translation;
+                        access.offset_query.get_mut(*id).unwrap().trans = input;
                     },
                     (-2, -7) => { // color to color offset
                         white_hole.changed = false;
-                        let mat_id = material_ids.get(black_hole.parent).unwrap();
-                        let mat = mats.get(mat_id).unwrap();
+                        let mat_id = access.material_ids.get(black_hole.parent).unwrap();
+                        let mat = access.mats.get(mat_id).unwrap();
                         let input = mat.color;
-                        offset_query.get_mut(*id).unwrap().color = input;
+                        access.offset_query.get_mut(*id).unwrap().color = input;
                     },
                     (-3, -8) => { // radius to radius offset
                         white_hole.changed = false;
-                        let input = radius_query.get(black_hole.parent).unwrap().0;
-                        offset_query.get_mut(*id).unwrap().radius = input;
+                        let input = access.radius_query.get(black_hole.parent).unwrap().0;
+                        access.offset_query.get_mut(*id).unwrap().radius = input;
                     }
                     _ => {},
                 }

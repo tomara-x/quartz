@@ -1,5 +1,4 @@
 use bevy::{
-    //ecs::system::SystemParam,
     core_pipeline::{
         bloom::{BloomCompositeMode, BloomSettings},
         tonemapping::Tonemapping,
