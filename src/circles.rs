@@ -179,16 +179,19 @@ pub fn select_all(
 
 pub fn duplicate_selected(
     mut commands: Commands,
-    query: Query<(Entity, &Radius, &Handle<ColorMaterial>,
+    query: Query<(&Radius, &Handle<ColorMaterial>,
     &Transform, &Order, &Num, &Arr, &Offset, &Op), With<Selected>>,
+    selected_query: Query<Entity, With<Selected>>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     keyboard_input: Res<Input<KeyCode>>,
 ) {
     let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
     if ctrl && keyboard_input.just_pressed(KeyCode::D) {
-        for (e, radius, mat_id, trans, order, num, arr, offset, op) in query.iter() {
+        for e in selected_query.iter() {
             commands.entity(e).remove::<Selected>();
+        }
+        for (radius, mat_id, trans, order, num, arr, offset, op) in query.iter() {
             let color = materials.get(mat_id).unwrap().color;
             let id = commands.spawn((
                 ColorMesh2dBundle {
