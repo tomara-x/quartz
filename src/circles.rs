@@ -41,7 +41,7 @@ pub fn spawn_circles(
             Order(0),
             Num(0.),
             Arr(vec!(42., 105., 420., 1729.)),
-            Offset {trans:Vec3::ZERO, color:Color::BLACK, radius:0.},
+            Offset {trans:Vec3::ZERO, color:Color::hsla(0.,0.,0.,0.), radius:0.},
             Op(0),
         )).id();
 
