@@ -37,7 +37,7 @@ where
 
     let id_dc = net.chain(Box::new(dc(220.)));
     let id_sin = net.chain(Box::new(sine()));
-    let id_sin = net.chain(Box::new(pan(0.0)));
+    let id_pan = net.chain(Box::new(pan(0.0)));
 
     net.set_sample_rate(sample_rate);
     let mut backend = net.backend();
