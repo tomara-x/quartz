@@ -34,7 +34,7 @@ features = [
   #"vorbis",             # Audio: OGG Vorbis
   "x11",                # Linux: Support X11 windowing system
 
-  #"dynamic_linking",
+  "dynamic_linking",
 ]
 
 [dependencies]

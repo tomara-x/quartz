@@ -20,7 +20,8 @@ mod process;
 mod cursor;
 mod connections;
 mod circles;
-use {components::*, process::*, cursor::*, connections::*, circles::*,};
+mod audio;
+use {components::*, process::*, cursor::*, connections::*, circles::*, audio::*};
 
 fn main() {
     App::new()
