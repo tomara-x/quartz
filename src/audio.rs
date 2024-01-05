@@ -34,10 +34,16 @@ where
     let sample_rate = config.sample_rate.0 as f64;
     let channels = config.channels as usize;
     let mut net = Net32::new(0, 2);
+    let mut subnet = Net32::new(0, 1);
 
-    let id_dc = net.chain(Box::new(dc(220.)));
-    let id_sin = net.chain(Box::new(sine()));
-    let id_pan = net.chain(Box::new(pan(0.0)));
+    let id_dc = subnet.push(Box::new(dc(220.)));
+    let id_sin = subnet.push(Box::new(sine()));
+    subnet.pipe(id_dc, id_sin);
+    subnet.pipe_output(id_sin);
+    let id_subnet = net.push(Box::new(subnet.clone()));
+    let id_pan = net.push(Box::new(pan(0.)));
+    net.pipe(id_subnet, id_pan);
+    net.pipe_output(id_pan);
 
     net.set_sample_rate(sample_rate);
     let mut backend = net.backend();
@@ -56,7 +62,8 @@ where
 
     loop {
         if let Ok(input) = rx.recv() {
-            net.replace(id_dc, Box::new(dc(input)));
+            subnet.replace(id_dc, Box::new(dc(input)));
+            net.replace(id_subnet, Box::new(subnet.clone()));
             net.commit();
         }
     }
