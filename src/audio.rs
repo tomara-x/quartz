@@ -40,7 +40,8 @@ where
     let id_sin = subnet.push(Box::new(sine()));
     subnet.pipe(id_dc, id_sin);
     subnet.pipe_output(id_sin);
-    let id_subnet = net.push(Box::new(subnet.clone()));
+    let mut subnet_backend = subnet.backend();
+    let id_subnet = net.push(Box::new(subnet_backend));
     let id_pan = net.push(Box::new(pan(0.)));
     net.pipe(id_subnet, id_pan);
     net.pipe_output(id_pan);
@@ -63,8 +64,8 @@ where
     loop {
         if let Ok(input) = rx.recv() {
             subnet.replace(id_dc, Box::new(dc(input)));
-            net.replace(id_subnet, Box::new(subnet.clone()));
-            net.commit();
+            //net.replace(id_subnet, Box::new(subnet.clone()));
+            subnet.commit();
         }
     }
 }
