@@ -31,7 +31,6 @@ pub fn spawn_circles(
     if mouse_button_input.just_released(MouseButton::Left) &&
     !keyboard_input.pressed(KeyCode::Space) {
         let radius = cursor.f.distance(cursor.i);
-        let mut net = Net32::new(0,2);
         let id = commands.spawn((
             ColorMesh2dBundle {
                 mesh: meshes.add(bevy::prelude::shape::Circle::new(radius).into()).into(),
@@ -43,7 +42,7 @@ pub fn spawn_circles(
             Visible, //otherwise it can't be selected til after mark_visible is updated
             Order(0),
             OpChanged(true),
-            Network(net),
+            Network(Net32::new(0,0)),
             NetIns(Vec::new()),
             crate::components::Num(0.),
             Arr(vec!(42., 105., 420., 1729.)),
@@ -186,7 +185,7 @@ pub fn select_all(
 pub fn duplicate_selected(
     mut commands: Commands,
     query: Query<(&Radius, &Handle<ColorMaterial>,
-    &Transform, &Order, &crate::components::Num, &Arr, &Offset, &Op), With<Selected>>,
+    &Transform, &Order, &crate::components::Num, &Arr, &Offset, &Op, &Network, &NetIns), With<Selected>>,
     selected_query: Query<Entity, With<Selected>>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
@@ -197,9 +196,8 @@ pub fn duplicate_selected(
         for e in selected_query.iter() {
             commands.entity(e).remove::<Selected>();
         }
-        for (radius, mat_id, trans, order, num, arr, offset, op) in query.iter() {
+        for (radius, mat_id, trans, order, num, arr, offset, op, net, net_ins) in query.iter() {
             let color = materials.get(mat_id).unwrap().color;
-            let mut net = Net32::new(0,2);
             let id = commands.spawn((
                 ColorMesh2dBundle {
                     mesh: meshes.add(bevy::prelude::shape::Circle::new(radius.0).into()).into(),
@@ -213,6 +211,8 @@ pub fn duplicate_selected(
                 Selected,
                 Order(order.0),
                 OpChanged(true),
+                Network(net.0.clone()),
+                NetIns(net_ins.0.clone()),
                 crate::components::Num(num.0),
                 Arr(arr.0.clone().into()),
                 Offset {trans: offset.trans, color: offset.color, radius: offset.radius},
@@ -425,23 +425,27 @@ pub fn update_op(
         for (mut op, mut op_changed, mut n, mut inputs) in query.iter_mut() {
             op.0 += increment;
             op_changed.0 = true;
-            if op.0 == 6 { // sin
-                let freq = shared(220.);
-                n.0 = Net32::wrap(Box::new(var(&freq) >> sine() >> pan(0.)));
-                inputs.0.clear();
-                inputs.0.push(freq);
-            }
-            if op.0 == 7 { // saw
-                let freq = shared(220.);
-                n.0 = Net32::wrap(Box::new(var(&freq) >> saw() >> pan(0.)));
-                inputs.0.clear();
-                inputs.0.push(freq);
-            }
-            if op.0 == 8 { // square
-                let freq = shared(220.);
-                n.0 = Net32::wrap(Box::new(var(&freq) >> square() >> pan(0.)));
-                inputs.0.clear();
-                inputs.0.push(freq);
+            // can we use duplicate macros here?
+            match op.0 {
+                6 => { // sin
+                    let freq = shared(220.);
+                    n.0 = Net32::wrap(Box::new(var(&freq) >> sine() >> pan(0.)));
+                    inputs.0.clear();
+                    inputs.0.push(freq);
+                },
+                7 => { // saw
+                    let freq = shared(220.);
+                    n.0 = Net32::wrap(Box::new(var(&freq) >> saw() >> pan(0.)));
+                    inputs.0.clear();
+                    inputs.0.push(freq);
+                },
+                8 => { // square
+                    let freq = shared(220.);
+                    n.0 = Net32::wrap(Box::new(var(&freq) >> square() >> pan(0.)));
+                    inputs.0.clear();
+                    inputs.0.push(freq);
+                },
+                _ => {},
             }
         }
     }

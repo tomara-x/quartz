@@ -252,7 +252,7 @@ pub fn process(
             },
             5 => { //out
                 for child in children {
-                    if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+                    if let Ok(white_hole) = white_hole_query.get_mut(*child) {
                         let black_hole = black_hole_query.get(white_hole.bh).unwrap();
                         if white_hole.link_type == 1 && black_hole.link_type == 0 {
                             if access.op_changed_query.get(black_hole.parent).unwrap().0 {
