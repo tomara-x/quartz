@@ -264,7 +264,7 @@ pub fn process(
                     }
                 }
             },
-            6 | 7 => { //oscil
+            6 | 7 | 8 => { //oscil
                 for child in children {
                     if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
                         if white_hole.changed {

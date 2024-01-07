@@ -437,6 +437,12 @@ pub fn update_op(
                 inputs.0.clear();
                 inputs.0.push(freq);
             }
+            if op.0 == 8 { // square
+                let freq = shared(220.);
+                n.0 = Net32::wrap(Box::new(var(&freq) >> square() >> pan(0.)));
+                inputs.0.clear();
+                inputs.0.push(freq);
+            }
         }
     }
 }
@@ -483,7 +489,9 @@ pub fn update_circle_text(
                 3 => "op: Get\n".to_string(),
                 4 => "op: fromTCR\n".to_string(),
                 5 => "op: Out\n".to_string(),
-                6 => "op: Oscil\n".to_string(),
+                6 => "op: Sin\n".to_string(),
+                7 => "op: Saw\n".to_string(),
+                8 => "op: Square\n".to_string(),
                 _ => op.0.to_string() + "\n",
             };
         }
