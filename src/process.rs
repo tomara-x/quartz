@@ -57,9 +57,8 @@ pub struct Access<'w, 's> {
     arr_query: Query<'w, 's, &'static mut Arr>,
     tonemapping: Query<'w, 's, &'static mut Tonemapping, With<Camera>>,
     op_changed_query: Query<'w, 's, &'static mut OpChanged>,
-    network_query: Query<'w, 's, &'static mut Network>,
-    netb_query: Query<'w, 's, &'static mut NetB>,
-    net_nodes_query: Query<'w, 's, &'static mut NetNodes>,
+    net_query: Query<'w, 's, &'static mut Network>,
+    net_ins_query: Query<'w, 's, &'static mut NetIns>,
 }
 
 pub fn process(
@@ -258,31 +257,23 @@ pub fn process(
                         if white_hole.link_type == 1 && black_hole.link_type == 0 {
                             if access.op_changed_query.get(black_hole.parent).unwrap().0 {
                                 access.op_changed_query.get_mut(black_hole.parent).unwrap().0 = false;
-                                let backend = &access.netb_query.get(black_hole.parent).unwrap().0;
-                                slot.0.set(Fade::Smooth, 0.1, Box::new(backend.clone()));
+                                let net = &access.net_query.get(black_hole.parent).unwrap().0;
+                                slot.0.set(Fade::Smooth, 0., Box::new(net.clone()));
                             }
                         }
                     }
                 }
             },
-            6 => { //oscil
+            6 | 7 => { //oscil
                 for child in children {
                     if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
                         if white_hole.changed {
                             let black_hole = black_hole_query.get(white_hole.bh).unwrap();
-                            if black_hole.link_type == -4 {
-                                match white_hole.link_type {
-                                    1 => {
-                                        white_hole.changed = false;
-                                        let input = access.num_query.get(black_hole.parent).unwrap().0;
-                                        let dc_id = access.net_nodes_query.get(*id).unwrap().0[0];
-                                        let net = &mut access.network_query.get_mut(*id).unwrap().0;
-                                        net.replace(dc_id, Box::new(dc(input)));
-                                        net.commit();
-                                        access.op_changed_query.get_mut(*id).unwrap().0 = true;
-                                    },
-                                    _ => {},
-                                }
+                            if white_hole.link_type == 1 && black_hole.link_type == -4 {
+                                white_hole.changed = false;
+                                let input = access.num_query.get(black_hole.parent).unwrap().0;
+                                let freq = &access.net_ins_query.get(*id).unwrap().0[0];
+                                freq.set_value(input);
                             }
                         }
                     }
