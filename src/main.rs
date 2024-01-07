@@ -49,6 +49,7 @@ fn main() {
         .insert_resource(Msaa::Sample4)
 
         .add_systems(Startup, setup)
+        .add_systems(Startup, ext_thread)
         
         .add_systems(Update, toggle_pan)
         .add_state::<Mode>()
@@ -91,7 +92,6 @@ fn main() {
 
         .add_systems(Update, process.after(sort_by_order))
 
-        .add_systems(Startup, ext_thread)
 
         .run();
 }

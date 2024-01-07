@@ -1,5 +1,5 @@
 use bevy::{prelude::*};
-use crossbeam_channel::Sender;
+use fundsp::hacker32::*;
 // -------------------- components --------------------
 #[derive(Component)]
 pub struct Op(pub i32);
@@ -29,6 +29,12 @@ pub struct Visible;
 #[derive(Component)]
 pub struct Order(pub usize);
 
+#[derive(Component)]
+pub struct OpChanged(pub bool);
+
+#[derive(Component)]
+pub struct Network(pub Net32);
+
 // hole enum?
 #[allow(dead_code)]
 #[derive(Component)]
@@ -38,6 +44,7 @@ pub struct WhiteHole {
     pub bh: Entity,
     pub link_type: i32,
     pub changed: bool,
+    pub new: bool,
 }
 
 #[derive(Component)]
@@ -73,8 +80,8 @@ pub struct CursorInfo {
 #[derive(Resource)]
 pub struct Depth(pub f32);
 
-#[derive(Resource, Deref)]
-pub struct StreamSender(pub Sender<f32>);
+#[derive(Resource)]
+pub struct Slot(pub Slot32);
 
 // -------------------- events --------------------
 #[derive(Event, Default)]

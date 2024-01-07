@@ -1,7 +1,5 @@
 use bevy::{prelude::*};
 
-use crossbeam_channel::{bounded, Receiver};
-
 use assert_no_alloc::*;
 use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
 use cpal::{FromSample, SizedSample};
@@ -9,8 +7,12 @@ use fundsp::hacker32::*;
 
 use crate::components::*;
 
-pub fn ext_thread(mut commands: Commands) {
-    let (tx, rx) = bounded::<f32>(10);
+pub fn ext_thread(
+    mut commands: Commands,
+) {
+    let net = Net32::new(0, 2);
+    let slot = Slot32::new(Box::new(net));
+    commands.insert_resource(Slot(slot.0));
     std::thread::spawn(move || {
         let host = cpal::default_host();
         let device = host
@@ -18,38 +20,26 @@ pub fn ext_thread(mut commands: Commands) {
             .expect("Failed to find a default output device");
         let config = device.default_output_config().unwrap();
         match config.sample_format() {
-            cpal::SampleFormat::F32 => run::<f32>(&device, &config.into(), rx).unwrap(),
-            cpal::SampleFormat::I16 => run::<i16>(&device, &config.into(), rx).unwrap(),
-            cpal::SampleFormat::U16 => run::<u16>(&device, &config.into(), rx).unwrap(),
+            cpal::SampleFormat::F32 => run::<f32>(&device, &config.into(), slot.1).unwrap(),
+            cpal::SampleFormat::I16 => run::<i16>(&device, &config.into(), slot.1).unwrap(),
+            cpal::SampleFormat::U16 => run::<u16>(&device, &config.into(), slot.1).unwrap(),
             _ => panic!("Unsupported format"),
         }
     });
-    commands.insert_resource(StreamSender(tx));
 }
 
-fn run<T>(device: &cpal::Device, config: &cpal::StreamConfig, rx: Receiver<f32>) -> Result<(), anyhow::Error>
+fn run<T>(
+    device: &cpal::Device,
+    config: &cpal::StreamConfig,
+    mut slot_b: SlotBackend32) -> Result<(), anyhow::Error>
 where
     T: SizedSample + FromSample<f32>,
 {
     let sample_rate = config.sample_rate.0 as f64;
     let channels = config.channels as usize;
-    let mut net = Net32::new(0, 2);
-    let mut subnet = Net32::new(0, 1);
 
-    let id_dc = subnet.push(Box::new(dc(220.)));
-    let id_sin = subnet.push(Box::new(sine()));
-    subnet.pipe(id_dc, id_sin);
-    subnet.pipe_output(id_sin);
-    let mut subnet_backend = subnet.backend();
-    let id_subnet = net.push(Box::new(subnet_backend));
-    let id_pan = net.push(Box::new(pan(0.)));
-    net.pipe(id_subnet, id_pan);
-    net.pipe_output(id_pan);
-
-    net.set_sample_rate(sample_rate);
-    let mut backend = net.backend();
-
-    let mut next_value = move || assert_no_alloc(|| backend.get_stereo());
+    slot_b.set_sample_rate(sample_rate);
+    let mut next_value = move || assert_no_alloc(|| slot_b.get_stereo());
     let err_fn = |err| eprintln!("an error occurred on stream: {}", err);
     let stream = device.build_output_stream(
         config,
@@ -60,14 +50,8 @@ where
         None,
     )?;
     stream.play()?;
-
-    loop {
-        if let Ok(input) = rx.recv() {
-            subnet.replace(id_dc, Box::new(dc(input)));
-            //net.replace(id_subnet, Box::new(subnet.clone()));
-            subnet.commit();
-        }
-    }
+    std::thread::sleep(std::time::Duration::from_secs(u64::MAX));
+    Ok(())
 }
 
 fn write_data<T>(output: &mut [T], channels: usize, next_sample: &mut dyn FnMut() -> (f32, f32))

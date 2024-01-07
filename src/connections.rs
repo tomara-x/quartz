@@ -70,6 +70,7 @@ pub fn connect(
                     bh: black_hole,
                     link_type: 0,
                     changed: false,
+                    new: true,
                 });
 
             // add to parents

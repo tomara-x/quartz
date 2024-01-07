@@ -3,6 +3,8 @@ use bevy::{
     sprite::Mesh2dHandle,
     prelude::*};
 
+use fundsp::hacker32::*;
+
 use crate::components::*;
 
 macro_rules! mark_changed {
@@ -31,7 +33,7 @@ pub fn spawn_circles(
         let radius = cursor.f.distance(cursor.i);
         let id = commands.spawn((
             ColorMesh2dBundle {
-                mesh: meshes.add(shape::Circle::new(radius).into()).into(),
+                mesh: meshes.add(bevy::prelude::shape::Circle::new(radius).into()).into(),
                 material: materials.add(ColorMaterial::from(Color::hsl(0., 1.0, 0.5))),
                 transform: Transform::from_translation(cursor.i.extend(depth.0)),
                 ..default()
@@ -39,7 +41,9 @@ pub fn spawn_circles(
             Radius(radius),
             Visible, //otherwise it can't be selected til after mark_visible is updated
             Order(0),
-            Num(0.),
+            OpChanged(true),
+            Network(Net32::new(0,2)),
+            crate::components::Num(0.),
             Arr(vec!(42., 105., 420., 1729.)),
             Offset {trans:Vec3::ZERO, color:Color::hsla(0.,0.,0.,0.), radius:0.},
             Op(0),
@@ -180,7 +184,7 @@ pub fn select_all(
 pub fn duplicate_selected(
     mut commands: Commands,
     query: Query<(&Radius, &Handle<ColorMaterial>,
-    &Transform, &Order, &Num, &Arr, &Offset, &Op), With<Selected>>,
+    &Transform, &Order, &crate::components::Num, &Arr, &Offset, &Op, &Network), With<Selected>>,
     selected_query: Query<Entity, With<Selected>>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
@@ -191,11 +195,11 @@ pub fn duplicate_selected(
         for e in selected_query.iter() {
             commands.entity(e).remove::<Selected>();
         }
-        for (radius, mat_id, trans, order, num, arr, offset, op) in query.iter() {
+        for (radius, mat_id, trans, order, num, arr, offset, op, net) in query.iter() {
             let color = materials.get(mat_id).unwrap().color;
             let id = commands.spawn((
                 ColorMesh2dBundle {
-                    mesh: meshes.add(shape::Circle::new(radius.0).into()).into(),
+                    mesh: meshes.add(bevy::prelude::shape::Circle::new(radius.0).into()).into(),
                     material: materials.add(ColorMaterial::from(color)),
                     transform: Transform::from_translation(
                         Vec3 {z: trans.translation.z + 1., ..trans.translation }),
@@ -205,7 +209,9 @@ pub fn duplicate_selected(
                 Visible,
                 Selected,
                 Order(order.0),
-                Num(num.0),
+                OpChanged(true),
+                Network(net.0.clone()),
+                crate::components::Num(num.0),
                 Arr(arr.0.clone().into()),
                 Offset {trans: offset.trans, color: offset.color, radius: offset.radius},
                 Op(op.0),
@@ -221,7 +227,7 @@ pub fn duplicate_selected(
                         TextStyle { color: Color::BLACK, ..default() },
                     ),
                     TextSection::new(
-                        "op: yaas\n",
+                        "op: nope\n",
                         TextStyle { color: Color::BLACK, ..default() },
                     ),
                     TextSection::new(
@@ -347,7 +353,7 @@ pub fn update_radius(
             for (entity, children, Mesh2dHandle(id)) in mesh_ids.iter() {
                 let r = cursor.f.distance(cursor.i);
                 let mesh = meshes.get_mut(id).unwrap();
-                *mesh = shape::Circle::new(r).into();
+                *mesh = bevy::prelude::shape::Circle::new(r).into();
                 radius_query.get_mut(entity).unwrap().0 = r;
                 mark_changed!(-3, children, black_hole_query, white_hole_query);
             }
@@ -357,7 +363,7 @@ pub fn update_radius(
                 let r = radius_query.get_mut(entity).unwrap().0 + 1.;
                 radius_query.get_mut(entity).unwrap().0 = r;
                 let mesh = meshes.get_mut(id).unwrap();
-                *mesh = shape::Circle::new(r).into();
+                *mesh = bevy::prelude::shape::Circle::new(r).into();
                 mark_changed!(-3, children, black_hole_query, white_hole_query);
             }
         }
@@ -366,7 +372,7 @@ pub fn update_radius(
                 let r = radius_query.get_mut(entity).unwrap().0 - 1.;
                 radius_query.get_mut(entity).unwrap().0 = r;
                 let mesh = meshes.get_mut(id).unwrap();
-                *mesh = shape::Circle::new(r).into();
+                *mesh = bevy::prelude::shape::Circle::new(r).into();
                 mark_changed!(-3, children, black_hole_query, white_hole_query);
             }
         }
@@ -374,7 +380,7 @@ pub fn update_radius(
 }
 
 pub fn update_num(
-    mut query: Query<(&mut Num, &Children), With<Selected>>,
+    mut query: Query<(&mut crate::components::Num, &Children), With<Selected>>,
     keyboard_input: Res<Input<KeyCode>>,
     cursor: Res<CursorInfo>,
     mouse_button_input: Res<Input<MouseButton>>,
@@ -408,14 +414,20 @@ pub fn update_num(
 }
 
 pub fn update_op(
-    mut query: Query<&mut Op, With<Selected>>,
+    mut query: Query<(&mut Op, &mut OpChanged, &mut Network), With<Selected>>,
     keyboard_input: Res<Input<KeyCode>>,
 ) {
-    if keyboard_input.just_pressed(KeyCode::O) {
-        for mut op in query.iter_mut() { op.0 -= 1; }
-    }
-    if keyboard_input.just_pressed(KeyCode::P) {
-        for mut op in query.iter_mut() { op.0 += 1; }
+    if keyboard_input.any_just_pressed([KeyCode::O, KeyCode::P]) {
+        let increment = if keyboard_input.just_pressed(KeyCode::O) { -1 } else { 1 };
+        for (mut op, mut op_changed, mut net) in query.iter_mut() {
+            op.0 += increment;
+            op_changed.0 = true;
+            match op.0 {
+                6 => { net.0 = Net32::wrap(Box::new(dc(220.) >> sine() >> pan(0.))); },
+                7 => { net.0 = Net32::wrap(Box::new(dc(220.) >> saw() >> pan(0.))); },
+                _ => {},
+            }
+        }
     }
 }
 
@@ -443,7 +455,7 @@ pub fn update_order (
 pub fn update_circle_text(
     mut query: Query<(&mut Text, &Parent), With<Visible>>,
     order_query: Query<&Order>,
-    num_query: Query<&Num>,
+    num_query: Query<&crate::components::Num>,
     op_query: Query<&Op>,
 ) {
     for (mut text, parent) in query.iter_mut() {
@@ -455,11 +467,13 @@ pub fn update_circle_text(
                 -3 => "op: toRadius\n".to_string(),
                 -2 => "op: toColor\n".to_string(),
                 -1 => "op: toTrans\n".to_string(),
-                0 => "op: yaas\n".to_string(),
+                0 => "op: nope\n".to_string(),
                 1 => "op: BloomControl\n".to_string(),
                 2 => "op: Tonemapping\n".to_string(),
                 3 => "op: Get\n".to_string(),
                 4 => "op: fromTCR\n".to_string(),
+                5 => "op: Out\n".to_string(),
+                6 => "op: Oscil\n".to_string(),
                 _ => op.0.to_string() + "\n",
             };
         }

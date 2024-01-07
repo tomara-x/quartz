@@ -7,6 +7,8 @@ use bevy::{
         },
     prelude::*};
 
+use fundsp::hacker32::*;
+
 use crate::components::*;
 
 macro_rules! mark_changed {
@@ -44,7 +46,7 @@ pub fn sort_by_order(
 pub struct Access<'w, 's> {
     op_query: Query<'w, 's, &'static mut Op>,
     bloom: Query<'w, 's, & 'static mut BloomSettings, With<Camera>>,
-    num_query: Query<'w, 's, &'static mut Num>,
+    num_query: Query<'w, 's, &'static mut crate::components::Num>,
     mats: ResMut<'w, Assets<ColorMaterial>>,
     material_ids: Query<'w, 's, &'static Handle<ColorMaterial>>,
     radius_query: Query<'w, 's, &'static mut Radius>,
@@ -54,6 +56,8 @@ pub struct Access<'w, 's> {
     offset_query: Query<'w, 's, &'static mut Offset>,
     arr_query: Query<'w, 's, &'static mut Arr>,
     tonemapping: Query<'w, 's, &'static mut Tonemapping, With<Camera>>,
+    op_changed_query: Query<'w, 's, &'static mut OpChanged>,
+    network_query: Query<'w, 's, &'static mut Network>,
 }
 
 pub fn process(
@@ -62,7 +66,7 @@ pub fn process(
     black_hole_query: Query<&BlackHole>,
     mut white_hole_query: Query<&mut WhiteHole>,
     mut access: Access,
-    stream_sender: Res<StreamSender>,
+    mut slot: ResMut<Slot>,
 ) {
     for id in queue.0.iter().flatten() {
         let children = children_query.get(*id).unwrap();
@@ -78,7 +82,7 @@ pub fn process(
                                 let Mesh2dHandle(mesh_id) = access.mesh_ids.get(*id).unwrap();
                                 access.radius_query.get_mut(*id).unwrap().0 = input;
                                 let mesh = access.meshes.get_mut(mesh_id).unwrap();
-                                *mesh = shape::Circle::new(input).into();
+                                *mesh = bevy::prelude::shape::Circle::new(input).into();
                                 mark_changed!(-3, children, black_hole_query, white_hole_query);
                             }
                         }
@@ -248,16 +252,28 @@ pub fn process(
             5 => {
                 for child in children {
                     if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
-                        if white_hole.changed {
-                            let black_hole = black_hole_query.get(white_hole.bh).unwrap();
-                            if white_hole.link_type == 1 && black_hole.link_type == -4 {
-                                white_hole.changed = false;
-                                let input = access.num_query.get(black_hole.parent).unwrap().0;
-                                stream_sender.0.send(input).unwrap();
+                        let black_hole = black_hole_query.get(white_hole.bh).unwrap();
+                        if white_hole.link_type == 1 && black_hole.link_type == 0 {
+                            if access.op_changed_query.get(black_hole.parent).unwrap().0 {
+                                access.op_changed_query.get_mut(black_hole.parent).unwrap().0 = false;
+                                let net = &access.network_query.get(black_hole.parent).unwrap().0;
+                                slot.0.set(Fade::Smooth, 0., Box::new(net.clone()));
                             }
                         }
                     }
                 }
+            },
+            6 => {
+                //if access.op_changed_query.get(*id).unwrap().0 {
+                //    access.op_changed_query.get_mut(*id).unwrap().0 = false;
+                //    let id
+                //for child in children {
+                //    if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+                //        if white_hole.changed {
+                //            let black_hole = black_hole_query.get(white_hole.bh).unwrap();
+                //            if white_hole.link_type == 1 && black_hole.link_type == -4 {
+                //                white_hole.changed = false;
+                //                let input = access.num_query.get(black_hole.parent).unwrap().0;
             },
             _ => {},
         }
@@ -294,7 +310,7 @@ pub fn process(
                             let input = access.radius_query.get(black_hole.parent).unwrap().0;
                             access.radius_query.get_mut(*id).unwrap().0 = input + offset;
                             let mesh = access.meshes.get_mut(mesh_id).unwrap();
-                            *mesh = shape::Circle::new(input + offset).into();
+                            *mesh = bevy::prelude::shape::Circle::new(input + offset).into();
                         }
                         mark_changed!(-3, children, black_hole_query, white_hole_query);
                     },
