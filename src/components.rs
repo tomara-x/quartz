@@ -35,6 +35,12 @@ pub struct OpChanged(pub bool);
 #[derive(Component)]
 pub struct Network(pub Net32);
 
+#[derive(Component)]
+pub struct NetB(pub NetBackend32);
+
+#[derive(Component)]
+pub struct NetNodes(pub Vec<NodeId>);
+
 // hole enum?
 #[allow(dead_code)]
 #[derive(Component)]

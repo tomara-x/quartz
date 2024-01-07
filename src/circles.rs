@@ -31,6 +31,7 @@ pub fn spawn_circles(
     if mouse_button_input.just_released(MouseButton::Left) &&
     !keyboard_input.pressed(KeyCode::Space) {
         let radius = cursor.f.distance(cursor.i);
+        let mut net = Net32::new(0,2);
         let id = commands.spawn((
             ColorMesh2dBundle {
                 mesh: meshes.add(bevy::prelude::shape::Circle::new(radius).into()).into(),
@@ -42,7 +43,9 @@ pub fn spawn_circles(
             Visible, //otherwise it can't be selected til after mark_visible is updated
             Order(0),
             OpChanged(true),
-            Network(Net32::new(0,2)),
+            NetB(net.backend()),
+            Network(net),
+            NetNodes(Vec::new()),
             crate::components::Num(0.),
             Arr(vec!(42., 105., 420., 1729.)),
             Offset {trans:Vec3::ZERO, color:Color::hsla(0.,0.,0.,0.), radius:0.},
@@ -197,6 +200,7 @@ pub fn duplicate_selected(
         }
         for (radius, mat_id, trans, order, num, arr, offset, op, net) in query.iter() {
             let color = materials.get(mat_id).unwrap().color;
+            let mut net = Net32::new(0,2);
             let id = commands.spawn((
                 ColorMesh2dBundle {
                     mesh: meshes.add(bevy::prelude::shape::Circle::new(radius.0).into()).into(),
@@ -210,7 +214,9 @@ pub fn duplicate_selected(
                 Selected,
                 Order(order.0),
                 OpChanged(true),
-                Network(net.0.clone()),
+                NetB(net.backend()),
+                Network(net),
+                NetNodes(Vec::new()),
                 crate::components::Num(num.0),
                 Arr(arr.0.clone().into()),
                 Offset {trans: offset.trans, color: offset.color, radius: offset.radius},
@@ -414,18 +420,29 @@ pub fn update_num(
 }
 
 pub fn update_op(
-    mut query: Query<(&mut Op, &mut OpChanged, &mut Network), With<Selected>>,
+    mut query: Query<(&mut Op, &mut OpChanged,
+    &mut Network, &mut NetB, &mut NetNodes), With<Selected>>,
     keyboard_input: Res<Input<KeyCode>>,
 ) {
     if keyboard_input.any_just_pressed([KeyCode::O, KeyCode::P]) {
         let increment = if keyboard_input.just_pressed(KeyCode::O) { -1 } else { 1 };
-        for (mut op, mut op_changed, mut net) in query.iter_mut() {
+        for (mut op, mut op_changed, mut n, mut nb, mut nodes) in query.iter_mut() {
             op.0 += increment;
             op_changed.0 = true;
-            match op.0 {
-                6 => { net.0 = Net32::wrap(Box::new(dc(220.) >> sine() >> pan(0.))); },
-                7 => { net.0 = Net32::wrap(Box::new(dc(220.) >> saw() >> pan(0.))); },
-                _ => {},
+            if op.0 == 6 {
+                let mut net = Net32::new(0,2);
+                let id0 = net.push(Box::new(dc(220.)));
+                let id1 = net.push(Box::new(sine()));
+                let id2 = net.push(Box::new(pan(0.)));
+                net.pipe(id0, id1);
+                net.pipe(id1, id2);
+                net.pipe_output(id2);
+                let backend = net.backend();
+                n.0 = net;
+                nb.0 = backend;
+                nodes.0.push(id0);
+                nodes.0.push(id1);
+                nodes.0.push(id2);
             }
         }
     }
