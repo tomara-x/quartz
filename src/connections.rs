@@ -136,11 +136,11 @@ pub fn update_link_type (
 ) {
     if keyboard_input.just_pressed(KeyCode::Period) {
         for mut hole in black_hole_query.iter_mut() { hole.link_type += 1; }
-        for mut hole in white_hole_query.iter_mut() { hole.link_type += 1; }
+        for mut hole in white_hole_query.iter_mut() { hole.link_type += 1; hole.new = true; }
     }
     if keyboard_input.just_pressed(KeyCode::Comma) {
         for mut hole in black_hole_query.iter_mut() { hole.link_type -= 1; }
-        for mut hole in white_hole_query.iter_mut() { hole.link_type -= 1; }
+        for mut hole in white_hole_query.iter_mut() { hole.link_type -= 1; hole.new = true; }
     }
 }
 

@@ -263,20 +263,24 @@ pub fn process(
                 }
                 if has_l || has_r { // we have inputs to 1 or 2
                     for child in children {
-                        if let Ok(white_hole) = white_hole_query.get_mut(*child) {
+                        if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
                             let black_hole = black_hole_query.get(white_hole.bh).unwrap();
                             let in_op_changed = &mut access.op_changed_query.get_mut(black_hole.parent).unwrap().0;
                             // if an input has a new op, we re-assign that slot
-                            if white_hole.link_type == 1 && black_hole.link_type == 0 && *in_op_changed {
+                            if white_hole.link_type == 1 && black_hole.link_type == 0 &&
+                                (*in_op_changed || white_hole.new) {
                                 let l = &access.net_query.get(black_hole.parent).unwrap().0;
                                 slot.0.set(Fade::Smooth, 0.1, Box::new(l.clone()));
                                 *in_op_changed = false;
+                                white_hole.new = false;
                                 *had_l = true;
                             }
-                            if white_hole.link_type == 2 && black_hole.link_type == 0 && *in_op_changed {
+                            if white_hole.link_type == 2 && black_hole.link_type == 0 &&
+                                (*in_op_changed || white_hole.new) {
                                 let r = &access.net_query.get(black_hole.parent).unwrap().0;
                                 slot.1.set(Fade::Smooth, 0.1, Box::new(r.clone()));
                                 *in_op_changed = false;
+                                white_hole.new = false;
                                 *had_r = true;
                             }
                         }
