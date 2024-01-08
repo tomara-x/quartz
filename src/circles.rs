@@ -445,6 +445,8 @@ pub fn update_op(
                     inputs.0.clear();
                     inputs.0.push(freq);
                 },
+                9 => { // mult
+                },
                 _ => {
                     n.0 = Net32::wrap(Box::new(dc(0.)));
                     inputs.0.clear();
@@ -491,7 +493,7 @@ pub fn update_circle_text(
                 -2 => "op: toColor\n".to_string(),
                 -1 => "op: toTrans\n".to_string(),
                 0 => "op: nope\n".to_string(),
-                1 => "op: BloomControl\n".to_string(),
+                1 => "op: Bloom\n".to_string(),
                 2 => "op: Tonemapping\n".to_string(),
                 3 => "op: Get\n".to_string(),
                 4 => "op: fromTCR\n".to_string(),
@@ -499,6 +501,7 @@ pub fn update_circle_text(
                 6 => "op: Sin\n".to_string(),
                 7 => "op: Saw\n".to_string(),
                 8 => "op: Square\n".to_string(),
+                9 => "op: Mult\n".to_string(),
                 _ => op.0.to_string() + "\n",
             };
         }

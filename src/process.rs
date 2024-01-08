@@ -312,6 +312,33 @@ pub fn process(
                     }
                 }
             },
+            9 => { // mult
+                let mut changed = true;
+                let mut inputs = Vec::new();
+                for child in children {
+                    if let Ok(white_hole) = white_hole_query.get(*child) {
+                        let black_hole = black_hole_query.get(white_hole.bh).unwrap();
+                        // grab everything connected through a correct connection
+                        if black_hole.link_type == 0 {
+                            inputs.push(&access.net_query.get(black_hole.parent).unwrap().0);
+                        }
+                        // something is new so we'll update our output
+                        //let in_op_changed = &mut access.op_changed_query.get_mut(black_hole.parent).unwrap().0;
+                        //if *in_op_changed {
+                        //    *in_op_changed = false;
+                        //    changed = true;
+                        //}
+                    }
+                }
+                if changed {
+                    let mut graph = Net32::wrap(Box::new(dc(1.)));
+                    for i in inputs {
+                        graph = graph * i.clone();
+                    }
+                    let output = &mut access.net_query.get_mut(*id).unwrap().0;
+                    *output = Net32::wrap(Box::new(graph));
+                }
+            },
             _ => {},
         }
         for child in children {
