@@ -56,6 +56,7 @@ pub struct BlackHole {
     pub parent: Entity,
     pub wh: Entity,
     pub link_type: i32,
+    pub new: bool,
 }
 
 // -------------------- states --------------------

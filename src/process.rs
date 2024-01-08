@@ -64,7 +64,7 @@ pub struct Access<'w, 's> {
 pub fn process(
     queue: Res<Queue>,
     children_query: Query<&Children>,
-    black_hole_query: Query<&BlackHole>,
+    mut black_hole_query: Query<&mut BlackHole>,
     mut white_hole_query: Query<&mut WhiteHole>,
     mut access: Access,
     mut slot: ResMut<Slot>,
@@ -257,30 +257,31 @@ pub fn process(
                 let mut has_r = false;
                 for child in children {
                     if let Ok(white_hole) = white_hole_query.get(*child) {
-                        if white_hole.link_type == 1 { has_l = true; }
-                        if white_hole.link_type == 2 { has_r = true; }
+                        let black_hole = black_hole_query.get(white_hole.bh).unwrap();
+                        if white_hole.link_type == 1 && black_hole.link_type == 0 { has_l = true; }
+                        if white_hole.link_type == 2 && black_hole.link_type == 0 { has_r = true; }
                     }
                 }
                 if has_l || has_r { // we have inputs to 1 or 2
                     for child in children {
                         if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
-                            let black_hole = black_hole_query.get(white_hole.bh).unwrap();
+                            let black_hole = &mut black_hole_query.get_mut(white_hole.bh).unwrap();
                             let in_op_changed = &mut access.op_changed_query.get_mut(black_hole.parent).unwrap().0;
                             // if an input has a new op, we re-assign that slot
                             if white_hole.link_type == 1 && black_hole.link_type == 0 &&
-                                (*in_op_changed || white_hole.new) {
+                                (*in_op_changed || white_hole.new || black_hole.new) {
                                 let l = &access.net_query.get(black_hole.parent).unwrap().0;
                                 slot.0.set(Fade::Smooth, 0.1, Box::new(l.clone()));
                                 *in_op_changed = false;
-                                white_hole.new = false;
+                                white_hole.new = false; black_hole.new = false;
                                 *had_l = true;
                             }
                             if white_hole.link_type == 2 && black_hole.link_type == 0 &&
-                                (*in_op_changed || white_hole.new) {
+                                (*in_op_changed || white_hole.new || black_hole.new) {
                                 let r = &access.net_query.get(black_hole.parent).unwrap().0;
                                 slot.1.set(Fade::Smooth, 0.1, Box::new(r.clone()));
                                 *in_op_changed = false;
-                                white_hole.new = false;
+                                white_hole.new = false; black_hole.new = false;
                                 *had_r = true;
                             }
                         }
