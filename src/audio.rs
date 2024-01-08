@@ -10,9 +10,11 @@ use crate::components::*;
 pub fn ext_thread(
     mut commands: Commands,
 ) {
-    let net = Net32::new(0, 2);
-    let slot = Slot32::new(Box::new(net));
-    commands.insert_resource(Slot(slot.0));
+    // create slots for outputs
+    let slot_l = Slot32::new(Box::new(dc(0.)));
+    let slot_r = Slot32::new(Box::new(dc(0.)));
+    // save thier frontends in a bevy resource
+    commands.insert_resource(Slot(slot_l.0, slot_r.0));
     std::thread::spawn(move || {
         let host = cpal::default_host();
         let device = host
@@ -20,9 +22,10 @@ pub fn ext_thread(
             .expect("Failed to find a default output device");
         let config = device.default_output_config().unwrap();
         match config.sample_format() {
-            cpal::SampleFormat::F32 => run::<f32>(&device, &config.into(), slot.1).unwrap(),
-            cpal::SampleFormat::I16 => run::<i16>(&device, &config.into(), slot.1).unwrap(),
-            cpal::SampleFormat::U16 => run::<u16>(&device, &config.into(), slot.1).unwrap(),
+            // passing the slot backends inside
+            cpal::SampleFormat::F32 => run::<f32>(&device, &config.into(), slot_l.1, slot_r.1).unwrap(),
+            cpal::SampleFormat::I16 => run::<i16>(&device, &config.into(), slot_l.1, slot_r.1).unwrap(),
+            cpal::SampleFormat::U16 => run::<u16>(&device, &config.into(), slot_l.1, slot_r.1).unwrap(),
             _ => panic!("Unsupported format"),
         }
     });
@@ -31,15 +34,18 @@ pub fn ext_thread(
 fn run<T>(
     device: &cpal::Device,
     config: &cpal::StreamConfig,
-    mut slot_b: SlotBackend32) -> Result<(), anyhow::Error>
+    mut slot_l: SlotBackend32,
+    mut slot_r: SlotBackend32,
+    ) -> Result<(), anyhow::Error>
 where
     T: SizedSample + FromSample<f32>,
 {
     let sample_rate = config.sample_rate.0 as f64;
     let channels = config.channels as usize;
 
-    slot_b.set_sample_rate(sample_rate);
-    let mut next_value = move || assert_no_alloc(|| slot_b.get_stereo());
+    slot_l.set_sample_rate(sample_rate);
+    slot_r.set_sample_rate(sample_rate);
+    let mut next_value = move || assert_no_alloc(|| (slot_l.get_mono(), slot_r.get_mono()));
     let err_fn = |err| eprintln!("an error occurred on stream: {}", err);
     let stream = device.build_output_stream(
         config,

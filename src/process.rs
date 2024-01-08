@@ -252,13 +252,25 @@ pub fn process(
             },
             5 => { //out
                 for child in children {
+                    if children.len() == 1 {
+                        slot.0.set(Fade::Smooth, 0.1, Box::new(dc(0.)));
+                        slot.1.set(Fade::Smooth, 0.1, Box::new(dc(0.)));
+                        break;
+                    }
                     if let Ok(white_hole) = white_hole_query.get_mut(*child) {
                         let black_hole = black_hole_query.get(white_hole.bh).unwrap();
                         if white_hole.link_type == 1 && black_hole.link_type == 0 {
                             if access.op_changed_query.get(black_hole.parent).unwrap().0 {
                                 access.op_changed_query.get_mut(black_hole.parent).unwrap().0 = false;
-                                let net = &access.net_query.get(black_hole.parent).unwrap().0;
-                                slot.0.set(Fade::Smooth, 0., Box::new(net.clone()));
+                                let l = &access.net_query.get(black_hole.parent).unwrap().0;
+                                slot.0.set(Fade::Smooth, 0.1, Box::new(l.clone()));
+                            }
+                        }
+                        if white_hole.link_type == 2 && black_hole.link_type == 0 {
+                            if access.op_changed_query.get(black_hole.parent).unwrap().0 {
+                                access.op_changed_query.get_mut(black_hole.parent).unwrap().0 = false;
+                                let r = &access.net_query.get(black_hole.parent).unwrap().0;
+                                slot.1.set(Fade::Smooth, 0.1, Box::new(r.clone()));
                             }
                         }
                     }

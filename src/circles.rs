@@ -429,19 +429,19 @@ pub fn update_op(
             match op.0 {
                 6 => { // sin
                     let freq = shared(220.);
-                    n.0 = Net32::wrap(Box::new(var(&freq) >> sine() >> pan(0.)));
+                    n.0 = Net32::wrap(Box::new(var(&freq) >> sine()));
                     inputs.0.clear();
                     inputs.0.push(freq);
                 },
                 7 => { // saw
                     let freq = shared(220.);
-                    n.0 = Net32::wrap(Box::new(var(&freq) >> saw() >> pan(0.)));
+                    n.0 = Net32::wrap(Box::new(var(&freq) >> saw()));
                     inputs.0.clear();
                     inputs.0.push(freq);
                 },
                 8 => { // square
                     let freq = shared(220.);
-                    n.0 = Net32::wrap(Box::new(var(&freq) >> square() >> pan(0.)));
+                    n.0 = Net32::wrap(Box::new(var(&freq) >> square()));
                     inputs.0.clear();
                     inputs.0.push(freq);
                 },

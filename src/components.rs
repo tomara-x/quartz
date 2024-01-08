@@ -84,7 +84,7 @@ pub struct CursorInfo {
 pub struct Depth(pub f32);
 
 #[derive(Resource)]
-pub struct Slot(pub Slot32);
+pub struct Slot(pub Slot32, pub Slot32);
 
 // -------------------- events --------------------
 #[derive(Event, Default)]
