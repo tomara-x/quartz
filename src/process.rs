@@ -313,7 +313,7 @@ pub fn process(
                 }
             },
             9 => { // mult
-                let mut changed = true;
+                let mut changed = false;
                 let mut inputs = Vec::new();
                 for child in children {
                     if let Ok(white_hole) = white_hole_query.get(*child) {
@@ -323,11 +323,15 @@ pub fn process(
                             inputs.push(&access.net_query.get(black_hole.parent).unwrap().0);
                         }
                         // something is new so we'll update our output
-                        //let in_op_changed = &mut access.op_changed_query.get_mut(black_hole.parent).unwrap().0;
-                        //if *in_op_changed {
-                        //    *in_op_changed = false;
-                        //    changed = true;
-                        //}
+                        let in_op_changed = &mut access.op_changed_query.get_mut(black_hole.parent).unwrap().0;
+                        if *in_op_changed {
+                            *in_op_changed = false;
+                            changed = true;
+                            // this entity's op has "changed"
+                            // TODO(amy): figure out better names for this
+                            // the op hasn't changed, our output netork has
+                            access.op_changed_query.get_mut(*id).unwrap().0 = true;
+                        }
                     }
                 }
                 if changed {
