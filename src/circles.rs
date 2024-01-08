@@ -42,7 +42,7 @@ pub fn spawn_circles(
             Visible, //otherwise it can't be selected til after mark_visible is updated
             Order(0),
             OpChanged(true),
-            Network(Net32::new(0,0)),
+            Network(Net32::new(0,1)),
             NetIns(Vec::new()),
             crate::components::Num(0.),
             Arr(vec!(42., 105., 420., 1729.)),
