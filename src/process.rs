@@ -68,6 +68,8 @@ pub fn process(
     mut white_hole_query: Query<&mut WhiteHole>,
     mut access: Access,
     mut slot: ResMut<Slot>,
+    mut had_l: Local<bool>,
+    mut had_r: Local<bool>,
 ) {
     for id in queue.0.iter().flatten() {
         let children = children_query.get(*id).unwrap();
@@ -251,27 +253,43 @@ pub fn process(
                 }
             },
             5 => { //out
+                let mut has_l = false;
+                let mut has_r = false;
                 for child in children {
-                    if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
-                        let black_hole = black_hole_query.get(white_hole.bh).unwrap();
-                        let in_op_changed = &mut access.op_changed_query.get_mut(black_hole.parent).unwrap().0;
-                        if white_hole.link_type == 1 && black_hole.link_type == 0 {
-                            if white_hole.new || *in_op_changed {
-                                white_hole.new = false;
-                                *in_op_changed = false;
+                    if let Ok(white_hole) = white_hole_query.get(*child) {
+                        if white_hole.link_type == 1 { has_l = true; }
+                        if white_hole.link_type == 2 { has_r = true; }
+                    }
+                }
+                if has_l || has_r { // we have inputs to 1 or 2
+                    for child in children {
+                        if let Ok(white_hole) = white_hole_query.get_mut(*child) {
+                            let black_hole = black_hole_query.get(white_hole.bh).unwrap();
+                            let in_op_changed = &mut access.op_changed_query.get_mut(black_hole.parent).unwrap().0;
+                            // if an input has a new op, we re-assign that slot
+                            if white_hole.link_type == 1 && black_hole.link_type == 0 && *in_op_changed {
                                 let l = &access.net_query.get(black_hole.parent).unwrap().0;
                                 slot.0.set(Fade::Smooth, 0.1, Box::new(l.clone()));
-                            }
-                        }
-                        if white_hole.link_type == 2 && black_hole.link_type == 0 {
-                            if white_hole.new || *in_op_changed {
-                                white_hole.new = false;
                                 *in_op_changed = false;
+                                *had_l = true;
+                            }
+                            if white_hole.link_type == 2 && black_hole.link_type == 0 && *in_op_changed {
                                 let r = &access.net_query.get(black_hole.parent).unwrap().0;
                                 slot.1.set(Fade::Smooth, 0.1, Box::new(r.clone()));
+                                *in_op_changed = false;
+                                *had_r = true;
                             }
                         }
                     }
+                }
+                // an input was here but it's now removed. we output silence
+                if !has_l && *had_l {
+                    slot.0.set(Fade::Smooth, 0.1, Box::new(dc(0.)));
+                    *had_l = false;
+                }
+                if !has_r && *had_r {
+                    slot.1.set(Fade::Smooth, 0.1, Box::new(dc(0.)));
+                    *had_r = false;
                 }
             },
             6 | 7 | 8 => { //oscil
