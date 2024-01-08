@@ -445,7 +445,10 @@ pub fn update_op(
                     inputs.0.clear();
                     inputs.0.push(freq);
                 },
-                _ => {},
+                _ => {
+                    n.0 = Net32::wrap(Box::new(dc(0.)));
+                    inputs.0.clear();
+                },
             }
         }
     }

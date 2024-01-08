@@ -252,23 +252,21 @@ pub fn process(
             },
             5 => { //out
                 for child in children {
-                    if children.len() == 1 {
-                        slot.0.set(Fade::Smooth, 0.1, Box::new(dc(0.)));
-                        slot.1.set(Fade::Smooth, 0.1, Box::new(dc(0.)));
-                        break;
-                    }
-                    if let Ok(white_hole) = white_hole_query.get_mut(*child) {
+                    if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
                         let black_hole = black_hole_query.get(white_hole.bh).unwrap();
+                        let in_op_changed = &mut access.op_changed_query.get_mut(black_hole.parent).unwrap().0;
                         if white_hole.link_type == 1 && black_hole.link_type == 0 {
-                            if access.op_changed_query.get(black_hole.parent).unwrap().0 {
-                                access.op_changed_query.get_mut(black_hole.parent).unwrap().0 = false;
+                            if white_hole.new || *in_op_changed {
+                                white_hole.new = false;
+                                *in_op_changed = false;
                                 let l = &access.net_query.get(black_hole.parent).unwrap().0;
                                 slot.0.set(Fade::Smooth, 0.1, Box::new(l.clone()));
                             }
                         }
                         if white_hole.link_type == 2 && black_hole.link_type == 0 {
-                            if access.op_changed_query.get(black_hole.parent).unwrap().0 {
-                                access.op_changed_query.get_mut(black_hole.parent).unwrap().0 = false;
+                            if white_hole.new || *in_op_changed {
+                                white_hole.new = false;
+                                *in_op_changed = false;
                                 let r = &access.net_query.get(black_hole.parent).unwrap().0;
                                 slot.1.set(Fade::Smooth, 0.1, Box::new(r.clone()));
                             }
