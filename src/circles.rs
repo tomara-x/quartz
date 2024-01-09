@@ -446,6 +446,8 @@ pub fn update_op(
                     inputs.0.push(freq);
                 },
                 9 => { // mult
+                    // gets overwritten, but it's good to clear the previous op's state
+                    n.0 = Net32::wrap(Box::new(dc(0.)));
                 },
                 _ => {
                     n.0 = Net32::wrap(Box::new(dc(0.)));

@@ -37,7 +37,7 @@ fn main() {
                 wait: Duration::from_secs_f64(1.0 / 60.0),
             },
             unfocused_mode: UpdateMode::ReactiveLowPower {
-                wait: Duration::from_secs_f64(1.0 / 60.0),
+                wait: Duration::from_secs_f64(1.0 / 30.0),
             },
             ..default()
         })
@@ -153,6 +153,8 @@ fn switch_mode(
     }
 }
 
+// TODO(amy): clean this, figure out reflection and the handles issue
+// saving files would make testing a lot easier!
 fn save_scene(
     circles_query: Query<&GlobalTransform, With<Order>>,
     keyboard_input: Res<Input<KeyCode>>,

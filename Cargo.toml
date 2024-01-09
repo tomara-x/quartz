@@ -40,7 +40,6 @@ features = [
 [dependencies]
 rand = "0.8.0"
 bevy_pancam = "0.10.0"
-crossbeam-channel = "0.5.10"
 fundsp = "0.16.0"
 cpal = "0.15.2"
 anyhow = "1.0.77"

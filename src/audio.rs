@@ -31,6 +31,7 @@ pub fn ext_thread(
     });
 }
 
+// TODO(amy): try to yeet anyhow
 fn run<T>(
     device: &cpal::Device,
     config: &cpal::StreamConfig,
