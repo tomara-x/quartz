@@ -38,11 +38,7 @@ pub struct Network(pub Net32);
 #[derive(Component)]
 pub struct NetIns(pub Vec<Shared<f32>>);
 
-// `new`?
-// `output_changed` and `link_type_changed` ? too much typing tho
-// leave changed as is, change `new` to `new_lt` ?
-// hole enum? (what on earth was on your mind, weeks-ago-amy?)
-// TODO(amy): clean this mess
+// hole enum? <-(what on earth was on your mind, weeks-ago-amy?)
 #[allow(dead_code)]
 #[derive(Component)]
 pub struct WhiteHole {
@@ -51,7 +47,7 @@ pub struct WhiteHole {
     pub bh: Entity,
     pub link_type: i32,
     pub changed: bool,
-    pub new: bool,
+    pub new_lt: bool,
 }
 
 #[derive(Component)]
@@ -60,7 +56,7 @@ pub struct BlackHole {
     pub parent: Entity,
     pub wh: Entity,
     pub link_type: i32,
-    pub new: bool,
+    pub new_lt: bool,
 }
 
 // -------------------- states --------------------

@@ -273,19 +273,19 @@ pub fn process(
                             let in_op_changed = &mut access.op_changed_query.get_mut(black_hole.parent).unwrap().0;
                             // if an input has a new op, we re-assign that slot
                             if white_hole.link_type == 1 && black_hole.link_type == 0 &&
-                                (*in_op_changed || white_hole.new || black_hole.new) {
+                                (*in_op_changed || white_hole.new_lt || black_hole.new_lt) {
                                 let l = &access.net_query.get(black_hole.parent).unwrap().0;
                                 slot.0.set(Fade::Smooth, 0.1, Box::new(l.clone()));
                                 *in_op_changed = false;
-                                white_hole.new = false; black_hole.new = false;
+                                white_hole.new_lt = false; black_hole.new_lt = false;
                                 *had_l = true;
                             }
                             if white_hole.link_type == 2 && black_hole.link_type == 0 &&
-                                (*in_op_changed || white_hole.new || black_hole.new) {
+                                (*in_op_changed || white_hole.new_lt || black_hole.new_lt) {
                                 let r = &access.net_query.get(black_hole.parent).unwrap().0;
                                 slot.1.set(Fade::Smooth, 0.1, Box::new(r.clone()));
                                 *in_op_changed = false;
-                                white_hole.new = false; black_hole.new = false;
+                                white_hole.new_lt = false; black_hole.new_lt = false;
                                 *had_r = true;
                             }
                         }

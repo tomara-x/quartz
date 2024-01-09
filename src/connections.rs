@@ -62,7 +62,7 @@ pub fn connect(
                     parent: src,
                     wh: white_hole,
                     link_type: 0,
-                    new: true,
+                    new_lt: true,
                 });
             commands.entity(white_hole).insert(
                 WhiteHole {
@@ -71,7 +71,7 @@ pub fn connect(
                     bh: black_hole,
                     link_type: 0,
                     changed: false,
-                    new: true,
+                    new_lt: true,
                 });
 
             // add to parents
@@ -136,12 +136,12 @@ pub fn update_link_type (
     mut white_hole_query: Query<&mut WhiteHole, With<Selected>>,
 ) {
     if keyboard_input.just_pressed(KeyCode::Period) {
-        for mut hole in black_hole_query.iter_mut() { hole.link_type += 1; hole.new = true; }
-        for mut hole in white_hole_query.iter_mut() { hole.link_type += 1; hole.new = true; }
+        for mut hole in black_hole_query.iter_mut() { hole.link_type += 1; hole.new_lt = true; }
+        for mut hole in white_hole_query.iter_mut() { hole.link_type += 1; hole.new_lt = true; }
     }
     if keyboard_input.just_pressed(KeyCode::Comma) {
-        for mut hole in black_hole_query.iter_mut() { hole.link_type -= 1; hole.new = true; }
-        for mut hole in white_hole_query.iter_mut() { hole.link_type -= 1; hole.new = true; }
+        for mut hole in black_hole_query.iter_mut() { hole.link_type -= 1; hole.new_lt = true; }
+        for mut hole in white_hole_query.iter_mut() { hole.link_type -= 1; hole.new_lt = true; }
     }
 }
 
