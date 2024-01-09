@@ -244,7 +244,11 @@ pub fn process(
                                 // let all connections know about this change
                                 for child in children.iter() {
                                     if let Ok(black_hole) = black_hole_query.get(*child) {
-                                        white_hole_query.get_mut(black_hole.wh).unwrap().changed = true;
+                                        // color has 4 outputs, everything else is less
+                                        // we update anything reading from outputs 0..4
+                                        if (0..4).contains(&black_hole.link_type) {
+                                            white_hole_query.get_mut(black_hole.wh).unwrap().changed = true;
+                                        }
                                     }
                                 }
                             }

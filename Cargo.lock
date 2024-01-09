@@ -2876,7 +2876,6 @@ dependencies = [
  "bevy-inspector-egui",
  "bevy_pancam",
  "cpal",
- "crossbeam-channel",
  "fundsp",
  "rand",
 ]
