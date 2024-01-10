@@ -62,7 +62,7 @@ pub fn spawn_circles(
                     TextStyle { color: Color::BLACK, ..default() },
                 ),
                 TextSection::new(
-                    "op: yaas\n",
+                    "op: empty\n",
                     TextStyle { color: Color::BLACK, ..default() },
                 ),
                 TextSection::new(
@@ -229,7 +229,7 @@ pub fn duplicate_selected(
                         TextStyle { color: Color::BLACK, ..default() },
                     ),
                     TextSection::new(
-                        "op: nope\n",
+                        "op: empty\n",
                         TextStyle { color: Color::BLACK, ..default() },
                     ),
                     TextSection::new(
@@ -427,27 +427,11 @@ pub fn update_op(
             op_changed.0 = true;
             // can we use duplicate macros here?
             match op.0 {
-                6 => { // sin
-                    let freq = shared(220.);
-                    n.0 = Net32::wrap(Box::new(var(&freq) >> sine()));
+                1 => { // Var
+                    let input = shared(0.);
+                    n.0 = Net32::wrap(Box::new(var(&input)));
                     inputs.0.clear();
-                    inputs.0.push(freq);
-                },
-                7 => { // saw
-                    let freq = shared(220.);
-                    n.0 = Net32::wrap(Box::new(var(&freq) >> saw()));
-                    inputs.0.clear();
-                    inputs.0.push(freq);
-                },
-                8 => { // square
-                    let freq = shared(220.);
-                    n.0 = Net32::wrap(Box::new(var(&freq) >> square()));
-                    inputs.0.clear();
-                    inputs.0.push(freq);
-                },
-                9 => { // mult
-                    // gets overwritten, but it's good to clear the previous op's state
-                    n.0 = Net32::wrap(Box::new(dc(0.)));
+                    inputs.0.push(input);
                 },
                 _ => {
                     n.0 = Net32::wrap(Box::new(dc(0.)));
@@ -491,19 +475,19 @@ pub fn update_circle_text(
         }
         if let Ok(op) = op_query.get(**parent) {
             text.sections[2].value = match op.0 {
-                -3 => "op: toRadius\n".to_string(),
-                -2 => "op: toColor\n".to_string(),
-                -1 => "op: toTrans\n".to_string(),
-                0 => "op: nope\n".to_string(),
-                1 => "op: Bloom\n".to_string(),
-                2 => "op: Tonemapping\n".to_string(),
-                3 => "op: Get\n".to_string(),
-                4 => "op: fromTCR\n".to_string(),
+                -7 => "op: tonemapping\n".to_string(),
+                -6 => "op: bloom\n".to_string(),
+                -5 => "op: get\n".to_string(),
+                -4 => "op: fromTCR\n".to_string(),
+                -3 => "op: to_radius\n".to_string(),
+                -2 => "op: to_color\n".to_string(),
+                -1 => "op: to_trans\n".to_string(),
+                0 => "op: empty\n".to_string(),
+                1 => "op: Var\n".to_string(),
+                2 => "op: Oscil\n".to_string(),
+                3 => "op: Sum\n".to_string(),
+                4 => "op: Product\n".to_string(),
                 5 => "op: Out\n".to_string(),
-                6 => "op: Sin\n".to_string(),
-                7 => "op: Saw\n".to_string(),
-                8 => "op: Square\n".to_string(),
-                9 => "op: Mult\n".to_string(),
                 _ => op.0.to_string() + "\n",
             };
         }
