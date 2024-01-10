@@ -243,24 +243,27 @@ pub fn process(
             },
             0 => {},
             1 => { // Var
-                for child in children {
-                    if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
-                        let op_changed = &mut access.op_changed_query.get_mut(*id).unwrap().0;
-                        let black_hole = &mut black_hole_query.get_mut(white_hole.bh).unwrap();
-                        if white_hole.link_type == 1 && black_hole.link_type == -4 {
-                            if white_hole.changed {
-                                white_hole.changed = false;
-                                let input = access.num_query.get(black_hole.parent).unwrap().0;
-                                let var = &access.net_ins_query.get(*id).unwrap().0[0];
-                                var.set_value(input);
-                            }
-                            if white_hole.new_lt || black_hole.new_lt || *op_changed {
-                                white_hole.new_lt = false; black_hole.new_lt = false; *op_changed = false;
-                                mark_changed!(0, children, black_hole_query, white_hole_query);
-                            }
-                        }
-                    }
-                }
+                let input = access.num_query.get(*id).unwrap().0;
+                let var = &access.net_ins_query.get(*id).unwrap().0[0];
+                var.set_value(input);
+                //for child in children {
+                //    if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+                //        let op_changed = &mut access.op_changed_query.get_mut(*id).unwrap().0;
+                //        let black_hole = &mut black_hole_query.get_mut(white_hole.bh).unwrap();
+                //        if white_hole.link_type == 1 && black_hole.link_type == -4 {
+                //            if white_hole.changed {
+                //                white_hole.changed = false;
+                //                let input = access.num_query.get(black_hole.parent).unwrap().0;
+                //                let var = &access.net_ins_query.get(*id).unwrap().0[0];
+                //                var.set_value(input);
+                //            }
+                //            if white_hole.new_lt || black_hole.new_lt || *op_changed {
+                //                white_hole.new_lt = false; black_hole.new_lt = false; *op_changed = false;
+                //                mark_changed!(0, children, black_hole_query, white_hole_query);
+                //            }
+                //        }
+                //    }
+                //}
             },
             2 => { // Oscil
                 for child in children {
