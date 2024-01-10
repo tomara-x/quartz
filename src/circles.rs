@@ -185,7 +185,7 @@ pub fn select_all(
 pub fn duplicate_selected(
     mut commands: Commands,
     query: Query<(&Radius, &Handle<ColorMaterial>,
-    &Transform, &Order, &crate::components::Num, &Arr, &Offset, &Op, &Network, &NetIns), With<Selected>>,
+    &Transform, &crate::components::Num, &Arr, &Offset), With<Selected>>,
     selected_query: Query<Entity, With<Selected>>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
@@ -196,7 +196,7 @@ pub fn duplicate_selected(
         for e in selected_query.iter() {
             commands.entity(e).remove::<Selected>();
         }
-        for (radius, mat_id, trans, order, num, arr, offset, op, net, net_ins) in query.iter() {
+        for (radius, mat_id, trans, num, arr, offset) in query.iter() {
             let color = materials.get(mat_id).unwrap().color;
             let id = commands.spawn((
                 ColorMesh2dBundle {
@@ -209,14 +209,14 @@ pub fn duplicate_selected(
                 Radius(radius.0),
                 Visible,
                 Selected,
-                Order(order.0),
+                Order(0),
                 OpChanged(true),
-                Network(net.0.clone()),
-                NetIns(net_ins.0.clone()),
+                Network(Net32::new(0,1)),
+                NetIns(Vec::new()),
                 crate::components::Num(num.0),
                 Arr(arr.0.clone().into()),
                 Offset {trans: offset.trans, color: offset.color, radius: offset.radius},
-                Op(op.0),
+                Op(0),
             )).id();
             let text = commands.spawn(Text2dBundle {
                 text: Text::from_sections([
