@@ -276,25 +276,21 @@ pub fn process(
                                 oscil.1 = true; // new wave
                             }
                         }
-                        if white_hole.link_type == 1 && black_hole.link_type == 0 {
-                            let op_changed = &mut access.op_changed_query.get_mut(*id).unwrap().0;
-                            if white_hole.changed || white_hole.new_lt || black_hole.new_lt ||
-                                *op_changed || oscil.1 {
-                                white_hole.changed = false;
-                                white_hole.new_lt = false;
-                                black_hole.new_lt = false;
-                                *op_changed = false;
-                                oscil.1 = false;
-                                let input = access.net_query.get(black_hole.parent).unwrap().0.clone();
-                                let net = &mut access.net_query.get_mut(*id).unwrap().0;
-                                match oscil.0 {
-                                    0 => { *net = Net32::wrap(Box::new(input >> sine())); },
-                                    1 => { *net = Net32::wrap(Box::new(input >> saw())); },
-                                    2 => { *net = Net32::wrap(Box::new(input >> square())); },
-                                    _ => {},
-                                }
-                                mark_changed!(0, children, black_hole_query, white_hole_query);
+                        if white_hole.link_type == 1 && black_hole.link_type == 0 &&
+                        (white_hole.changed || white_hole.new_lt || black_hole.new_lt || oscil.1) {
+                            white_hole.changed = false;
+                            white_hole.new_lt = false;
+                            black_hole.new_lt = false;
+                            oscil.1 = false;
+                            let input = access.net_query.get(black_hole.parent).unwrap().0.clone();
+                            let net = &mut access.net_query.get_mut(*id).unwrap().0;
+                            match oscil.0 {
+                                0 => { *net = Net32::wrap(Box::new(input >> sine())); },
+                                1 => { *net = Net32::wrap(Box::new(input >> saw())); },
+                                2 => { *net = Net32::wrap(Box::new(input >> square())); },
+                                _ => {},
                             }
+                            mark_changed!(0, children, black_hole_query, white_hole_query);
                         }
                     }
                 }
@@ -308,15 +304,16 @@ pub fn process(
                         if black_hole.link_type == 0 {
                             inputs.push(&access.net_query.get(black_hole.parent).unwrap().0);
                         }
-                        if white_hole.changed || black_hole.new_lt {
+                        if white_hole.changed || black_hole.new_lt || white_hole.new_lt {
                             white_hole.changed = false;
+                            white_hole.new_lt = false;
                             black_hole.new_lt = false;
                             changed = true;
+                            mark_changed!(0, children, black_hole_query, white_hole_query);
                         }
                     }
                 }
                 if changed {
-                    mark_changed!(0, children, black_hole_query, white_hole_query);
                     let mut graph = Net32::wrap(Box::new(dc(0.)));
                     for i in inputs {
                         graph = graph + i.clone();
@@ -336,15 +333,16 @@ pub fn process(
                             inputs.push(&access.net_query.get(black_hole.parent).unwrap().0);
                         }
                         // something is new so we'll update our output
-                        if white_hole.changed || black_hole.new_lt {
+                        if white_hole.changed || black_hole.new_lt || white_hole.new_lt {
                             white_hole.changed = false;
+                            white_hole.new_lt = false;
                             black_hole.new_lt = false;
                             changed = true;
+                            mark_changed!(0, children, black_hole_query, white_hole_query);
                         }
                     }
                 }
                 if changed {
-                    mark_changed!(0, children, black_hole_query, white_hole_query);
                     let mut graph = Net32::wrap(Box::new(dc(1.)));
                     for i in inputs {
                         graph = graph * i.clone();
