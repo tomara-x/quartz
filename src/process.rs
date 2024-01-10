@@ -299,25 +299,24 @@ pub fn process(
                     }
                 }
             },
-            // FIXME(amy): this and product are now broken
             3 => { // Sum
                 let mut changed = false;
                 let mut inputs = Vec::new();
                 for child in children {
-                    if let Ok(white_hole) = white_hole_query.get(*child) {
-                        let black_hole = black_hole_query.get(white_hole.bh).unwrap();
+                    if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+                        let black_hole = &mut black_hole_query.get_mut(white_hole.bh).unwrap();
                         if black_hole.link_type == 0 {
                             inputs.push(&access.net_query.get(black_hole.parent).unwrap().0);
                         }
-                        let in_op_changed = &mut access.op_changed_query.get_mut(black_hole.parent).unwrap().0;
-                        if *in_op_changed {
-                            *in_op_changed = false;
+                        if white_hole.changed || black_hole.new_lt {
+                            white_hole.changed = false;
+                            black_hole.new_lt = false;
                             changed = true;
-                            access.op_changed_query.get_mut(*id).unwrap().0 = true;
                         }
                     }
                 }
                 if changed {
+                    mark_changed!(0, children, black_hole_query, white_hole_query);
                     let mut graph = Net32::wrap(Box::new(dc(0.)));
                     for i in inputs {
                         graph = graph + i.clone();
@@ -330,25 +329,22 @@ pub fn process(
                 let mut changed = false;
                 let mut inputs = Vec::new();
                 for child in children {
-                    if let Ok(white_hole) = white_hole_query.get(*child) {
-                        let black_hole = black_hole_query.get(white_hole.bh).unwrap();
+                    if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+                        let black_hole = &mut black_hole_query.get_mut(white_hole.bh).unwrap();
                         // grab everything connected through a correct connection
                         if black_hole.link_type == 0 {
                             inputs.push(&access.net_query.get(black_hole.parent).unwrap().0);
                         }
                         // something is new so we'll update our output
-                        let in_op_changed = &mut access.op_changed_query.get_mut(black_hole.parent).unwrap().0;
-                        if *in_op_changed {
-                            *in_op_changed = false;
+                        if white_hole.changed || black_hole.new_lt {
+                            white_hole.changed = false;
+                            black_hole.new_lt = false;
                             changed = true;
-                            // this entity's op has "changed"
-                            // TODO(amy): figure out better names for this
-                            // the op hasn't changed, our output netork has
-                            access.op_changed_query.get_mut(*id).unwrap().0 = true;
                         }
                     }
                 }
                 if changed {
+                    mark_changed!(0, children, black_hole_query, white_hole_query);
                     let mut graph = Net32::wrap(Box::new(dc(1.)));
                     for i in inputs {
                         graph = graph * i.clone();
