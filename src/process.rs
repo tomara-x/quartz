@@ -70,6 +70,7 @@ pub fn process(
     mut slot: ResMut<Slot>,
     mut had_l: Local<bool>,
     mut had_r: Local<bool>,
+    mut oscil: Local<(u8, bool)>,
 ) {
     for id in queue.0.iter().flatten() {
         let children = children_query.get(*id).unwrap();
@@ -265,17 +266,30 @@ pub fn process(
                 for child in children {
                     if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
                         let black_hole = &mut black_hole_query.get_mut(white_hole.bh).unwrap();
+                        if white_hole.link_type == 2 && black_hole.link_type == -4 {
+                            let input = access.num_query.get(black_hole.parent).unwrap().0;
+                            if (input as u8) != oscil.0 {
+                                oscil.0 = input as u8;
+                                oscil.1 = true; // new wave
+                            }
+                        }
                         if white_hole.link_type == 1 && black_hole.link_type == 0 {
                             let op_changed = &mut access.op_changed_query.get_mut(*id).unwrap().0;
-                            if white_hole.changed || white_hole.new_lt || black_hole.new_lt || *op_changed {
+                            if white_hole.changed || white_hole.new_lt || black_hole.new_lt ||
+                                *op_changed || oscil.1 {
                                 white_hole.changed = false;
                                 white_hole.new_lt = false;
                                 black_hole.new_lt = false;
                                 *op_changed = false;
-                                let var = access.net_query.get(black_hole.parent).unwrap().0.clone();
-                                let out = &mut access.net_query.get_mut(*id).unwrap().0;
-                                // TODO: use a second input to set wave shape
-                                *out = Net32::wrap(Box::new(var >> sine()));
+                                oscil.1 = false;
+                                let input = access.net_query.get(black_hole.parent).unwrap().0.clone();
+                                let net = &mut access.net_query.get_mut(*id).unwrap().0;
+                                match oscil.0 {
+                                    0 => { *net = Net32::wrap(Box::new(input >> sine())); },
+                                    1 => { *net = Net32::wrap(Box::new(input >> saw())); },
+                                    2 => { *net = Net32::wrap(Box::new(input >> square())); },
+                                    _ => {},
+                                }
                                 mark_changed!(0, children, black_hole_query, white_hole_query);
                             }
                         }
