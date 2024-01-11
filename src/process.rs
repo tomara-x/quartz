@@ -74,6 +74,7 @@ pub fn process(
 ) {
     for id in queue.0.iter().flatten() {
         let children = children_query.get(*id).unwrap();
+        let op_changed = &mut access.op_changed_query.get_mut(*id).unwrap().0;
         match access.op_query.get(*id).unwrap().0 {
             -7 => { // tonemapping
                 let mut tm = access.tonemapping.single_mut();
@@ -246,6 +247,10 @@ pub fn process(
                 let input = access.num_query.get(*id).unwrap().0;
                 let var = &access.net_ins_query.get(*id).unwrap().0[0];
                 var.set_value(input);
+                if *op_changed {
+                    *op_changed = false;
+                    mark_changed!(0, children, black_hole_query, white_hole_query);
+                }
                 //for child in children {
                 //    if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
                 //        let op_changed = &mut access.op_changed_query.get_mut(*id).unwrap().0;
@@ -277,7 +282,8 @@ pub fn process(
                             }
                         }
                         if white_hole.link_type == 1 && black_hole.link_type == 0 &&
-                        (white_hole.changed || white_hole.new_lt || black_hole.new_lt || oscil.1) {
+                        (white_hole.changed || white_hole.new_lt || black_hole.new_lt ||
+                         oscil.1 || *op_changed) {
                             white_hole.changed = false;
                             white_hole.new_lt = false;
                             black_hole.new_lt = false;
@@ -294,6 +300,7 @@ pub fn process(
                         }
                     }
                 }
+                *op_changed = false;
             },
             3 => { // Sum
                 let mut changed = false;
@@ -304,7 +311,7 @@ pub fn process(
                         if black_hole.link_type == 0 {
                             inputs.push(&access.net_query.get(black_hole.parent).unwrap().0);
                         }
-                        if white_hole.changed || black_hole.new_lt || white_hole.new_lt {
+                        if white_hole.changed || black_hole.new_lt || white_hole.new_lt || *op_changed {
                             white_hole.changed = false;
                             white_hole.new_lt = false;
                             black_hole.new_lt = false;
@@ -313,6 +320,7 @@ pub fn process(
                         }
                     }
                 }
+                *op_changed = false;
                 if changed {
                     let mut graph = Net32::wrap(Box::new(dc(0.)));
                     for i in inputs {
@@ -333,7 +341,7 @@ pub fn process(
                             inputs.push(&access.net_query.get(black_hole.parent).unwrap().0);
                         }
                         // something is new so we'll update our output
-                        if white_hole.changed || black_hole.new_lt || white_hole.new_lt {
+                        if white_hole.changed || black_hole.new_lt || white_hole.new_lt || *op_changed {
                             white_hole.changed = false;
                             white_hole.new_lt = false;
                             black_hole.new_lt = false;
@@ -342,6 +350,7 @@ pub fn process(
                         }
                     }
                 }
+                *op_changed = false;
                 if changed {
                     let mut graph = Net32::wrap(Box::new(dc(1.)));
                     for i in inputs {
@@ -367,7 +376,7 @@ pub fn process(
                             let black_hole = &mut black_hole_query.get_mut(white_hole.bh).unwrap();
                             // if an input has a new net, we re-assign that slot
                             if white_hole.link_type == 1 && black_hole.link_type == 0 &&
-                                (white_hole.changed || white_hole.new_lt || black_hole.new_lt) {
+                                (white_hole.changed || white_hole.new_lt || black_hole.new_lt || *op_changed) {
                                 let l = &access.net_query.get(black_hole.parent).unwrap().0;
                                 slot.0.set(Fade::Smooth, 0.1, Box::new(l.clone()));
                                 white_hole.changed = false;
@@ -375,7 +384,7 @@ pub fn process(
                                 *had_l = true;
                             }
                             if white_hole.link_type == 2 && black_hole.link_type == 0 &&
-                                (white_hole.changed || white_hole.new_lt || black_hole.new_lt) {
+                                (white_hole.changed || white_hole.new_lt || black_hole.new_lt || *op_changed) {
                                 let r = &access.net_query.get(black_hole.parent).unwrap().0;
                                 slot.1.set(Fade::Smooth, 0.1, Box::new(r.clone()));
                                 white_hole.changed = false;
@@ -384,6 +393,7 @@ pub fn process(
                             }
                         }
                     }
+                    *op_changed = false;
                 }
                 // an input was here but it's now removed. we output silence
                 if !has_l && *had_l {
