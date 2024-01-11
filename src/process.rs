@@ -244,9 +244,9 @@ pub fn process(
             },
             0 => {},
             1 => { // Var
-                let input = access.num_query.get(*id).unwrap().0;
+                let num = access.num_query.get(*id).unwrap().0;
                 let var = &access.net_ins_query.get(*id).unwrap().0[0];
-                var.set_value(input);
+                var.set_value(num);
                 if *op_changed {
                     *op_changed = false;
                     mark_changed!(0, children, black_hole_query, white_hole_query);
