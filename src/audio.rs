@@ -46,7 +46,12 @@ where
 
     slot_l.set_sample_rate(sample_rate);
     slot_r.set_sample_rate(sample_rate);
-    let mut next_value = move || assert_no_alloc(|| (slot_l.get_mono(), slot_r.get_mono()));
+    let mut next_value = move || assert_no_alloc(|| {
+        let l = slot_l.get_mono();
+        let r = slot_r.get_mono();
+        (if l.is_normal() {l.clamp(-1., 1.)} else {0.},
+         if r.is_normal() {r.clamp(-1., 1.)} else {0.})
+    });
     let err_fn = |err| eprintln!("an error occurred on stream: {}", err);
     let stream = device.build_output_stream(
         config,
