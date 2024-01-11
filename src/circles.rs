@@ -488,6 +488,7 @@ pub fn update_circle_text(
                 3 => "op: Sum\n".to_string(),
                 4 => "op: Product\n".to_string(),
                 5 => "op: Out\n".to_string(),
+                6 => "op: Probe\n".to_string(),
                 _ => op.0.to_string() + "\n",
             };
         }

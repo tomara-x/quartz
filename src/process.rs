@@ -360,6 +360,7 @@ pub fn process(
                     *output = Net32::wrap(Box::new(graph));
                 }
             },
+            // you can simplify this by having 2 separate objects, out_l and out_r
             5 => { // Out
                 let mut has_l = false;
                 let mut has_r = false;
@@ -404,6 +405,30 @@ pub fn process(
                     slot.1.set(Fade::Smooth, 0.1, Box::new(dc(0.)));
                     *had_r = false;
                 }
+            },
+            6 => { // Probe
+                for child in children {
+                    if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+                        let black_hole = &mut black_hole_query.get_mut(white_hole.bh).unwrap();
+                        if white_hole.link_type == 1 && black_hole.link_type == 0 &&
+                            (white_hole.changed || white_hole.new_lt || black_hole.new_lt || *op_changed) {
+                                let mut input_net = access.net_query.get(black_hole.parent).unwrap().0.clone();
+                                input_net.set_sample_rate(120.);
+                                let net = &mut access.net_query.get_mut(*id).unwrap().0;
+                                *net = Net32::wrap(Box::new(input_net));
+                                white_hole.changed = false;
+                                white_hole.new_lt = false;
+                                black_hole.new_lt = false;
+                        }
+                        if white_hole.link_type == 1 && black_hole.link_type == 0 {
+                            let net = &mut access.net_query.get_mut(*id).unwrap().0;
+                            let num = &mut access.num_query.get_mut(*id).unwrap().0;
+                            *num = net.get_mono();
+                            mark_changed!(-4, children, black_hole_query, white_hole_query);
+                        }
+                    }
+                }
+                *op_changed = false;
             },
             _ => {},
         }
