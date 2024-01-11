@@ -183,28 +183,28 @@ pub fn process(
             -3 => { // float to radius
                 for child in children {
                     if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
-                        if white_hole.changed {
+                        //if white_hole.changed {
                             let black_hole = black_hole_query.get(white_hole.bh).unwrap();
                             if black_hole.link_type == -4 && white_hole.link_type == 1 {
-                                white_hole.changed = false;
+                                //white_hole.changed = false;
                                 let input = access.num_query.get(black_hole.parent).unwrap().0;
                                 let Mesh2dHandle(mesh_id) = access.mesh_ids.get(*id).unwrap();
                                 access.radius_query.get_mut(*id).unwrap().0 = input;
                                 let mesh = access.meshes.get_mut(mesh_id).unwrap();
                                 *mesh = bevy::prelude::shape::Circle::new(input).into();
-                                mark_changed!(-3, children, black_hole_query, white_hole_query);
+                                //mark_changed!(-3, children, black_hole_query, white_hole_query);
                             }
-                        }
+                        //}
                     }
                 }
             },
             -2 => { // 4 floats to color
                 for child in children {
                     if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
-                        if white_hole.changed {
+                        //if white_hole.changed {
                             let black_hole = black_hole_query.get(white_hole.bh).unwrap();
                             if black_hole.link_type == -4 && (1..5).contains(&white_hole.link_type) {
-                                white_hole.changed = false;
+                                //white_hole.changed = false;
                                 let input = access.num_query.get(black_hole.parent).unwrap().0;
                                 let mat_id = access.material_ids.get(*id).unwrap();
                                 match white_hole.link_type {
@@ -214,19 +214,19 @@ pub fn process(
                                     4 => { access.mats.get_mut(mat_id).unwrap().color.set_a(input); },
                                     _ => {},
                                 }
-                                mark_changed!(-2, children, black_hole_query, white_hole_query);
+                                //mark_changed!(-2, children, black_hole_query, white_hole_query);
                             }
-                        }
+                        //}
                     }
                 }
             },
             -1 => { // 3 floats to position
                 for child in children {
                     if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
-                        if white_hole.changed {
+                        //if white_hole.changed {
                             let black_hole = black_hole_query.get(white_hole.bh).unwrap();
                             if black_hole.link_type == -4 && (1..4).contains(&white_hole.link_type) {
-                                white_hole.changed = false;
+                                //white_hole.changed = false;
                                 let input = access.num_query.get(black_hole.parent).unwrap().0;
                                 let mut t = access.trans_query.get_mut(*id).unwrap();
                                 match white_hole.link_type {
@@ -236,9 +236,9 @@ pub fn process(
                                     _ => {},
                                 }
                                 // position has changed
-                                mark_changed!(-1, children, black_hole_query, white_hole_query);
+                                //mark_changed!(-1, children, black_hole_query, white_hole_query);
                             }
-                        }
+                        //}
                     }
                 }
             },
@@ -424,7 +424,7 @@ pub fn process(
                             let net = &mut access.net_query.get_mut(*id).unwrap().0;
                             let num = &mut access.num_query.get_mut(*id).unwrap().0;
                             *num = net.get_mono();
-                            mark_changed!(-4, children, black_hole_query, white_hole_query);
+                            //mark_changed!(-4, children, black_hole_query, white_hole_query);
                         }
                     }
                 }
