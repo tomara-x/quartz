@@ -1,4 +1,4 @@
-use bevy::{prelude::*};
+use bevy::prelude::*;
 
 use crate::components::*;
 
@@ -32,5 +32,3 @@ pub fn update_cursor_info(
         *last_pos = -cursor.f; // so on the pressed frame we don't get a delta
     }
 }
-
-

@@ -1,4 +1,4 @@
-use bevy::{prelude::*};
+use bevy::prelude::*;
 
 use assert_no_alloc::*;
 use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
@@ -7,9 +7,7 @@ use fundsp::hacker32::*;
 
 use crate::components::*;
 
-pub fn ext_thread(
-    mut commands: Commands,
-) {
+pub fn ext_thread(mut commands: Commands) {
     // create slots for outputs
     let slot_l = Slot32::new(Box::new(dc(0.)));
     let slot_r = Slot32::new(Box::new(dc(0.)));
@@ -36,8 +34,7 @@ fn run<T>(
     config: &cpal::StreamConfig,
     mut slot_l: SlotBackend32,
     mut slot_r: SlotBackend32,
-)
-where
+) where
     T: SizedSample + FromSample<f32>,
 {
     let sample_rate = config.sample_rate.0 as f64;
@@ -45,12 +42,16 @@ where
 
     slot_l.set_sample_rate(sample_rate);
     slot_r.set_sample_rate(sample_rate);
-    let mut next_value = move || assert_no_alloc(|| {
-        let l = slot_l.get_mono();
-        let r = slot_r.get_mono();
-        (if l.is_normal() {l.clamp(-1., 1.)} else {0.},
-         if r.is_normal() {r.clamp(-1., 1.)} else {0.})
-    });
+    let mut next_value = move || {
+        assert_no_alloc(|| {
+            let l = slot_l.get_mono();
+            let r = slot_r.get_mono();
+            (
+                if l.is_normal() { l.clamp(-1., 1.) } else { 0. },
+                if r.is_normal() { r.clamp(-1., 1.) } else { 0. },
+            )
+        })
+    };
     let err_fn = |err| eprintln!("an error occurred on stream: {}", err);
     let stream = device.build_output_stream(
         config,
@@ -85,4 +86,3 @@ where
         }
     }
 }
-

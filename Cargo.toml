@@ -48,7 +48,7 @@ bevy-inspector-egui = {version = "0.21.0",  default-features = false}
 [profile.dev]
 opt-level = 1
 
-# high optimizations and no debug symbols for deps:
+# high optimizations and no debug symbols for deps
 [profile.dev.package."*"]
 opt-level = 3
 debug = false

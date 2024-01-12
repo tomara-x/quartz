@@ -1,4 +1,4 @@
-use bevy::{prelude::*};
+use bevy::prelude::*;
 use fundsp::hacker32::*;
 // -------------------- components --------------------
 #[derive(Component)]
@@ -38,7 +38,6 @@ pub struct Network(pub Net32);
 #[derive(Component)]
 pub struct NetIns(pub Vec<Shared<f32>>);
 
-// hole enum? <-(what on earth was on your mind, weeks-ago-amy?)
 #[allow(dead_code)]
 #[derive(Component)]
 pub struct WhiteHole {
@@ -90,5 +89,3 @@ pub struct Slot(pub Slot32, pub Slot32);
 // -------------------- events --------------------
 #[derive(Event, Default)]
 pub struct OrderChange;
-
-
