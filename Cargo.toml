@@ -38,11 +38,9 @@ features = [
 ]
 
 [dependencies]
-rand = "0.8.0"
 bevy_pancam = "0.10.0"
 fundsp = "0.16.0"
 cpal = "0.15.2"
-anyhow = "1.0.77"
 assert_no_alloc = "1.1.2"
 bevy-inspector-egui = {version = "0.21.0",  default-features = false}
 

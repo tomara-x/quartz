@@ -13,7 +13,6 @@ use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 //use std::{fs::File, io::Write};
 //use std::time::{Duration, Instant};
-//use rand::prelude::random;
 
 mod components;
 mod process;

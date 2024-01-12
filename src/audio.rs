@@ -23,21 +23,20 @@ pub fn ext_thread(
         let config = device.default_output_config().unwrap();
         match config.sample_format() {
             // passing the slot backends inside
-            cpal::SampleFormat::F32 => run::<f32>(&device, &config.into(), slot_l.1, slot_r.1).unwrap(),
-            cpal::SampleFormat::I16 => run::<i16>(&device, &config.into(), slot_l.1, slot_r.1).unwrap(),
-            cpal::SampleFormat::U16 => run::<u16>(&device, &config.into(), slot_l.1, slot_r.1).unwrap(),
+            cpal::SampleFormat::F32 => run::<f32>(&device, &config.into(), slot_l.1, slot_r.1),
+            cpal::SampleFormat::I16 => run::<i16>(&device, &config.into(), slot_l.1, slot_r.1),
+            cpal::SampleFormat::U16 => run::<u16>(&device, &config.into(), slot_l.1, slot_r.1),
             _ => panic!("Unsupported format"),
         }
     });
 }
 
-// TODO(amy): try to yeet anyhow
 fn run<T>(
     device: &cpal::Device,
     config: &cpal::StreamConfig,
     mut slot_l: SlotBackend32,
     mut slot_r: SlotBackend32,
-    ) -> Result<(), anyhow::Error>
+)
 where
     T: SizedSample + FromSample<f32>,
 {
@@ -60,10 +59,12 @@ where
         },
         err_fn,
         None,
-    )?;
-    stream.play()?;
-    std::thread::sleep(std::time::Duration::from_secs(u64::MAX));
-    Ok(())
+    );
+    if let Ok(stream) = stream {
+        if let Ok(()) = stream.play() {
+            std::thread::sleep(std::time::Duration::from_secs(u64::MAX));
+        }
+    }
 }
 
 fn write_data<T>(output: &mut [T], channels: usize, next_sample: &mut dyn FnMut() -> (f32, f32))
