@@ -38,7 +38,6 @@ pub struct Network(pub Net32);
 #[derive(Component)]
 pub struct NetIns(pub Vec<Shared<f32>>);
 
-#[allow(dead_code)]
 #[derive(Component)]
 pub struct WhiteHole {
     pub id: Entity,
