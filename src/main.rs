@@ -54,12 +54,10 @@ fn main() {
         .add_state::<Mode>()
         .add_systems(Update, switch_mode)
         .add_systems(Update, save_scene)
-
+        // cursor
         .insert_resource(CursorInfo::default())
         .add_systems(Update, update_cursor_info)
-
-        // test high depth
-        .insert_resource(Depth(-10.))
+        // circles
         .add_systems(Update, draw_pointer_circle.run_if(not(in_state(Mode::Connect))))
         .add_systems(Update, mark_visible.after(update_cursor_info))
         .add_systems(Update, update_selection.after(mark_visible).run_if(in_state(Mode::Edit)))
@@ -73,13 +71,12 @@ fn main() {
         .add_systems(Update, update_circle_text.run_if(in_state(Mode::Edit)))
         .add_systems(Update, select_all.run_if(in_state(Mode::Edit)))
         .add_systems(Update, duplicate_selected.run_if(in_state(Mode::Edit)))
-
+        // connections
         .add_systems(Update, connect.run_if(in_state(Mode::Connect)))
         .add_systems(Update, draw_connections)
         .add_systems(Update, draw_connecting_line.run_if(in_state(Mode::Connect)))
         .add_systems(Update, update_link_type.run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_link_type_text.run_if(in_state(Mode::Edit)))
-
         // order
         .add_systems(Update, (spawn_circles.run_if(in_state(Mode::Draw)),
                               delete_selected.run_if(in_state(Mode::Edit)),
@@ -88,10 +85,8 @@ fn main() {
         .register_type::<Queue>()
         .init_resource::<Queue>()
         .add_event::<OrderChange>()
-
+        // process
         .add_systems(Update, process.after(sort_by_order))
-
-
         .run();
 }
 

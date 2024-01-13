@@ -24,7 +24,7 @@ pub fn spawn_circles(
     mouse_button_input: Res<Input<MouseButton>>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
-    mut depth: ResMut<Depth>,
+    mut depth: Local<f32>,
     cursor: Res<CursorInfo>,
     keyboard_input: Res<Input<KeyCode>>,
 ) {
@@ -35,7 +35,7 @@ pub fn spawn_circles(
             ColorMesh2dBundle {
                 mesh: meshes.add(bevy::prelude::shape::Circle::new(radius).into()).into(),
                 material: materials.add(ColorMaterial::from(Color::hsl(0., 1.0, 0.5))),
-                transform: Transform::from_translation(cursor.i.extend(depth.0)),
+                transform: Transform::from_translation(cursor.i.extend(*depth)),
                 ..default()
             },
             Radius(radius),
@@ -74,7 +74,7 @@ pub fn spawn_circles(
         }).id();
         commands.entity(id).add_child(text);
 
-        depth.0 += 0.00001;
+        *depth += 0.00001;
     }
 }
 
