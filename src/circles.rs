@@ -46,7 +46,6 @@ pub fn spawn_circles(
             NetIns(Vec::new()),
             crate::components::Num(0.),
             Arr(vec!(42., 105., 420., 1729.)),
-            Offset {trans:Vec3::ZERO, color:Color::hsla(0.,0.,0.,0.), radius:0.},
             Op(0),
         )).id();
 
@@ -185,7 +184,7 @@ pub fn select_all(
 pub fn duplicate_selected(
     mut commands: Commands,
     query: Query<(&Radius, &Handle<ColorMaterial>,
-    &Transform, &crate::components::Num, &Arr, &Offset), With<Selected>>,
+    &Transform, &crate::components::Num, &Arr), With<Selected>>,
     selected_query: Query<Entity, With<Selected>>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
@@ -196,7 +195,7 @@ pub fn duplicate_selected(
         for e in selected_query.iter() {
             commands.entity(e).remove::<Selected>();
         }
-        for (radius, mat_id, trans, num, arr, offset) in query.iter() {
+        for (radius, mat_id, trans, num, arr) in query.iter() {
             let color = materials.get(mat_id).unwrap().color;
             let id = commands.spawn((
                 ColorMesh2dBundle {
@@ -215,7 +214,6 @@ pub fn duplicate_selected(
                 NetIns(Vec::new()),
                 crate::components::Num(num.0),
                 Arr(arr.0.clone().into()),
-                Offset {trans: offset.trans, color: offset.color, radius: offset.radius},
                 Op(0),
             )).id();
             let text = commands.spawn(Text2dBundle {

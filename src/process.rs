@@ -53,7 +53,6 @@ pub struct Access<'w, 's> {
     meshes: ResMut<'w, Assets<Mesh>>,
     mesh_ids: Query<'w, 's, &'static Mesh2dHandle>,
     trans_query: Query<'w, 's, &'static mut Transform>,
-    offset_query: Query<'w, 's, &'static mut Offset>,
     arr_query: Query<'w, 's, &'static mut Arr>,
     tonemapping: Query<'w, 's, &'static mut Tonemapping, With<Camera>>,
     op_changed_query: Query<'w, 's, &'static mut OpChanged>,
@@ -441,31 +440,28 @@ pub fn process(
                         white_hole.changed = false;
                         let input = access.trans_query.get(black_hole.parent).unwrap().translation;
                         let mut t = access.trans_query.get_mut(*id).unwrap();
-                        let offset = access.offset_query.get(*id).unwrap().trans;
-                        t.translation.x = input.x + offset.x;
-                        t.translation.y = input.y + offset.y;
-                        t.translation.z = input.z + offset.z;
+                        t.translation.x = input.x;
+                        t.translation.y = input.y;
+                        t.translation.z = input.z;
                         mark_changed!(-1, children, black_hole_query, white_hole_query);
                     },
                     (-2, -2) => { // color
                         white_hole.changed = false;
                         let mat_id = access.material_ids.get(black_hole.parent).unwrap();
-                        let offset = access.offset_query.get(*id).unwrap().color;
                         let mat = access.mats.get(mat_id).unwrap();
                         let input = mat.color;
                         access.mats.get_mut(
                             access.material_ids.get(*id).unwrap()
-                        ).unwrap().color = input + offset;
+                        ).unwrap().color = input;
                         mark_changed!(-2, children, black_hole_query, white_hole_query);
                     },
                     (-3, -3) => { // radius
                         white_hole.changed = false;
                         if let Ok(Mesh2dHandle(mesh_id)) = access.mesh_ids.get(*id) {
-                            let offset = access.offset_query.get(*id).unwrap().radius;
                             let input = access.radius_query.get(black_hole.parent).unwrap().0;
-                            access.radius_query.get_mut(*id).unwrap().0 = input + offset;
+                            access.radius_query.get_mut(*id).unwrap().0 = input;
                             let mesh = access.meshes.get_mut(mesh_id).unwrap();
-                            *mesh = bevy::prelude::shape::Circle::new(input + offset).into();
+                            *mesh = bevy::prelude::shape::Circle::new(input).into();
                         }
                         mark_changed!(-3, children, black_hole_query, white_hole_query);
                     },
@@ -473,23 +469,6 @@ pub fn process(
                         white_hole.changed = false;
                         let input = access.num_query.get(black_hole.parent).unwrap().0;
                         access.op_query.get_mut(*id).unwrap().0 = input as i32;
-                    }
-                    (-1, -6) => { // position to trans offset
-                        white_hole.changed = false;
-                        let input = access.trans_query.get(black_hole.parent).unwrap().translation;
-                        access.offset_query.get_mut(*id).unwrap().trans = input;
-                    },
-                    (-2, -7) => { // color to color offset
-                        white_hole.changed = false;
-                        let mat_id = access.material_ids.get(black_hole.parent).unwrap();
-                        let mat = access.mats.get(mat_id).unwrap();
-                        let input = mat.color;
-                        access.offset_query.get_mut(*id).unwrap().color = input;
-                    },
-                    (-3, -8) => { // radius to radius offset
-                        white_hole.changed = false;
-                        let input = access.radius_query.get(black_hole.parent).unwrap().0;
-                        access.offset_query.get_mut(*id).unwrap().radius = input;
                     }
                     _ => {},
                 }

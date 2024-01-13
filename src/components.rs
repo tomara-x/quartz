@@ -11,13 +11,6 @@ pub struct Num(pub f32);
 pub struct Arr(pub Vec<f32>);
 
 #[derive(Component)]
-pub struct Offset {
-    pub trans: Vec3,
-    pub color: Color,
-    pub radius: f32,
-}
-
-#[derive(Component)]
 pub struct Radius(pub f32);
 
 #[derive(Component)]
@@ -56,6 +49,24 @@ pub struct BlackHole {
     pub link_type: i32,
     pub new_lt: bool,
 }
+
+enum Message {
+    N(f32),
+    R(f32),
+    X(f32),
+    Y(f32),
+    Z(f32),
+    H(f32),
+    S(f32),
+    L(f32),
+    A(f32),
+    Net(Net32),
+    Arr(Vec<f32>),
+    Str(String),
+}
+
+#[derive(Component)]
+pub struct PrimaryMessageBuffer(Vec<(Message, bool)>);
 
 // -------------------- states --------------------
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
