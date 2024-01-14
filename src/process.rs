@@ -100,7 +100,7 @@ pub fn process(
             }
         }
         match access.op_query.get(*id).unwrap().0 {
-            -8 => { // sum
+            -9 => { // sum
                 let mut out = 0.;
                 for child in children {
                     if let Ok(white_hole) = white_hole_query.get(*child) {
@@ -111,7 +111,7 @@ pub fn process(
                 }
                 access.num_query.get_mut(*id).unwrap().0 = out;
             },
-            -7 => { // tonemapping
+            -8 => { // tonemapping
                 let mut tm = access.tonemapping.single_mut();
                 for child in children {
                     if let Ok(white_hole) = white_hole_query.get(*child) {
@@ -132,7 +132,7 @@ pub fn process(
                     }
                 }
             },
-            -6 => { // bloom
+            -7 => { // bloom
                 let mut bloom_settings = access.bloom.single_mut();
                 for child in children {
                     if let Ok(white_hole) = white_hole_query.get(*child) {
@@ -147,6 +147,18 @@ pub fn process(
                             (-4, 6) => bloom_settings.prefilter_settings.threshold = input,
                             (-4, 7) => bloom_settings.prefilter_settings.threshold_softness = input,
                             _ => {},
+                        }
+                    }
+                }
+            },
+            -6 => { // set
+                for child in children {
+                    if let Ok(white_hole) = white_hole_query.get(*child) {
+                        if white_hole.link_types.0 == -4 {
+                            let index = white_hole.link_types.1;
+                            let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
+                            if arr.len() <= index as usize { arr.resize((index + 1) as usize, 0.); }
+                            arr[index as usize] = access.num_query.get(white_hole.bh_parent).unwrap().0;
                         }
                     }
                 }
