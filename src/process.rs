@@ -87,6 +87,10 @@ pub fn process(
                             *mesh = bevy::prelude::shape::Circle::new(input).into();
                         }
                     },
+                    (-4, -4) => { // num
+                        let input = access.num_query.get(white_hole.bh_parent).unwrap().0;
+                        access.num_query.get_mut(*id).unwrap().0 = input;
+                    }
                     (-4, -5) => { // number to op
                         let input = access.num_query.get(white_hole.bh_parent).unwrap().0;
                         access.op_query.get_mut(*id).unwrap().0 = input as i32;
@@ -96,6 +100,17 @@ pub fn process(
             }
         }
         match access.op_query.get(*id).unwrap().0 {
+            -8 => { // sum
+                let mut out = 0.;
+                for child in children {
+                    if let Ok(white_hole) = white_hole_query.get(*child) {
+                        if white_hole.link_types.0 == -4 {
+                            out += access.num_query.get(white_hole.bh_parent).unwrap().0;
+                        }
+                    }
+                }
+                access.num_query.get_mut(*id).unwrap().0 = out;
+            },
             -7 => { // tonemapping
                 let mut tm = access.tonemapping.single_mut();
                 for child in children {
