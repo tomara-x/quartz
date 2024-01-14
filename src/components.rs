@@ -75,24 +75,6 @@ pub struct CursorInfo {
 #[derive(Resource)]
 pub struct Slot(pub Slot32, pub Slot32);
 
-enum Message {
-    N(f32),
-    R(f32),
-    X(f32),
-    Y(f32),
-    Z(f32),
-    H(f32),
-    S(f32),
-    L(f32),
-    A(f32),
-    Net(Net32),
-    Arr(Vec<f32>),
-    Str(String),
-}
-
-#[derive(Component)]
-pub struct PrimaryMessageBuffer(Vec<Vec<(Message, bool)>>);
-
 // -------------------- events --------------------
 #[derive(Event, Default)]
 pub struct OrderChange;
