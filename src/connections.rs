@@ -58,7 +58,6 @@ pub fn connect(
             // insert connection info
             commands.entity(black_hole).insert(
                 BlackHole {
-                    id: black_hole,
                     parent: src,
                     wh: white_hole,
                     link_type: 0,
@@ -66,7 +65,6 @@ pub fn connect(
                 });
             commands.entity(white_hole).insert(
                 WhiteHole {
-                    id: white_hole,
                     parent: snk,
                     bh: black_hole,
                     link_type: 0,
@@ -104,12 +102,12 @@ pub fn connect(
 
 pub fn draw_connections(
     mut gizmos: Gizmos,
-    black_hole_query: Query<&BlackHole>,
+    black_hole_query: Query<(Entity, &BlackHole)>,
     time: Res<Time>,
     trans_query: Query<&GlobalTransform>,
 ) {
-    for black_hole in black_hole_query.iter() {
-        let src_pos = trans_query.get(black_hole.id).unwrap().translation().xy();
+    for (id, black_hole) in black_hole_query.iter() {
+        let src_pos = trans_query.get(id).unwrap().translation().xy();
         let snk_pos = trans_query.get(black_hole.wh).unwrap().translation().xy();
         let color = Color::hsl((time.elapsed_seconds() * 100.) % 360., 1.0, 0.5);
         gizmos.line_2d(src_pos, snk_pos, color);

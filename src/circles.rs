@@ -507,21 +507,21 @@ pub fn delete_selected(
     if keyboard_input.pressed(KeyCode::Delete) {
         for (id, children) in query.iter() {
             // if the circle we're deleting is a connection
-            if let Ok(black_hole) = black_hole_query.get(id) {
-                commands.entity(black_hole.wh).despawn_recursive();
-            } else if let Ok(white_hole) = white_hole_query.get(id) {
-                commands.entity(white_hole.bh).despawn_recursive();
-            } else {
-                // not a connection, despawn the holes on the other side
-                for child in children.iter() {
-                    if let Ok(black_hole) = black_hole_query.get(*child) {
-                        commands.entity(black_hole.wh).despawn_recursive();
-                    }
-                    if let Ok(white_hole) = white_hole_query.get(*child) {
-                        commands.entity(white_hole.bh).despawn_recursive();
-                    }
-                }
-            }
+            //if let Ok(black_hole) = black_hole_query.get(id) {
+            //    commands.entity(black_hole.wh).despawn_recursive();
+            //} else if let Ok(white_hole) = white_hole_query.get(id) {
+            //    commands.entity(white_hole.bh).despawn_recursive();
+            //} else {
+            //    // not a connection, despawn the holes on the other side
+            //    for child in children.iter() {
+            //        if let Ok(black_hole) = black_hole_query.get(*child) {
+            //            commands.entity(black_hole.wh).despawn_recursive();
+            //        }
+            //        if let Ok(white_hole) = white_hole_query.get(*child) {
+            //            commands.entity(white_hole.bh).despawn_recursive();
+            //        }
+            //    }
+            //}
             commands.entity(id).despawn_recursive();
             order_change.send_default();
         }

@@ -33,7 +33,6 @@ pub struct NetIns(pub Vec<Shared<f32>>);
 
 #[derive(Component)]
 pub struct WhiteHole {
-    pub id: Entity,
     pub parent: Entity,
     pub bh: Entity,
     pub link_type: i32,
@@ -43,7 +42,6 @@ pub struct WhiteHole {
 
 #[derive(Component)]
 pub struct BlackHole {
-    pub id: Entity,
     pub parent: Entity,
     pub wh: Entity,
     pub link_type: i32,
