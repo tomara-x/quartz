@@ -75,7 +75,7 @@ where
     for frame in output.chunks_mut(channels) {
         let sample = next_sample();
         let left = T::from_sample(sample.0);
-        let right: T = T::from_sample(sample.1);
+        let right = T::from_sample(sample.1);
 
         for (channel, sample) in frame.iter_mut().enumerate() {
             if channel & 1 == 0 {
