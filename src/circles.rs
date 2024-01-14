@@ -7,18 +7,6 @@ use fundsp::hacker32::*;
 
 use crate::components::*;
 
-macro_rules! mark_changed {
-    ($n:expr, $children:expr, $bh_query:expr, $wh_query:expr) => {
-        for child in $children.iter() {
-            if let Ok(black_hole) = $bh_query.get(*child) {
-                if black_hole.link_type == $n {
-                    $wh_query.get_mut(black_hole.wh).unwrap().changed = true;
-                }
-            }
-        }
-    };
-}
-
 pub fn spawn_circles(
     mut commands: Commands,
     mouse_button_input: Res<Input<MouseButton>>,
@@ -258,31 +246,26 @@ pub fn move_selected(
             for (mut t, children) in query.iter_mut() {
                 t.translation.x += cursor.d.x;
                 t.translation.y += cursor.d.y;
-                mark_changed!(-1, children, black_hole_query, white_hole_query);
             }
         }
         if keyboard_input.pressed(KeyCode::Up) {
             for (mut t, children) in query.iter_mut() {
                 t.translation.y += 1.;
-                mark_changed!(-1, children, black_hole_query, white_hole_query);
             }
         }
         if keyboard_input.pressed(KeyCode::Down) {
             for (mut t, children) in query.iter_mut() {
                 t.translation.y -= 1.;
-                mark_changed!(-1, children, black_hole_query, white_hole_query);
             }
         }
         if keyboard_input.pressed(KeyCode::Right) {
             for (mut t, children) in query.iter_mut() {
                 t.translation.x += 1.;
-                mark_changed!(-1, children, black_hole_query, white_hole_query);
             }
         }
         if keyboard_input.pressed(KeyCode::Left) {
             for (mut t, children) in query.iter_mut() {
                 t.translation.x -= 1.;
-                mark_changed!(-1, children, black_hole_query, white_hole_query);
             }
         }
     }
@@ -303,8 +286,6 @@ pub fn update_color(
             for (id, children) in material_ids.iter() {
                 let mat = mats.get_mut(id).unwrap();
                 mat.color.set_h((mat.color.h() + cursor.d.x).rem_euclid(360.));
-                // mark change
-                mark_changed!(-2, children, black_hole_query, white_hole_query);
             }
         }
 
@@ -355,7 +336,6 @@ pub fn update_radius(
                 let mesh = meshes.get_mut(id).unwrap();
                 *mesh = bevy::prelude::shape::Circle::new(r).into();
                 radius_query.get_mut(entity).unwrap().0 = r;
-                mark_changed!(-3, children, black_hole_query, white_hole_query);
             }
         }
         if keyboard_input.pressed(KeyCode::Up) {
@@ -364,7 +344,6 @@ pub fn update_radius(
                 radius_query.get_mut(entity).unwrap().0 = r;
                 let mesh = meshes.get_mut(id).unwrap();
                 *mesh = bevy::prelude::shape::Circle::new(r).into();
-                mark_changed!(-3, children, black_hole_query, white_hole_query);
             }
         }
         if keyboard_input.pressed(KeyCode::Down) {
@@ -373,7 +352,6 @@ pub fn update_radius(
                 radius_query.get_mut(entity).unwrap().0 = r;
                 let mesh = meshes.get_mut(id).unwrap();
                 *mesh = bevy::prelude::shape::Circle::new(r).into();
-                mark_changed!(-3, children, black_hole_query, white_hole_query);
             }
         }
     }
@@ -391,23 +369,17 @@ pub fn update_num(
         if mouse_button_input.pressed(MouseButton::Left) &&
         !mouse_button_input.just_pressed(MouseButton::Left) {
             for (mut n, children) in query.iter_mut() {
-                // change the number
                 n.0 += cursor.d.y / 10.;
-                // inform any white holes connected through link -4 black holes
-                // that our value has changed
-                mark_changed!(-4, children, black_hole_query, white_hole_query);
             }
         }
         if keyboard_input.pressed(KeyCode::Up) {
             for (mut n, children) in query.iter_mut() {
                 n.0 += 0.01;
-                mark_changed!(-4, children, black_hole_query, white_hole_query);
             }
         }
         if keyboard_input.pressed(KeyCode::Down) {
             for (mut n, children) in query.iter_mut() {
                 n.0 -= 0.01;
-                mark_changed!(-4, children, black_hole_query, white_hole_query);
             }
         }
     }

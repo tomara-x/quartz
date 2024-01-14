@@ -53,25 +53,22 @@ pub fn connect(
                 },
                 Visible,
                 Radius(snk_radius * 0.1),
-            )).id();
-
-            // insert connection info
-            commands.entity(black_hole).insert(
-                BlackHole {
-                    parent: src,
-                    wh: white_hole,
-                    link_type: 0,
-                    new_lt: true,
-                });
-            commands.entity(white_hole).insert(
                 WhiteHole {
                     parent: snk,
+                    bh_parent: src,
                     bh: black_hole,
-                    link_type: 0,
-                    changed: false,
+                    link_types: (0, 0),
+                    open: true,
                     new_lt: true,
-                });
+                },
+            )).id();
 
+            // insert black hole white hole
+            commands.entity(black_hole).insert(
+                BlackHole {
+                    wh: white_hole,
+                });
+                
             // add to parents
             commands.entity(src).add_child(black_hole);
             commands.entity(snk).add_child(white_hole);
@@ -128,18 +125,41 @@ pub fn draw_connecting_line(
     }
 }
 
-pub fn update_link_type (
+pub fn update_link_type_b (
     keyboard_input: Res<Input<KeyCode>>,
-    mut black_hole_query: Query<&mut BlackHole, With<Selected>>,
-    mut white_hole_query: Query<&mut WhiteHole, With<Selected>>,
+    mut selected_black_holes: Query<&mut BlackHole, With<Selected>>,
+    mut white_hole_query: Query<&mut WhiteHole>,
 ) {
     if keyboard_input.just_pressed(KeyCode::Period) {
-        for mut hole in black_hole_query.iter_mut() { hole.link_type += 1; hole.new_lt = true; }
-        for mut hole in white_hole_query.iter_mut() { hole.link_type += 1; hole.new_lt = true; }
+        for mut hole in selected_black_holes.iter_mut() {
+            let wh = &mut white_hole_query.get_mut(hole.wh).unwrap();
+            wh.link_types.0 += 1;
+            wh.new_lt = true;
+        }
     }
     if keyboard_input.just_pressed(KeyCode::Comma) {
-        for mut hole in black_hole_query.iter_mut() { hole.link_type -= 1; hole.new_lt = true; }
-        for mut hole in white_hole_query.iter_mut() { hole.link_type -= 1; hole.new_lt = true; }
+        for mut hole in selected_black_holes.iter_mut() {
+            let wh = &mut white_hole_query.get_mut(hole.wh).unwrap();
+            wh.link_types.0 -= 1;
+            wh.new_lt = true;
+        }
+    }
+}
+pub fn update_link_type_w (
+    keyboard_input: Res<Input<KeyCode>>,
+    mut selected_white_holes: Query<&mut WhiteHole, With<Selected>>,
+) {
+    if keyboard_input.just_pressed(KeyCode::Period) {
+        for mut hole in selected_white_holes.iter_mut() {
+            hole.link_types.1 += 1;
+            hole.new_lt = true;
+        }
+    }
+    if keyboard_input.just_pressed(KeyCode::Comma) {
+        for mut hole in selected_white_holes.iter_mut() {
+            hole.link_types.1 -= 1;
+            hole.new_lt = true;
+        }
     }
 }
 
@@ -150,10 +170,10 @@ pub fn update_link_type_text(
 ) {
     for (mut text, parent) in query.iter_mut() {
         if let Ok(hole) = black_hole_query.get(**parent) {
-            text.sections[0].value = hole.link_type.to_string();
+            text.sections[0].value = white_hole_query.get(hole.wh).unwrap().link_types.0.to_string();
         }
         if let Ok(hole) = white_hole_query.get(**parent) {
-            text.sections[0].value = hole.link_type.to_string();
+            text.sections[0].value = hole.link_types.1.to_string();
         }
     }
 }

@@ -35,17 +35,15 @@ pub struct NetIns(pub Vec<Shared<f32>>);
 pub struct WhiteHole {
     pub parent: Entity,
     pub bh: Entity,
-    pub link_type: i32,
-    pub changed: bool,
+    pub bh_parent: Entity,
+    pub link_types: (i32, i32), //(black, white)
+    pub open: bool,
     pub new_lt: bool,
 }
 
 #[derive(Component)]
 pub struct BlackHole {
-    pub parent: Entity,
     pub wh: Entity,
-    pub link_type: i32,
-    pub new_lt: bool,
 }
 
 // -------------------- states --------------------
