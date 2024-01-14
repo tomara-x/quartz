@@ -155,10 +155,10 @@ pub fn process(
                 for child in children {
                     if let Ok(white_hole) = white_hole_query.get(*child) {
                         if white_hole.link_types.0 == -4 {
-                            let index = white_hole.link_types.1;
+                            let index = white_hole.link_types.1 as usize;
                             let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
-                            if arr.len() <= index as usize { arr.resize((index + 1) as usize, 0.); }
-                            arr[index as usize] = access.num_query.get(white_hole.bh_parent).unwrap().0;
+                            if arr.len() <= index { arr.resize(index + 1, 0.); }
+                            arr[index] = access.num_query.get(white_hole.bh_parent).unwrap().0;
                         }
                     }
                 }
