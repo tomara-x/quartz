@@ -51,7 +51,6 @@ pub struct Access<'w, 's> {
 pub fn process(
     queue: Res<Queue>,
     children_query: Query<&Children>,
-    mut black_hole_query: Query<&mut BlackHole>,
     mut white_hole_query: Query<&mut WhiteHole>,
     mut access: Access,
     mut slot: ResMut<Slot>,
@@ -63,7 +62,7 @@ pub fn process(
         let children = children_query.get(*id).unwrap();
         let op_changed = &mut access.op_changed_query.get_mut(*id).unwrap().0;
         for child in children {
-            if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+            if let Ok(white_hole) = white_hole_query.get(*child) {
                 match white_hole.link_types {
                     (-1, -1) => { //trans
                         let input = access.trans_query.get(white_hole.bh_parent).unwrap().translation;
@@ -100,7 +99,7 @@ pub fn process(
             -7 => { // tonemapping
                 let mut tm = access.tonemapping.single_mut();
                 for child in children {
-                    if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+                    if let Ok(white_hole) = white_hole_query.get(*child) {
                         if white_hole.link_types == (-4, 1) {
                             let input = access.num_query.get(white_hole.bh_parent).unwrap().0;
                             match input as usize {
@@ -121,7 +120,7 @@ pub fn process(
             -6 => { // bloom
                 let mut bloom_settings = access.bloom.single_mut();
                 for child in children {
-                    if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+                    if let Ok(white_hole) = white_hole_query.get(*child) {
                         let input = access.num_query.get(white_hole.bh_parent).unwrap().0 / 100.;
                         match white_hole.link_types {
                             (-4, 1) => bloom_settings.intensity = input,
@@ -139,7 +138,7 @@ pub fn process(
             },
             -5 => { // get
                 for child in children {
-                    if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+                    if let Ok(white_hole) = white_hole_query.get(*child) {
                         if white_hole.link_types.1 == -4 {
                            let arr = &access.arr_query.get(white_hole.bh_parent).unwrap().0;
                            // TODO(amy): with negative indexing get in reverse
@@ -152,7 +151,7 @@ pub fn process(
             },
             -4 => { // separate outputs from trans/color/radius
                 for child in children {
-                    if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+                    if let Ok(white_hole) = white_hole_query.get(*child) {
                         match white_hole.link_types {
                             (-1, 1) => {
                                 let t = access.trans_query.get(white_hole.bh_parent).unwrap().translation;
@@ -177,7 +176,7 @@ pub fn process(
             },
             -3 => { // float to radius
                 for child in children {
-                    if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+                    if let Ok(white_hole) = white_hole_query.get(*child) {
                         if white_hole.link_types == (-4, 1) {
                             let input = access.num_query.get(white_hole.bh_parent).unwrap().0;
                             let Mesh2dHandle(mesh_id) = access.mesh_ids.get(*id).unwrap();
@@ -190,7 +189,7 @@ pub fn process(
             },
             -2 => { // 4 floats to color
                 for child in children {
-                    if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+                    if let Ok(white_hole) = white_hole_query.get(*child) {
                         if white_hole.link_types.0 == -4 {
                             let input = access.num_query.get(white_hole.bh_parent).unwrap().0;
                             let mat_id = access.material_ids.get(*id).unwrap();
@@ -207,7 +206,7 @@ pub fn process(
             },
             -1 => { // 3 floats to position
                 for child in children {
-                    if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+                    if let Ok(white_hole) = white_hole_query.get(*child) {
                         if white_hole.link_types.0 == -4 {
                             let input = access.num_query.get(white_hole.bh_parent).unwrap().0;
                             let mut t = access.trans_query.get_mut(*id).unwrap();

@@ -234,37 +234,35 @@ pub fn duplicate_selected(
 pub fn move_selected(
     mouse_button_input: Res<Input<MouseButton>>,
     cursor: Res<CursorInfo>,
-    mut query: Query<(&mut Transform, &Children), With<Selected>>,
+    mut query: Query<&mut Transform, With<Selected>>,
     keyboard_input: Res<Input<KeyCode>>,
-    black_hole_query: Query<&BlackHole>,
-    mut white_hole_query: Query<&mut WhiteHole>,
 ) {
     if keyboard_input.pressed(KeyCode::Key1) {
         if mouse_button_input.pressed(MouseButton::Left) &&
         //lol because the update to entities isn't read until the next frame
         !mouse_button_input.just_pressed(MouseButton::Left) {
-            for (mut t, children) in query.iter_mut() {
+            for mut t in query.iter_mut() {
                 t.translation.x += cursor.d.x;
                 t.translation.y += cursor.d.y;
             }
         }
         if keyboard_input.pressed(KeyCode::Up) {
-            for (mut t, children) in query.iter_mut() {
+            for mut t in query.iter_mut() {
                 t.translation.y += 1.;
             }
         }
         if keyboard_input.pressed(KeyCode::Down) {
-            for (mut t, children) in query.iter_mut() {
+            for mut t in query.iter_mut() {
                 t.translation.y -= 1.;
             }
         }
         if keyboard_input.pressed(KeyCode::Right) {
-            for (mut t, children) in query.iter_mut() {
+            for mut t in query.iter_mut() {
                 t.translation.x += 1.;
             }
         }
         if keyboard_input.pressed(KeyCode::Left) {
-            for (mut t, children) in query.iter_mut() {
+            for mut t in query.iter_mut() {
                 t.translation.x -= 1.;
             }
         }
@@ -273,44 +271,49 @@ pub fn move_selected(
 
 pub fn update_color(
     mut mats: ResMut<Assets<ColorMaterial>>,
-    material_ids: Query<(&Handle<ColorMaterial>, &Children), With<Selected>>,
+    material_ids: Query<&Handle<ColorMaterial>, With<Selected>>,
     keyboard_input: Res<Input<KeyCode>>,
     cursor: Res<CursorInfo>,
     mouse_button_input: Res<Input<MouseButton>>,
-    mut white_hole_query: Query<&mut WhiteHole>,
-    black_hole_query: Query<&BlackHole>,
 ) {
     if keyboard_input.pressed(KeyCode::Key2) {
         if mouse_button_input.pressed(MouseButton::Left) &&
         !mouse_button_input.just_pressed(MouseButton::Left) {
-            for (id, children) in material_ids.iter() {
+            for id in material_ids.iter() {
                 let mat = mats.get_mut(id).unwrap();
                 mat.color.set_h((mat.color.h() + cursor.d.x).rem_euclid(360.));
             }
         }
 
+        // FIXME(amy): use opposing arrows to change the same value
+        // up/down -> hue
+        // shift+up/down -> saturation
+        // right/left -> lightness
+        // shift+right/left -> alpha
+        // or something
+        // and clamp the limits, don't mod
         let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
         let increment = if shift { 0.01 } else { -0.01 };
         if keyboard_input.pressed(KeyCode::Up) {
-            for (id, _) in material_ids.iter() {
+            for id in material_ids.iter() {
                 let mat = mats.get_mut(id).unwrap();
                 mat.color.set_h((mat.color.h() + increment * 100.).rem_euclid(360.));
             }
         }
         if keyboard_input.pressed(KeyCode::Down) {
-            for (id, _) in material_ids.iter() {
+            for id in material_ids.iter() {
                 let mat = mats.get_mut(id).unwrap();
                 mat.color.set_s((mat.color.s() + increment).rem_euclid(2.));
             }
         }
         if keyboard_input.pressed(KeyCode::Right) {
-            for (id, _) in material_ids.iter() {
+            for id in material_ids.iter() {
                 let mat = mats.get_mut(id).unwrap();
                 mat.color.set_l((mat.color.l() + increment).rem_euclid(4.));
             }
         }
         if keyboard_input.pressed(KeyCode::Left) {
-            for (id, _) in material_ids.iter() {
+            for id in material_ids.iter() {
                 let mat = mats.get_mut(id).unwrap();
                 mat.color.set_a((mat.color.a() + increment).rem_euclid(1.));
             }
@@ -320,18 +323,16 @@ pub fn update_color(
 
 pub fn update_radius(
     mut meshes: ResMut<Assets<Mesh>>,
-    mesh_ids: Query<(Entity, &Children, &Mesh2dHandle), With<Selected>>,
+    mesh_ids: Query<(Entity, &Mesh2dHandle), With<Selected>>,
     keyboard_input: Res<Input<KeyCode>>,
     cursor: Res<CursorInfo>,
     mouse_button_input: Res<Input<MouseButton>>,
     mut radius_query: Query<&mut Radius>,
-    mut white_hole_query: Query<&mut WhiteHole>,
-    black_hole_query: Query<&BlackHole>,
 ) {
     if keyboard_input.pressed(KeyCode::Key3) {
         if mouse_button_input.pressed(MouseButton::Left) &&
         !mouse_button_input.just_pressed(MouseButton::Left) {
-            for (entity, children, Mesh2dHandle(id)) in mesh_ids.iter() {
+            for (entity, Mesh2dHandle(id)) in mesh_ids.iter() {
                 let r = cursor.f.distance(cursor.i);
                 let mesh = meshes.get_mut(id).unwrap();
                 *mesh = bevy::prelude::shape::Circle::new(r).into();
@@ -339,7 +340,7 @@ pub fn update_radius(
             }
         }
         if keyboard_input.pressed(KeyCode::Up) {
-            for (entity, children, Mesh2dHandle(id)) in mesh_ids.iter() {
+            for (entity, Mesh2dHandle(id)) in mesh_ids.iter() {
                 let r = radius_query.get_mut(entity).unwrap().0 + 1.;
                 radius_query.get_mut(entity).unwrap().0 = r;
                 let mesh = meshes.get_mut(id).unwrap();
@@ -347,7 +348,7 @@ pub fn update_radius(
             }
         }
         if keyboard_input.pressed(KeyCode::Down) {
-            for (entity, children, Mesh2dHandle(id)) in mesh_ids.iter() {
+            for (entity, Mesh2dHandle(id)) in mesh_ids.iter() {
                 let r = radius_query.get_mut(entity).unwrap().0 - 1.;
                 radius_query.get_mut(entity).unwrap().0 = r;
                 let mesh = meshes.get_mut(id).unwrap();
@@ -358,27 +359,25 @@ pub fn update_radius(
 }
 
 pub fn update_num(
-    mut query: Query<(&mut crate::components::Num, &Children), With<Selected>>,
+    mut query: Query<&mut crate::components::Num, With<Selected>>,
     keyboard_input: Res<Input<KeyCode>>,
     cursor: Res<CursorInfo>,
     mouse_button_input: Res<Input<MouseButton>>,
-    mut white_hole_query: Query<&mut WhiteHole>,
-    black_hole_query: Query<&BlackHole>,
 ) {
     if keyboard_input.pressed(KeyCode::Key4) {
         if mouse_button_input.pressed(MouseButton::Left) &&
         !mouse_button_input.just_pressed(MouseButton::Left) {
-            for (mut n, children) in query.iter_mut() {
+            for mut n in query.iter_mut() {
                 n.0 += cursor.d.y / 10.;
             }
         }
         if keyboard_input.pressed(KeyCode::Up) {
-            for (mut n, children) in query.iter_mut() {
+            for mut n in query.iter_mut() {
                 n.0 += 0.01;
             }
         }
         if keyboard_input.pressed(KeyCode::Down) {
-            for (mut n, children) in query.iter_mut() {
+            for mut n in query.iter_mut() {
                 n.0 -= 0.01;
             }
         }
@@ -470,14 +469,14 @@ pub fn update_circle_text(
 
 pub fn delete_selected(
     keyboard_input: Res<Input<KeyCode>>,
-    query: Query<(Entity, &Children), With<Selected>>,
+    query: Query<Entity, With<Selected>>,
     mut commands: Commands,
-    white_hole_query: Query<&WhiteHole>,
-    black_hole_query: Query<&BlackHole>,
+    //white_hole_query: Query<&WhiteHole>,
+    //black_hole_query: Query<&BlackHole>,
     mut order_change: EventWriter<OrderChange>,
 ) {
     if keyboard_input.pressed(KeyCode::Delete) {
-        for (id, children) in query.iter() {
+        for id in query.iter() {
             // if the circle we're deleting is a connection
             //if let Ok(black_hole) = black_hole_query.get(id) {
             //    commands.entity(black_hole.wh).despawn_recursive();

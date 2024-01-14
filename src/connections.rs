@@ -54,7 +54,6 @@ pub fn connect(
                 Visible,
                 Radius(snk_radius * 0.1),
                 WhiteHole {
-                    parent: snk,
                     bh_parent: src,
                     bh: black_hole,
                     link_types: (0, 0),
@@ -127,18 +126,18 @@ pub fn draw_connecting_line(
 
 pub fn update_link_type_b (
     keyboard_input: Res<Input<KeyCode>>,
-    mut selected_black_holes: Query<&mut BlackHole, With<Selected>>,
+    selected_black_holes: Query<&BlackHole, With<Selected>>,
     mut white_hole_query: Query<&mut WhiteHole>,
 ) {
     if keyboard_input.just_pressed(KeyCode::Period) {
-        for mut hole in selected_black_holes.iter_mut() {
+        for hole in selected_black_holes.iter() {
             let wh = &mut white_hole_query.get_mut(hole.wh).unwrap();
             wh.link_types.0 += 1;
             wh.new_lt = true;
         }
     }
     if keyboard_input.just_pressed(KeyCode::Comma) {
-        for mut hole in selected_black_holes.iter_mut() {
+        for hole in selected_black_holes.iter() {
             let wh = &mut white_hole_query.get_mut(hole.wh).unwrap();
             wh.link_types.0 -= 1;
             wh.new_lt = true;
