@@ -471,32 +471,34 @@ pub fn update_circle_text(
 
 pub fn delete_selected(
     keyboard_input: Res<Input<KeyCode>>,
-    query: Query<Entity, With<Selected>>,
+    query: Query<(Entity, &Children), With<Selected>>,
     mut commands: Commands,
-    //white_hole_query: Query<&WhiteHole>,
-    //black_hole_query: Query<&BlackHole>,
+    white_hole_query: Query<(Entity, &WhiteHole)>,
+    black_hole_query: Query<(Entity, &BlackHole)>,
     mut order_change: EventWriter<OrderChange>,
 ) {
-    if keyboard_input.pressed(KeyCode::Delete) {
-        for id in query.iter() {
-            // if the circle we're deleting is a connection
-            //if let Ok(black_hole) = black_hole_query.get(id) {
-            //    commands.entity(black_hole.wh).despawn_recursive();
-            //} else if let Ok(white_hole) = white_hole_query.get(id) {
-            //    commands.entity(white_hole.bh).despawn_recursive();
-            //} else {
-            //    // not a connection, despawn the holes on the other side
-            //    for child in children.iter() {
-            //        if let Ok(black_hole) = black_hole_query.get(*child) {
-            //            commands.entity(black_hole.wh).despawn_recursive();
-            //        }
-            //        if let Ok(white_hole) = white_hole_query.get(*child) {
-            //            commands.entity(white_hole.bh).despawn_recursive();
-            //        }
-            //    }
-            //}
-            commands.entity(id).despawn_recursive();
-            order_change.send_default();
+    if keyboard_input.just_pressed(KeyCode::Delete) {
+        let mut need_cleaning = false;
+        for (id, children) in query.iter() {
+            if children.len() == 1 {
+                commands.entity(id).remove_parent();
+                commands.entity(id).despawn_recursive();
+                order_change.send_default();
+                need_cleaning = true;
+            } else {
+                for child in children {
+                    if white_hole_query.get(*child).is_ok() {
+                        commands.entity(*child).remove_parent();
+                        commands.entity(*child).despawn_recursive();
+                        need_cleaning = true;
+                    }
+                    if black_hole_query.get(*child).is_ok() {
+                        commands.entity(*child).remove_parent();
+                        commands.entity(*child).despawn_recursive();
+                        need_cleaning = true;
+                    }
+                }
+            }
         }
     }
 }

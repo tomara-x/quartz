@@ -104,9 +104,11 @@ pub fn draw_connections(
 ) {
     for (id, black_hole) in black_hole_query.iter() {
         let src_pos = trans_query.get(id).unwrap().translation().xy();
-        let snk_pos = trans_query.get(black_hole.wh).unwrap().translation().xy();
-        let color = Color::hsl((time.elapsed_seconds() * 100.) % 360., 1.0, 0.5);
-        gizmos.line_2d(src_pos, snk_pos, color);
+        if let Ok(wh) = trans_query.get(black_hole.wh) {
+            let snk_pos = wh.translation().xy();
+            let color = Color::hsl((time.elapsed_seconds() * 100.) % 360., 1.0, 0.5);
+            gizmos.line_2d(src_pos, snk_pos, color);
+        }
     }
 }
 
@@ -169,7 +171,9 @@ pub fn update_link_type_text(
 ) {
     for (mut text, parent) in query.iter_mut() {
         if let Ok(hole) = black_hole_query.get(**parent) {
-            text.sections[0].value = white_hole_query.get(hole.wh).unwrap().link_types.0.to_string();
+            if let Ok(wh) = white_hole_query.get(hole.wh) {
+                text.sections[0].value = wh.link_types.0.to_string();
+            }
         }
         if let Ok(hole) = white_hole_query.get(**parent) {
             text.sections[0].value = hole.link_types.1.to_string();
