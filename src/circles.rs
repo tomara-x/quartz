@@ -469,31 +469,39 @@ pub fn update_circle_text(
     }
 }
 
-pub fn delete_selected(
+pub fn remove_connections(
     keyboard_input: Res<Input<KeyCode>>,
-    query: Query<(Entity, &Children), With<Selected>>,
+    query: Query<&Children, With<Selected>>,
     mut commands: Commands,
     white_hole_query: Query<&WhiteHole>,
     black_hole_query: Query<&BlackHole>,
-    mut order_change: EventWriter<OrderChange>,
 ) {
-    if keyboard_input.just_pressed(KeyCode::Delete) {
-        for (id, children) in query.iter() {
-            if children.len() == 1 {
-                commands.entity(id).remove_parent();
-                commands.entity(id).despawn_recursive();
-                order_change.send_default();
-            } else {
-                for child in children {
-                    if white_hole_query.get(*child).is_ok() {
-                        commands.entity(*child).remove_parent();
-                        commands.entity(*child).despawn_recursive();
-                    } else if black_hole_query.get(*child).is_ok() {
-                        commands.entity(*child).remove_parent();
-                        commands.entity(*child).despawn_recursive();
-                    }
+    let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
+    if shift && keyboard_input.just_pressed(KeyCode::Delete) {
+        for children in query.iter() {
+            for child in children {
+                if white_hole_query.get(*child).is_ok() {
+                    commands.entity(*child).remove_parent();
+                    commands.entity(*child).despawn_recursive();
+                } else if black_hole_query.get(*child).is_ok() {
+                    commands.entity(*child).remove_parent();
+                    commands.entity(*child).despawn_recursive();
                 }
             }
+        }
+    }
+}
+pub fn delete_selected(
+    keyboard_input: Res<Input<KeyCode>>,
+    query: Query<Entity, With<Selected>>,
+    mut commands: Commands,
+    mut order_change: EventWriter<OrderChange>,
+) {
+    let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
+    if !shift && keyboard_input.just_pressed(KeyCode::Delete) {
+        for id in query.iter() {
+            commands.entity(id).despawn_recursive();
+            order_change.send_default();
         }
     }
 }

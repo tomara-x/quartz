@@ -80,6 +80,7 @@ fn main() {
         .add_systems(Update, update_link_type_text.run_if(in_state(Mode::Edit)))
         // order
         .add_systems(Update, (spawn_circles.run_if(in_state(Mode::Draw)),
+                              remove_connections.run_if(in_state(Mode::Edit)),
                               delete_selected.run_if(in_state(Mode::Edit)),
                               apply_deferred, //to make sure the commands are applied
                               sort_by_order.run_if(on_event::<OrderChange>())).chain())
