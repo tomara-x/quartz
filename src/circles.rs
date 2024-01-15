@@ -473,8 +473,8 @@ pub fn delete_selected(
     keyboard_input: Res<Input<KeyCode>>,
     query: Query<(Entity, &Children), With<Selected>>,
     mut commands: Commands,
-    white_hole_query: Query<(Entity, &WhiteHole)>,
-    black_hole_query: Query<(Entity, &BlackHole)>,
+    white_hole_query: Query<&WhiteHole>,
+    black_hole_query: Query<&BlackHole>,
     mut order_change: EventWriter<OrderChange>,
 ) {
     if keyboard_input.just_pressed(KeyCode::Delete) {
