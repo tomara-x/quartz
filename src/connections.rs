@@ -5,12 +5,12 @@ use crate::components::*;
 pub fn connect(
     mouse_button_input: Res<Input<MouseButton>>,
     mut commands: Commands,
-    query: Query<(Entity, &Radius, &Transform), (With<Visible>, With<Order>)>,
+    query: Query<(Entity, &Radius, &GlobalTransform), With<Visible>>,
     cursor: Res<CursorInfo>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     rad_query: Query<&Radius>,
-    trans_query: Query<&Transform>,
+    trans_query: Query<&GlobalTransform>,
     keyboard_input: Res<Input<KeyCode>>,
 ) {
     if mouse_button_input.just_released(MouseButton::Left) &&
@@ -18,11 +18,11 @@ pub fn connect(
         let mut source_entity: Option<Entity> = None;
         let mut sink_entity: Option<Entity> = None;
         for (e, r, t) in query.iter() {
-            if cursor.i.distance(t.translation.xy()) < r.0 {
+            if cursor.i.distance(t.translation().xy()) < r.0 {
                 source_entity = Some(e);
                 continue;
             }
-            if cursor.f.distance(t.translation.xy()) < r.0 {
+            if cursor.f.distance(t.translation().xy()) < r.0 {
                 sink_entity = Some(e);
                 continue;
             }
@@ -32,8 +32,8 @@ pub fn connect(
         if let (Some(src), Some(snk)) = (source_entity, sink_entity) {
             let src_radius = rad_query.get(src).unwrap().0;
             let snk_radius = rad_query.get(snk).unwrap().0;
-            let src_trans = trans_query.get(src).unwrap().translation;
-            let snk_trans = trans_query.get(snk).unwrap().translation;
+            let src_trans = trans_query.get(src).unwrap().translation();
+            let snk_trans = trans_query.get(snk).unwrap().translation();
 
             // spawn circles
             let black_hole = commands.spawn(( ColorMesh2dBundle {
