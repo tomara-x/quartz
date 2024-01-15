@@ -478,24 +478,19 @@ pub fn delete_selected(
     mut order_change: EventWriter<OrderChange>,
 ) {
     if keyboard_input.just_pressed(KeyCode::Delete) {
-        let mut need_cleaning = false;
         for (id, children) in query.iter() {
             if children.len() == 1 {
                 commands.entity(id).remove_parent();
                 commands.entity(id).despawn_recursive();
                 order_change.send_default();
-                need_cleaning = true;
             } else {
                 for child in children {
                     if white_hole_query.get(*child).is_ok() {
                         commands.entity(*child).remove_parent();
                         commands.entity(*child).despawn_recursive();
-                        need_cleaning = true;
-                    }
-                    if black_hole_query.get(*child).is_ok() {
+                    } else if black_hole_query.get(*child).is_ok() {
                         commands.entity(*child).remove_parent();
                         commands.entity(*child).despawn_recursive();
-                        need_cleaning = true;
                     }
                 }
             }
