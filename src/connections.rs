@@ -15,21 +15,21 @@ pub fn connect(
 ) {
     if mouse_button_input.just_released(MouseButton::Left) &&
     !keyboard_input.pressed(KeyCode::Space) {
-        let mut source_entity: Option<Entity> = None;
-        let mut sink_entity: Option<Entity> = None;
+        let mut source_entity: (Option<Entity>, f32) = (None, f32::MIN);
+        let mut sink_entity: (Option<Entity>, f32) = (None, f32::MIN);
         for (e, r, t) in query.iter() {
-            if cursor.i.distance(t.translation().xy()) < r.0 {
-                source_entity = Some(e);
-                continue;
+            if cursor.i.distance(t.translation().xy()) < r.0
+                && t.translation().z > source_entity.1 {
+                source_entity = (Some(e), t.translation().z);
             }
-            if cursor.f.distance(t.translation().xy()) < r.0 {
-                sink_entity = Some(e);
-                continue;
+            if cursor.f.distance(t.translation().xy()) < r.0
+                && t.translation().z > sink_entity.1 {
+                sink_entity = (Some(e), t.translation().z);
             }
-            if source_entity.is_some() && sink_entity.is_some() { break; }
         }
 
-        if let (Some(src), Some(snk)) = (source_entity, sink_entity) {
+        if let (Some(src), Some(snk)) = (source_entity.0, sink_entity.0) {
+            if source_entity.0 == sink_entity.0 { return; }
             let src_radius = rad_query.get(src).unwrap().0;
             let snk_radius = rad_query.get(snk).unwrap().0;
             let src_trans = trans_query.get(src).unwrap().translation();
@@ -57,7 +57,6 @@ pub fn connect(
                     bh_parent: src,
                     bh: black_hole,
                     link_types: (0, 0),
-                    open: true,
                     new_lt: true,
                 },
             )).id();
