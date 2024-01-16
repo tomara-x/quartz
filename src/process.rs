@@ -58,48 +58,21 @@ pub fn process(
     mut had_r: Local<bool>,
     mut oscil: Local<(u8, bool)>,
 ) {
-    for id in queue.0.iter().flatten() {
+    'entity: for id in queue.0.iter().flatten() {
         let children = children_query.get(*id).unwrap();
         let op_changed = &mut access.op_changed_query.get_mut(*id).unwrap().0;
-        for child in children {
-            if let Ok(white_hole) = white_hole_query.get(*child) {
-                match white_hole.link_types {
-                    (-1, -1) => { //trans
-                        let input = access.trans_query.get(white_hole.bh_parent).unwrap().translation;
-                        let mut t = access.trans_query.get_mut(*id).unwrap();
-                        t.translation.x = input.x;
-                        t.translation.y = input.y;
-                        t.translation.z = input.z;
-                    },
-                    (-2, -2) => { // color
-                        let mat_id = access.material_ids.get(white_hole.bh_parent).unwrap();
-                        let mat = access.mats.get(mat_id).unwrap();
-                        let input = mat.color;
-                        access.mats.get_mut(
-                            access.material_ids.get(*id).unwrap()
-                        ).unwrap().color = input;
-                    },
-                    (-3, -3) => { // radius
-                        if let Ok(Mesh2dHandle(mesh_id)) = access.mesh_ids.get(*id) {
-                            let input = access.radius_query.get(white_hole.bh_parent).unwrap().0;
-                            access.radius_query.get_mut(*id).unwrap().0 = input;
-                            let mesh = access.meshes.get_mut(mesh_id).unwrap();
-                            *mesh = bevy::prelude::shape::Circle::new(input).into();
-                        }
-                    },
-                    (-4, -4) => { // num
-                        let input = access.num_query.get(white_hole.bh_parent).unwrap().0;
-                        access.num_query.get_mut(*id).unwrap().0 = input;
-                    }
-                    (-4, -5) => { // number to op
-                        let input = access.num_query.get(white_hole.bh_parent).unwrap().0;
-                        access.op_query.get_mut(*id).unwrap().0 = input as i32;
-                    }
-                    _ => {},
-                }
-            }
-        }
         match access.op_query.get(*id).unwrap().0 {
+            -10 => { // pass
+                for child in children {
+                    if let Ok(white_hole) = white_hole_query.get(*child) {
+                        if white_hole.link_types == (-4, 1) {
+                            if access.num_query.get(white_hole.bh_parent).unwrap().0 == 0. {
+                                continue 'entity;
+                            }
+                        }
+                    }
+                }
+            },
             -9 => { // sum
                 let mut out = 0.;
                 for child in children {
@@ -389,6 +362,44 @@ pub fn process(
                 *op_changed = false;
             },
             _ => {},
+        }
+        for child in children {
+            if let Ok(white_hole) = white_hole_query.get(*child) {
+                match white_hole.link_types {
+                    (-1, -1) => { //trans
+                        let input = access.trans_query.get(white_hole.bh_parent).unwrap().translation;
+                        let mut t = access.trans_query.get_mut(*id).unwrap();
+                        t.translation.x = input.x;
+                        t.translation.y = input.y;
+                        t.translation.z = input.z;
+                    },
+                    (-2, -2) => { // color
+                        let mat_id = access.material_ids.get(white_hole.bh_parent).unwrap();
+                        let mat = access.mats.get(mat_id).unwrap();
+                        let input = mat.color;
+                        access.mats.get_mut(
+                            access.material_ids.get(*id).unwrap()
+                        ).unwrap().color = input;
+                    },
+                    (-3, -3) => { // radius
+                        if let Ok(Mesh2dHandle(mesh_id)) = access.mesh_ids.get(*id) {
+                            let input = access.radius_query.get(white_hole.bh_parent).unwrap().0;
+                            access.radius_query.get_mut(*id).unwrap().0 = input;
+                            let mesh = access.meshes.get_mut(mesh_id).unwrap();
+                            *mesh = bevy::prelude::shape::Circle::new(input).into();
+                        }
+                    },
+                    (-4, -4) => { // num
+                        let input = access.num_query.get(white_hole.bh_parent).unwrap().0;
+                        access.num_query.get_mut(*id).unwrap().0 = input;
+                    }
+                    (-4, -5) => { // number to op
+                        let input = access.num_query.get(white_hole.bh_parent).unwrap().0;
+                        access.op_query.get_mut(*id).unwrap().0 = input as i32;
+                    }
+                    _ => {},
+                }
+            }
         }
     }
 }

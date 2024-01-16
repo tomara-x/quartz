@@ -444,7 +444,8 @@ pub fn update_circle_text(
         }
         if let Ok(op) = op_query.get(**parent) {
             text.sections[2].value = match op.0 {
-                -9 => "op: sum (test)\n".to_string(),
+                -10 => "op: pass\n".to_string(),
+                -9 => "op: sum\n".to_string(),
                 -8 => "op: tonemapping\n".to_string(),
                 -7 => "op: bloom\n".to_string(),
                 -6 => "op: set\n".to_string(),
