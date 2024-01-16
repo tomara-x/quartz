@@ -128,7 +128,7 @@ pub fn process(
                 for child in children {
                     if let Ok(white_hole) = white_hole_query.get(*child) {
                         if white_hole.link_types.0 == -4 {
-                            let index = white_hole.link_types.1 as usize;
+                            let index = Ord::max(white_hole.link_types.1, 0) as usize;
                             let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
                             if arr.len() <= index { arr.resize(index + 1, 0.); }
                             arr[index] = access.num_query.get(white_hole.bh_parent).unwrap().0;
@@ -142,7 +142,7 @@ pub fn process(
                         if white_hole.link_types.1 == -4 {
                            let arr = &access.arr_query.get(white_hole.bh_parent).unwrap().0;
                            // TODO(amy): with negative indexing get in reverse
-                           if let Some(input) = arr.get(white_hole.link_types.0 as usize) {
+                           if let Some(input) = arr.get(Ord::max(white_hole.link_types.0, 0) as usize) {
                                access.num_query.get_mut(*id).unwrap().0 = *input;
                            }
                         }
