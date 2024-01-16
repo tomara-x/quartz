@@ -5,7 +5,7 @@ use crate::components::*;
 pub fn connect(
     mouse_button_input: Res<Input<MouseButton>>,
     mut commands: Commands,
-    query: Query<(Entity, &Radius, &GlobalTransform), With<Visible>>,
+    query: Query<(Entity, &Radius, &GlobalTransform), (With<Visible>, With<Order>)>,
     cursor: Res<CursorInfo>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,

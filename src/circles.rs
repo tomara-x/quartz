@@ -481,10 +481,14 @@ pub fn remove_connections(
     if shift && keyboard_input.just_pressed(KeyCode::Delete) {
         for children in query.iter() {
             for child in children {
-                if white_hole_query.get(*child).is_ok() {
+                if let Ok(wh) = white_hole_query.get(*child) {
+                    commands.entity(wh.bh).remove_parent();
+                    commands.entity(wh.bh).despawn_recursive();
                     commands.entity(*child).remove_parent();
                     commands.entity(*child).despawn_recursive();
-                } else if black_hole_query.get(*child).is_ok() {
+                } else if let Ok(bh) = black_hole_query.get(*child) {
+                    commands.entity(bh.wh).remove_parent();
+                    commands.entity(bh.wh).despawn_recursive();
                     commands.entity(*child).remove_parent();
                     commands.entity(*child).despawn_recursive();
                 }
@@ -492,17 +496,37 @@ pub fn remove_connections(
         }
     }
 }
+// TODO(amy): make a custom command for this
 pub fn delete_selected(
     keyboard_input: Res<Input<KeyCode>>,
-    query: Query<Entity, With<Selected>>,
+    query: Query<(Entity, &Children), With<Selected>>,
     mut commands: Commands,
     mut order_change: EventWriter<OrderChange>,
+    white_hole_query: Query<&WhiteHole>,
+    black_hole_query: Query<&BlackHole>,
 ) {
     let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
     if !shift && keyboard_input.just_pressed(KeyCode::Delete) {
-        for id in query.iter() {
-            commands.entity(id).despawn_recursive();
-            order_change.send_default();
+        for (id, children) in query.iter() {
+            if let Ok(wh) = white_hole_query.get(id) {
+                commands.entity(wh.bh).despawn_recursive();
+                commands.entity(id).despawn_recursive();
+            } else if let Ok(bh) = black_hole_query.get(id) {
+                commands.entity(bh.wh).despawn_recursive();
+                commands.entity(id).despawn_recursive();
+            } else {
+                for child in children {
+                    if let Ok(wh) = white_hole_query.get(*child) {
+                        commands.entity(wh.bh).despawn_recursive();
+                        commands.entity(*child).despawn_recursive();
+                    } else if let Ok(bh) = black_hole_query.get(*child) {
+                        commands.entity(bh.wh).despawn_recursive();
+                        commands.entity(*child).despawn_recursive();
+                    }
+                }
+                commands.entity(id).despawn_recursive();
+                order_change.send_default();
+            }
         }
     }
 }
