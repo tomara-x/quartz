@@ -15,10 +15,16 @@ pub fn command_parser(
     if keyboard_input.just_pressed(KeyCode::Escape) { text.clear(); }
     if keyboard_input.just_pressed(KeyCode::Return) {
         // commands starting with :
-        match text.as_str() {
-            ":hi" => {
-                text.push_str("hiiiiiiiii");
-                info!(text);
+        let mut command = text.as_str().split_ascii_whitespace();
+        match command.next() {
+            Some(":hi") => {
+                match command.next() {
+                    Some("hey") => {
+                        text.push_str(" hiiiiiiiii");
+                        info!(text);
+                    },
+                    _ => {},
+                }
             },
             _ => {},
         }
