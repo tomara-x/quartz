@@ -19,10 +19,9 @@ todo!();
     - fundsp https://github.com/SamiPerttu/fundsp
     - cpal https://github.com/rustaudio/cpal
     - assert_no_alloc https://github.com/Windfisch/rust-assert-no-alloc
-    - anyhow https://github.com/dtolnay/anyhow
     - bevy_github_ci_template https://github.com/bevyengine/bevy_github_ci_template
     - tracy https://github.com/wolfpld/tracy
-- learning / inspiration:
+- learning / inspiration / used for a while:
     - bevy_fundsp https://github.com/harudagondi/bevy_fundsp
     - bevy_kira_audio https://github.com/NiklasEi/bevy_kira_audio
     - crossbeam https://github.com/crossbeam-rs/crossbeam
@@ -30,6 +29,7 @@ todo!();
     - bevy_vector_shapes https://github.com/james-j-obrien/bevy_vector_shapes
     - knyst https://github.com/ErikNatanael/knyst
     - rust-ants-colony-simulation https://github.com/bones-ai/rust-ants-colony-simulation
+    - anyhow https://github.com/dtolnay/anyhow
 
 ## license
 
@@ -39,6 +39,10 @@ quartz is free and open source. all code in this repository is dual-licensed und
 - Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE) or [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0))
 
 at your option.
+
+### your contributions
+
+unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you, as defined in the Apache-2.0 license, shall be dual licensed as above, without any additional terms or conditions.
 
 ## donate if you can
 
