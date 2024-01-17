@@ -92,6 +92,7 @@ fn main() {
         // process
         .add_systems(Update, process.after(sort_by_order))
         // commands
+        .add_systems(Update, command_parser)
         .run();
 }
 
