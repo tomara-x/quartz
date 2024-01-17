@@ -44,6 +44,9 @@ pub struct BlackHole {
     pub wh: Entity,
 }
 
+#[derive(Component)]
+pub struct CommandText;
+
 // -------------------- states --------------------
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 pub enum Mode {

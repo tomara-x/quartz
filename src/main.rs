@@ -20,7 +20,9 @@ mod cursor;
 mod connections;
 mod circles;
 mod audio;
-use {components::*, process::*, cursor::*, connections::*, circles::*, audio::*};
+mod commands;
+use {components::*, process::*, cursor::*, connections::*,
+     circles::*, audio::*, commands::*};
 
 fn main() {
     App::new()
@@ -89,6 +91,7 @@ fn main() {
         .add_event::<OrderChange>()
         // process
         .add_systems(Update, process.after(sort_by_order))
+        // commands
         .run();
 }
 
@@ -121,6 +124,33 @@ fn setup(
             ..default()
         },
     ));
+
+    commands.spawn(NodeBundle {
+            style: Style {
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                justify_content: JustifyContent::SpaceBetween,
+                ..default()
+            },
+            ..default()
+        })
+        .with_children(|parent| {
+            parent.spawn((
+                TextBundle::from_section(
+                    ":awoo",
+                    TextStyle {
+                        font_size: 13.0,
+                        ..default()
+                    },
+                )
+                .with_style(Style {
+                    margin: UiRect::all(Val::Px(5.)),
+                    align_self: AlignSelf::End,
+                    ..default()
+                }),
+                CommandText,
+            ));
+        });
 }
 
 fn toggle_pan(
