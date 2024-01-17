@@ -42,7 +42,7 @@ pub fn spawn_circles(
             text: Text::from_sections([
                 TextSection::new(
                     id.index().to_string() + "v" + &id.generation().to_string() + "\n",
-                    TextStyle { color: Color::BLACK, ..default() },
+                    TextStyle { color: Color::BLACK, font_size: 18., ..default() },
                 ),
                 TextSection::new(
                     "order: 0\n",
@@ -208,7 +208,7 @@ pub fn duplicate_selected(
                 text: Text::from_sections([
                     TextSection::new(
                         id.index().to_string() + "v" + &id.generation().to_string() + "\n",
-                        TextStyle { color: Color::BLACK, ..default() },
+                        TextStyle { color: Color::BLACK, font_size: 18., ..default() },
                     ),
                     TextSection::new(
                         "order: 0\n",
@@ -497,6 +497,8 @@ pub fn remove_connections(
     }
 }
 // TODO(amy): make a custom command for this
+// or check if parent isn't in the query
+// then you can do remove parent and 2 step
 pub fn delete_selected(
     keyboard_input: Res<Input<KeyCode>>,
     query: Query<(Entity, &Children), With<Selected>>,

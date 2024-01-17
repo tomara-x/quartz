@@ -6,6 +6,7 @@ pub fn command_parser(
     keyboard_input: Res<Input<KeyCode>>,
     mut display: Query<&mut Text, With<CommandText>>,
     mut char_input_events: EventReader<ReceivedCharacter>,
+    mut commands: Commands,
 ) {
     if char_input_events.is_empty() { return; }
     let text = &mut display.single_mut().sections[0].value;
@@ -27,6 +28,13 @@ pub fn command_parser(
                     _ => {},
                 }
             },
+            Some(":yeet") => {
+                if let Some(s) = command.next() {
+                    if let Ok(e) = str_to_id(s) {
+                        commands.entity(e).despawn_recursive();
+                    }
+                }
+            },
             _ => {},
         }
         text.clear();
@@ -37,4 +45,19 @@ pub fn command_parser(
         Some("hi") => {text.clear();},
         _ => {},
     }
+}
+
+fn str_to_id(s: &str) -> Result<Entity, &str> {
+    let mut e = s.split('v');
+    if let Some(i) = e.next() {
+        if let Some(g) = e.next() {
+            if let Ok(index) = i.parse::<u64>() {
+                if let Ok(gen) = g.parse::<u64>() {
+                    let bits = gen << 32 | index;
+                    return Ok(Entity::from_bits(bits));
+                }
+            }
+        }
+    }
+    return Err("errrrr");
 }
