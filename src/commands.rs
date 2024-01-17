@@ -16,17 +16,11 @@ pub fn command_parser(
     if keyboard_input.just_pressed(KeyCode::Return) {
         // commands starting with :
         let mut command = text.as_str().split_ascii_whitespace();
-        match command.next() {
-            Some(":hi") => {
-                match command.next() {
-                    Some("hey") => {
-                        text.push_str(" hiiiiiiiii");
-                        info!(text);
-                    },
-                    _ => {},
-                }
-            },
-            _ => {},
+        if command.next() == Some(":hi") {
+            if command.next() == Some("hey") {
+                text.push_str(" hiiiiiiiii");
+                info!(text);
+            }
         }
         text.clear();
     }
