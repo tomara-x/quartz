@@ -7,6 +7,7 @@ pub fn command_parser(
     mut display: Query<&mut Text, With<CommandText>>,
     mut char_input_events: EventReader<ReceivedCharacter>,
 ) {
+    if char_input_events.is_empty() { return; }
     let text = &mut display.single_mut().sections[0].value;
     for event in char_input_events.read() {
         if !event.char.is_control() { text.push(event.char); }
@@ -31,8 +32,9 @@ pub fn command_parser(
         text.clear();
     }
     // key commands
-    match text.as_str() {
-        "hi" => {text.clear();},
+    let mut command = text.as_str().split_ascii_whitespace();
+    match command.next() {
+        Some("hi") => {text.clear();},
         _ => {},
     }
 }
