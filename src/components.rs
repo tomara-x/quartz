@@ -37,6 +37,7 @@ pub struct WhiteHole {
     pub bh_parent: Entity,
     pub link_types: (i32, i32), //(black, white)
     pub new_lt: bool,
+    pub open: bool,
 }
 
 #[derive(Component)]

@@ -365,6 +365,7 @@ pub fn process(
         }
         for child in children {
             if let Ok(white_hole) = white_hole_query.get(*child) {
+                if !white_hole.open { continue; }
                 match white_hole.link_types {
                     (-1, -1) => { //trans
                         let input = access.trans_query.get(white_hole.bh_parent).unwrap().translation;

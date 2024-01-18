@@ -8,6 +8,7 @@ pub fn command_parser(
     mut char_input_events: EventReader<ReceivedCharacter>,
     mut commands: Commands,
     entities: Query<Entity, With<Radius>>,
+    mut white_hole_query: Query<&mut WhiteHole, With<Selected>>,
 ) {
     if char_input_events.is_empty() { return; }
     let text = &mut display.single_mut().sections[0].value;
@@ -38,6 +39,19 @@ pub fn command_parser(
                     }
                 }
             },
+            Some(":lt") => {
+                if let Some(b) = command.next() {
+                    if let Some(w) = command.next() {
+                        if let Ok(b) = b.parse::<i32>() {
+                            if let Ok(w) = w.parse::<i32>() {
+                                for mut wh in white_hole_query.iter_mut() {
+                                    wh.link_types = (b, w);
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             _ => {},
         }
         text.clear();
@@ -46,6 +60,8 @@ pub fn command_parser(
     let mut command = text.as_str().split_ascii_whitespace();
     match command.next() {
         Some("hi") => {text.clear();},
+        Some("ht") => {
+        },
         _ => {},
     }
 }
