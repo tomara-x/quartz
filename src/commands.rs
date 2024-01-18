@@ -7,6 +7,7 @@ pub fn command_parser(
     mut display: Query<&mut Text, With<CommandText>>,
     mut char_input_events: EventReader<ReceivedCharacter>,
     mut commands: Commands,
+    entities: Query<Entity, With<Radius>>,
 ) {
     if char_input_events.is_empty() { return; }
     let text = &mut display.single_mut().sections[0].value;
@@ -31,7 +32,9 @@ pub fn command_parser(
             Some(":yeet") => {
                 if let Some(s) = command.next() {
                     if let Ok(e) = str_to_id(s) {
-                        commands.entity(e).despawn_recursive();
+                        if entities.contains(e) {
+                            commands.entity(e).despawn_recursive();
+                        }
                     }
                 }
             },
