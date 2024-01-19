@@ -103,6 +103,8 @@ fn main() {
         .register_type::<Visible>()
         .register_type::<Order>()
         .register_type::<OpChanged>()
+        .register_type::<BlackHole>()
+        .register_type::<WhiteHole>()
         .run();
 }
 
@@ -207,6 +209,8 @@ fn save_scene(world: &mut World) {
             .allow::<Visible>()
             .allow::<Order>()
             .allow::<OpChanged>()
+            .allow::<BlackHole>()
+            .allow::<WhiteHole>()
             .extract_entities(query.iter(&world))
             .extract_resources()
             .build();

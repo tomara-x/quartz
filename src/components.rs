@@ -41,7 +41,8 @@ pub struct Network(pub Net32);
 #[derive(Component)]
 pub struct NetIns(pub Vec<Shared<f32>>);
 
-#[derive(Component)]
+#[derive(Component, Reflect)]
+#[reflect(Component)]
 pub struct WhiteHole {
     pub bh: Entity,
     pub bh_parent: Entity,
@@ -50,9 +51,30 @@ pub struct WhiteHole {
     pub open: bool,
 }
 
-#[derive(Component)]
+#[derive(Component, Reflect)]
+#[reflect(Component)]
 pub struct BlackHole {
     pub wh: Entity,
+}
+
+impl Default for WhiteHole {
+    fn default() -> Self {
+        WhiteHole {
+            bh: Entity::PLACEHOLDER,
+            bh_parent: Entity::PLACEHOLDER,
+            link_types: (0, 0),
+            new_lt: true,
+            open: true,
+        }
+    }
+}
+
+impl Default for BlackHole {
+    fn default() -> Self {
+        BlackHole {
+            wh: Entity::PLACEHOLDER,
+        }
+    }
 }
 
 #[derive(Component)]
