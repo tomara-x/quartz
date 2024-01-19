@@ -496,9 +496,7 @@ pub fn remove_connections(
         }
     }
 }
-// TODO(amy): make a custom command for this
-// or check if parent isn't in the query
-// then you can do remove parent and 2 step
+
 pub fn delete_selected(
     keyboard_input: Res<Input<KeyCode>>,
     query: Query<Entity, With<Selected>>,
