@@ -1,6 +1,25 @@
-use bevy::{prelude::*, window::ReceivedCharacter};
+use bevy::{
+    prelude::*,
+    ecs::system::SystemParam,
+    window::ReceivedCharacter,
+    sprite::Mesh2dHandle,
+};
 
 use crate::components::*;
+
+#[derive(SystemParam)]
+pub struct Access<'w, 's> {
+    op_query: Query<'w, 's, &'static mut Op>,
+    num_query: Query<'w, 's, &'static mut crate::components::Num>,
+    mats: ResMut<'w, Assets<ColorMaterial>>,
+    material_ids: Query<'w, 's, &'static Handle<ColorMaterial>>,
+    radius_query: Query<'w, 's, &'static mut Radius>,
+    meshes: ResMut<'w, Assets<Mesh>>,
+    mesh_ids: Query<'w, 's, &'static Mesh2dHandle>,
+    trans_query: Query<'w, 's, &'static mut Transform>,
+    arr_query: Query<'w, 's, &'static mut Arr>,
+    op_changed_query: Query<'w, 's, &'static mut OpChanged>,
+}
 
 pub fn command_parser(
     keyboard_input: Res<Input<KeyCode>>,
@@ -9,6 +28,7 @@ pub fn command_parser(
     mut commands: Commands,
     entities: Query<Entity, With<Radius>>,
     mut white_hole_query: Query<&mut WhiteHole, With<Selected>>,
+    mut access: Access,
 ) {
     if char_input_events.is_empty() { return; }
     let text = &mut display.single_mut().sections[0].value;
@@ -48,6 +68,32 @@ pub fn command_parser(
                             }
                         }
                     }
+                }
+            },
+            Some(":set") => {
+                match command.next() {
+                    Some("n") => {
+                        if let Some(s) = command.next() {
+                            if let Ok(e) = str_to_id(s) {
+                                if let Ok(mut num) = access.num_query.get_mut(e) {
+                                    if let Some(n) = command.next() {
+                                        if let Ok(n) = n.parse::<f32>() {
+                                            num.0 = n;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    Some("r") => {},
+                    Some("x") => {},
+                    Some("y") => {},
+                    Some("z") => {},
+                    Some("h") => {},
+                    Some("s") => {},
+                    Some("l") => {},
+                    Some("a") => {},
+                    _ => {},
                 }
             },
             _ => {},
