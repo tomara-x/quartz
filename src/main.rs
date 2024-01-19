@@ -96,6 +96,7 @@ fn main() {
         // type registry
         .register_type::<Queue>()
         .register_type::<Radius>()
+        .register_type::<Col>()
         .register_type::<Op>()
         .register_type::<Num>()
         .register_type::<Arr>()
@@ -201,6 +202,7 @@ fn save_scene(world: &mut World) {
         let scene = DynamicSceneBuilder::from_world(&world)
             .allow_resource::<Queue>()
             .allow::<Radius>()
+            .allow::<Col>()
             .allow::<Transform>()
             .allow::<Op>()
             .allow::<Num>()

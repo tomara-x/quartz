@@ -21,6 +21,10 @@ pub struct Radius(pub f32);
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
+pub struct Col(pub Color);
+
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
 pub struct Selected;
 
 #[derive(Component, Reflect, Default)]

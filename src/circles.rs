@@ -19,14 +19,16 @@ pub fn spawn_circles(
     if mouse_button_input.just_released(MouseButton::Left) &&
     !keyboard_input.pressed(KeyCode::Space) {
         let radius = cursor.f.distance(cursor.i);
+        let color = Color::hsla(300., 1., 0.5, 1.);
         let id = commands.spawn((
             ColorMesh2dBundle {
                 mesh: meshes.add(bevy::prelude::shape::Circle::new(radius).into()).into(),
-                material: materials.add(ColorMaterial::from(Color::hsl(0., 1.0, 0.5))),
+                material: materials.add(ColorMaterial::from(color)),
                 transform: Transform::from_translation(cursor.i.extend(*depth)),
                 ..default()
             },
             Radius(radius),
+            Col(color),
             Visible, //otherwise it can't be selected til after mark_visible is updated
             Order(0),
             OpChanged(true),
