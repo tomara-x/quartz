@@ -34,7 +34,7 @@ pub fn command_parser(
                 if let Some(s) = command.next() {
                     if let Ok(e) = str_to_id(s) {
                         if entities.contains(e) {
-                            commands.entity(e).despawn_recursive();
+                            commands.add(DespawnCircle(e));
                         }
                     }
                 }

@@ -1,4 +1,6 @@
-use bevy::prelude::*;
+use bevy::{
+    ecs::system::Command,
+    prelude::*};
 use fundsp::hacker32::*;
 // -------------------- components --------------------
 #[derive(Component)]
@@ -76,3 +78,37 @@ pub struct Slot(pub Slot32, pub Slot32);
 // -------------------- events --------------------
 #[derive(Event, Default)]
 pub struct OrderChange;
+
+// -------------------- commands --------------------
+pub struct DespawnCircle(pub Entity);
+impl Command for DespawnCircle {
+    fn apply(self, world: &mut World) {
+        despawn_circle(self.0, world);
+    }
+}
+fn despawn_circle(entity: Entity, world: &mut World) {
+    if world.get_entity(entity).is_none() { return; }
+    if let Some(mirror) = get_mirror_hole(entity, world) {
+        world.entity_mut(entity).despawn_recursive();
+        world.entity_mut(mirror).despawn_recursive();
+    } else {
+        let children = world.entity(entity).get::<Children>().unwrap().to_vec();
+        for child in children {
+            if let Some(mirror) = get_mirror_hole(child, world) {
+                world.entity_mut(child).despawn_recursive();
+                world.entity_mut(mirror).despawn_recursive();
+            }
+        }
+        world.entity_mut(entity).despawn_recursive();
+    }
+}
+fn get_mirror_hole(entity: Entity, world: &World) -> Option<Entity> {
+    let e = world.entity(entity);
+    if let Some(wh) = e.get::<WhiteHole>() {
+        return Some(wh.bh);
+    } else if let Some(bh) = e.get::<BlackHole>() {
+        return Some(bh.wh);
+    } else {
+        return None;
+    }
+}
