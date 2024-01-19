@@ -208,6 +208,7 @@ fn save_scene(world: &mut World) {
             .allow::<Order>()
             .allow::<OpChanged>()
             .extract_entities(query.iter(&world))
+            .extract_resources()
             .build();
         let type_registry = world.resource::<AppTypeRegistry>();
         let serialized_scene = scene.serialize_ron(type_registry).unwrap();
