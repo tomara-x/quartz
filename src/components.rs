@@ -3,29 +3,36 @@ use bevy::{
     prelude::*};
 use fundsp::hacker32::*;
 // -------------------- components --------------------
-#[derive(Component)]
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
 pub struct Op(pub i32);
 
-#[derive(Component)]
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
 pub struct Num(pub f32);
 
-#[derive(Component)]
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
 pub struct Arr(pub Vec<f32>);
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
 pub struct Radius(pub f32);
 
-#[derive(Component)]
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
 pub struct Selected;
 
-#[derive(Component)]
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
 pub struct Visible;
 
-#[derive(Component)]
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
 pub struct Order(pub usize);
 
-#[derive(Component)]
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
 pub struct OpChanged(pub bool);
 
 #[derive(Component)]

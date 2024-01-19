@@ -86,7 +86,6 @@ fn main() {
                               delete_selected.run_if(in_state(Mode::Edit)),
                               apply_deferred, //to make sure the commands are applied
                               sort_by_order.run_if(on_event::<OrderChange>())).chain())
-        .register_type::<Queue>()
         .init_resource::<Queue>()
         .add_event::<OrderChange>()
         // process
@@ -94,7 +93,16 @@ fn main() {
         // commands
         .add_systems(Update, command_parser)
 
+        // type registry
+        .register_type::<Queue>()
         .register_type::<Radius>()
+        .register_type::<Op>()
+        .register_type::<Num>()
+        .register_type::<Arr>()
+        .register_type::<Selected>()
+        .register_type::<Visible>()
+        .register_type::<Order>()
+        .register_type::<OpChanged>()
         .run();
 }
 
@@ -189,7 +197,16 @@ fn save_scene(world: &mut World) {
 
         let mut query = world.query_filtered::<Entity, With<Radius>>();
         let scene = DynamicSceneBuilder::from_world(&world)
+            .allow_resource::<Queue>()
             .allow::<Radius>()
+            .allow::<Transform>()
+            .allow::<Op>()
+            .allow::<Num>()
+            .allow::<Arr>()
+            .allow::<Selected>()
+            .allow::<Visible>()
+            .allow::<Order>()
+            .allow::<OpChanged>()
             .extract_entities(query.iter(&world))
             .build();
         let type_registry = world.resource::<AppTypeRegistry>();
