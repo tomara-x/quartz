@@ -18,7 +18,8 @@ pub struct Access<'w, 's> {
     mesh_ids: Query<'w, 's, &'static Mesh2dHandle>,
     trans_query: Query<'w, 's, &'static mut Transform>,
     arr_query: Query<'w, 's, &'static mut Arr>,
-    op_changed_query: Query<'w, 's, &'static mut OpChanged>,
+    order_query: Query<'w, 's, &'static mut Order>,
+    selected_query: Query<'w, 's, Entity, With<Selected>>,
 }
 
 pub fn command_parser(
@@ -80,6 +81,12 @@ pub fn command_parser(
                                         if let Ok(n) = n.parse::<f32>() {
                                             num.0 = n;
                                         }
+                                    }
+                                }
+                            } else if let Ok(n) = s.parse::<f32>() {
+                                for id in access.selected_query.iter() {
+                                    if let Ok(mut num) = access.num_query.get_mut(id) {
+                                        num.0 = n;
                                     }
                                 }
                             }
