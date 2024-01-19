@@ -12,7 +12,8 @@ pub struct Num(pub f32);
 #[derive(Component)]
 pub struct Arr(pub Vec<f32>);
 
-#[derive(Component)]
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
 pub struct Radius(pub f32);
 
 #[derive(Component)]

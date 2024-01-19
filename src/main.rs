@@ -5,13 +5,13 @@ use bevy::{
         },
     utils::Duration,
     winit::{WinitSettings, UpdateMode},
-    //tasks::IoTaskPool,
+    tasks::IoTaskPool,
     prelude::*};
 
 use bevy_pancam::{PanCam, PanCamPlugin};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
-//use std::{fs::File, io::Write};
+use std::{fs::File, io::Write};
 //use std::time::{Duration, Instant};
 
 mod components;
@@ -93,6 +93,8 @@ fn main() {
         .add_systems(Update, process.after(sort_by_order))
         // commands
         .add_systems(Update, command_parser)
+
+        .register_type::<Radius>()
         .run();
 }
 
@@ -180,28 +182,30 @@ fn switch_mode(
     }
 }
 
-// TODO(amy): clean this, figure out reflection and the handles issue
-// saving files would make testing a lot easier!
-fn save_scene(
-    circles_query: Query<&GlobalTransform, With<Order>>,
-    keyboard_input: Res<Input<KeyCode>>,
-    ) {
+fn save_scene(world: &mut World) {
+    let keyboard_input = world.resource::<Input<KeyCode>>();
     let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
     if ctrl && keyboard_input.just_pressed(KeyCode::S) {
-        for circle in circles_query.iter() {
-            info!("{:?}", circle.translation());
-        }
+
+        let mut query = world.query_filtered::<Entity, With<Radius>>();
+        let scene = DynamicSceneBuilder::from_world(&world)
+            .allow::<Radius>()
+            .extract_entities(query.iter(&world))
+            .build();
+        let type_registry = world.resource::<AppTypeRegistry>();
+        let serialized_scene = scene.serialize_ron(type_registry).unwrap();
+
+        #[cfg(not(target_arch = "wasm32"))]
+        IoTaskPool::get()
+            .spawn(async move {
+                File::create(format!("scene"))
+                    .and_then(|mut file| file.write(serialized_scene.as_bytes()))
+                    .expect("Error while writing scene to file");
+            })
+            .detach();
     }
-//        #[cfg(not(target_arch = "wasm32"))]
-//        IoTaskPool::get()
-//            .spawn(async move {
-//                File::create(format!("scene"))
-//                    .and_then(|mut file| file.write(serialized_scene.as_bytes()))
-//                    .expect("Error while writing scene to file");
-//            })
-//            .detach();
-//    }
 }
+
 
 fn draw_pointer_circle(
     cursor: Res<CursorInfo>,
