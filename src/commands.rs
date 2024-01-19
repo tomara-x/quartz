@@ -30,7 +30,7 @@ pub fn command_parser(
                     _ => {},
                 }
             },
-            Some(":yeet") => {
+            Some(":d") => {
                 if let Some(s) = command.next() {
                     if let Ok(e) = str_to_id(s) {
                         if entities.contains(e) {
@@ -42,11 +42,9 @@ pub fn command_parser(
             Some(":lt") => {
                 if let Some(b) = command.next() {
                     if let Some(w) = command.next() {
-                        if let Ok(b) = b.parse::<i32>() {
-                            if let Ok(w) = w.parse::<i32>() {
-                                for mut wh in white_hole_query.iter_mut() {
-                                    wh.link_types = (b, w);
-                                }
+                        if let (Ok(b), Ok(w)) = (b.parse::<i32>(), w.parse::<i32>()) {
+                            for mut wh in white_hole_query.iter_mut() {
+                                wh.link_types = (b, w);
                             }
                         }
                     }
