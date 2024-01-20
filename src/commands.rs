@@ -336,7 +336,33 @@ pub fn command_parser(
                                 }
                             }
                         },
-                        Some("arr") => {},
+                        Some("arr") | Some("array") => {
+                            if let Some(s) = command.next() {
+                                if let Ok(e) = str_to_id(s) {
+                                    if let Ok(mut arr) = access.arr_query.get_mut(e) {
+                                        arr.0.clear();
+                                        for n in command {
+                                            if let Ok(n) = n.parse::<f32>() {
+                                                arr.0.push(n);
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    let mut tmp = Vec::new();
+                                    if let Ok(n) = s.parse::<f32>() { tmp.push(n); }
+                                    for n in command {
+                                        if let Ok(n) = n.parse::<f32>() {
+                                            tmp.push(n);
+                                        }
+                                    }
+                                    for id in access.selected_query.iter() {
+                                        if let Ok(mut arr) = access.arr_query.get_mut(id) {
+                                            arr.0 = tmp.clone();
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         _ => {},
                     }
                 },
