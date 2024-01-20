@@ -315,7 +315,7 @@ pub fn command_parser(
                                 }
                             }
                         },
-                        Some("ord") => {
+                        Some("ord") | Some("order") => {
                             if let Some(s) = command.next() {
                                 if let Ok(e) = str_to_id(s) {
                                     if let Ok(mut order) = access.order_query.get_mut(e) {
