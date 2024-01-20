@@ -87,9 +87,9 @@ pub struct CommandText;
 // -------------------- states --------------------
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 pub enum Mode {
-    #[default]
     Draw,
     Connect,
+    #[default]
     Edit,
 }
 
