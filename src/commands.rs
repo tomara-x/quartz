@@ -230,9 +230,69 @@ pub fn command_parser(
                                 }
                             }
                         },
-                        Some("s") => {},
-                        Some("l") => {},
-                        Some("a") => {},
+                        Some("s") => {
+                            if let Some(s) = command.next() {
+                                if let Ok(e) = str_to_id(s) {
+                                    if let Ok(mut color) = access.col_query.get_mut(e) {
+                                        if let Some(n) = command.next() {
+                                            if let Ok(n) = n.parse::<f32>() {
+                                                color.1.0.set_s(n);
+                                                access.color_change_event.send(ColorChange(e, color.1.0));
+                                            }
+                                        }
+                                    }
+                                } else if let Ok(n) = s.parse::<f32>() {
+                                    for id in access.selected_query.iter() {
+                                        if let Ok(mut color) = access.col_query.get_mut(id) {
+                                            color.1.0.set_s(n);
+                                            access.color_change_event.send(ColorChange(id, color.1.0));
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        Some("l") => {
+                            if let Some(s) = command.next() {
+                                if let Ok(e) = str_to_id(s) {
+                                    if let Ok(mut color) = access.col_query.get_mut(e) {
+                                        if let Some(n) = command.next() {
+                                            if let Ok(n) = n.parse::<f32>() {
+                                                color.1.0.set_l(n);
+                                                access.color_change_event.send(ColorChange(e, color.1.0));
+                                            }
+                                        }
+                                    }
+                                } else if let Ok(n) = s.parse::<f32>() {
+                                    for id in access.selected_query.iter() {
+                                        if let Ok(mut color) = access.col_query.get_mut(id) {
+                                            color.1.0.set_l(n);
+                                            access.color_change_event.send(ColorChange(id, color.1.0));
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        Some("a") => {
+                            if let Some(s) = command.next() {
+                                if let Ok(e) = str_to_id(s) {
+                                    if let Ok(mut color) = access.col_query.get_mut(e) {
+                                        if let Some(n) = command.next() {
+                                            if let Ok(n) = n.parse::<f32>() {
+                                                color.1.0.set_a(n);
+                                                access.color_change_event.send(ColorChange(e, color.1.0));
+                                            }
+                                        }
+                                    }
+                                } else if let Ok(n) = s.parse::<f32>() {
+                                    for id in access.selected_query.iter() {
+                                        if let Ok(mut color) = access.col_query.get_mut(id) {
+                                            color.1.0.set_a(n);
+                                            access.color_change_event.send(ColorChange(id, color.1.0));
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         Some("op") => {},
                         Some("ord") => {},
                         _ => {},
