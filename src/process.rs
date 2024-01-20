@@ -46,6 +46,11 @@ pub struct Access<'w, 's> {
     op_changed_query: Query<'w, 's, &'static mut OpChanged>,
     net_query: Query<'w, 's, &'static mut Network>,
     net_ins_query: Query<'w, 's, &'static mut NetIns>,
+    col_query: Query<'w, 's, &'static mut Col>,
+    radius_change_event: EventWriter<'w, RadiusChange>,
+    color_change_event: EventWriter<'w, ColorChange>,
+    op_change_event: EventWriter<'w, OpChange>,
+    order_change: EventWriter<'w, OrderChange>,
 }
 
 pub fn process(
@@ -366,38 +371,57 @@ pub fn process(
         for child in children {
             if let Ok(white_hole) = white_hole_query.get(*child) {
                 if !white_hole.open { continue; }
-                match white_hole.link_types {
-                    (-1, -1) => { //trans
-                        let input = access.trans_query.get(white_hole.bh_parent).unwrap().translation;
-                        let mut t = access.trans_query.get_mut(*id).unwrap();
-                        t.translation.x = input.x;
-                        t.translation.y = input.y;
-                        t.translation.z = input.z;
+                let mut input = 0.;
+                match white_hole.link_types.0 {
+                    // num
+                    -1 => { input = access.num_query.get(white_hole.bh_parent).unwrap().0; },
+                    // radius
+                    -2 => { input = access.radius_query.get(white_hole.bh_parent).unwrap().0; },
+                    // x
+                    -3 => { input = access.trans_query.get(white_hole.bh_parent).unwrap().translation.x; },
+                    // y
+                    -4 => { input = access.trans_query.get(white_hole.bh_parent).unwrap().translation.y; },
+                    // z
+                    -5 => { input = access.trans_query.get(white_hole.bh_parent).unwrap().translation.z; },
+                    // hue
+                    -6 => { input = access.col_query.get(white_hole.bh_parent).unwrap().0.h(); },
+                    // saturation
+                    -7 => { input = access.col_query.get(white_hole.bh_parent).unwrap().0.s(); },
+                    // lightness
+                    -8 => { input = access.col_query.get(white_hole.bh_parent).unwrap().0.l(); },
+                    // alpha
+                    -9 => { input = access.col_query.get(white_hole.bh_parent).unwrap().0.a(); },
+                    _ => {},
+                }
+                match white_hole.link_types.1 {
+                    -1 => { access.num_query.get_mut(*id).unwrap().0 = input; },
+                    -2 => {
+                        access.radius_query.get_mut(*id).unwrap().0 = input;
+                        access.radius_change_event.send(RadiusChange(*id, input));
                     },
-                    (-2, -2) => { // color
-                        let mat_id = access.material_ids.get(white_hole.bh_parent).unwrap();
-                        let mat = access.mats.get(mat_id).unwrap();
-                        let input = mat.color;
-                        access.mats.get_mut(
-                            access.material_ids.get(*id).unwrap()
-                        ).unwrap().color = input;
+                    -3 => { access.trans_query.get_mut(*id).unwrap().translation.x = input; },
+                    -4 => { access.trans_query.get_mut(*id).unwrap().translation.y = input; },
+                    -5 => { access.trans_query.get_mut(*id).unwrap().translation.z = input; },
+                    -6 => {
+                        access.col_query.get_mut(*id).unwrap().0.set_h(input);
+                        let c = access.col_query.get(*id).unwrap().0;
+                        access.color_change_event.send(ColorChange(*id, c));
                     },
-                    (-3, -3) => { // radius
-                        if let Ok(Mesh2dHandle(mesh_id)) = access.mesh_ids.get(*id) {
-                            let input = access.radius_query.get(white_hole.bh_parent).unwrap().0;
-                            access.radius_query.get_mut(*id).unwrap().0 = input;
-                            let mesh = access.meshes.get_mut(mesh_id).unwrap();
-                            *mesh = bevy::prelude::shape::Circle::new(input).into();
-                        }
+                    -7 => {
+                        access.col_query.get_mut(*id).unwrap().0.set_s(input);
+                        let c = access.col_query.get(*id).unwrap().0;
+                        access.color_change_event.send(ColorChange(*id, c));
                     },
-                    (-4, -4) => { // num
-                        let input = access.num_query.get(white_hole.bh_parent).unwrap().0;
-                        access.num_query.get_mut(*id).unwrap().0 = input;
-                    }
-                    (-4, -5) => { // number to op
-                        let input = access.num_query.get(white_hole.bh_parent).unwrap().0;
-                        access.op_query.get_mut(*id).unwrap().0 = input as i32;
-                    }
+                    -8 => {
+                        access.col_query.get_mut(*id).unwrap().0.set_l(input);
+                        let c = access.col_query.get(*id).unwrap().0;
+                        access.color_change_event.send(ColorChange(*id, c));
+                    },
+                    -9 => {
+                        access.col_query.get_mut(*id).unwrap().0.set_a(input);
+                        let c = access.col_query.get(*id).unwrap().0;
+                        access.color_change_event.send(ColorChange(*id, c));
+                    },
                     _ => {},
                 }
             }
