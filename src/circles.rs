@@ -445,28 +445,42 @@ pub fn update_num(
 }
 
 pub fn update_op(
-    mut query: Query<(&mut Op, &mut OpChanged,
-    &mut Network, &mut NetIns), With<Selected>>,
+    mut query: Query<(Entity, &mut Op), With<Selected>>,
     keyboard_input: Res<Input<KeyCode>>,
+    mut op_change_event: EventWriter<OpChange>,
 ) {
-    if keyboard_input.any_just_pressed([KeyCode::O, KeyCode::P]) {
-        let increment = if keyboard_input.just_pressed(KeyCode::O) { -1 } else { 1 };
-        for (mut op, mut op_changed, mut n, mut inputs) in query.iter_mut() {
-            op.0 += increment;
-            op_changed.0 = true;
-            // can we use duplicate macros here?
-            match op.0 {
-                1 => { // Var
-                    let input = shared(0.);
-                    n.0 = Net32::wrap(Box::new(var(&input)));
-                    inputs.0.clear();
-                    inputs.0.push(input);
-                },
-                _ => {
-                    n.0 = Net32::wrap(Box::new(dc(0.)));
-                    inputs.0.clear();
-                },
-            }
+    if keyboard_input.just_pressed(KeyCode::O) {
+        for (e, mut op) in query.iter_mut() {
+            op.0 -= 1;
+            op_change_event.send(OpChange(e, op.0));
+        }
+    }
+    if keyboard_input.just_pressed(KeyCode::P) {
+        for (e, mut op) in query.iter_mut() {
+            op.0 += 1;
+            op_change_event.send(OpChange(e, op.0));
+        }
+    }
+}
+
+pub fn update_net_from_op(
+    mut query: Query<(&mut OpChanged, &mut Network, &mut NetIns)>,
+    mut radius_change_event: EventReader<OpChange>,
+) {
+    for event in radius_change_event.read() {
+        let (mut op_changed, mut n, mut inputs) = query.get_mut(event.0).unwrap();
+        op_changed.0 = true;
+        match event.1 {
+            1 => { // Var
+                let input = shared(0.);
+                n.0 = Net32::wrap(Box::new(var(&input)));
+                inputs.0.clear();
+                inputs.0.push(input);
+            },
+            _ => {
+                n.0 = Net32::wrap(Box::new(dc(0.)));
+                inputs.0.clear();
+            },
         }
     }
 }

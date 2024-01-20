@@ -73,12 +73,14 @@ fn main() {
         .add_systems(Update, highlight_selected.run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_order.run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_op.run_if(in_state(Mode::Edit)))
+        .add_systems(Update, update_net_from_op.after(update_op).run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_circle_text.run_if(in_state(Mode::Edit)))
         .add_systems(Update, select_all.run_if(in_state(Mode::Edit)))
         .add_systems(Update, duplicate_selected.run_if(in_state(Mode::Edit)))
         // events
         .add_event::<ColorChange>()
         .add_event::<RadiusChange>()
+        .add_event::<OpChange>()
         .add_event::<OrderChange>()
         // connections
         .add_systems(Update, connect.run_if(in_state(Mode::Connect)))
