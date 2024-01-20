@@ -56,6 +56,7 @@ fn main() {
         .add_state::<Mode>()
         .add_systems(Update, switch_mode)
         .add_systems(Update, save_scene)
+        .add_systems(Update, load_scene)
         // cursor
         .insert_resource(CursorInfo::default())
         .add_systems(Update, update_cursor_info)
@@ -200,7 +201,7 @@ fn save_scene(world: &mut World) {
 
         let mut query = world.query_filtered::<Entity, With<Radius>>();
         let scene = DynamicSceneBuilder::from_world(&world)
-            .allow_resource::<Queue>()
+            //.allow_resource::<Queue>()
             .allow::<Radius>()
             .allow::<Col>()
             .allow::<Transform>()
@@ -214,7 +215,7 @@ fn save_scene(world: &mut World) {
             .allow::<BlackHole>()
             .allow::<WhiteHole>()
             .extract_entities(query.iter(&world))
-            .extract_resources()
+            //.extract_resources()
             .build();
         let type_registry = world.resource::<AppTypeRegistry>();
         let serialized_scene = scene.serialize_ron(type_registry).unwrap();
@@ -222,7 +223,7 @@ fn save_scene(world: &mut World) {
         #[cfg(not(target_arch = "wasm32"))]
         IoTaskPool::get()
             .spawn(async move {
-                File::create(format!("scene"))
+                File::create(format!("scene.scn.ron"))
                     .and_then(|mut file| file.write(serialized_scene.as_bytes()))
                     .expect("Error while writing scene to file");
             })
@@ -230,6 +231,19 @@ fn save_scene(world: &mut World) {
     }
 }
 
+fn load_scene(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    keyboard_input: Res<Input<KeyCode>>,
+) {
+    let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
+    if ctrl && keyboard_input.just_pressed(KeyCode::O) {
+        commands.spawn(DynamicSceneBundle {
+            scene: asset_server.load("scene.scn.ron"),
+            ..default()
+        });
+    }
+}
 
 fn draw_pointer_circle(
     cursor: Res<CursorInfo>,
