@@ -316,6 +316,10 @@ pub fn process(
                     -8 => { input = access.col_query.get(white_hole.bh_parent).unwrap().0.l(); },
                     // alpha
                     -9 => { input = access.col_query.get(white_hole.bh_parent).unwrap().0.a(); },
+                    // op
+                    -10 => { input = access.op_query.get(white_hole.bh_parent).unwrap().0 as f32; },
+                    // order
+                    -11 => { input = access.order_query.get(white_hole.bh_parent).unwrap().0 as f32; },
                     _ => {},
                 }
                 match white_hole.link_types.1 {
@@ -346,6 +350,14 @@ pub fn process(
                         access.col_query.get_mut(*id).unwrap().0.set_a(input);
                         let c = access.col_query.get(*id).unwrap().0;
                         access.color_change_event.send(ColorChange(*id, c));
+                    },
+                    -10 => {
+                        access.op_query.get_mut(*id).unwrap().0 = input as i32;
+                        access.op_change_event.send(OpChange(*id, input as i32));
+                    },
+                    -11 => {
+                        access.order_query.get_mut(*id).unwrap().0 = input as usize;
+                        access.order_change.send_default();
                     },
                     _ => {},
                 }
