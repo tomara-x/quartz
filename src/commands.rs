@@ -39,10 +39,11 @@ pub fn command_parser(
     // draw mode
     if *mode == 1 {
         // exit to edit
-        if keyboard_input.just_pressed(KeyCode::Escape) {
+        if keyboard_input.any_just_pressed([KeyCode::Escape, KeyCode::E]) {
             text.clear();
             *mode = 0;
             next_state.set(Mode::Edit);
+            char_input_events.clear(); // we have an 'e' that we don't want
         }
         // switch to connect mode
         if keyboard_input.just_pressed(KeyCode::C) {
@@ -55,10 +56,11 @@ pub fn command_parser(
     // connect mode
     if *mode == 2 {
         // exit to edit
-        if keyboard_input.just_pressed(KeyCode::Escape) {
+        if keyboard_input.any_just_pressed([KeyCode::Escape, KeyCode::E]) {
             text.clear();
             *mode = 0;
             next_state.set(Mode::Edit);
+            char_input_events.clear();
         }
         // switch to draw mode
         if keyboard_input.just_pressed(KeyCode::D) {
