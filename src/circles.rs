@@ -312,6 +312,54 @@ pub fn update_color(
             }
         }
     }
+    if keyboard_input.any_pressed([KeyCode::Left, KeyCode::Down]) {
+        for (e, mut c) in query.iter_mut() {
+            if drag_modes.h {
+                let h = (c.0.h() - 1.).clamp(0., 360.);
+                c.0.set_h(h);
+                color_change_event.send(ColorChange(e, c.0));
+            }
+            if drag_modes.s {
+                let s = (c.0.s() - 0.01).clamp(0., 1.);
+                c.0.set_s(s);
+                color_change_event.send(ColorChange(e, c.0));
+            }
+            if drag_modes.l {
+                let l = (c.0.l() - 0.01).clamp(0., 1.);
+                c.0.set_l(l);
+                color_change_event.send(ColorChange(e, c.0));
+            }
+            if drag_modes.a {
+                let a = (c.0.a() - 0.01).clamp(0., 1.);
+                c.0.set_a(a);
+                color_change_event.send(ColorChange(e, c.0));
+            }
+        }
+    }
+    if keyboard_input.any_pressed([KeyCode::Right, KeyCode::Up]) {
+        for (e, mut c) in query.iter_mut() {
+            if drag_modes.h {
+                let h = (c.0.h() + 1.).clamp(0., 360.);
+                c.0.set_h(h);
+                color_change_event.send(ColorChange(e, c.0));
+            }
+            if drag_modes.s {
+                let s = (c.0.s() + 0.01).clamp(0., 1.);
+                c.0.set_s(s);
+                color_change_event.send(ColorChange(e, c.0));
+            }
+            if drag_modes.l {
+                let l = (c.0.l() + 0.01).clamp(0., 1.);
+                c.0.set_l(l);
+                color_change_event.send(ColorChange(e, c.0));
+            }
+            if drag_modes.a {
+                let a = (c.0.a() + 0.01).clamp(0., 1.);
+                c.0.set_a(a);
+                color_change_event.send(ColorChange(e, c.0));
+            }
+        }
+    }
 }
 
 pub fn update_mat_from_color(
@@ -324,41 +372,6 @@ pub fn update_mat_from_color(
         let mat = mats.get_mut(id).unwrap();
         mat.color = event.1;
     }
-    //if keyboard_input.pressed(KeyCode::Key2) {
-    //    if mouse_button_input.pressed(MouseButton::Left) &&
-    //    !mouse_button_input.just_pressed(MouseButton::Left) {
-    //        for id in material_ids.iter() {
-    //            let mat = mats.get_mut(id).unwrap();
-    //            mat.color.set_h((mat.color.h() + cursor.d.x).rem_euclid(360.));
-    //        }
-    //    }
-    //    let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
-    //    let increment = if shift { 0.01 } else { -0.01 };
-    //    if keyboard_input.pressed(KeyCode::Up) {
-    //        for id in material_ids.iter() {
-    //            let mat = mats.get_mut(id).unwrap();
-    //            mat.color.set_h((mat.color.h() + increment * 100.).rem_euclid(360.));
-    //        }
-    //    }
-    //    if keyboard_input.pressed(KeyCode::Down) {
-    //        for id in material_ids.iter() {
-    //            let mat = mats.get_mut(id).unwrap();
-    //            mat.color.set_s((mat.color.s() + increment).rem_euclid(2.));
-    //        }
-    //    }
-    //    if keyboard_input.pressed(KeyCode::Right) {
-    //        for id in material_ids.iter() {
-    //            let mat = mats.get_mut(id).unwrap();
-    //            mat.color.set_l((mat.color.l() + increment).rem_euclid(4.));
-    //        }
-    //    }
-    //    if keyboard_input.pressed(KeyCode::Left) {
-    //        for id in material_ids.iter() {
-    //            let mat = mats.get_mut(id).unwrap();
-    //            mat.color.set_a((mat.color.a() + increment).rem_euclid(1.));
-    //        }
-    //    }
-    //}
 }
 
 pub fn update_radius(
