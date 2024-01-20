@@ -1,6 +1,5 @@
 use bevy::{
     ecs::system::SystemParam,
-    sprite::Mesh2dHandle,
     core_pipeline::{
         bloom::{BloomCompositeMode, BloomSettings},
         tonemapping::Tonemapping,
@@ -32,14 +31,11 @@ pub fn sort_by_order(
 
 #[derive(SystemParam)]
 pub struct Access<'w, 's> {
+    order_query: Query<'w, 's, &'static mut Order>,
     op_query: Query<'w, 's, &'static mut Op>,
     bloom: Query<'w, 's, & 'static mut BloomSettings, With<Camera>>,
     num_query: Query<'w, 's, &'static mut crate::components::Num>,
-    mats: ResMut<'w, Assets<ColorMaterial>>,
-    material_ids: Query<'w, 's, &'static Handle<ColorMaterial>>,
     radius_query: Query<'w, 's, &'static mut Radius>,
-    meshes: ResMut<'w, Assets<Mesh>>,
-    mesh_ids: Query<'w, 's, &'static Mesh2dHandle>,
     trans_query: Query<'w, 's, &'static mut Transform>,
     arr_query: Query<'w, 's, &'static mut Arr>,
     tonemapping: Query<'w, 's, &'static mut Tonemapping, With<Camera>>,
@@ -70,7 +66,7 @@ pub fn process(
             -10 => { // pass
                 for child in children {
                     if let Ok(white_hole) = white_hole_query.get(*child) {
-                        if white_hole.link_types == (-4, 1) {
+                        if white_hole.link_types == (-1, 1) {
                             if access.num_query.get(white_hole.bh_parent).unwrap().0 == 0. {
                                 continue 'entity;
                             }
@@ -82,7 +78,7 @@ pub fn process(
                 let mut out = 0.;
                 for child in children {
                     if let Ok(white_hole) = white_hole_query.get(*child) {
-                        if white_hole.link_types.0 == -4 {
+                        if white_hole.link_types.0 == -1 {
                             out += access.num_query.get(white_hole.bh_parent).unwrap().0;
                         }
                     }
@@ -93,7 +89,7 @@ pub fn process(
                 let mut tm = access.tonemapping.single_mut();
                 for child in children {
                     if let Ok(white_hole) = white_hole_query.get(*child) {
-                        if white_hole.link_types == (-4, 1) {
+                        if white_hole.link_types == (-1, 1) {
                             let input = access.num_query.get(white_hole.bh_parent).unwrap().0;
                             match input as usize {
                                 0 => *tm = Tonemapping::None,
@@ -116,14 +112,14 @@ pub fn process(
                     if let Ok(white_hole) = white_hole_query.get(*child) {
                         let input = access.num_query.get(white_hole.bh_parent).unwrap().0 / 100.;
                         match white_hole.link_types {
-                            (-4, 1) => bloom_settings.intensity = input,
-                            (-4, 2) => bloom_settings.low_frequency_boost = input,
-                            (-4, 3) => bloom_settings.low_frequency_boost_curvature = input,
-                            (-4, 4) => bloom_settings.high_pass_frequency = input,
-                            (-4, 5) => bloom_settings.composite_mode = if input > 0. {
+                            (-1, 1) => bloom_settings.intensity = input,
+                            (-1, 2) => bloom_settings.low_frequency_boost = input,
+                            (-1, 3) => bloom_settings.low_frequency_boost_curvature = input,
+                            (-1, 4) => bloom_settings.high_pass_frequency = input,
+                            (-1, 5) => bloom_settings.composite_mode = if input > 0. {
                             BloomCompositeMode::Additive } else { BloomCompositeMode::EnergyConserving },
-                            (-4, 6) => bloom_settings.prefilter_settings.threshold = input,
-                            (-4, 7) => bloom_settings.prefilter_settings.threshold_softness = input,
+                            (-1, 6) => bloom_settings.prefilter_settings.threshold = input,
+                            (-1, 7) => bloom_settings.prefilter_settings.threshold_softness = input,
                             _ => {},
                         }
                     }
@@ -132,7 +128,7 @@ pub fn process(
             -6 => { // set
                 for child in children {
                     if let Ok(white_hole) = white_hole_query.get(*child) {
-                        if white_hole.link_types.0 == -4 {
+                        if white_hole.link_types.0 == -1 {
                             let index = Ord::max(white_hole.link_types.1, 0) as usize;
                             let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
                             if arr.len() <= index { arr.resize(index + 1, 0.); }
@@ -144,83 +140,12 @@ pub fn process(
             -5 => { // get
                 for child in children {
                     if let Ok(white_hole) = white_hole_query.get(*child) {
-                        if white_hole.link_types.1 == -4 {
+                        if white_hole.link_types.1 == -1 {
                            let arr = &access.arr_query.get(white_hole.bh_parent).unwrap().0;
                            // TODO(amy): with negative indexing get in reverse
                            if let Some(input) = arr.get(Ord::max(white_hole.link_types.0, 0) as usize) {
                                access.num_query.get_mut(*id).unwrap().0 = *input;
                            }
-                        }
-                    }
-                }
-            },
-            -4 => { // separate outputs from trans/color/radius
-                for child in children {
-                    if let Ok(white_hole) = white_hole_query.get(*child) {
-                        match white_hole.link_types {
-                            (-1, 1) => {
-                                let t = access.trans_query.get(white_hole.bh_parent).unwrap().translation;
-                                let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
-                                *arr = t.to_array().into();
-                            },
-                            (-2, 1) => {
-                                let mat_id = access.material_ids.get(white_hole.bh_parent).unwrap();
-                                let c = access.mats.get(mat_id).unwrap().color;
-                                let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
-                                *arr = c.as_hsla_f32().into();
-                            },
-                            (-3, 1) => {
-                                let r = access.radius_query.get(white_hole.bh_parent).unwrap().0;
-                                let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
-                                *arr = [r].into();
-                            }
-                            _ => {},
-                        }
-                    }
-                }
-            },
-            -3 => { // float to radius
-                for child in children {
-                    if let Ok(white_hole) = white_hole_query.get(*child) {
-                        if white_hole.link_types == (-4, 1) {
-                            let input = access.num_query.get(white_hole.bh_parent).unwrap().0;
-                            let Mesh2dHandle(mesh_id) = access.mesh_ids.get(*id).unwrap();
-                            access.radius_query.get_mut(*id).unwrap().0 = input;
-                            let mesh = access.meshes.get_mut(mesh_id).unwrap();
-                            *mesh = bevy::prelude::shape::Circle::new(input).into();
-                        }
-                    }
-                }
-            },
-            -2 => { // 4 floats to color
-                for child in children {
-                    if let Ok(white_hole) = white_hole_query.get(*child) {
-                        if white_hole.link_types.0 == -4 {
-                            let input = access.num_query.get(white_hole.bh_parent).unwrap().0;
-                            let mat_id = access.material_ids.get(*id).unwrap();
-                            match white_hole.link_types.1 {
-                                1 => { access.mats.get_mut(mat_id).unwrap().color.set_h(input); },
-                                2 => { access.mats.get_mut(mat_id).unwrap().color.set_s(input); },
-                                3 => { access.mats.get_mut(mat_id).unwrap().color.set_l(input); },
-                                4 => { access.mats.get_mut(mat_id).unwrap().color.set_a(input); },
-                                _ => {},
-                            }
-                        }
-                    }
-                }
-            },
-            -1 => { // 3 floats to position
-                for child in children {
-                    if let Ok(white_hole) = white_hole_query.get(*child) {
-                        if white_hole.link_types.0 == -4 {
-                            let input = access.num_query.get(white_hole.bh_parent).unwrap().0;
-                            let mut t = access.trans_query.get_mut(*id).unwrap();
-                            match white_hole.link_types.1 {
-                                1 => t.translation.x = input,
-                                2 => t.translation.y = input,
-                                3 => t.translation.z = input,
-                                _ => {},
-                            }
                         }
                     }
                 }
@@ -234,7 +159,7 @@ pub fn process(
             2 => { // Oscil
                 for child in children {
                     if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
-                        if white_hole.link_types == (-4, 2) {
+                        if white_hole.link_types == (-1, 2) {
                             let input = access.num_query.get(white_hole.bh_parent).unwrap().0;
                             if (input as u8) != oscil.0 {
                                 oscil.0 = input as u8;
