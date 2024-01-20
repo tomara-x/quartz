@@ -171,6 +171,7 @@ pub fn select_all(
     }
 }
 
+// HAZARDOUS!
 pub fn duplicate_selected(
     mut commands: Commands,
     query: Query<(&Radius, &Handle<ColorMaterial>,
@@ -509,6 +510,7 @@ pub fn update_circle_text(
     }
 }
 
+// HAZARDOUS!
 pub fn remove_connections(
     keyboard_input: Res<Input<KeyCode>>,
     query: Query<&Children, With<Selected>>,

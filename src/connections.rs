@@ -44,6 +44,7 @@ pub fn connect(
                 },
                 Visible,
                 Radius(src_radius * 0.1),
+                Col(Color::BLACK),
             )).id();
             let white_hole = commands.spawn(( ColorMesh2dBundle {
                     mesh: meshes.add(shape::Circle::new(snk_radius * 0.1).into()).into(),
@@ -53,6 +54,7 @@ pub fn connect(
                 },
                 Visible,
                 Radius(snk_radius * 0.1),
+                Col(Color::WHITE),
                 WhiteHole {
                     bh_parent: src,
                     bh: black_hole,
