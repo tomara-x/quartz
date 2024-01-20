@@ -109,12 +109,14 @@ fn main() {
         .register_type::<Op>()
         .register_type::<Num>()
         .register_type::<Arr>()
+        .register_type::<Vec<f32>>()
         .register_type::<Selected>()
         .register_type::<Visible>()
         .register_type::<Order>()
         .register_type::<OpChanged>()
         .register_type::<BlackHole>()
         .register_type::<WhiteHole>()
+        .register_type::<(i32, i32)>()
         .run();
 }
 
