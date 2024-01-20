@@ -375,39 +375,45 @@ pub fn update_mat_from_color(
 }
 
 pub fn update_radius(
-    mut meshes: ResMut<Assets<Mesh>>,
-    mesh_ids: Query<(Entity, &Mesh2dHandle), With<Selected>>,
+    mut query: Query<(Entity, &mut Radius), With<Selected>>,
     keyboard_input: Res<Input<KeyCode>>,
     cursor: Res<CursorInfo>,
     mouse_button_input: Res<Input<MouseButton>>,
-    mut radius_query: Query<&mut Radius>,
+    drag_modes: Res<DragModes>,
+    mut radius_change_event: EventWriter<RadiusChange>,
 ) {
-    if keyboard_input.pressed(KeyCode::Key3) {
-        if mouse_button_input.pressed(MouseButton::Left) &&
-        !mouse_button_input.just_pressed(MouseButton::Left) {
-            for (entity, Mesh2dHandle(id)) in mesh_ids.iter() {
-                let r = cursor.f.distance(cursor.i);
-                let mesh = meshes.get_mut(id).unwrap();
-                *mesh = bevy::prelude::shape::Circle::new(r).into();
-                radius_query.get_mut(entity).unwrap().0 = r;
+    if drag_modes.r {
+        if mouse_button_input.pressed(MouseButton::Left)
+        && !mouse_button_input.just_pressed(MouseButton::Left) {
+            for (e, mut r) in query.iter_mut() {
+                r.0 = cursor.f.distance(cursor.i);
+                radius_change_event.send(RadiusChange(e, r.0));
             }
         }
-        if keyboard_input.pressed(KeyCode::Up) {
-            for (entity, Mesh2dHandle(id)) in mesh_ids.iter() {
-                let r = radius_query.get_mut(entity).unwrap().0 + 1.;
-                radius_query.get_mut(entity).unwrap().0 = r;
-                let mesh = meshes.get_mut(id).unwrap();
-                *mesh = bevy::prelude::shape::Circle::new(r).into();
+        if keyboard_input.any_pressed([KeyCode::Up, KeyCode::Right]) {
+            for (e, mut r) in query.iter_mut() {
+                r.0 += 1.;
+                radius_change_event.send(RadiusChange(e, r.0));
             }
         }
-        if keyboard_input.pressed(KeyCode::Down) {
-            for (entity, Mesh2dHandle(id)) in mesh_ids.iter() {
-                let r = radius_query.get_mut(entity).unwrap().0 - 1.;
-                radius_query.get_mut(entity).unwrap().0 = r;
-                let mesh = meshes.get_mut(id).unwrap();
-                *mesh = bevy::prelude::shape::Circle::new(r).into();
+        if keyboard_input.any_pressed([KeyCode::Down, KeyCode::Left]) {
+            for (e, mut r) in query.iter_mut() {
+                r.0 -= 1.;
+                radius_change_event.send(RadiusChange(e, r.0));
             }
         }
+    }
+}
+
+pub fn update_mesh_from_radius(
+    mut meshes: ResMut<Assets<Mesh>>,
+    mesh_ids: Query<&Mesh2dHandle>,
+    mut radius_change_event: EventReader<RadiusChange>,
+) {
+    for event in radius_change_event.read() {
+        let Mesh2dHandle(id) = mesh_ids.get(event.0).unwrap();
+        let mesh = meshes.get_mut(id).unwrap();
+        *mesh = bevy::prelude::shape::Circle::new(event.1).into();
     }
 }
 

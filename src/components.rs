@@ -139,6 +139,9 @@ pub struct OrderChange;
 #[derive(Event)]
 pub struct ColorChange(pub Entity, pub Color);
 
+#[derive(Event)]
+pub struct RadiusChange(pub Entity, pub f32);
+
 // -------------------- commands --------------------
 pub struct DespawnCircle(pub Entity);
 impl Command for DespawnCircle {
