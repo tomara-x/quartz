@@ -9,7 +9,7 @@ use crate::components::*;
 
 #[derive(SystemParam)]
 pub struct Access<'w, 's> {
-    op_query: Query<'w, 's, &'static mut Op>,
+    op_query: Query<'w, 's, (Entity, &'static mut Op)>,
     num_query: Query<'w, 's, &'static mut Num>,
     radius_query: Query<'w, 's, (Entity, &'static mut Radius)>,
     col_query: Query<'w, 's, (Entity, &'static mut Col)>,
@@ -19,6 +19,7 @@ pub struct Access<'w, 's> {
     selected_query: Query<'w, 's, Entity, With<Selected>>,
     radius_change_event: EventWriter<'w, RadiusChange>,
     color_change_event: EventWriter<'w, ColorChange>,
+    op_change_event: EventWriter<'w, OpChange>,
 }
 
 pub fn command_parser(
@@ -138,7 +139,7 @@ pub fn command_parser(
                                         if let Some(n) = command.next() {
                                             if let Ok(n) = n.parse::<f32>() {
                                                 radius.1.0 = n;
-                                                access.radius_change_event.send(RadiusChange(e, radius.1.0));
+                                                access.radius_change_event.send(RadiusChange(e, n));
                                             }
                                         }
                                     }
@@ -293,7 +294,27 @@ pub fn command_parser(
                                 }
                             }
                         },
-                        Some("op") => {},
+                        Some("op") => {
+                            if let Some(s) = command.next() {
+                                if let Ok(e) = str_to_id(s) {
+                                    if let Ok(mut op) = access.op_query.get_mut(e) {
+                                        if let Some(n) = command.next() {
+                                            if let Ok(n) = n.parse::<i32>() {
+                                                op.1.0 = n;
+                                                access.op_change_event.send(OpChange(e, n));
+                                            }
+                                        }
+                                    }
+                                } else if let Ok(n) = s.parse::<i32>() {
+                                    for id in access.selected_query.iter() {
+                                        if let Ok(mut op) = access.op_query.get_mut(id) {
+                                            op.1.0 = n;
+                                            access.op_change_event.send(OpChange(id, n));
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         Some("ord") => {},
                         _ => {},
                     }
