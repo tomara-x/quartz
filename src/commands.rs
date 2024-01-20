@@ -445,6 +445,10 @@ pub fn command_parser(
             },
 
             Some("ht") => {
+                for mut wh in white_hole_query.iter_mut() {
+                    wh.open = !wh.open;
+                }
+                text.clear();
             },
             _ => {},
         }
