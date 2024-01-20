@@ -109,6 +109,29 @@ pub struct CursorInfo {
 #[derive(Resource)]
 pub struct Slot(pub Slot32, pub Slot32);
 
+#[derive(Resource, Reflect, Default)]
+#[reflect(Resource)]
+pub struct DragModes {
+    pub t: bool,
+    pub r: bool,
+    pub n: bool,
+    pub h: bool,
+    pub s: bool,
+    pub l: bool,
+    pub a: bool,
+}
+impl DragModes {
+    pub fn falsify(&mut self) {
+        self.t = false;
+        self.r = false;
+        self.n = false;
+        self.h = false;
+        self.s = false;
+        self.l = false;
+        self.a = false;
+    }
+}
+
 // -------------------- events --------------------
 #[derive(Event, Default)]
 pub struct OrderChange;

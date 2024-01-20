@@ -32,6 +32,7 @@ pub fn command_parser(
     mut access: Access,
     mut mode: Local<i32>,
     mut next_state: ResMut<NextState<Mode>>,
+    mut drag_modes: ResMut<DragModes>,
 ) {
     if char_input_events.is_empty() { return; }
     let text = &mut display.single_mut().sections[0].value;
@@ -139,6 +140,8 @@ pub fn command_parser(
                         Some("s") => {},
                         Some("l") => {},
                         Some("a") => {},
+                        Some("op") => {},
+                        Some("ord") => {},
                         _ => {},
                     }
                 },
@@ -153,13 +156,82 @@ pub fn command_parser(
                 *mode = 1;
                 next_state.set(Mode::Draw);
                 *text = "-- DRAW --".to_string();
-            }
+            },
             Some("c") => {
                 *mode = 2;
                 next_state.set(Mode::Connect);
                 *text = "-- CONNECT --".to_string();
-            }
-            Some("hi") => {text.clear();},
+            },
+            Some("et") => {
+                drag_modes.falsify();
+                drag_modes.t = true;
+                text.clear();
+            },
+            Some("er") => {
+                drag_modes.falsify();
+                drag_modes.r = true;
+                text.clear();
+            },
+            Some("en") => {
+                drag_modes.falsify();
+                drag_modes.n = true;
+                text.clear();
+            },
+            Some("eh") => {
+                drag_modes.falsify();
+                drag_modes.h = true;
+                text.clear();
+            },
+            Some("es") => {
+                drag_modes.falsify();
+                drag_modes.s = true;
+                text.clear();
+            },
+            Some("el") => {
+                drag_modes.falsify();
+                drag_modes.l = true;
+                text.clear();
+            },
+            Some("ea") => {
+                drag_modes.falsify();
+                drag_modes.a = true;
+                text.clear();
+            },
+
+            Some("ee") => {
+                drag_modes.falsify();
+                text.clear();
+            },
+
+            Some("Et") => {
+                drag_modes.t = true;
+                text.clear();
+            },
+            Some("Er") => {
+                drag_modes.r = true;
+                text.clear();
+            },
+            Some("En") => {
+                drag_modes.n = true;
+                text.clear();
+            },
+            Some("Eh") => {
+                drag_modes.h = true;
+                text.clear();
+            },
+            Some("Es") => {
+                drag_modes.s = true;
+                text.clear();
+            },
+            Some("El") => {
+                drag_modes.l = true;
+                text.clear();
+            },
+            Some("Ea") => {
+                drag_modes.a = true;
+                text.clear();
+            },
+
             Some("ht") => {
             },
             _ => {},

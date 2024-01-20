@@ -56,6 +56,7 @@ fn main() {
         .add_state::<Mode>()
         .add_systems(Update, save_scene)
         .add_systems(Update, load_scene)
+        .init_resource::<DragModes>()
         // cursor
         .insert_resource(CursorInfo::default())
         .add_systems(Update, update_cursor_info)
@@ -94,6 +95,7 @@ fn main() {
         .add_systems(Update, command_parser)
 
         // type registry
+        .register_type::<DragModes>()
         .register_type::<Queue>()
         .register_type::<Radius>()
         .register_type::<Col>()
