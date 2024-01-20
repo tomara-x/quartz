@@ -145,6 +145,9 @@ pub struct RadiusChange(pub Entity, pub f32);
 #[derive(Event)]
 pub struct OpChange(pub Entity, pub i32);
 
+#[derive(Event, Default)]
+pub struct SceneLoaded;
+
 // -------------------- commands --------------------
 pub struct DespawnCircle(pub Entity);
 impl Command for DespawnCircle {

@@ -55,7 +55,8 @@ fn main() {
         .add_systems(Update, toggle_pan)
         .add_state::<Mode>()
         .add_systems(Update, save_scene)
-        .add_systems(Update, load_scene)
+        .add_systems(Update, (load_scene, apply_deferred,
+                post_load.run_if(on_event::<SceneLoaded>())).chain())
         .init_resource::<DragModes>()
         // cursor
         .insert_resource(CursorInfo::default())
@@ -82,6 +83,7 @@ fn main() {
         .add_event::<RadiusChange>()
         .add_event::<OpChange>()
         .add_event::<OrderChange>()
+        .add_event::<SceneLoaded>()
         // connections
         .add_systems(Update, connect.run_if(in_state(Mode::Connect)))
         .add_systems(Update, draw_connections)
@@ -233,6 +235,7 @@ fn load_scene(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     keyboard_input: Res<Input<KeyCode>>,
+    mut scene_load_event: EventWriter<SceneLoaded>,
 ) {
     let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
     if ctrl && keyboard_input.just_pressed(KeyCode::O) {
@@ -240,6 +243,25 @@ fn load_scene(
             scene: asset_server.load("scene.scn.ron"),
             ..default()
         });
+        scene_load_event.send_default();
+    }
+}
+
+fn post_load(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+    query: Query<(Entity, &Radius, &Transform, &Col)>,
+) {
+    for (e, r, t, c) in query.iter() {
+        commands.entity(e).insert((
+            ColorMesh2dBundle {
+                mesh: meshes.add(bevy::prelude::shape::Circle::new(r.0).into()).into(),
+                material: materials.add(ColorMaterial::from(c.0)),
+                transform: *t,
+                ..default()
+            }
+        ));
     }
 }
 
