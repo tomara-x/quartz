@@ -82,15 +82,6 @@ pub fn command_parser(
             // commands starting with :
             let mut command = text.as_str().split_ascii_whitespace();
             match command.next() {
-                Some(":hi") => {
-                    match command.next() {
-                        Some("hey") => {
-                            text.push_str(" hiiiiiiiii");
-                            info!(text);
-                        },
-                        _ => {},
-                    }
-                },
                 Some(":d") => {
                     if let Some(s) = command.next() {
                         if let Ok(e) = str_to_id(s) {
