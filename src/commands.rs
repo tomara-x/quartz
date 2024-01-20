@@ -152,7 +152,25 @@ pub fn command_parser(
                                 }
                             }
                         },
-                        Some("x") => {},
+                        Some("x") => {
+                            if let Some(s) = command.next() {
+                                if let Ok(e) = str_to_id(s) {
+                                    if let Ok(mut t) = access.trans_query.get_mut(e) {
+                                        if let Some(n) = command.next() {
+                                            if let Ok(n) = n.parse::<f32>() {
+                                                t.translation.x = n;
+                                            }
+                                        }
+                                    }
+                                } else if let Ok(n) = s.parse::<f32>() {
+                                    for id in access.selected_query.iter() {
+                                        if let Ok(mut t) = access.trans_query.get_mut(id) {
+                                            t.translation.x = n;
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         Some("y") => {},
                         Some("z") => {},
                         Some("h") => {},
