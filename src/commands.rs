@@ -10,16 +10,15 @@ use crate::components::*;
 #[derive(SystemParam)]
 pub struct Access<'w, 's> {
     op_query: Query<'w, 's, &'static mut Op>,
-    num_query: Query<'w, 's, &'static mut crate::components::Num>,
-    mats: ResMut<'w, Assets<ColorMaterial>>,
-    material_ids: Query<'w, 's, &'static Handle<ColorMaterial>>,
-    radius_query: Query<'w, 's, &'static mut Radius>,
-    meshes: ResMut<'w, Assets<Mesh>>,
-    mesh_ids: Query<'w, 's, &'static Mesh2dHandle>,
+    num_query: Query<'w, 's, &'static mut Num>,
+    radius_query: Query<'w, 's, (Entity, &'static mut Radius)>,
+    col_query: Query<'w, 's, (Entity, &'static mut Col)>,
     trans_query: Query<'w, 's, &'static mut Transform>,
     arr_query: Query<'w, 's, &'static mut Arr>,
     order_query: Query<'w, 's, &'static mut Order>,
     selected_query: Query<'w, 's, Entity, With<Selected>>,
+    radius_change_event: EventWriter<'w, RadiusChange>,
+    color_change_event: EventWriter<'w, ColorChange>,
 }
 
 pub fn command_parser(
@@ -132,7 +131,27 @@ pub fn command_parser(
                                 }
                             }
                         },
-                        Some("r") => {},
+                        Some("r") => {
+                            if let Some(s) = command.next() {
+                                if let Ok(e) = str_to_id(s) {
+                                    if let Ok(mut radius) = access.radius_query.get_mut(e) {
+                                        if let Some(n) = command.next() {
+                                            if let Ok(n) = n.parse::<f32>() {
+                                                radius.1.0 = n;
+                                                access.radius_change_event.send(RadiusChange(e, radius.1.0));
+                                            }
+                                        }
+                                    }
+                                } else if let Ok(n) = s.parse::<f32>() {
+                                    for id in access.selected_query.iter() {
+                                        if let Ok(mut radius) = access.radius_query.get_mut(id) {
+                                            radius.1.0 = n;
+                                            access.radius_change_event.send(RadiusChange(id, n));
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         Some("x") => {},
                         Some("y") => {},
                         Some("z") => {},
