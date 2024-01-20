@@ -416,8 +416,9 @@ pub fn update_num(
     keyboard_input: Res<Input<KeyCode>>,
     cursor: Res<CursorInfo>,
     mouse_button_input: Res<Input<MouseButton>>,
+    drag_modes: Res<DragModes>,
 ) {
-    if keyboard_input.pressed(KeyCode::Key4) {
+    if drag_modes.n {
         if mouse_button_input.pressed(MouseButton::Left) &&
         !mouse_button_input.just_pressed(MouseButton::Left) {
             for mut n in query.iter_mut() {
