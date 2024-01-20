@@ -2,7 +2,6 @@ use bevy::{
     prelude::*,
     ecs::system::SystemParam,
     window::ReceivedCharacter,
-    sprite::Mesh2dHandle,
 };
 
 use crate::components::*;
