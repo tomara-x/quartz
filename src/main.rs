@@ -152,7 +152,7 @@ fn setup(
         .with_children(|parent| {
             parent.spawn((
                 TextBundle::from_section(
-                    ":awoo",
+                    "",
                     TextStyle {
                         font_size: 13.0,
                         ..default()
