@@ -136,6 +136,9 @@ impl DragModes {
 #[derive(Event, Default)]
 pub struct OrderChange;
 
+#[derive(Event)]
+pub struct ColorChange(pub Entity, pub Color);
+
 // -------------------- commands --------------------
 pub struct DespawnCircle(pub Entity);
 impl Command for DespawnCircle {

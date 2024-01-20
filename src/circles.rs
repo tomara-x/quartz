@@ -238,8 +238,9 @@ pub fn move_selected(
     cursor: Res<CursorInfo>,
     mut query: Query<&mut Transform, With<Selected>>,
     keyboard_input: Res<Input<KeyCode>>,
+    drag_modes: Res<DragModes>,
 ) {
-    if keyboard_input.pressed(KeyCode::Key1) {
+    if drag_modes.t {
         if mouse_button_input.pressed(MouseButton::Left) &&
         //lol because the update to entities isn't read until the next frame
         !mouse_button_input.just_pressed(MouseButton::Left) {
@@ -272,55 +273,91 @@ pub fn move_selected(
 }
 
 pub fn update_color(
-    mut mats: ResMut<Assets<ColorMaterial>>,
-    material_ids: Query<&Handle<ColorMaterial>, With<Selected>>,
-    keyboard_input: Res<Input<KeyCode>>,
-    cursor: Res<CursorInfo>,
     mouse_button_input: Res<Input<MouseButton>>,
+    cursor: Res<CursorInfo>,
+    mut query: Query<(Entity, &mut Col), With<Selected>>,
+    keyboard_input: Res<Input<KeyCode>>,
+    drag_modes: Res<DragModes>,
+    mut color_change_event: EventWriter<ColorChange>,
 ) {
-    if keyboard_input.pressed(KeyCode::Key2) {
-        if mouse_button_input.pressed(MouseButton::Left) &&
-        !mouse_button_input.just_pressed(MouseButton::Left) {
-            for id in material_ids.iter() {
-                let mat = mats.get_mut(id).unwrap();
-                mat.color.set_h((mat.color.h() + cursor.d.x).rem_euclid(360.));
+    if mouse_button_input.pressed(MouseButton::Left)
+    && !mouse_button_input.just_pressed(MouseButton::Left) {
+        if drag_modes.h {
+            for (e, mut c) in query.iter_mut() {
+                let h = (c.0.h() + cursor.d.x).clamp(0., 360.);
+                c.0.set_h(h);
+                color_change_event.send(ColorChange(e, c.0));
             }
         }
-
-        // FIXME(amy): use opposing arrows to change the same value
-        // up/down -> hue
-        // shift+up/down -> saturation
-        // right/left -> lightness
-        // shift+right/left -> alpha
-        // or something
-        // and clamp the limits, don't mod
-        let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
-        let increment = if shift { 0.01 } else { -0.01 };
-        if keyboard_input.pressed(KeyCode::Up) {
-            for id in material_ids.iter() {
-                let mat = mats.get_mut(id).unwrap();
-                mat.color.set_h((mat.color.h() + increment * 100.).rem_euclid(360.));
+        if drag_modes.s {
+            for (e, mut c) in query.iter_mut() {
+                let s = (c.0.s() + cursor.d.x / 100.).clamp(0., 1.);
+                c.0.set_s(s);
+                color_change_event.send(ColorChange(e, c.0));
             }
         }
-        if keyboard_input.pressed(KeyCode::Down) {
-            for id in material_ids.iter() {
-                let mat = mats.get_mut(id).unwrap();
-                mat.color.set_s((mat.color.s() + increment).rem_euclid(2.));
+        if drag_modes.l {
+            for (e, mut c) in query.iter_mut() {
+                let l = (c.0.l() + cursor.d.x / 100.).clamp(0., 1.);
+                c.0.set_l(l);
+                color_change_event.send(ColorChange(e, c.0));
             }
         }
-        if keyboard_input.pressed(KeyCode::Right) {
-            for id in material_ids.iter() {
-                let mat = mats.get_mut(id).unwrap();
-                mat.color.set_l((mat.color.l() + increment).rem_euclid(4.));
-            }
-        }
-        if keyboard_input.pressed(KeyCode::Left) {
-            for id in material_ids.iter() {
-                let mat = mats.get_mut(id).unwrap();
-                mat.color.set_a((mat.color.a() + increment).rem_euclid(1.));
+        if drag_modes.a {
+            for (e, mut c) in query.iter_mut() {
+                let a = (c.0.a() + cursor.d.x / 100.).clamp(0., 1.);
+                c.0.set_a(a);
+                color_change_event.send(ColorChange(e, c.0));
             }
         }
     }
+}
+
+pub fn update_mat_from_color(
+    mut mats: ResMut<Assets<ColorMaterial>>,
+    material_ids: Query<&Handle<ColorMaterial>>,
+    mut color_change_event: EventReader<ColorChange>,
+) {
+    for event in color_change_event.read() {
+        let id = material_ids.get(event.0).unwrap();
+        let mat = mats.get_mut(id).unwrap();
+        mat.color = event.1;
+    }
+    //if keyboard_input.pressed(KeyCode::Key2) {
+    //    if mouse_button_input.pressed(MouseButton::Left) &&
+    //    !mouse_button_input.just_pressed(MouseButton::Left) {
+    //        for id in material_ids.iter() {
+    //            let mat = mats.get_mut(id).unwrap();
+    //            mat.color.set_h((mat.color.h() + cursor.d.x).rem_euclid(360.));
+    //        }
+    //    }
+    //    let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
+    //    let increment = if shift { 0.01 } else { -0.01 };
+    //    if keyboard_input.pressed(KeyCode::Up) {
+    //        for id in material_ids.iter() {
+    //            let mat = mats.get_mut(id).unwrap();
+    //            mat.color.set_h((mat.color.h() + increment * 100.).rem_euclid(360.));
+    //        }
+    //    }
+    //    if keyboard_input.pressed(KeyCode::Down) {
+    //        for id in material_ids.iter() {
+    //            let mat = mats.get_mut(id).unwrap();
+    //            mat.color.set_s((mat.color.s() + increment).rem_euclid(2.));
+    //        }
+    //    }
+    //    if keyboard_input.pressed(KeyCode::Right) {
+    //        for id in material_ids.iter() {
+    //            let mat = mats.get_mut(id).unwrap();
+    //            mat.color.set_l((mat.color.l() + increment).rem_euclid(4.));
+    //        }
+    //    }
+    //    if keyboard_input.pressed(KeyCode::Left) {
+    //        for id in material_ids.iter() {
+    //            let mat = mats.get_mut(id).unwrap();
+    //            mat.color.set_a((mat.color.a() + increment).rem_euclid(1.));
+    //        }
+    //    }
+    //}
 }
 
 pub fn update_radius(

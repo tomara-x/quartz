@@ -66,6 +66,7 @@ fn main() {
         .add_systems(Update, update_selection.after(mark_visible).run_if(in_state(Mode::Edit)))
         .add_systems(Update, move_selected.after(update_selection).run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_color.after(update_selection).run_if(in_state(Mode::Edit)))
+        .add_systems(Update, update_mat_from_color.after(update_selection).run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_radius.after(update_selection).run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_num.after(update_selection).run_if(in_state(Mode::Edit)))
         .add_systems(Update, highlight_selected.run_if(in_state(Mode::Edit)))
@@ -74,6 +75,9 @@ fn main() {
         .add_systems(Update, update_circle_text.run_if(in_state(Mode::Edit)))
         .add_systems(Update, select_all.run_if(in_state(Mode::Edit)))
         .add_systems(Update, duplicate_selected.run_if(in_state(Mode::Edit)))
+        // events
+        .add_event::<ColorChange>()
+        .add_event::<OrderChange>()
         // connections
         .add_systems(Update, connect.run_if(in_state(Mode::Connect)))
         .add_systems(Update, draw_connections)
@@ -88,7 +92,6 @@ fn main() {
                               apply_deferred, //to make sure the commands are applied
                               sort_by_order.run_if(on_event::<OrderChange>())).chain())
         .init_resource::<Queue>()
-        .add_event::<OrderChange>()
         // process
         .add_systems(Update, process.after(sort_by_order))
         // commands
