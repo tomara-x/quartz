@@ -19,6 +19,7 @@ pub struct Access<'w, 's> {
     radius_change_event: EventWriter<'w, RadiusChange>,
     color_change_event: EventWriter<'w, ColorChange>,
     op_change_event: EventWriter<'w, OpChange>,
+    order_change: EventWriter<'w, OrderChange>,
 }
 
 pub fn command_parser(
@@ -314,7 +315,28 @@ pub fn command_parser(
                                 }
                             }
                         },
-                        Some("ord") => {},
+                        Some("ord") => {
+                            if let Some(s) = command.next() {
+                                if let Ok(e) = str_to_id(s) {
+                                    if let Ok(mut order) = access.order_query.get_mut(e) {
+                                        if let Some(n) = command.next() {
+                                            if let Ok(n) = n.parse::<usize>() {
+                                                order.0 = n;
+                                                access.order_change.send_default();
+                                            }
+                                        }
+                                    }
+                                } else if let Ok(n) = s.parse::<usize>() {
+                                    for id in access.selected_query.iter() {
+                                        if let Ok(mut order) = access.order_query.get_mut(id) {
+                                            order.0 = n;
+                                            access.order_change.send_default();
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        Some("arr") => {},
                         _ => {},
                     }
                 },
