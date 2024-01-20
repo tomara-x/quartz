@@ -54,7 +54,6 @@ fn main() {
         
         .add_systems(Update, toggle_pan)
         .add_state::<Mode>()
-        .add_systems(Update, switch_mode)
         .add_systems(Update, save_scene)
         .add_systems(Update, load_scene)
         // cursor
@@ -179,18 +178,6 @@ fn toggle_pan(
     if keyboard_input.just_released(KeyCode::Space) {
         let mut pancam = query.single_mut();
         pancam.enabled = false;
-    }
-}
-
-
-fn switch_mode(
-    mut next_state: ResMut<NextState<Mode>>,
-    keyboard_input: Res<Input<KeyCode>>,
-) {
-    if keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]) {
-        if keyboard_input.just_pressed(KeyCode::Key1) { next_state.set(Mode::Draw); }
-        if keyboard_input.just_pressed(KeyCode::Key2) { next_state.set(Mode::Connect); }
-        if keyboard_input.just_pressed(KeyCode::Key3) { next_state.set(Mode::Edit); }
     }
 }
 
