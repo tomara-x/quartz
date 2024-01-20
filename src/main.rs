@@ -55,8 +55,8 @@ fn main() {
         .add_systems(Update, toggle_pan)
         .add_state::<Mode>()
         .add_systems(Update, save_scene)
-        .add_systems(Update, (load_scene, apply_deferred,
-                post_load.run_if(on_event::<SceneLoaded>())).chain())
+        .add_systems(Update, load_scene)
+        .add_systems(Update, post_load.run_if(on_event::<SceneLoaded>()))
         .init_resource::<DragModes>()
         // cursor
         .insert_resource(CursorInfo::default())
@@ -205,6 +205,7 @@ fn save_scene(world: &mut World) {
             .allow::<Radius>()
             .allow::<Col>()
             .allow::<Transform>()
+            .allow::<GlobalTransform>()
             .allow::<Op>()
             .allow::<Num>()
             .allow::<Arr>()
@@ -214,6 +215,7 @@ fn save_scene(world: &mut World) {
             .allow::<OpChanged>()
             .allow::<BlackHole>()
             .allow::<WhiteHole>()
+            .allow::<Parent>()
             .extract_entities(query.iter(&world))
             //.extract_resources()
             .build();
@@ -254,14 +256,14 @@ fn post_load(
     query: Query<(Entity, &Radius, &Transform, &Col)>,
 ) {
     for (e, r, t, c) in query.iter() {
-        commands.entity(e).insert((
+        commands.entity(e).insert(
             ColorMesh2dBundle {
                 mesh: meshes.add(bevy::prelude::shape::Circle::new(r.0).into()).into(),
                 material: materials.add(ColorMaterial::from(c.0)),
                 transform: *t,
                 ..default()
             }
-        ));
+        );
     }
 }
 
