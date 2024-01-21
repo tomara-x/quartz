@@ -261,6 +261,7 @@ fn post_load(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     query: Query<(Entity, &Radius, &Transform, &Col)>,
+    text_query: Query<(Entity, &Text), With<Save>>,
     keyboard_input: Res<Input<KeyCode>>,
 ) {
     let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
@@ -272,6 +273,15 @@ fn post_load(
                     material: materials.add(ColorMaterial::from(c.0)),
                     transform: *t,
                     ..default()
+                }
+            );
+        }
+        for (e, t) in text_query.iter() {
+            commands.entity(e).insert(
+                Text2dBundle {
+                    text: t.clone(),
+                    transform: Transform::from_translation(Vec3{z:0.000001, ..default()}),
+                ..default()
                 }
             );
         }
