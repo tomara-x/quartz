@@ -199,7 +199,7 @@ fn save_scene(world: &mut World) {
     let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
     if ctrl && keyboard_input.just_pressed(KeyCode::S) {
 
-        let mut query = world.query_filtered::<Entity, With<Radius>>();
+        let mut query = world.query_filtered::<Entity, Or<(With<Radius>, With<Text>)>>();
         let scene = DynamicSceneBuilder::from_world(&world)
             //.allow_resource::<Queue>()
             .allow::<Radius>()
@@ -217,6 +217,10 @@ fn save_scene(world: &mut World) {
             .allow::<WhiteHole>()
             .allow::<Parent>()
             .allow::<Children>()
+            .allow::<Text>()
+            .allow::<ViewVisibility>()
+            .allow::<InheritedVisibility>()
+            .allow::<Visibility>()
             .extract_entities(query.iter(&world))
             //.extract_resources()
             .build();
