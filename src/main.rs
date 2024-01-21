@@ -56,7 +56,7 @@ fn main() {
         .add_state::<Mode>()
         .add_systems(Update, save_scene)
         .add_systems(Update, load_scene)
-        .add_systems(Update, post_load.run_if(on_event::<SceneLoaded>()))
+        .add_systems(Update, post_load)
         .init_resource::<DragModes>()
         // cursor
         .insert_resource(CursorInfo::default())
@@ -261,16 +261,20 @@ fn post_load(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     query: Query<(Entity, &Radius, &Transform, &Col)>,
+    keyboard_input: Res<Input<KeyCode>>,
 ) {
-    for (e, r, t, c) in query.iter() {
-        commands.entity(e).insert(
-            ColorMesh2dBundle {
-                mesh: meshes.add(bevy::prelude::shape::Circle::new(r.0).into()).into(),
-                material: materials.add(ColorMaterial::from(c.0)),
-                transform: *t,
-                ..default()
-            }
-        );
+    let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
+    if ctrl && keyboard_input.just_pressed(KeyCode::P) {
+        for (e, r, t, c) in query.iter() {
+            commands.entity(e).insert(
+                ColorMesh2dBundle {
+                    mesh: meshes.add(bevy::prelude::shape::Circle::new(r.0).into()).into(),
+                    material: materials.add(ColorMaterial::from(c.0)),
+                    transform: *t,
+                    ..default()
+                }
+            );
+        }
     }
 }
 
