@@ -1,5 +1,9 @@
 use bevy::{
-    ecs::system::Command,
+    ecs::{
+        system::Command,
+        entity::{EntityMapper, MapEntities},
+        reflect::{ReflectComponent, ReflectMapEntities},
+    },
     prelude::*};
 use fundsp::hacker32::*;
 // -------------------- components --------------------
@@ -50,7 +54,7 @@ pub struct NetIns(pub Vec<Shared<f32>>);
 pub struct Save;
 
 #[derive(Component, Reflect)]
-#[reflect(Component)]
+#[reflect(Component, MapEntities)]
 pub struct WhiteHole {
     pub bh: Entity,
     pub bh_parent: Entity,
@@ -58,15 +62,8 @@ pub struct WhiteHole {
     pub new_lt: bool,
     pub open: bool,
 }
-
-#[derive(Component, Reflect)]
-#[reflect(Component)]
-pub struct BlackHole {
-    pub wh: Entity,
-}
-
-impl Default for WhiteHole {
-    fn default() -> Self {
+impl FromWorld for WhiteHole {
+    fn from_world(_world: &mut World) -> Self {
         WhiteHole {
             bh: Entity::PLACEHOLDER,
             bh_parent: Entity::PLACEHOLDER,
@@ -76,12 +73,28 @@ impl Default for WhiteHole {
         }
     }
 }
+impl MapEntities for WhiteHole {
+    fn map_entities(&mut self, entity_mapper: &mut EntityMapper) {
+        self.bh = entity_mapper.get_or_reserve(self.bh);
+        self.bh_parent = entity_mapper.get_or_reserve(self.bh_parent);
+    }
+}
 
-impl Default for BlackHole {
-    fn default() -> Self {
+#[derive(Component, Reflect)]
+#[reflect(Component, MapEntities)]
+pub struct BlackHole {
+    pub wh: Entity,
+}
+impl FromWorld for BlackHole {
+    fn from_world(_world: &mut World) -> Self {
         BlackHole {
             wh: Entity::PLACEHOLDER,
         }
+    }
+}
+impl MapEntities for BlackHole {
+    fn map_entities(&mut self, entity_mapper: &mut EntityMapper) {
+        self.wh = entity_mapper.get_or_reserve(self.wh);
     }
 }
 
