@@ -161,11 +161,13 @@ fn despawn_circle(entity: Entity, world: &mut World) {
         world.entity_mut(entity).despawn_recursive();
         world.entity_mut(mirror).despawn_recursive();
     } else {
-        let children = world.entity(entity).get::<Children>().unwrap().to_vec();
-        for child in children {
-            if let Some(mirror) = get_mirror_hole(child, world) {
-                world.entity_mut(child).despawn_recursive();
-                world.entity_mut(mirror).despawn_recursive();
+        if let Some(children) = world.entity(entity).get::<Children>() {
+            let children = children.to_vec();
+            for child in children {
+                if let Some(mirror) = get_mirror_hole(child, world) {
+                    world.entity_mut(child).despawn_recursive();
+                    world.entity_mut(mirror).despawn_recursive();
+                }
             }
         }
         world.entity_mut(entity).despawn_recursive();
