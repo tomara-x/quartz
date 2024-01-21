@@ -37,10 +37,11 @@ pub fn spawn_circles(
             crate::components::Num(0.),
             Arr(vec!(42., 105., 420., 1729.)),
             Op(0),
+            Save,
         )).id();
 
         // have the circle adopt a text entity
-        let text = commands.spawn(Text2dBundle {
+        let text = commands.spawn((Text2dBundle {
             text: Text::from_sections([
                 TextSection::new(
                     id.index().to_string() + "v" + &id.generation().to_string() + "\n",
@@ -61,7 +62,9 @@ pub fn spawn_circles(
             ]),
             transform: Transform::from_translation(Vec3{z:0.000001, ..default()}),
             ..default()
-        }).id();
+        },
+        Save,
+        )).id();
         commands.entity(id).add_child(text);
 
         *depth += 0.00001;

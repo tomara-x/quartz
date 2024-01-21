@@ -45,6 +45,9 @@ pub struct Network(pub Net32);
 #[derive(Component)]
 pub struct NetIns(pub Vec<Shared<f32>>);
 
+#[derive(Component)]
+pub struct Save;
+
 #[derive(Component, Reflect)]
 #[reflect(Component)]
 pub struct WhiteHole {

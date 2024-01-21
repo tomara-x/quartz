@@ -45,6 +45,7 @@ pub fn connect(
                 Visible,
                 Radius(src_radius * 0.1),
                 Col(Color::BLACK),
+                Save,
             )).id();
             let white_hole = commands.spawn(( ColorMesh2dBundle {
                     mesh: meshes.add(shape::Circle::new(snk_radius * 0.1).into()).into(),
@@ -62,6 +63,7 @@ pub fn connect(
                     new_lt: true,
                     open: true,
                 },
+                Save,
             )).id();
 
             // insert black hole white hole
@@ -75,24 +77,28 @@ pub fn connect(
             commands.entity(snk).add_child(white_hole);
 
             // add link type text
-            let black_hole_text = commands.spawn(Text2dBundle {
+            let black_hole_text = commands.spawn((Text2dBundle {
                 text: Text::from_section(
                     0.to_string(),
                     TextStyle { color: Color::WHITE, ..default() },
                     ),
                 transform: Transform::from_translation(Vec3{z:0.000001, ..default()}),
                 ..default()
-                }).id();
+                },
+                Save,
+                )).id();
             commands.entity(black_hole).add_child(black_hole_text);
 
-            let white_hole_text = commands.spawn(Text2dBundle {
+            let white_hole_text = commands.spawn((Text2dBundle {
                 text: Text::from_section(
                     0.to_string(),
                     TextStyle { color: Color::BLACK, ..default() },
                     ),
                 transform: Transform::from_translation(Vec3{z:0.000001, ..default()}),
                 ..default()
-                }).id();
+                },
+                Save,
+                )).id();
             commands.entity(white_hole).add_child(white_hole_text);
         }
     }
