@@ -45,7 +45,8 @@ pub struct Network(pub Net32);
 #[derive(Component)]
 pub struct NetIns(pub Vec<Shared<f32>>);
 
-#[derive(Component)]
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
 pub struct Save;
 
 #[derive(Component, Reflect)]
