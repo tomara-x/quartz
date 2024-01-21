@@ -63,7 +63,7 @@ pub fn process(
         let children = children_query.get(*id).unwrap();
         let op_changed = &mut access.op_changed_query.get_mut(*id).unwrap().0;
         match access.op_query.get(*id).unwrap().0 {
-            -10 => { // pass
+            -6 => { // pass
                 for child in children {
                     if let Ok(white_hole) = white_hole_query.get(*child) {
                         if white_hole.link_types == (-1, 1) {
@@ -74,7 +74,7 @@ pub fn process(
                     }
                 }
             },
-            -9 => { // sum
+            -5 => { // sum
                 let mut out = 0.;
                 for child in children {
                     if let Ok(white_hole) = white_hole_query.get(*child) {
@@ -85,7 +85,7 @@ pub fn process(
                 }
                 access.num_query.get_mut(*id).unwrap().0 = out;
             },
-            -8 => { // tonemapping
+            -4 => { // tonemapping
                 let mut tm = access.tonemapping.single_mut();
                 for child in children {
                     if let Ok(white_hole) = white_hole_query.get(*child) {
@@ -106,7 +106,7 @@ pub fn process(
                     }
                 }
             },
-            -7 => { // bloom
+            -3 => { // bloom
                 let mut bloom_settings = access.bloom.single_mut();
                 for child in children {
                     if let Ok(white_hole) = white_hole_query.get(*child) {
@@ -125,7 +125,7 @@ pub fn process(
                     }
                 }
             },
-            -6 => { // set
+            -2 => { // set
                 for child in children {
                     if let Ok(white_hole) = white_hole_query.get(*child) {
                         if white_hole.link_types.0 == -1 {
@@ -137,7 +137,7 @@ pub fn process(
                     }
                 }
             },
-            -5 => { // get
+            -1 => { // get
                 for child in children {
                     if let Ok(white_hole) = white_hole_query.get(*child) {
                         if white_hole.link_types.1 == -1 {

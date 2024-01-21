@@ -518,16 +518,12 @@ pub fn update_circle_text(
         }
         if let Ok(op) = op_query.get(**parent) {
             text.sections[2].value = match op.0 {
-                -10 => "op: pass\n".to_string(),
-                -9 => "op: sum\n".to_string(),
-                -8 => "op: tonemapping\n".to_string(),
-                -7 => "op: bloom\n".to_string(),
-                -6 => "op: set\n".to_string(),
-                -5 => "op: get\n".to_string(),
-                -4 => "op: fromTCR\n".to_string(),
-                -3 => "op: to_radius\n".to_string(),
-                -2 => "op: to_color\n".to_string(),
-                -1 => "op: to_trans\n".to_string(),
+                -6 => "op: pass\n".to_string(),
+                -5 => "op: sum\n".to_string(),
+                -4 => "op: tonemapping\n".to_string(),
+                -3 => "op: bloom\n".to_string(),
+                -2 => "op: set\n".to_string(),
+                -1 => "op: get\n".to_string(),
                 0 => "op: empty\n".to_string(),
                 1 => "op: Var\n".to_string(),
                 2 => "op: Oscil\n".to_string(),
