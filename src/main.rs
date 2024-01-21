@@ -14,6 +14,8 @@ use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use std::{fs::File, io::Write};
 //use std::time::{Duration, Instant};
 
+use fundsp::hacker32::*;
+
 mod components;
 mod process;
 mod cursor;
@@ -109,7 +111,7 @@ fn main() {
         .register_type::<Radius>()
         .register_type::<Col>()
         .register_type::<Op>()
-        .register_type::<Num>()
+        .register_type::<crate::components::Num>()
         .register_type::<Arr>()
         .register_type::<Vec<f32>>()
         .register_type::<Selected>()
@@ -208,7 +210,7 @@ fn save_scene(world: &mut World) {
             .allow::<Transform>()
             .allow::<GlobalTransform>()
             .allow::<Op>()
-            .allow::<Num>()
+            .allow::<crate::components::Num>()
             .allow::<Arr>()
             .allow::<Selected>()
             .allow::<Visible>()
@@ -267,14 +269,16 @@ fn post_load(
     let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
     if ctrl && keyboard_input.just_pressed(KeyCode::P) {
         for (e, r, t, c) in query.iter() {
-            commands.entity(e).insert(
+            commands.entity(e).insert((
                 ColorMesh2dBundle {
                     mesh: meshes.add(bevy::prelude::shape::Circle::new(r.0).into()).into(),
                     material: materials.add(ColorMaterial::from(c.0)),
                     transform: *t,
                     ..default()
-                }
-            );
+                },
+                Network(Net32::new(0,1)),
+                NetIns(Vec::new()),
+            ));
         }
         for (e, t) in text_query.iter() {
             commands.entity(e).insert(
