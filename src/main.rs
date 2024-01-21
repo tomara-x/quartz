@@ -216,6 +216,7 @@ fn save_scene(world: &mut World) {
             .allow::<BlackHole>()
             .allow::<WhiteHole>()
             .allow::<Parent>()
+            .allow::<Children>()
             .extract_entities(query.iter(&world))
             //.extract_resources()
             .build();
