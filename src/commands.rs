@@ -16,6 +16,8 @@ pub struct Access<'w, 's> {
     arr_query: Query<'w, 's, &'static mut Arr>,
     order_query: Query<'w, 's, &'static mut Order>,
     selected_query: Query<'w, 's, Entity, With<Selected>>,
+    white_hole_query: Query<'w, 's, &'static mut WhiteHole>,
+    black_hole_query: Query<'w, 's, &'static mut BlackHole>,
     radius_change_event: EventWriter<'w, RadiusChange>,
     color_change_event: EventWriter<'w, ColorChange>,
     op_change_event: EventWriter<'w, OpChange>,
@@ -28,7 +30,6 @@ pub fn command_parser(
     mut char_input_events: EventReader<ReceivedCharacter>,
     mut commands: Commands,
     entities: Query<Entity, With<Radius>>,
-    mut white_hole_query: Query<&mut WhiteHole, With<Selected>>,
     mut access: Access,
     mut mode: Local<i32>,
     mut next_state: ResMut<NextState<Mode>>,
@@ -94,11 +95,26 @@ pub fn command_parser(
                         }
                     },
                     Some(":lt") | Some("lt") => {
-                        if let Some(b) = command.next() {
-                            if let Some(w) = command.next() {
-                                let (b, w) = (str_to_lt(b), str_to_lt(w));
-                                for mut wh in white_hole_query.iter_mut() {
-                                    wh.link_types = (b, w);
+                        if let Some(s) = command.next() {
+                            if let Ok(e) = str_to_id(s) {
+                                if let Ok(mut wh) = access.white_hole_query.get_mut(e) {
+                                    if let Some(s) = command.next() {
+                                        wh.link_types.1 = str_to_lt(s);
+                                    }
+                                } else if let Ok(bh) = access.black_hole_query.get(e) {
+                                    let wh = &mut access.white_hole_query.get_mut(bh.wh).unwrap();
+                                    if let Some(s) = command.next() {
+                                        wh.link_types.0 = str_to_lt(s);
+                                    }
+                                }
+                            } else {
+                                for id in access.selected_query.iter() {
+                                    if let Ok(mut wh) = access.white_hole_query.get_mut(id) {
+                                        wh.link_types.1 = str_to_lt(s);
+                                    } else if let Ok(bh) = access.black_hole_query.get(id) {
+                                        let wh = &mut access.white_hole_query.get_mut(bh.wh).unwrap();
+                                        wh.link_types.0 = str_to_lt(s);
+                                    }
                                 }
                             }
                         }
@@ -445,8 +461,10 @@ pub fn command_parser(
             },
 
             Some("ht") => {
-                for mut wh in white_hole_query.iter_mut() {
-                    wh.open = !wh.open;
+                for id in access.selected_query.iter() {
+                    if let Ok(mut wh) = access.white_hole_query.get_mut(id) {
+                        wh.open = !wh.open;
+                    }
                 }
                 text.clear();
             },
