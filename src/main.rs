@@ -75,8 +75,7 @@ fn main() {
         .add_systems(Update, update_num.after(update_selection).run_if(in_state(Mode::Edit)))
         .add_systems(Update, highlight_selected.run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_order.run_if(in_state(Mode::Edit)))
-        .add_systems(Update, update_op.run_if(in_state(Mode::Edit)))
-        .add_systems(Update, update_net_from_op.after(update_op).run_if(in_state(Mode::Edit)))
+        .add_systems(Update, update_net_from_op.run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_circle_text.run_if(in_state(Mode::Edit)))
         .add_systems(Update, select_all.run_if(in_state(Mode::Edit)))
         .add_systems(Update, duplicate_selected.run_if(in_state(Mode::Edit)))
@@ -283,7 +282,7 @@ fn post_load(
                 NetIns(Vec::new()),
             ));
             if let Ok(op) = op_query.get(e) {
-                op_change_event.send(OpChange(e, op.0));
+                op_change_event.send(OpChange(e, op.0.clone()));
             }
         }
         for (e, t) in text_query.iter() {

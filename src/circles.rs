@@ -36,7 +36,7 @@ pub fn spawn_circles(
             NetIns(Vec::new()),
             crate::components::Num(0.),
             Arr(vec!(42., 105., 420., 1729.)),
-            Op(0),
+            Op("empty".to_string()),
             Save,
         )).id();
 
@@ -52,7 +52,7 @@ pub fn spawn_circles(
                     TextStyle { color: Color::BLACK, ..default() },
                 ),
                 TextSection::new(
-                    "op: empty\n",
+                    "empty\n",
                     TextStyle { color: Color::BLACK, ..default() },
                 ),
                 TextSection::new(
@@ -208,7 +208,7 @@ pub fn duplicate_selected(
                 NetIns(Vec::new()),
                 crate::components::Num(num.0),
                 Arr(arr.0.clone().into()),
-                Op(0),
+                Op("empty".to_string()),
             )).id();
             let text = commands.spawn(Text2dBundle {
                 text: Text::from_sections([
@@ -221,7 +221,7 @@ pub fn duplicate_selected(
                         TextStyle { color: Color::BLACK, ..default() },
                     ),
                     TextSection::new(
-                        "op: empty\n",
+                        "empty\n",
                         TextStyle { color: Color::BLACK, ..default() },
                     ),
                     TextSection::new(
@@ -447,25 +447,6 @@ pub fn update_num(
     }
 }
 
-pub fn update_op(
-    mut query: Query<(Entity, &mut Op), With<Selected>>,
-    keyboard_input: Res<Input<KeyCode>>,
-    mut op_change_event: EventWriter<OpChange>,
-) {
-    if keyboard_input.just_pressed(KeyCode::O) {
-        for (e, mut op) in query.iter_mut() {
-            op.0 -= 1;
-            op_change_event.send(OpChange(e, op.0));
-        }
-    }
-    if keyboard_input.just_pressed(KeyCode::P) {
-        for (e, mut op) in query.iter_mut() {
-            op.0 += 1;
-            op_change_event.send(OpChange(e, op.0));
-        }
-    }
-}
-
 pub fn update_net_from_op(
     mut query: Query<(&mut OpChanged, &mut Network, &mut NetIns)>,
     mut radius_change_event: EventReader<OpChange>,
@@ -473,8 +454,8 @@ pub fn update_net_from_op(
     for event in radius_change_event.read() {
         let (mut op_changed, mut n, mut inputs) = query.get_mut(event.0).unwrap();
         op_changed.0 = true;
-        match event.1 {
-            1 => { // Var
+        match event.1.as_str() {
+            "Var" => {
                 let input = shared(0.);
                 n.0 = Net32::wrap(Box::new(var(&input)));
                 inputs.0.clear();
@@ -520,22 +501,7 @@ pub fn update_circle_text(
             text.sections[1].value = "order: ".to_string() + &order.0.to_string() + "\n";
         }
         if let Ok(op) = op_query.get(**parent) {
-            text.sections[2].value = match op.0 {
-                -6 => "op: pass\n".to_string(),
-                -5 => "op: sum\n".to_string(),
-                -4 => "op: tonemapping\n".to_string(),
-                -3 => "op: bloom\n".to_string(),
-                -2 => "op: set\n".to_string(),
-                -1 => "op: get\n".to_string(),
-                0 => "op: empty\n".to_string(),
-                1 => "op: Var\n".to_string(),
-                2 => "op: Oscil\n".to_string(),
-                3 => "op: Sum\n".to_string(),
-                4 => "op: Product\n".to_string(),
-                5 => "op: Out\n".to_string(),
-                6 => "op: Probe\n".to_string(),
-                _ => op.0.to_string() + "\n",
-            };
+            text.sections[2].value = op.0.clone() + "\n";
         }
         if let Ok(num) = num_query.get(**parent) {
             text.sections[3].value = num.0.to_string();

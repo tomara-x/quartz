@@ -292,17 +292,15 @@ pub fn command_parser(
                                     if let Ok(e) = str_to_id(s) {
                                         if let Ok(mut op) = access.op_query.get_mut(e) {
                                             if let Some(n) = command.next() {
-                                                if let Ok(n) = n.parse::<i32>() {
-                                                    op.1.0 = n;
-                                                    access.op_change_event.send(OpChange(e, n));
-                                                }
+                                                op.1.0 = n.to_string();
+                                                access.op_change_event.send(OpChange(e, n.to_string()));
                                             }
                                         }
-                                    } else if let Ok(n) = s.parse::<i32>() {
+                                    } else {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut op) = access.op_query.get_mut(id) {
-                                                op.1.0 = n;
-                                                access.op_change_event.send(OpChange(id, n));
+                                                op.1.0 = s.to_string();
+                                                access.op_change_event.send(OpChange(id, s.to_string()));
                                             }
                                         }
                                     }

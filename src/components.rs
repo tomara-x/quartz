@@ -9,7 +9,7 @@ use fundsp::hacker32::*;
 // -------------------- components --------------------
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
-pub struct Op(pub i32);
+pub struct Op(pub String);
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
@@ -160,7 +160,7 @@ pub struct ColorChange(pub Entity, pub Color);
 pub struct RadiusChange(pub Entity, pub f32);
 
 #[derive(Event)]
-pub struct OpChange(pub Entity, pub i32);
+pub struct OpChange(pub Entity, pub String);
 
 #[derive(Event, Default)]
 pub struct SceneLoaded;

@@ -62,8 +62,8 @@ pub fn process(
     'entity: for id in queue.0.iter().flatten() {
         let children = children_query.get(*id).unwrap();
         let op_changed = &mut access.op_changed_query.get_mut(*id).unwrap().0;
-        match access.op_query.get(*id).unwrap().0 {
-            -6 => { // pass
+        match access.op_query.get(*id).unwrap().0.as_str() {
+            "pass" => {
                 for child in children {
                     if let Ok(white_hole) = white_hole_query.get(*child) {
                         if white_hole.link_types == (-1, 1) {
@@ -74,7 +74,7 @@ pub fn process(
                     }
                 }
             },
-            -5 => { // sum
+            "sum" => {
                 let mut out = 0.;
                 for child in children {
                     if let Ok(white_hole) = white_hole_query.get(*child) {
@@ -85,7 +85,7 @@ pub fn process(
                 }
                 access.num_query.get_mut(*id).unwrap().0 = out;
             },
-            -4 => { // tonemapping
+            "tonemapping" => {
                 let mut tm = access.tonemapping.single_mut();
                 for child in children {
                     if let Ok(white_hole) = white_hole_query.get(*child) {
@@ -106,7 +106,7 @@ pub fn process(
                     }
                 }
             },
-            -3 => { // bloom
+            "bloom" => {
                 let mut bloom_settings = access.bloom.single_mut();
                 for child in children {
                     if let Ok(white_hole) = white_hole_query.get(*child) {
@@ -125,7 +125,7 @@ pub fn process(
                     }
                 }
             },
-            -2 => { // set
+            "set" => {
                 for child in children {
                     if let Ok(white_hole) = white_hole_query.get(*child) {
                         if white_hole.link_types.0 == -1 {
@@ -137,7 +137,7 @@ pub fn process(
                     }
                 }
             },
-            -1 => { // get
+            "get" => {
                 for child in children {
                     if let Ok(white_hole) = white_hole_query.get(*child) {
                         if white_hole.link_types.1 == -1 {
@@ -150,14 +150,14 @@ pub fn process(
                     }
                 }
             },
-            0 => {},
-            1 => { // Var
+            "empty" => {},
+            "Var" => {
                 let num = access.num_query.get(*id).unwrap().0;
                 if let Some(var) = &access.net_ins_query.get(*id).unwrap().0.get(0) {
                     var.set_value(num);
                 }
             },
-            2 => { // Oscil
+            "Oscil" => {
                 for child in children {
                     if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
                         if white_hole.link_types == (-1, 2) {
@@ -183,7 +183,7 @@ pub fn process(
                 }
                 *op_changed = false;
             },
-            3 => { // Sum
+            "Sum" => {
                 let mut changed = false;
                 let mut inputs = Vec::new();
                 for child in children {
@@ -207,7 +207,7 @@ pub fn process(
                     *output = Net32::wrap(Box::new(graph));
                 }
             },
-            4 => { // Product
+            "Product" => {
                 let mut changed = false;
                 let mut inputs = Vec::new();
                 for child in children {
@@ -233,8 +233,7 @@ pub fn process(
                     *output = Net32::wrap(Box::new(graph));
                 }
             },
-            // you can simplify this by having 2 separate objects, out_l and out_r
-            5 => { // Out
+            "Out" => {
                 let mut has_l = false;
                 let mut has_r = false;
                 for child in children {
@@ -273,7 +272,7 @@ pub fn process(
                     *had_r = false;
                 }
             },
-            6 => { // Probe
+            "Probe" => {
                 for child in children {
                     if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
                         if white_hole.link_types == (0, 1) && (white_hole.new_lt || *op_changed) {
@@ -317,10 +316,8 @@ pub fn process(
                     -8 => { input = access.col_query.get(white_hole.bh_parent).unwrap().0.l(); },
                     // alpha
                     -9 => { input = access.col_query.get(white_hole.bh_parent).unwrap().0.a(); },
-                    // op
-                    -10 => { input = access.op_query.get(white_hole.bh_parent).unwrap().0 as f32; },
                     // order
-                    -11 => { input = access.order_query.get(white_hole.bh_parent).unwrap().0 as f32; },
+                    -10 => { input = access.order_query.get(white_hole.bh_parent).unwrap().0 as f32; },
                     _ => {},
                 }
                 match white_hole.link_types.1 {
@@ -353,10 +350,6 @@ pub fn process(
                         access.color_change_event.send(ColorChange(*id, c));
                     },
                     -10 => {
-                        access.op_query.get_mut(*id).unwrap().0 = input as i32;
-                        access.op_change_event.send(OpChange(*id, input as i32));
-                    },
-                    -11 => {
                         access.order_query.get_mut(*id).unwrap().0 = input as usize;
                         access.order_change.send_default();
                     },
