@@ -200,3 +200,39 @@ fn get_mirror_hole(entity: Entity, world: &World) -> Option<Entity> {
         return None;
     }
 }
+
+// -------------------- helper-functions --------------------
+pub fn str_to_lt(s: &str) -> i32 {
+    if let Ok(n) = s.parse::<i32>() {
+        n
+    } else {
+        match s {
+            "n" => -1,
+            "r" => -2,
+            "x" => -3,
+            "y" => -4,
+            "z" => -5,
+            "h" => -6,
+            "s" => -7,
+            "l" => -8,
+            "a" => -9,
+            "ord" => -10,
+            _ => 0,
+        }
+    }
+}
+pub fn lt_to_string(n: i32) -> String {
+    match n {
+        -1 => "n".to_string(),
+        -2 => "r".to_string(),
+        -3 => "x".to_string(),
+        -4 => "y".to_string(),
+        -5 => "z".to_string(),
+        -6 => "h".to_string(),
+        -7 => "s".to_string(),
+        -8 => "l".to_string(),
+        -9 => "a".to_string(),
+        -10 => "ord".to_string(),
+        _ => n.to_string(),
+    }
+}

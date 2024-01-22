@@ -180,11 +180,11 @@ pub fn update_link_type_text(
     for (mut text, parent) in query.iter_mut() {
         if let Ok(hole) = black_hole_query.get(**parent) {
             if let Ok(wh) = white_hole_query.get(hole.wh) {
-                text.sections[0].value = wh.link_types.0.to_string();
+                text.sections[0].value = lt_to_string(wh.link_types.0);
             }
         }
         if let Ok(hole) = white_hole_query.get(**parent) {
-            text.sections[0].value = hole.link_types.1.to_string();
+            text.sections[0].value = lt_to_string(hole.link_types.1);
         }
     }
 }

@@ -96,10 +96,9 @@ pub fn command_parser(
                     Some(":lt") | Some("lt") => {
                         if let Some(b) = command.next() {
                             if let Some(w) = command.next() {
-                                if let (Ok(b), Ok(w)) = (b.parse::<i32>(), w.parse::<i32>()) {
-                                    for mut wh in white_hole_query.iter_mut() {
-                                        wh.link_types = (b, w);
-                                    }
+                                let (b, w) = (str_to_lt(b), str_to_lt(w));
+                                for mut wh in white_hole_query.iter_mut() {
+                                    wh.link_types = (b, w);
                                 }
                             }
                         }
