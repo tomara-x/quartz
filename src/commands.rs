@@ -451,8 +451,9 @@ pub fn command_parser(
                 }
                 text.clear();
             },
-            Some("o") | Some("p") |
-            Some(",") | Some(".") |
+            Some("o") => {
+                *text = ":set op ".to_string();
+            },
             Some("[") | Some("]") => {
                 text.clear();
             },
