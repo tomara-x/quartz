@@ -265,6 +265,9 @@ fn post_load(
     query: Query<(Entity, &Radius, &Transform, &Col)>,
     text_query: Query<(Entity, &Text), With<Save>>,
     keyboard_input: Res<Input<KeyCode>>,
+    mut op_change_event: EventWriter<OpChange>,
+    op_query: Query<&Op>,
+    mut order_change: EventWriter<OrderChange>,
 ) {
     let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
     if ctrl && keyboard_input.just_pressed(KeyCode::P) {
@@ -279,6 +282,9 @@ fn post_load(
                 Network(Net32::new(0,1)),
                 NetIns(Vec::new()),
             ));
+            if let Ok(op) = op_query.get(e) {
+                op_change_event.send(OpChange(e, op.0));
+            }
         }
         for (e, t) in text_query.iter() {
             commands.entity(e).insert(
@@ -289,6 +295,7 @@ fn post_load(
                 }
             );
         }
+        order_change.send_default();
     }
 }
 

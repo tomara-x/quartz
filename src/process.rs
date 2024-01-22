@@ -153,8 +153,9 @@ pub fn process(
             0 => {},
             1 => { // Var
                 let num = access.num_query.get(*id).unwrap().0;
-                let var = &access.net_ins_query.get(*id).unwrap().0[0];
-                var.set_value(num);
+                if let Some(var) = &access.net_ins_query.get(*id).unwrap().0.get(0) {
+                    var.set_value(num);
+                }
             },
             2 => { // Oscil
                 for child in children {
