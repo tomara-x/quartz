@@ -174,68 +174,8 @@ pub fn select_all(
     }
 }
 
-// HAZARDOUS!
-pub fn duplicate_selected(
-    mut commands: Commands,
-    query: Query<(&Radius, &Handle<ColorMaterial>,
-    &Transform, &crate::components::Num, &Arr), With<Selected>>,
-    selected_query: Query<Entity, With<Selected>>,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-    keyboard_input: Res<Input<KeyCode>>,
-) {
-    let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
-    if ctrl && keyboard_input.just_pressed(KeyCode::D) {
-        for e in selected_query.iter() {
-            commands.entity(e).remove::<Selected>();
-        }
-        for (radius, mat_id, trans, num, arr) in query.iter() {
-            let color = materials.get(mat_id).unwrap().color;
-            let id = commands.spawn((
-                ColorMesh2dBundle {
-                    mesh: meshes.add(bevy::prelude::shape::Circle::new(radius.0).into()).into(),
-                    material: materials.add(ColorMaterial::from(color)),
-                    transform: Transform::from_translation(
-                        Vec3 {z: trans.translation.z + 1., ..trans.translation }),
-                    ..default()
-                },
-                Radius(radius.0),
-                Visible,
-                Selected,
-                Order(0),
-                OpChanged(true),
-                Network(Net32::new(0,1)),
-                NetIns(Vec::new()),
-                crate::components::Num(num.0),
-                Arr(arr.0.clone().into()),
-                Op("empty".to_string()),
-            )).id();
-            let text = commands.spawn(Text2dBundle {
-                text: Text::from_sections([
-                    TextSection::new(
-                        id.index().to_string() + "v" + &id.generation().to_string() + "\n",
-                        TextStyle { color: Color::BLACK, font_size: 18., ..default() },
-                    ),
-                    TextSection::new(
-                        "order: 0\n",
-                        TextStyle { color: Color::BLACK, ..default() },
-                    ),
-                    TextSection::new(
-                        "empty\n",
-                        TextStyle { color: Color::BLACK, ..default() },
-                    ),
-                    TextSection::new(
-                        "0",
-                        TextStyle { color: Color::BLACK, ..default() },
-                    ),
-                ]),
-                transform: Transform::from_translation(Vec3{z:0.000001, ..default()}),
-                ..default()
-            }).id();
-            commands.entity(id).add_child(text);
-        }
-    }
-}
+// TODO(amy): use scenes
+pub fn duplicate_selected() {}
 
 pub fn move_selected(
     mouse_button_input: Res<Input<MouseButton>>,
