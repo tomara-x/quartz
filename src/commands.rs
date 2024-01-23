@@ -426,6 +426,12 @@ pub fn command_parser(
                 drag_modes.a = true;
                 text.clear();
             },
+            Some("eo") => {
+                // rotation
+            },
+            Some("ev") => {
+                // vertices
+            },
 
             Some("ee") => {
                 drag_modes.falsify();
@@ -459,6 +465,12 @@ pub fn command_parser(
             Some("Ea") => {
                 drag_modes.a = true;
                 text.clear();
+            },
+            Some("eO") => {
+                // rotation
+            },
+            Some("eV") => {
+                // vertices
             },
 
             Some("ht") => {
