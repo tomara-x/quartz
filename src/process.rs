@@ -78,6 +78,7 @@ pub fn process(
                 let mut out = 0.;
                 for child in children {
                     if let Ok(white_hole) = white_hole_query.get(*child) {
+                        if !white_hole.open { continue; }
                         if white_hole.link_types.0 == -1 {
                             out += access.num_query.get(white_hole.bh_parent).unwrap().0;
                         }

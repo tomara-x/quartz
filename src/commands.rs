@@ -32,10 +32,11 @@ pub fn command_parser(
     entities: Query<Entity, With<Radius>>,
     mut access: Access,
     mut mode: Local<i32>,
+    mut in_progress: Local<bool>,
     mut next_state: ResMut<NextState<Mode>>,
     mut drag_modes: ResMut<DragModes>,
 ) {
-    if char_input_events.is_empty() { return; }
+    if char_input_events.is_empty() && !*in_progress { return; }
     let text = &mut display.single_mut().sections[0].value;
 
     // draw mode
@@ -467,6 +468,24 @@ pub fn command_parser(
                     }
                 }
                 text.clear();
+            },
+            Some("hf") => {
+                if *in_progress {
+                    for id in access.selected_query.iter() {
+                        if let Ok(mut wh) = access.white_hole_query.get_mut(id) {
+                            wh.open = false;
+                        }
+                    }
+                    text.clear();
+                    *in_progress = false;
+                } else {
+                    for id in access.selected_query.iter() {
+                        if let Ok(mut wh) = access.white_hole_query.get_mut(id) {
+                            wh.open = true;
+                        }
+                    }
+                    *in_progress = true;
+                }
             },
             Some("o") => {
                 *text = ":set op ".to_string();
