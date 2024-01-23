@@ -325,7 +325,7 @@ pub fn process(
                     -11 => { input = access.vertices_query.get(white_hole.bh_parent).unwrap().0 as f32; },
                     // rotation
                     -12 => { input = access.trans_query.get(white_hole.bh_parent)
-                                           .unwrap().rotation.to_euler(EulerRot::ZYX).2; },
+                                           .unwrap().rotation.to_euler(EulerRot::XYZ).2; },
                     _ => {},
                 }
                 match white_hole.link_types.1 {
@@ -364,6 +364,11 @@ pub fn process(
                     -11 => {
                         access.vertices_query.get_mut(*id).unwrap().0 = input as usize;
                         access.vertices_change_event.send(VerticesChange(*id, input as usize));
+                    },
+                    -12 => {
+                        let (a, b, _) = access.trans_query.get(*id).unwrap().rotation.to_euler(EulerRot::XYZ);
+                        let q = Quat::from_euler(EulerRot::XYZ, a, b, input);
+                        access.trans_query.get_mut(*id).unwrap().rotation = q;
                     },
                     _ => {},
                 }
