@@ -264,7 +264,7 @@ fn post_load(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
-    query: Query<(Entity, &Radius, &Transform, &Col)>,
+    query: Query<(Entity, &Radius, &Transform, &Col, &Vertices)>,
     text_query: Query<(Entity, &Text), With<Save>>,
     keyboard_input: Res<Input<KeyCode>>,
     mut op_change_event: EventWriter<OpChange>,
@@ -273,18 +273,20 @@ fn post_load(
 ) {
     let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
     if ctrl && keyboard_input.just_pressed(KeyCode::P) {
-        for (e, r, t, c) in query.iter() {
-            commands.entity(e).insert((
+        for (e, r, t, c, v) in query.iter() {
+            commands.entity(e).insert(
                 ColorMesh2dBundle {
-                    mesh: meshes.add(bevy::prelude::shape::Circle::new(r.0).into()).into(),
+                    mesh: meshes.add(bevy::prelude::shape::Circle { radius: r.0, vertices: v.0 }.into()).into(),
                     material: materials.add(ColorMaterial::from(c.0)),
                     transform: *t,
                     ..default()
                 },
-                Network(Net32::new(0,1)),
-                NetIns(Vec::new()),
-            ));
+            );
             if let Ok(op) = op_query.get(e) {
+                commands.entity(e).insert((
+                    Network(Net32::new(0,1)),
+                    NetIns(Vec::new()),
+                ));
                 op_change_event.send(OpChange(e, op.0.clone()));
             }
         }
