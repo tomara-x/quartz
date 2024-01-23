@@ -229,6 +229,8 @@ pub fn str_to_lt(s: &str) -> i32 {
             "l" => -8,
             "a" => -9,
             "ord" => -10,
+            "v" => -11,
+            "o" => -12,
             _ => 0,
         }
     }
@@ -245,6 +247,8 @@ pub fn lt_to_string(n: i32) -> String {
         -8 => "l".to_string(),
         -9 => "a".to_string(),
         -10 => "ord".to_string(),
+        -11 => "v".to_string(),
+        -12 => "o".to_string(),
         _ => n.to_string(),
     }
 }
