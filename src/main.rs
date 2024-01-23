@@ -3,16 +3,17 @@ use bevy::{
         bloom::{BloomCompositeMode, BloomSettings},
         tonemapping::Tonemapping,
         },
+    sprite::Mesh2dHandle,
     utils::Duration,
     winit::{WinitSettings, UpdateMode},
     tasks::IoTaskPool,
     prelude::*};
+use bevy::prelude::shape::Circle as BevyCircle;
 
 use bevy_pancam::{PanCam, PanCamPlugin};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 use std::{fs::File, io::Write};
-//use std::time::{Duration, Instant};
 
 use fundsp::hacker32::*;
 
@@ -64,7 +65,7 @@ fn main() {
         .insert_resource(CursorInfo::default())
         .add_systems(Update, update_cursor_info)
         // circles
-        .add_systems(Update, draw_pointer_circle.run_if(not(in_state(Mode::Connect))))
+        .add_systems(Update, draw_selection_circle.run_if(not(in_state(Mode::Connect))))
         .add_systems(Update, mark_visible.after(update_cursor_info))
         .add_systems(Update, update_selection.after(mark_visible).run_if(in_state(Mode::Edit)))
         .add_systems(Update, move_selected.after(update_selection).run_if(in_state(Mode::Edit)))
@@ -129,8 +130,11 @@ fn main() {
 fn setup(
     mut commands: Commands,
     mut config: ResMut<GizmoConfig>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     config.line_width = 1.;
+    // camera
     commands.spawn((
         Camera2dBundle {
             camera: Camera {
@@ -156,6 +160,7 @@ fn setup(
         },
     ));
 
+    // command line
     commands.spawn(NodeBundle {
             style: Style {
                 width: Val::Percent(100.0),
@@ -182,6 +187,17 @@ fn setup(
                 CommandText,
             ));
         });
+
+        // selection / drawing circle
+        let id = commands.spawn((
+            ColorMesh2dBundle {
+                mesh: meshes.add(BevyCircle {radius: 0., vertices: 12} .into()).into(),
+                material: materials.add(ColorMaterial::from(Color::hsla(0., 1., 0.5, 0.3))),
+                transform: Transform::from_translation(Vec3::Z),
+                ..default()
+            },
+        )).id();
+        commands.insert_resource(SelectionCircle(id));
 }
 
 fn toggle_pan(
@@ -276,7 +292,7 @@ fn post_load(
         for (e, r, t, c, v) in query.iter() {
             commands.entity(e).insert(
                 ColorMesh2dBundle {
-                    mesh: meshes.add(bevy::prelude::shape::Circle { radius: r.0, vertices: v.0 }.into()).into(),
+                    mesh: meshes.add(BevyCircle { radius: r.0, vertices: v.0 }.into()).into(),
                     material: materials.add(ColorMaterial::from(c.0)),
                     transform: *t,
                     ..default()
@@ -303,18 +319,28 @@ fn post_load(
     }
 }
 
-fn draw_pointer_circle(
+fn draw_selection_circle(
     cursor: Res<CursorInfo>,
-    mut gizmos: Gizmos,
-    time: Res<Time>,
     mouse_button_input: Res<Input<MouseButton>>,
     keyboard_input: Res<Input<KeyCode>>,
+    id: Res<SelectionCircle>,
+    mut trans_query: Query<&mut Transform>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mesh_ids: Query<&Mesh2dHandle>,
 ) {
     if mouse_button_input.pressed(MouseButton::Left) &&
     ! mouse_button_input.just_pressed(MouseButton::Left) &&
     !keyboard_input.pressed(KeyCode::Space) {
-        let color = Color::hsl((time.elapsed_seconds() * 100.) % 360., 1.0, 0.5);
-        gizmos.circle_2d(cursor.i, cursor.f.distance(cursor.i), color).segments(64);
+        trans_query.get_mut(id.0).unwrap().translation = cursor.i.extend(1.);
+        let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
+        let mesh = meshes.get_mut(mesh_id).unwrap();
+        *mesh = BevyCircle { radius: cursor.i.distance(cursor.f), vertices: 12 }.into();
+    }
+    if mouse_button_input.just_released(MouseButton::Left) {
+        trans_query.get_mut(id.0).unwrap().translation = Vec3::Z;
+        let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
+        let mesh = meshes.get_mut(mesh_id).unwrap();
+        *mesh = BevyCircle { radius: 0., vertices: 12 }.into();
     }
 }
 

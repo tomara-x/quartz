@@ -158,6 +158,9 @@ impl DragModes {
     }
 }
 
+#[derive(Resource)]
+pub struct SelectionCircle(pub Entity);
+
 // -------------------- events --------------------
 #[derive(Event, Default)]
 pub struct OrderChange;
