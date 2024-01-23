@@ -79,9 +79,12 @@ fn main() {
         .add_systems(Update, update_circle_text.run_if(in_state(Mode::Edit)))
         .add_systems(Update, select_all.run_if(in_state(Mode::Edit)))
         .add_systems(Update, duplicate_selected.run_if(in_state(Mode::Edit)))
+        .add_systems(Update, update_mesh_from_vertices.run_if(in_state(Mode::Edit)))
+        .add_systems(Update, rotate_selected.after(update_selection).run_if(in_state(Mode::Edit)))
         // events
         .add_event::<ColorChange>()
         .add_event::<RadiusChange>()
+        .add_event::<VerticesChange>()
         .add_event::<OpChange>()
         .add_event::<OrderChange>()
         .add_event::<SceneLoaded>()
@@ -119,6 +122,7 @@ fn main() {
         .register_type::<BlackHole>()
         .register_type::<WhiteHole>()
         .register_type::<(i32, i32)>()
+        .register_type::<Vertices>()
         .run();
 }
 
@@ -222,6 +226,7 @@ fn save_scene(world: &mut World) {
             .allow::<ViewVisibility>()
             .allow::<InheritedVisibility>()
             .allow::<Visibility>()
+            .allow::<Vertices>()
             .extract_entities(query.iter(&world))
             //.extract_resources()
             .build();

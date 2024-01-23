@@ -25,6 +25,10 @@ pub struct Radius(pub f32);
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
+pub struct Vertices(pub usize);
+
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
 pub struct Col(pub Color);
 
 #[derive(Component, Reflect, Default)]
@@ -139,6 +143,7 @@ pub struct DragModes {
     pub s: bool,
     pub l: bool,
     pub a: bool,
+    pub o: bool,
 }
 impl DragModes {
     pub fn falsify(&mut self) {
@@ -149,6 +154,7 @@ impl DragModes {
         self.s = false;
         self.l = false;
         self.a = false;
+        self.o = false;
     }
 }
 
@@ -161,6 +167,9 @@ pub struct ColorChange(pub Entity, pub Color);
 
 #[derive(Event)]
 pub struct RadiusChange(pub Entity, pub f32);
+
+#[derive(Event)]
+pub struct VerticesChange(pub Entity, pub usize);
 
 #[derive(Event)]
 pub struct OpChange(pub Entity, pub String);

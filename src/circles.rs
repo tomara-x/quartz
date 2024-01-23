@@ -2,6 +2,7 @@ use bevy::{
     render::view::VisibleEntities,
     sprite::Mesh2dHandle,
     prelude::*};
+use bevy::prelude::shape::Circle as BevyCircle;
 
 use fundsp::hacker32::*;
 
@@ -18,16 +19,17 @@ pub fn spawn_circles(
 ) {
     if mouse_button_input.just_released(MouseButton::Left) &&
     !keyboard_input.pressed(KeyCode::Space) {
-        let radius = cursor.f.distance(cursor.i);
+        let r = cursor.f.distance(cursor.i);
+        let v = 12;
         let color = Color::hsla(300., 1., 0.5, 1.);
         let id = commands.spawn((
             ColorMesh2dBundle {
-                mesh: meshes.add(bevy::prelude::shape::Circle::new(radius).into()).into(),
+                mesh: meshes.add(BevyCircle { radius: r, vertices: v} .into()).into(),
                 material: materials.add(ColorMaterial::from(color)),
                 transform: Transform::from_translation(cursor.i.extend(*depth)),
                 ..default()
             },
-            Radius(radius),
+            Radius(r),
             Col(color),
             Visible, //otherwise it can't be selected til after mark_visible is updated
             Order(0),
@@ -37,6 +39,7 @@ pub fn spawn_circles(
             crate::components::Num(0.),
             Arr(vec!(42., 105., 420., 1729.)),
             Op("empty".to_string()),
+            Vertices(v),
             Save,
         )).id();
 
@@ -75,15 +78,15 @@ pub fn highlight_selected(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
-    added: Query<(Entity, &Radius), Added<Selected>>,
+    added: Query<(Entity, &Radius, &Vertices), Added<Selected>>,
     mut removed: RemovedComponents<Selected>,
     highlight_query: Query<&Highlight>,
     children_query: Query<&Children>,
 ) {
-    for (id, r) in added.iter() {
+    for (id, r, v) in added.iter() {
         let highlight = commands.spawn((
             ColorMesh2dBundle {
-                mesh: meshes.add(bevy::prelude::shape::Circle::new(r.0 + 5.).into()).into(),
+                mesh: meshes.add(BevyCircle{ radius: r.0 + 5., vertices: v.0} .into()).into(),
                 material: materials.add(ColorMaterial::from(Color::hsl(0.0,1.0,0.5))),
                 transform: Transform::from_translation(Vec3{z:-0.0000001, ..default()}),
                 ..default()
@@ -241,6 +244,33 @@ pub fn move_selected(
     }
 }
 
+pub fn rotate_selected(
+    mouse_button_input: Res<Input<MouseButton>>,
+    cursor: Res<CursorInfo>,
+    mut query: Query<&mut Transform, With<Selected>>,
+    keyboard_input: Res<Input<KeyCode>>,
+    drag_modes: Res<DragModes>,
+) {
+    if drag_modes.o {
+        if mouse_button_input.pressed(MouseButton::Left)
+        && !mouse_button_input.just_pressed(MouseButton::Left) {
+            for mut t in query.iter_mut() {
+                t.rotate_z(cursor.d.x / 100.);
+            }
+        }
+        if keyboard_input.any_pressed([KeyCode::Up, KeyCode::Right]) {
+            for mut t in query.iter_mut() {
+                t.rotate_z(0.01);
+            }
+        }
+        if keyboard_input.any_pressed([KeyCode::Down, KeyCode::Left]) {
+            for mut t in query.iter_mut() {
+                t.rotate_z(-0.01);
+            }
+        }
+    }
+}
+
 pub fn update_color(
     mouse_button_input: Res<Input<MouseButton>>,
     cursor: Res<CursorInfo>,
@@ -377,11 +407,28 @@ pub fn update_mesh_from_radius(
     mut meshes: ResMut<Assets<Mesh>>,
     mesh_ids: Query<&Mesh2dHandle>,
     mut radius_change_event: EventReader<RadiusChange>,
+    vertices_query: Query<&Vertices>,
 ) {
     for event in radius_change_event.read() {
+        let v = vertices_query.get(event.0).unwrap().0;
         let Mesh2dHandle(id) = mesh_ids.get(event.0).unwrap();
         let mesh = meshes.get_mut(id).unwrap();
-        *mesh = bevy::prelude::shape::Circle::new(event.1).into();
+        *mesh = BevyCircle {radius: event.1, vertices: v }.into();
+    }
+}
+
+pub fn update_mesh_from_vertices(
+    mut meshes: ResMut<Assets<Mesh>>,
+    mesh_ids: Query<&Mesh2dHandle>,
+    mut vertices_change_event: EventReader<VerticesChange>,
+    radius_query: Query<&Radius>,
+) {
+    for event in vertices_change_event.read() {
+        let r = radius_query.get(event.0).unwrap().0;
+        let v = if event.1 < 3 { 3 } else { event.1 };
+        let Mesh2dHandle(id) = mesh_ids.get(event.0).unwrap();
+        let mesh = meshes.get_mut(id).unwrap();
+        *mesh = BevyCircle { radius: r, vertices: v }.into();
     }
 }
 

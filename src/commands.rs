@@ -22,6 +22,8 @@ pub struct Access<'w, 's> {
     color_change_event: EventWriter<'w, ColorChange>,
     op_change_event: EventWriter<'w, OpChange>,
     order_change: EventWriter<'w, OrderChange>,
+    vertices_query: Query<'w, 's, (Entity, &'static mut Vertices)>,
+    vertices_change_event: EventWriter<'w, VerticesChange>,
 }
 
 pub fn command_parser(
@@ -303,6 +305,48 @@ pub fn command_parser(
                                     }
                                 }
                             },
+                            Some("v") => {
+                                if let Some(s) = command.next() {
+                                    if let Ok(e) = str_to_id(s) {
+                                        if let Ok(mut vertices) = access.vertices_query.get_mut(e) {
+                                            if let Some(n) = command.next() {
+                                                if let Ok(n) = n.parse::<usize>() {
+                                                    let n = if n < 3 { 3 } else { n };
+                                                    vertices.1.0 = n;
+                                                    access.vertices_change_event.send(VerticesChange(e, n));
+                                                }
+                                            }
+                                        }
+                                    } else if let Ok(n) = s.parse::<usize>() {
+                                        for id in access.selected_query.iter() {
+                                            if let Ok(mut vertices) = access.vertices_query.get_mut(id) {
+                                                let n = if n < 3 { 3 } else { n };
+                                                vertices.1.0 = n;
+                                                access.vertices_change_event.send(VerticesChange(id, n));
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            Some("o") => {
+                                if let Some(s) = command.next() {
+                                    if let Ok(e) = str_to_id(s) {
+                                        if let Ok(mut t) = access.trans_query.get_mut(e) {
+                                            if let Some(n) = command.next() {
+                                                if let Ok(n) = n.parse::<f32>() {
+                                                    t.rotate_z(n);
+                                                }
+                                            }
+                                        }
+                                    } else if let Ok(n) = s.parse::<f32>() {
+                                        for id in access.selected_query.iter() {
+                                            if let Ok(mut t) = access.trans_query.get_mut(id) {
+                                                t.rotate_z(n);
+                                            }
+                                        }
+                                    }
+                                }
+                            },
                             Some("op") => {
                                 if let Some(s) = command.next() {
                                     if let Ok(e) = str_to_id(s) {
@@ -427,10 +471,9 @@ pub fn command_parser(
                 text.clear();
             },
             Some("eo") => {
-                // rotation
-            },
-            Some("ev") => {
-                // vertices
+                drag_modes.falsify();
+                drag_modes.o = true;
+                text.clear();
             },
 
             Some("ee") => {
@@ -467,10 +510,8 @@ pub fn command_parser(
                 text.clear();
             },
             Some("eO") => {
-                // rotation
-            },
-            Some("eV") => {
-                // vertices
+                drag_modes.o = true;
+                text.clear();
             },
 
             Some("ht") => {
