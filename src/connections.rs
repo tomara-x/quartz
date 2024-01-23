@@ -134,44 +134,6 @@ pub fn draw_connecting_line(
     }
 }
 
-pub fn update_link_type_b (
-    keyboard_input: Res<Input<KeyCode>>,
-    selected_black_holes: Query<&BlackHole, With<Selected>>,
-    mut white_hole_query: Query<&mut WhiteHole>,
-) {
-    if keyboard_input.just_pressed(KeyCode::Period) {
-        for hole in selected_black_holes.iter() {
-            let wh = &mut white_hole_query.get_mut(hole.wh).unwrap();
-            wh.link_types.0 += 1;
-            wh.new_lt = true;
-        }
-    }
-    if keyboard_input.just_pressed(KeyCode::Comma) {
-        for hole in selected_black_holes.iter() {
-            let wh = &mut white_hole_query.get_mut(hole.wh).unwrap();
-            wh.link_types.0 -= 1;
-            wh.new_lt = true;
-        }
-    }
-}
-pub fn update_link_type_w (
-    keyboard_input: Res<Input<KeyCode>>,
-    mut selected_white_holes: Query<&mut WhiteHole, With<Selected>>,
-) {
-    if keyboard_input.just_pressed(KeyCode::Period) {
-        for mut hole in selected_white_holes.iter_mut() {
-            hole.link_types.1 += 1;
-            hole.new_lt = true;
-        }
-    }
-    if keyboard_input.just_pressed(KeyCode::Comma) {
-        for mut hole in selected_white_holes.iter_mut() {
-            hole.link_types.1 -= 1;
-            hole.new_lt = true;
-        }
-    }
-}
-
 pub fn update_link_type_text(
     mut query: Query<(&mut Text, &Parent), With<Visible>>,
     black_hole_query: Query<&BlackHole>,
