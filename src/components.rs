@@ -53,6 +53,9 @@ pub struct NetIns(pub Vec<Shared<f32>>);
 #[reflect(Component)]
 pub struct Save;
 
+#[derive(Component)]
+pub struct Highlight;
+
 #[derive(Component, Reflect)]
 #[reflect(Component, MapEntities)]
 pub struct WhiteHole {

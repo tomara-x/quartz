@@ -72,13 +72,38 @@ pub fn spawn_circles(
 }
 
 pub fn highlight_selected(
-    mut gizmos: Gizmos,
-    time: Res<Time>,
-    query: Query<(&Radius, &GlobalTransform), With<Selected>>,
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+    added: Query<(Entity, &Radius), Added<Selected>>,
+    mut removed: RemovedComponents<Selected>,
+    highlight_query: Query<&Highlight>,
+    children_query: Query<&Children>,
 ) {
-    for (r, t) in query.iter() {
-        let color = Color::hsl((time.elapsed_seconds() * 100.) % 360., 1.0, 0.5);
-        gizmos.circle_2d(t.translation().xy(), r.0, color).segments(64);
+    for (id, r) in added.iter() {
+        let highlight = commands.spawn((
+            ColorMesh2dBundle {
+                mesh: meshes.add(bevy::prelude::shape::Circle::new(r.0 + 5.).into()).into(),
+                material: materials.add(ColorMaterial::from(Color::hsl(0.0,1.0,0.5))),
+                transform: Transform::from_translation(Vec3{z:-0.0000001, ..default()}),
+                ..default()
+            },
+            Highlight,
+        )).id();
+        commands.entity(id).add_child(highlight);
+    }
+    'circle: for id in removed.read() {
+        if let Ok(children) = children_query.get(id) {
+            for child in children {
+                if highlight_query.contains(*child) {
+                    if let Some(mut e) = commands.get_entity(*child) {
+                        e.remove_parent();
+                        e.despawn();
+                    }
+                    continue 'circle;
+                }
+            }
+        }
     }
 }
 
