@@ -37,7 +37,7 @@ pub fn connect(
 
             // spawn circles
             let black_hole = commands.spawn(( ColorMesh2dBundle {
-                    mesh: meshes.add(shape::Circle::new(src_radius * 0.1).into()).into(),
+                    mesh: meshes.add(shape::Circle { radius: src_radius * 0.15, vertices: 6 }.into()).into(),
                     material: materials.add(ColorMaterial::from(Color::BLACK)),
                     transform: Transform::from_translation((cursor.i - src_trans.xy()).extend(0.000001)),
                     ..default()
@@ -48,7 +48,7 @@ pub fn connect(
                 Save,
             )).id();
             let white_hole = commands.spawn(( ColorMesh2dBundle {
-                    mesh: meshes.add(shape::Circle::new(snk_radius * 0.1).into()).into(),
+                    mesh: meshes.add(shape::Circle { radius: snk_radius * 0.15, vertices: 6 }.into()).into(),
                     material: materials.add(ColorMaterial::from(Color::WHITE)),
                     transform: Transform::from_translation((cursor.f - snk_trans.xy()).extend(0.000001)),
                     ..default()
