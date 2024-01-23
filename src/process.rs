@@ -366,8 +366,7 @@ pub fn process(
                         access.vertices_change_event.send(VerticesChange(*id, input as usize));
                     },
                     -12 => {
-                        let (a, b, _) = access.trans_query.get(*id).unwrap().rotation.to_euler(EulerRot::XYZ);
-                        let q = Quat::from_euler(EulerRot::XYZ, a, b, input);
+                        let q = Quat::from_euler(EulerRot::XYZ, 0., 0., input);
                         access.trans_query.get_mut(*id).unwrap().rotation = q;
                     },
                     _ => {},
