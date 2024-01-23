@@ -129,11 +129,9 @@ fn main() {
 
 fn setup(
     mut commands: Commands,
-    mut config: ResMut<GizmoConfig>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
-    config.line_width = 1.;
     // camera
     commands.spawn((
         Camera2dBundle {
