@@ -255,7 +255,7 @@ pub fn rotate_selected(
         if mouse_button_input.pressed(MouseButton::Left)
         && !mouse_button_input.just_pressed(MouseButton::Left) {
             for mut t in query.iter_mut() {
-                t.rotate_z(cursor.d.x / 100.);
+                t.rotate_z(cursor.d.y / 100.);
             }
         }
         if keyboard_input.any_pressed([KeyCode::Up, KeyCode::Right]) {
