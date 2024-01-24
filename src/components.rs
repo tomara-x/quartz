@@ -274,13 +274,13 @@ pub struct Tri {
 
 impl From<Tri> for Mesh {
     fn from(tri: Tri) -> Self {
-        let i = tri.f * tri.ip + tri.i * (1. - tri.ip);
-        let f = tri.i * tri.fp + tri.f * (1. - tri.fp);
-        let perp = (i - f).perp().normalize_or_zero() * tri.b;
+        let i = (tri.f - tri.i).normalize_or_zero() * tri.ip;
+        let f = (tri.i - tri.f).normalize_or_zero() * tri.fp;
+        let perp = (tri.i - tri.f).perp().normalize_or_zero() * tri.b;
         let vertices = vec!(
-            [f.x, f.y, 0.0],
-            [i.x + perp.x, i.y + perp.y, 0.0],
-            [i.x - perp.x, i.y - perp.y, 0.0]
+            [tri.f.x + f.x, tri.f.y + f.y, 0.0],
+            [tri.i.x + i.x + perp.x, tri.i.y + i.y + perp.y, 0.0],
+            [tri.i.x + i.x - perp.x, tri.i.y + i.y - perp.y, 0.0]
         );
         let indices = Indices::U32(vec![0, 1, 2]);
         Mesh::new(PrimitiveTopology::TriangleList)
