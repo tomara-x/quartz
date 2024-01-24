@@ -274,9 +274,10 @@ pub struct Tri {
 
 impl From<Tri> for Mesh {
     fn from(tri: Tri) -> Self {
-        let i = (tri.f - tri.i).normalize_or_zero() * tri.ip;
-        let f = (tri.i - tri.f).normalize_or_zero() * tri.fp;
-        let perp = (tri.i - tri.f).perp().normalize_or_zero() * tri.b;
+        let diff = (tri.f - tri.i).normalize_or_zero();
+        let i = diff * tri.ip;
+        let f = diff * -tri.fp;
+        let perp = diff.perp() * tri.b;
         let vertices = vec!(
             [tri.f.x + f.x, tri.f.y + f.y, 0.0],
             [tri.i.x + i.x + perp.x, tri.i.y + i.y + perp.y, 0.0],
