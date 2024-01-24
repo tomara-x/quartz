@@ -267,14 +267,18 @@ pub fn lt_to_string(n: i32) -> String {
 pub struct Tri {
     pub i: Vec2,
     pub f: Vec2,
+    //pub ip: f32,
+    //pub fp: f32,
+    //pub b: f32,
 }
 
 impl From<Tri> for Mesh {
     fn from(tri: Tri) -> Self {
+        let perp = (tri.i - tri.f).perp().normalize_or_zero();
         let vertices = vec!(
             [tri.f.x, tri.f.y, 0.0],
-            [tri.i.x, tri.i.y, 0.0],
-            [tri.i.x+2., tri.i.y+2., 0.0]
+            [tri.i.x + perp.x, tri.i.y + perp.y, 0.0],
+            [tri.i.x - perp.x, tri.i.y - perp.y, 0.0]
         );
         let indices = Indices::U32(vec![0, 1, 2]);
         Mesh::new(PrimitiveTopology::TriangleList)
