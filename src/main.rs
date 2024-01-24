@@ -296,6 +296,7 @@ fn post_load(
     mut op_change_event: EventWriter<OpChange>,
     op_query: Query<&Op>,
     mut order_change: EventWriter<OrderChange>,
+    white_hole_query: Query<With<WhiteHole>>,
 ) {
     let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
     if ctrl && keyboard_input.just_pressed(KeyCode::P) {
@@ -314,6 +315,15 @@ fn post_load(
                     NetIns(Vec::new()),
                 ));
                 op_change_event.send(OpChange(e, op.0.clone()));
+            } else if white_hole_query.contains(e) {
+                let arrow = commands.spawn( ColorMesh2dBundle {
+                    // doesn't matter, it's gonna get replaced
+                    mesh: meshes.add(BevyCircle::new(0.).into()).into(),
+                    material: materials.add(ColorMaterial::from(Color::hsla(0., 1., 1., 0.7))),
+                    transform: Transform::from_translation(Vec3::Z),
+                    ..default()
+                }).id();
+                commands.entity(e).insert(ConnectionArrow(arrow));
             }
         }
         for (e, t) in text_query.iter() {

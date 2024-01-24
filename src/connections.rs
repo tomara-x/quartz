@@ -139,20 +139,22 @@ pub fn update_connection_arrows(
         let f = trans_query.get(bh.wh).unwrap().translation().xy();
         let ip = radius_query.get(id).unwrap().0;
         let fp = radius_query.get(bh.wh).unwrap().0;
-        let arrow_id = arrow_query.get(bh.wh).unwrap().0;
-        let Mesh2dHandle(mesh_id) = mesh_ids.get(arrow_id).unwrap();
-        let mesh = meshes.get_mut(mesh_id).unwrap();
-        *mesh = Tri { i: i, f: f, ip:ip, fp:fp, b:2. } .into();
+        if let Ok(arrow_id) = arrow_query.get(bh.wh) {
+            let Mesh2dHandle(mesh_id) = mesh_ids.get(arrow_id.0).unwrap();
+            let mesh = meshes.get_mut(mesh_id).unwrap();
+            *mesh = Tri { i: i, f: f, ip:ip, fp:fp, b:2. } .into();
+        }
     }
     for (id, wh) in wh_query.iter() {
         let f = trans_query.get(id).unwrap().translation().xy();
         let i = trans_query.get(wh.bh).unwrap().translation().xy();
         let fp = radius_query.get(id).unwrap().0;
         let ip = radius_query.get(wh.bh).unwrap().0;
-        let arrow_id = arrow_query.get(id).unwrap().0;
-        let Mesh2dHandle(mesh_id) = mesh_ids.get(arrow_id).unwrap();
-        let mesh = meshes.get_mut(mesh_id).unwrap();
-        *mesh = Tri { i: i, f: f, ip:ip, fp:fp, b:2. } .into();
+        if let Ok(arrow_id) = arrow_query.get(id) {
+            let Mesh2dHandle(mesh_id) = mesh_ids.get(arrow_id.0).unwrap();
+            let mesh = meshes.get_mut(mesh_id).unwrap();
+            *mesh = Tri { i: i, f: f, ip:ip, fp:fp, b:2. } .into();
+        }
     }
 }
 
