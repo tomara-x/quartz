@@ -1,4 +1,8 @@
 use bevy::{
+    render::{
+        render_resource::PrimitiveTopology,
+        mesh::Indices,
+    },
     ecs::{
         system::Command,
         entity::{EntityMapper, MapEntities},
@@ -256,5 +260,23 @@ pub fn lt_to_string(n: i32) -> String {
         -11 => "v".to_string(),
         -12 => "o".to_string(),
         _ => n.to_string(),
+    }
+}
+
+// -------------------- tri mesh --------------------
+pub struct Tri {
+    pub i: Vec2,
+    pub f: Vec2,
+}
+
+impl From<Tri> for Mesh {
+    fn from(tri: Tri) -> Self {
+        let vertices = vec!([tri.f.x, tri.f.y, 0.0],
+                        [tri.i.x, tri.i.y, 0.0],
+                        [tri.i.x+2., tri.i.y+2., 0.0]);
+        let indices = Indices::U32(vec![0, 1, 2]);
+        Mesh::new(PrimitiveTopology::TriangleList)
+            .with_indices(Some(indices))
+            .with_inserted_attribute(Mesh::ATTRIBUTE_POSITION, vertices)
     }
 }

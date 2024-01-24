@@ -139,22 +139,15 @@ pub fn draw_connecting_line(
     if mouse_button_input.pressed(MouseButton::Left)
     && !mouse_button_input.just_pressed(MouseButton::Left)
     && !keyboard_input.pressed(KeyCode::Space) {
-        if let Ok(mut t) = trans_query.get_mut(id.0) {
-            t.translation = ((cursor.i + cursor.f) / 2.).extend(1.);
-            let a = cursor.f - cursor.i;
-            let angle = a.y.atan2(a.x);
-            t.rotation = Quat::from_rotation_z(angle - FRAC_PI_2);
-            t.scale = Vec3::new(0.1, 1., 1.);
-        }
         let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
         let mesh = meshes.get_mut(mesh_id).unwrap();
-        *mesh = shape::Circle { radius: cursor.i.distance(cursor.f), vertices: 3 }.into();
+        *mesh = Tri{ i: cursor.i, f: cursor.f } .into();
     }
-    if mouse_button_input.just_released(MouseButton::Left) {
-        let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
-        let mesh = meshes.get_mut(mesh_id).unwrap();
-        *mesh = shape::Circle { radius: 0., vertices: 3 }.into();
-    }
+    //if mouse_button_input.just_released(MouseButton::Left) {
+    //    let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
+    //    let mesh = meshes.get_mut(mesh_id).unwrap();
+    //    *mesh = shape::Circle { radius: 0., vertices: 3 }.into();
+    //}
 }
 
 pub fn update_link_type_text(
@@ -173,5 +166,3 @@ pub fn update_link_type_text(
         }
     }
 }
-
-
