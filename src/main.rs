@@ -91,8 +91,8 @@ fn main() {
         .add_event::<SceneLoaded>()
         // connections
         .add_systems(Update, connect.run_if(in_state(Mode::Connect)))
-        .add_systems(Update, draw_connections)
-        .add_systems(Update, draw_connecting_line.run_if(in_state(Mode::Connect)))
+        .add_systems(Update, update_connection_arrows)
+        .add_systems(Update, draw_connecting_arrow.run_if(in_state(Mode::Connect)))
         .add_systems(Update, update_link_type_text.run_if(in_state(Mode::Edit)))
         // order
         .add_systems(Update, (spawn_circles.run_if(in_state(Mode::Draw)),
