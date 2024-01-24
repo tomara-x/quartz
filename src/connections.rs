@@ -138,7 +138,7 @@ pub fn draw_connecting_line(
     && !keyboard_input.pressed(KeyCode::Space) {
         let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
         let mesh = meshes.get_mut(mesh_id).unwrap();
-        *mesh = Tri { i: cursor.i, f: cursor.f } .into();
+        *mesh = Tri { i: cursor.i, f: cursor.f, ip:0., fp:0.2 } .into();
     }
     if mouse_button_input.just_released(MouseButton::Left) {
         let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
