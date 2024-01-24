@@ -564,16 +564,13 @@ pub fn delete_selected(
     }
 }
 
-// i feel dirty
 pub fn mark_children_change(
     query: Query<&Children, (With<Order>, Changed<Transform>)>,
     mut trans_query: Query<&mut Transform, Without<Order>>,
 ) {
     for children in query.iter() {
         for child in children {
-            if let Ok(mut x) = trans_query.get_mut(*child) {
-                *x = *x;
-            }
+            trans_query.get_mut(*child).unwrap().set_changed();
         }
     }
 }
