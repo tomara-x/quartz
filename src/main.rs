@@ -94,6 +94,7 @@ fn main() {
         .add_systems(Update, update_connection_arrows)
         .add_systems(Update, draw_connecting_arrow.run_if(in_state(Mode::Connect)))
         .add_systems(Update, update_link_type_text.run_if(in_state(Mode::Edit)))
+        .add_systems(Update, mark_children_change)
         // order
         .add_systems(Update, (spawn_circles.run_if(in_state(Mode::Draw)),
                               remove_connections.run_if(in_state(Mode::Edit)),
