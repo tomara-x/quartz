@@ -38,6 +38,21 @@ pub fn connect(
             let src_trans = trans_query.get(src).unwrap().translation();
             let snk_trans = trans_query.get(snk).unwrap().translation();
 
+            // spawn connection arrow
+            let arrow = commands.spawn(
+                ColorMesh2dBundle {
+                    mesh: meshes.add(Tri {
+                        i: cursor.i,
+                        f: cursor.f,
+                        ip: src_radius * 0.15,
+                        fp: snk_radius * 0.15,
+                        b: 2.
+                    }.into()).into(),
+                    material: materials.add(ColorMaterial::from(Color::hsla(0., 1., 1., 0.7))),
+                    transform: Transform::from_translation(Vec3::Z),
+                    ..default()
+                }
+            ).id();
             // spawn circles
             let black_hole = commands.spawn(( ColorMesh2dBundle {
                     mesh: meshes.add(shape::Circle { radius: src_radius * 0.15, vertices: 6 }.into()).into(),
@@ -69,6 +84,7 @@ pub fn connect(
                     open: true,
                 },
                 Save,
+                ConnectionArrow(arrow),
             )).id();
 
             // insert black hole white hole
@@ -110,19 +126,17 @@ pub fn connect(
 }
 
 pub fn draw_connections(
-    mut gizmos: Gizmos,
-    black_hole_query: Query<(Entity, &BlackHole)>,
-    time: Res<Time>,
-    trans_query: Query<&GlobalTransform>,
+    //black_hole_query: Query<(Entity, &BlackHole)>,
+    //trans_query: Query<&GlobalTransform>,
 ) {
-    for (id, black_hole) in black_hole_query.iter() {
-        let src_pos = trans_query.get(id).unwrap().translation().xy();
-        if let Ok(wh) = trans_query.get(black_hole.wh) {
-            let snk_pos = wh.translation().xy();
-            let color = Color::hsl((time.elapsed_seconds() * 100.) % 360., 1.0, 0.5);
-            gizmos.line_2d(src_pos, snk_pos, color);
-        }
-    }
+    //for (id, black_hole) in black_hole_query.iter() {
+    //    let src_pos = trans_query.get(id).unwrap().translation().xy();
+    //    if let Ok(wh) = trans_query.get(black_hole.wh) {
+    //        let snk_pos = wh.translation().xy();
+    //        let color = Color::hsl((time.elapsed_seconds() * 100.) % 360., 1.0, 0.5);
+    //        gizmos.line_2d(src_pos, snk_pos, color);
+    //    }
+    //}
 }
 
 pub fn draw_connecting_line(

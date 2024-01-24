@@ -91,6 +91,9 @@ impl MapEntities for WhiteHole {
     }
 }
 
+#[derive(Component)]
+pub struct ConnectionArrow(pub Entity);
+
 #[derive(Component, Reflect)]
 #[reflect(Component, MapEntities)]
 pub struct BlackHole {
