@@ -384,7 +384,7 @@ pub fn update_radius(
         if mouse_button_input.pressed(MouseButton::Left)
         && !mouse_button_input.just_pressed(MouseButton::Left) {
             for (e, mut r) in query.iter_mut() {
-                r.0 = cursor.f.distance(cursor.i);
+                r.0 += cursor.d.y;
                 radius_change_event.send(RadiusChange(e, r.0));
             }
         }
