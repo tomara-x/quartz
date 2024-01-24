@@ -269,14 +269,14 @@ pub struct Tri {
     pub f: Vec2,
     pub ip: f32,
     pub fp: f32,
-    //pub b: f32,
+    pub b: f32,
 }
 
 impl From<Tri> for Mesh {
     fn from(tri: Tri) -> Self {
         let i = tri.f * tri.ip + tri.i * (1. - tri.ip);
         let f = tri.i * tri.fp + tri.f * (1. - tri.fp);
-        let perp = (i - f).perp().normalize_or_zero();
+        let perp = (i - f).perp().normalize_or_zero() * tri.b;
         let vertices = vec!(
             [f.x, f.y, 0.0],
             [i.x + perp.x, i.y + perp.y, 0.0],
