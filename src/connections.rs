@@ -1,6 +1,11 @@
-use bevy::{prelude::*};
+use bevy::{
+    prelude::*,
+    sprite::Mesh2dHandle,
+};
 
 use crate::components::*;
+
+use std::f32::consts::FRAC_PI_2;
 
 pub fn connect(
     mouse_button_input: Res<Input<MouseButton>>,
@@ -123,16 +128,32 @@ pub fn draw_connections(
 }
 
 pub fn draw_connecting_line(
-    mut gizmos: Gizmos,
-    time: Res<Time>,
     mouse_button_input: Res<Input<MouseButton>>,
     cursor: Res<CursorInfo>,
     keyboard_input: Res<Input<KeyCode>>,
+    id: Res<ConnectingLine>,
+    mut trans_query: Query<&mut Transform>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mesh_ids: Query<&Mesh2dHandle>,
 ) {
-    if mouse_button_input.pressed(MouseButton::Left) &&
-    !keyboard_input.pressed(KeyCode::Space) {
-        let color = Color::hsl((time.elapsed_seconds() * 100.) % 360., 1.0, 0.5);
-        gizmos.line_2d(cursor.i, cursor.f, color);
+    if mouse_button_input.pressed(MouseButton::Left)
+    && !mouse_button_input.just_pressed(MouseButton::Left)
+    && !keyboard_input.pressed(KeyCode::Space) {
+        if let Ok(mut t) = trans_query.get_mut(id.0) {
+            t.translation = ((cursor.i + cursor.f) / 2.).extend(1.);
+            let a = cursor.f - cursor.i;
+            let angle = a.y.atan2(a.x);
+            t.rotation = Quat::from_rotation_z(angle - FRAC_PI_2);
+            t.scale = Vec3::new(0.1, 1., 1.);
+        }
+        let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
+        let mesh = meshes.get_mut(mesh_id).unwrap();
+        *mesh = shape::Circle { radius: cursor.i.distance(cursor.f), vertices: 3 }.into();
+    }
+    if mouse_button_input.just_released(MouseButton::Left) {
+        let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
+        let mesh = meshes.get_mut(mesh_id).unwrap();
+        *mesh = shape::Circle { radius: 0., vertices: 3 }.into();
     }
 }
 

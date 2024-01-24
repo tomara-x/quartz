@@ -196,6 +196,17 @@ fn setup(
             },
         )).id();
         commands.insert_resource(SelectionCircle(id));
+
+        // connecting line
+        let id = commands.spawn((
+            ColorMesh2dBundle {
+                mesh: meshes.add(BevyCircle {radius: 0., vertices: 3} .into()).into(),
+                material: materials.add(ColorMaterial::from(Color::hsla(0., 1., 0.5, 0.3))),
+                transform: Transform::from_translation(Vec3::Z),
+                ..default()
+            },
+        )).id();
+        commands.insert_resource(ConnectingLine(id));
 }
 
 fn toggle_pan(

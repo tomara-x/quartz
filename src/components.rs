@@ -161,6 +161,9 @@ impl DragModes {
 #[derive(Resource)]
 pub struct SelectionCircle(pub Entity);
 
+#[derive(Resource)]
+pub struct ConnectingLine(pub Entity);
+
 // -------------------- events --------------------
 #[derive(Event, Default)]
 pub struct OrderChange;
