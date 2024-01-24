@@ -5,8 +5,6 @@ use bevy::{
 
 use crate::components::*;
 
-use std::f32::consts::FRAC_PI_2;
-
 pub fn connect(
     mouse_button_input: Res<Input<MouseButton>>,
     mut commands: Commands,
@@ -132,7 +130,6 @@ pub fn draw_connecting_line(
     cursor: Res<CursorInfo>,
     keyboard_input: Res<Input<KeyCode>>,
     id: Res<ConnectingLine>,
-    mut trans_query: Query<&mut Transform>,
     mut meshes: ResMut<Assets<Mesh>>,
     mesh_ids: Query<&Mesh2dHandle>,
 ) {
@@ -141,13 +138,13 @@ pub fn draw_connecting_line(
     && !keyboard_input.pressed(KeyCode::Space) {
         let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
         let mesh = meshes.get_mut(mesh_id).unwrap();
-        *mesh = Tri{ i: cursor.i, f: cursor.f } .into();
+        *mesh = Tri { i: cursor.i, f: cursor.f } .into();
     }
-    //if mouse_button_input.just_released(MouseButton::Left) {
-    //    let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
-    //    let mesh = meshes.get_mut(mesh_id).unwrap();
-    //    *mesh = shape::Circle { radius: 0., vertices: 3 }.into();
-    //}
+    if mouse_button_input.just_released(MouseButton::Left) {
+        let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
+        let mesh = meshes.get_mut(mesh_id).unwrap();
+        *mesh = shape::Circle { radius: 0., vertices: 3 }.into();
+    }
 }
 
 pub fn update_link_type_text(

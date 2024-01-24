@@ -271,9 +271,11 @@ pub struct Tri {
 
 impl From<Tri> for Mesh {
     fn from(tri: Tri) -> Self {
-        let vertices = vec!([tri.f.x, tri.f.y, 0.0],
-                        [tri.i.x, tri.i.y, 0.0],
-                        [tri.i.x+2., tri.i.y+2., 0.0]);
+        let vertices = vec!(
+            [tri.f.x, tri.f.y, 0.0],
+            [tri.i.x, tri.i.y, 0.0],
+            [tri.i.x+2., tri.i.y+2., 0.0]
+        );
         let indices = Indices::U32(vec![0, 1, 2]);
         Mesh::new(PrimitiveTopology::TriangleList)
             .with_indices(Some(indices))
