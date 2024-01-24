@@ -18,7 +18,7 @@ features = [
   "bevy_winit",         # Window management (cross-platform Winit backend)
   "bevy_render",        # Rendering framework core
   "bevy_core_pipeline", # Common rendering abstractions
-  "bevy_gizmos",        # Support drawing debug lines and shapes
+  #"bevy_gizmos",        # Support drawing debug lines and shapes
   "bevy_sprite",        # 2D (sprites) rendering
   #"bevy_pbr",           # 3D (physically-based) rendering
   #"bevy_gltf",          # GLTF 3D assets format support
