@@ -126,8 +126,8 @@ pub fn connect(
 }
 
 pub fn update_connection_arrows(
-    bh_query: Query<(Entity, &BlackHole), Changed<Transform>>,
-    wh_query: Query<(Entity, &WhiteHole), Changed<Transform>>,
+    bh_query: Query<(Entity, &BlackHole), Or<(Changed<Transform>, Changed<Radius>)>>,
+    wh_query: Query<(Entity, &WhiteHole), Or<(Changed<Transform>, Changed<Radius>)>>,
     trans_query: Query<&GlobalTransform>,
     radius_query: Query<&Radius>,
     arrow_query: Query<&ConnectionArrow>,
