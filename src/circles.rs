@@ -488,34 +488,6 @@ pub fn update_circle_text(
     }
 }
 
-// HAZARDOUS!
-pub fn remove_connections(
-    keyboard_input: Res<Input<KeyCode>>,
-    query: Query<&Children, With<Selected>>,
-    mut commands: Commands,
-    white_hole_query: Query<&WhiteHole>,
-    black_hole_query: Query<&BlackHole>,
-) {
-    let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
-    if shift && keyboard_input.just_pressed(KeyCode::Delete) {
-        for children in query.iter() {
-            for child in children {
-                if let Ok(wh) = white_hole_query.get(*child) {
-                    commands.entity(wh.bh).remove_parent();
-                    commands.entity(wh.bh).despawn_recursive();
-                    commands.entity(*child).remove_parent();
-                    commands.entity(*child).despawn_recursive();
-                } else if let Ok(bh) = black_hole_query.get(*child) {
-                    commands.entity(bh.wh).remove_parent();
-                    commands.entity(bh.wh).despawn_recursive();
-                    commands.entity(*child).remove_parent();
-                    commands.entity(*child).despawn_recursive();
-                }
-            }
-        }
-    }
-}
-
 pub fn delete_selected(
     keyboard_input: Res<Input<KeyCode>>,
     query: Query<Entity, With<Selected>>,
