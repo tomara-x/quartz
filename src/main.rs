@@ -11,7 +11,7 @@ use bevy::{
 use bevy::prelude::shape::Circle as BevyCircle;
 
 use bevy_pancam::{PanCam, PanCamPlugin};
-use bevy_inspector_egui::quick::WorldInspectorPlugin;
+//use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 use std::{fs::File, io::Write};
 
@@ -47,7 +47,7 @@ fn main() {
         })
 
         .add_plugins(PanCamPlugin::default())
-        .add_plugins(WorldInspectorPlugin::new())
+        //.add_plugins(WorldInspectorPlugin::new())
 
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(Msaa::Sample4)
