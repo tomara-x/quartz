@@ -420,15 +420,14 @@ pub fn update_mesh_from_radius(
 pub fn update_mesh_from_vertices(
     mut meshes: ResMut<Assets<Mesh>>,
     mesh_ids: Query<&Mesh2dHandle>,
-    mut vertices_change_event: EventReader<VerticesChange>,
+    vertices_query: Query<(Entity, &Vertices), Changed<Vertices>>,
     radius_query: Query<&Radius>,
 ) {
-    for event in vertices_change_event.read() {
-        let r = radius_query.get(event.0).unwrap().0;
-        let v = if event.1 < 3 { 3 } else { event.1 };
-        let Mesh2dHandle(id) = mesh_ids.get(event.0).unwrap();
-        let mesh = meshes.get_mut(id).unwrap();
-        *mesh = BevyCircle { radius: r, vertices: v }.into();
+    for (id, v) in vertices_query.iter() {
+        let r = radius_query.get(id).unwrap().0;
+        let Mesh2dHandle(mesh_id) = mesh_ids.get(id).unwrap();
+        let mesh = meshes.get_mut(mesh_id).unwrap();
+        *mesh = BevyCircle { radius: r, vertices: if v.0 < 3 {3} else {v.0} }.into();
     }
 }
 

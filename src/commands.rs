@@ -23,7 +23,6 @@ pub struct Access<'w, 's> {
     op_change_event: EventWriter<'w, OpChange>,
     order_change: EventWriter<'w, OrderChange>,
     vertices_query: Query<'w, 's, (Entity, &'static mut Vertices)>,
-    vertices_change_event: EventWriter<'w, VerticesChange>,
 }
 
 pub fn command_parser(
@@ -313,7 +312,6 @@ pub fn command_parser(
                                                 if let Ok(n) = n.parse::<usize>() {
                                                     let n = if n < 3 { 3 } else { n };
                                                     vertices.1.0 = n;
-                                                    access.vertices_change_event.send(VerticesChange(e, n));
                                                 }
                                             }
                                         }
@@ -322,7 +320,6 @@ pub fn command_parser(
                                             if let Ok(mut vertices) = access.vertices_query.get_mut(id) {
                                                 let n = if n < 3 { 3 } else { n };
                                                 vertices.1.0 = n;
-                                                access.vertices_change_event.send(VerticesChange(id, n));
                                             }
                                         }
                                     }

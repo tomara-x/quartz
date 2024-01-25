@@ -85,7 +85,6 @@ fn main() {
         // events
         .add_event::<ColorChange>()
         .add_event::<RadiusChange>()
-        .add_event::<VerticesChange>()
         .add_event::<OpChange>()
         .add_event::<OrderChange>()
         .add_event::<SceneLoaded>()

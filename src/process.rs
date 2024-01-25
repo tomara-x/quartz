@@ -47,7 +47,6 @@ pub struct Access<'w, 's> {
     color_change_event: EventWriter<'w, ColorChange>,
     order_change: EventWriter<'w, OrderChange>,
     vertices_query: Query<'w, 's, &'static mut Vertices>,
-    vertices_change_event: EventWriter<'w, VerticesChange>,
 }
 
 pub fn process(
@@ -362,7 +361,6 @@ pub fn process(
                     },
                     -11 => {
                         access.vertices_query.get_mut(*id).unwrap().0 = input as usize;
-                        access.vertices_change_event.send(VerticesChange(*id, input as usize));
                     },
                     -12 => {
                         let q = Quat::from_euler(EulerRot::XYZ, 0., 0., input);

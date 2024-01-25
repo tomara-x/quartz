@@ -182,9 +182,6 @@ pub struct ColorChange(pub Entity, pub Color);
 pub struct RadiusChange(pub Entity, pub f32);
 
 #[derive(Event)]
-pub struct VerticesChange(pub Entity, pub usize);
-
-#[derive(Event)]
 pub struct OpChange(pub Entity, pub String);
 
 #[derive(Event, Default)]
