@@ -175,9 +175,6 @@ pub struct ConnectingLine(pub Entity);
 #[derive(Event, Default)]
 pub struct OrderChange;
 
-#[derive(Event)]
-pub struct ColorChange(pub Entity, pub Color);
-
 #[derive(Event, Default)]
 pub struct SceneLoaded;
 

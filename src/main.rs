@@ -70,7 +70,7 @@ fn main() {
         .add_systems(Update, update_selection.after(mark_visible).run_if(in_state(Mode::Edit)))
         .add_systems(Update, move_selected.after(update_selection).run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_color.after(update_selection).run_if(in_state(Mode::Edit)))
-        .add_systems(Update, update_mat_from_color.after(update_color).run_if(in_state(Mode::Edit)))
+        .add_systems(Update, update_mat.run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_radius.after(update_selection).run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_mesh.run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_num.after(update_selection).run_if(in_state(Mode::Edit)))
@@ -82,7 +82,6 @@ fn main() {
         .add_systems(Update, duplicate_selected.run_if(in_state(Mode::Edit)))
         .add_systems(Update, rotate_selected.after(update_selection).run_if(in_state(Mode::Edit)))
         // events
-        .add_event::<ColorChange>()
         .add_event::<OrderChange>()
         .add_event::<SceneLoaded>()
         // connections

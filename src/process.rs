@@ -43,7 +43,6 @@ pub struct Access<'w, 's> {
     net_query: Query<'w, 's, &'static mut Network>,
     net_ins_query: Query<'w, 's, &'static mut NetIns>,
     col_query: Query<'w, 's, &'static mut Col>,
-    color_change_event: EventWriter<'w, ColorChange>,
     order_change: EventWriter<'w, OrderChange>,
     vertices_query: Query<'w, 's, &'static mut Vertices>,
 }
@@ -331,26 +330,10 @@ pub fn process(
                     -3 => { access.trans_query.get_mut(*id).unwrap().translation.x = input; },
                     -4 => { access.trans_query.get_mut(*id).unwrap().translation.y = input; },
                     -5 => { access.trans_query.get_mut(*id).unwrap().translation.z = input; },
-                    -6 => {
-                        access.col_query.get_mut(*id).unwrap().0.set_h(input);
-                        let c = access.col_query.get(*id).unwrap().0;
-                        access.color_change_event.send(ColorChange(*id, c));
-                    },
-                    -7 => {
-                        access.col_query.get_mut(*id).unwrap().0.set_s(input);
-                        let c = access.col_query.get(*id).unwrap().0;
-                        access.color_change_event.send(ColorChange(*id, c));
-                    },
-                    -8 => {
-                        access.col_query.get_mut(*id).unwrap().0.set_l(input);
-                        let c = access.col_query.get(*id).unwrap().0;
-                        access.color_change_event.send(ColorChange(*id, c));
-                    },
-                    -9 => {
-                        access.col_query.get_mut(*id).unwrap().0.set_a(input);
-                        let c = access.col_query.get(*id).unwrap().0;
-                        access.color_change_event.send(ColorChange(*id, c));
-                    },
+                    -6 => { access.col_query.get_mut(*id).unwrap().0.set_h(input); },
+                    -7 => { access.col_query.get_mut(*id).unwrap().0.set_s(input); },
+                    -8 => { access.col_query.get_mut(*id).unwrap().0.set_l(input); },
+                    -9 => { access.col_query.get_mut(*id).unwrap().0.set_a(input); },
                     -10 => {
                         access.order_query.get_mut(*id).unwrap().0 = input as usize;
                         access.order_change.send_default();

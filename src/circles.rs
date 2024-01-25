@@ -274,101 +274,88 @@ pub fn rotate_selected(
 pub fn update_color(
     mouse_button_input: Res<Input<MouseButton>>,
     cursor: Res<CursorInfo>,
-    mut query: Query<(Entity, &mut Col), With<Selected>>,
+    mut query: Query<&mut Col, With<Selected>>,
     keyboard_input: Res<Input<KeyCode>>,
     drag_modes: Res<DragModes>,
-    mut color_change_event: EventWriter<ColorChange>,
 ) {
     if mouse_button_input.pressed(MouseButton::Left)
     && !mouse_button_input.just_pressed(MouseButton::Left) {
         if drag_modes.h {
-            for (e, mut c) in query.iter_mut() {
+            for mut c in query.iter_mut() {
                 let h = (c.0.h() + cursor.d.x).clamp(0., 360.);
                 c.0.set_h(h);
-                color_change_event.send(ColorChange(e, c.0));
             }
         }
         if drag_modes.s {
-            for (e, mut c) in query.iter_mut() {
+            for mut c in query.iter_mut() {
                 let s = (c.0.s() + cursor.d.x / 100.).clamp(0., 1.);
                 c.0.set_s(s);
-                color_change_event.send(ColorChange(e, c.0));
             }
         }
         if drag_modes.l {
-            for (e, mut c) in query.iter_mut() {
+            for mut c in query.iter_mut() {
                 let l = (c.0.l() + cursor.d.x / 100.).clamp(0., 1.);
                 c.0.set_l(l);
-                color_change_event.send(ColorChange(e, c.0));
             }
         }
         if drag_modes.a {
-            for (e, mut c) in query.iter_mut() {
+            for mut c in query.iter_mut() {
                 let a = (c.0.a() + cursor.d.x / 100.).clamp(0., 1.);
                 c.0.set_a(a);
-                color_change_event.send(ColorChange(e, c.0));
             }
         }
     }
     if keyboard_input.any_pressed([KeyCode::Left, KeyCode::Down]) {
-        for (e, mut c) in query.iter_mut() {
+        for mut c in query.iter_mut() {
             if drag_modes.h {
                 let h = (c.0.h() - 1.).clamp(0., 360.);
                 c.0.set_h(h);
-                color_change_event.send(ColorChange(e, c.0));
             }
             if drag_modes.s {
                 let s = (c.0.s() - 0.01).clamp(0., 1.);
                 c.0.set_s(s);
-                color_change_event.send(ColorChange(e, c.0));
             }
             if drag_modes.l {
                 let l = (c.0.l() - 0.01).clamp(0., 1.);
                 c.0.set_l(l);
-                color_change_event.send(ColorChange(e, c.0));
             }
             if drag_modes.a {
                 let a = (c.0.a() - 0.01).clamp(0., 1.);
                 c.0.set_a(a);
-                color_change_event.send(ColorChange(e, c.0));
             }
         }
     }
     if keyboard_input.any_pressed([KeyCode::Right, KeyCode::Up]) {
-        for (e, mut c) in query.iter_mut() {
+        for mut c in query.iter_mut() {
             if drag_modes.h {
                 let h = (c.0.h() + 1.).clamp(0., 360.);
                 c.0.set_h(h);
-                color_change_event.send(ColorChange(e, c.0));
             }
             if drag_modes.s {
                 let s = (c.0.s() + 0.01).clamp(0., 1.);
                 c.0.set_s(s);
-                color_change_event.send(ColorChange(e, c.0));
             }
             if drag_modes.l {
                 let l = (c.0.l() + 0.01).clamp(0., 1.);
                 c.0.set_l(l);
-                color_change_event.send(ColorChange(e, c.0));
             }
             if drag_modes.a {
                 let a = (c.0.a() + 0.01).clamp(0., 1.);
                 c.0.set_a(a);
-                color_change_event.send(ColorChange(e, c.0));
             }
         }
     }
 }
 
-pub fn update_mat_from_color(
+pub fn update_mat(
     mut mats: ResMut<Assets<ColorMaterial>>,
     material_ids: Query<&Handle<ColorMaterial>>,
-    mut color_change_event: EventReader<ColorChange>,
+    color_query: Query<(Entity, &Col), Changed<Col>>,
 ) {
-    for event in color_change_event.read() {
-        let id = material_ids.get(event.0).unwrap();
-        let mat = mats.get_mut(id).unwrap();
-        mat.color = event.1;
+    for (id, c) in color_query.iter() {
+        let mat_id = material_ids.get(id).unwrap();
+        let mat = mats.get_mut(mat_id).unwrap();
+        mat.color = c.0;
     }
 }
 

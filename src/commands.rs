@@ -18,7 +18,6 @@ pub struct Access<'w, 's> {
     selected_query: Query<'w, 's, Entity, With<Selected>>,
     white_hole_query: Query<'w, 's, &'static mut WhiteHole>,
     black_hole_query: Query<'w, 's, &'static mut BlackHole>,
-    color_change_event: EventWriter<'w, ColorChange>,
     order_change: EventWriter<'w, OrderChange>,
     vertices_query: Query<'w, 's, (Entity, &'static mut Vertices)>,
 }
@@ -223,7 +222,6 @@ pub fn command_parser(
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = n.parse::<f32>() {
                                                     color.1.0.set_h(n);
-                                                    access.color_change_event.send(ColorChange(e, color.1.0));
                                                 }
                                             }
                                         }
@@ -231,7 +229,6 @@ pub fn command_parser(
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut color) = access.col_query.get_mut(id) {
                                                 color.1.0.set_h(n);
-                                                access.color_change_event.send(ColorChange(id, color.1.0));
                                             }
                                         }
                                     }
@@ -244,7 +241,6 @@ pub fn command_parser(
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = n.parse::<f32>() {
                                                     color.1.0.set_s(n);
-                                                    access.color_change_event.send(ColorChange(e, color.1.0));
                                                 }
                                             }
                                         }
@@ -252,7 +248,6 @@ pub fn command_parser(
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut color) = access.col_query.get_mut(id) {
                                                 color.1.0.set_s(n);
-                                                access.color_change_event.send(ColorChange(id, color.1.0));
                                             }
                                         }
                                     }
@@ -265,7 +260,6 @@ pub fn command_parser(
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = n.parse::<f32>() {
                                                     color.1.0.set_l(n);
-                                                    access.color_change_event.send(ColorChange(e, color.1.0));
                                                 }
                                             }
                                         }
@@ -273,7 +267,6 @@ pub fn command_parser(
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut color) = access.col_query.get_mut(id) {
                                                 color.1.0.set_l(n);
-                                                access.color_change_event.send(ColorChange(id, color.1.0));
                                             }
                                         }
                                     }
@@ -286,7 +279,6 @@ pub fn command_parser(
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = n.parse::<f32>() {
                                                     color.1.0.set_a(n);
-                                                    access.color_change_event.send(ColorChange(e, color.1.0));
                                                 }
                                             }
                                         }
@@ -294,7 +286,6 @@ pub fn command_parser(
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut color) = access.col_query.get_mut(id) {
                                                 color.1.0.set_a(n);
-                                                access.color_change_event.send(ColorChange(id, color.1.0));
                                             }
                                         }
                                     }
