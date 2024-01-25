@@ -45,7 +45,6 @@ pub struct Access<'w, 's> {
     col_query: Query<'w, 's, &'static mut Col>,
     radius_change_event: EventWriter<'w, RadiusChange>,
     color_change_event: EventWriter<'w, ColorChange>,
-    op_change_event: EventWriter<'w, OpChange>,
     order_change: EventWriter<'w, OrderChange>,
     vertices_query: Query<'w, 's, &'static mut Vertices>,
     vertices_change_event: EventWriter<'w, VerticesChange>,
