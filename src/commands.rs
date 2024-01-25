@@ -328,20 +328,20 @@ pub fn command_parser(
                                     }
                                 }
                             },
-                            Some("o") => {
+                            Some("o") | Some("rot") | Some("rotation") => {
                                 if let Some(s) = command.next() {
                                     if let Ok(e) = str_to_id(s) {
                                         if let Ok(mut t) = access.trans_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = n.parse::<f32>() {
-                                                    t.rotate_z(n);
+                                                    t.rotation = Quat::from_rotation_z(n);
                                                 }
                                             }
                                         }
                                     } else if let Ok(n) = s.parse::<f32>() {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut t) = access.trans_query.get_mut(id) {
-                                                t.rotate_z(n);
+                                                t.rotation = Quat::from_rotation_z(n);
                                             }
                                         }
                                     }
