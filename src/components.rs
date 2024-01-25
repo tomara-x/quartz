@@ -4,7 +4,6 @@ use bevy::{
         mesh::Indices,
     },
     ecs::{
-        system::Command,
         entity::{EntityMapper, MapEntities},
         reflect::{ReflectComponent, ReflectMapEntities},
     },
@@ -177,42 +176,6 @@ pub struct DespawnQueue(pub Vec<Entity>);
 // -------------------- events --------------------
 #[derive(Event, Default)]
 pub struct OrderChange;
-
-// -------------------- commands --------------------
-pub struct DespawnCircle(pub Entity);
-impl Command for DespawnCircle {
-    fn apply(self, world: &mut World) {
-        despawn_circle(self.0, world);
-    }
-}
-fn despawn_circle(entity: Entity, world: &mut World) {
-    if world.get_entity(entity).is_none() { return; }
-    if let Some(mirror) = get_mirror_hole(entity, world) {
-        world.entity_mut(entity).despawn_recursive();
-        world.entity_mut(mirror).despawn_recursive();
-    } else {
-        if let Some(children) = world.entity(entity).get::<Children>() {
-            let children = children.to_vec();
-            for child in children {
-                if let Some(mirror) = get_mirror_hole(child, world) {
-                    world.entity_mut(child).despawn_recursive();
-                    world.entity_mut(mirror).despawn_recursive();
-                }
-            }
-        }
-        world.entity_mut(entity).despawn_recursive();
-    }
-}
-fn get_mirror_hole(entity: Entity, world: &World) -> Option<Entity> {
-    let e = world.entity(entity);
-    if let Some(wh) = e.get::<WhiteHole>() {
-        return Some(wh.bh);
-    } else if let Some(bh) = e.get::<BlackHole>() {
-        return Some(bh.wh);
-    } else {
-        return None;
-    }
-}
 
 // -------------------- helper-functions --------------------
 pub fn str_to_lt(s: &str) -> i32 {
