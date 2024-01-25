@@ -178,9 +178,6 @@ pub struct OrderChange;
 #[derive(Event)]
 pub struct ColorChange(pub Entity, pub Color);
 
-#[derive(Event)]
-pub struct OpChange(pub Entity, pub String);
-
 #[derive(Event, Default)]
 pub struct SceneLoaded;
 

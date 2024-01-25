@@ -19,7 +19,6 @@ pub struct Access<'w, 's> {
     white_hole_query: Query<'w, 's, &'static mut WhiteHole>,
     black_hole_query: Query<'w, 's, &'static mut BlackHole>,
     color_change_event: EventWriter<'w, ColorChange>,
-    op_change_event: EventWriter<'w, OpChange>,
     order_change: EventWriter<'w, OrderChange>,
     vertices_query: Query<'w, 's, (Entity, &'static mut Vertices)>,
 }
@@ -345,14 +344,12 @@ pub fn command_parser(
                                         if let Ok(mut op) = access.op_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 op.1.0 = n.to_string();
-                                                access.op_change_event.send(OpChange(e, n.to_string()));
                                             }
                                         }
                                     } else {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut op) = access.op_query.get_mut(id) {
                                                 op.1.0 = s.to_string();
-                                                access.op_change_event.send(OpChange(id, s.to_string()));
                                             }
                                         }
                                     }

@@ -440,13 +440,11 @@ pub fn update_num(
 }
 
 pub fn update_net_from_op(
-    mut query: Query<(&mut OpChanged, &mut Network, &mut NetIns)>,
-    mut op_change_event: EventReader<OpChange>,
+    mut query: Query<(&Op, &mut OpChanged, &mut Network, &mut NetIns), Changed<Op>>,
 ) {
-    for event in op_change_event.read() {
-        let (mut op_changed, mut n, mut inputs) = query.get_mut(event.0).unwrap();
+    for (op, mut op_changed, mut n, mut inputs) in query.iter_mut() {
         op_changed.0 = true;
-        match event.1.as_str() {
+        match op.0.as_str() {
             "Var" => {
                 let input = shared(0.);
                 n.0 = Net32::wrap(Box::new(var(&input)));

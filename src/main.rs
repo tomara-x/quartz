@@ -83,7 +83,6 @@ fn main() {
         .add_systems(Update, rotate_selected.after(update_selection).run_if(in_state(Mode::Edit)))
         // events
         .add_event::<ColorChange>()
-        .add_event::<OpChange>()
         .add_event::<OrderChange>()
         .add_event::<SceneLoaded>()
         // connections
@@ -290,7 +289,6 @@ fn post_load(
     query: Query<(Entity, &Radius, &Transform, &Col, &Vertices)>,
     text_query: Query<(Entity, &Text), With<Save>>,
     keyboard_input: Res<Input<KeyCode>>,
-    mut op_change_event: EventWriter<OpChange>,
     op_query: Query<&Op>,
     mut order_change: EventWriter<OrderChange>,
     white_hole_query: Query<With<WhiteHole>>,
@@ -306,12 +304,12 @@ fn post_load(
                     ..default()
                 },
             );
-            if let Ok(op) = op_query.get(e) {
+            // you can use an option in the main query instead (i think)
+            if op_query.contains(e) {
                 commands.entity(e).insert((
                     Network(Net32::new(0,1)),
                     NetIns(Vec::new()),
                 ));
-                op_change_event.send(OpChange(e, op.0.clone()));
             } else if white_hole_query.contains(e) {
                 let arrow = commands.spawn( ColorMesh2dBundle {
                     // doesn't matter, it's gonna get replaced
