@@ -43,7 +43,6 @@ pub struct Access<'w, 's> {
     net_query: Query<'w, 's, &'static mut Network>,
     net_ins_query: Query<'w, 's, &'static mut NetIns>,
     col_query: Query<'w, 's, &'static mut Col>,
-    radius_change_event: EventWriter<'w, RadiusChange>,
     color_change_event: EventWriter<'w, ColorChange>,
     order_change: EventWriter<'w, OrderChange>,
     vertices_query: Query<'w, 's, &'static mut Vertices>,
@@ -328,10 +327,7 @@ pub fn process(
                 }
                 match white_hole.link_types.1 {
                     -1 => { access.num_query.get_mut(*id).unwrap().0 = input; },
-                    -2 => {
-                        access.radius_query.get_mut(*id).unwrap().0 = input;
-                        access.radius_change_event.send(RadiusChange(*id, input));
-                    },
+                    -2 => { access.radius_query.get_mut(*id).unwrap().0 = input.max(0.); },
                     -3 => { access.trans_query.get_mut(*id).unwrap().translation.x = input; },
                     -4 => { access.trans_query.get_mut(*id).unwrap().translation.y = input; },
                     -5 => { access.trans_query.get_mut(*id).unwrap().translation.z = input; },
@@ -359,9 +355,7 @@ pub fn process(
                         access.order_query.get_mut(*id).unwrap().0 = input as usize;
                         access.order_change.send_default();
                     },
-                    -11 => {
-                        access.vertices_query.get_mut(*id).unwrap().0 = input as usize;
-                    },
+                    -11 => { access.vertices_query.get_mut(*id).unwrap().0 = input.max(3.) as usize; },
                     -12 => {
                         let q = Quat::from_euler(EulerRot::XYZ, 0., 0., input);
                         access.trans_query.get_mut(*id).unwrap().rotation = q;

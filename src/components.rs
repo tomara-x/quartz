@@ -179,9 +179,6 @@ pub struct OrderChange;
 pub struct ColorChange(pub Entity, pub Color);
 
 #[derive(Event)]
-pub struct RadiusChange(pub Entity, pub f32);
-
-#[derive(Event)]
 pub struct OpChange(pub Entity, pub String);
 
 #[derive(Event, Default)]

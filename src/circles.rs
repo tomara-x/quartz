@@ -373,61 +373,42 @@ pub fn update_mat_from_color(
 }
 
 pub fn update_radius(
-    mut query: Query<(Entity, &mut Radius), With<Selected>>,
+    mut query: Query<&mut Radius, With<Selected>>,
     keyboard_input: Res<Input<KeyCode>>,
     cursor: Res<CursorInfo>,
     mouse_button_input: Res<Input<MouseButton>>,
     drag_modes: Res<DragModes>,
-    mut radius_change_event: EventWriter<RadiusChange>,
 ) {
     if drag_modes.r {
         if mouse_button_input.pressed(MouseButton::Left)
         && !mouse_button_input.just_pressed(MouseButton::Left) {
-            for (e, mut r) in query.iter_mut() {
+            for mut r in query.iter_mut() {
                 r.0 += cursor.d.y;
-                radius_change_event.send(RadiusChange(e, r.0));
+                r.0 = r.0.max(0.);
             }
         }
         if keyboard_input.any_pressed([KeyCode::Up, KeyCode::Right]) {
-            for (e, mut r) in query.iter_mut() {
+            for mut r in query.iter_mut() {
                 r.0 += 1.;
-                radius_change_event.send(RadiusChange(e, r.0));
             }
         }
         if keyboard_input.any_pressed([KeyCode::Down, KeyCode::Left]) {
-            for (e, mut r) in query.iter_mut() {
-                r.0 -= 1.;
-                radius_change_event.send(RadiusChange(e, r.0));
+            for mut r in query.iter_mut() {
+                r.0 = (r.0 - 1.).max(0.);
             }
         }
     }
 }
 
-pub fn update_mesh_from_radius(
+pub fn update_mesh(
     mut meshes: ResMut<Assets<Mesh>>,
     mesh_ids: Query<&Mesh2dHandle>,
-    mut radius_change_event: EventReader<RadiusChange>,
-    vertices_query: Query<&Vertices>,
+    vertices_query: Query<(Entity, &Vertices, &Radius), Or<(Changed<Vertices>, Changed<Radius>)>>,
 ) {
-    for event in radius_change_event.read() {
-        let v = vertices_query.get(event.0).unwrap().0;
-        let Mesh2dHandle(id) = mesh_ids.get(event.0).unwrap();
-        let mesh = meshes.get_mut(id).unwrap();
-        *mesh = BevyCircle {radius: event.1, vertices: v }.into();
-    }
-}
-
-pub fn update_mesh_from_vertices(
-    mut meshes: ResMut<Assets<Mesh>>,
-    mesh_ids: Query<&Mesh2dHandle>,
-    vertices_query: Query<(Entity, &Vertices), Changed<Vertices>>,
-    radius_query: Query<&Radius>,
-) {
-    for (id, v) in vertices_query.iter() {
-        let r = radius_query.get(id).unwrap().0;
+    for (id, v, r) in vertices_query.iter() {
         let Mesh2dHandle(mesh_id) = mesh_ids.get(id).unwrap();
         let mesh = meshes.get_mut(mesh_id).unwrap();
-        *mesh = BevyCircle { radius: r, vertices: if v.0 < 3 {3} else {v.0} }.into();
+        *mesh = BevyCircle { radius: r.0, vertices: v.0 }.into();
     }
 }
 

@@ -18,7 +18,6 @@ pub struct Access<'w, 's> {
     selected_query: Query<'w, 's, Entity, With<Selected>>,
     white_hole_query: Query<'w, 's, &'static mut WhiteHole>,
     black_hole_query: Query<'w, 's, &'static mut BlackHole>,
-    radius_change_event: EventWriter<'w, RadiusChange>,
     color_change_event: EventWriter<'w, ColorChange>,
     op_change_event: EventWriter<'w, OpChange>,
     order_change: EventWriter<'w, OrderChange>,
@@ -148,16 +147,14 @@ pub fn command_parser(
                                         if let Ok(mut radius) = access.radius_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = n.parse::<f32>() {
-                                                    radius.1.0 = n;
-                                                    access.radius_change_event.send(RadiusChange(e, n));
+                                                    radius.1.0 = n.max(0.);
                                                 }
                                             }
                                         }
                                     } else if let Ok(n) = s.parse::<f32>() {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut radius) = access.radius_query.get_mut(id) {
-                                                radius.1.0 = n;
-                                                access.radius_change_event.send(RadiusChange(id, n));
+                                                radius.1.0 = n.max(0.);
                                             }
                                         }
                                     }
@@ -310,16 +307,14 @@ pub fn command_parser(
                                         if let Ok(mut vertices) = access.vertices_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = n.parse::<usize>() {
-                                                    let n = if n < 3 { 3 } else { n };
-                                                    vertices.1.0 = n;
+                                                    vertices.1.0 = n.max(3);
                                                 }
                                             }
                                         }
                                     } else if let Ok(n) = s.parse::<usize>() {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut vertices) = access.vertices_query.get_mut(id) {
-                                                let n = if n < 3 { 3 } else { n };
-                                                vertices.1.0 = n;
+                                                vertices.1.0 = n.max(3);
                                             }
                                         }
                                     }
