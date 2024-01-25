@@ -504,9 +504,9 @@ pub fn update_order (
 
 pub fn update_circle_text(
     mut query: Query<(&mut Text, &Parent), With<Visible>>,
-    order_query: Query<&Order>,
-    num_query: Query<&crate::components::Num>,
-    op_query: Query<&Op>,
+    order_query: Query<&Order, Changed<Order>>,
+    num_query: Query<&crate::components::Num, Changed<crate::components::Num>>,
+    op_query: Query<&Op, Changed<Op>>,
 ) {
     for (mut text, parent) in query.iter_mut() {
         if let Ok(order) = order_query.get(**parent) {

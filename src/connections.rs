@@ -183,7 +183,7 @@ pub fn draw_connecting_arrow(
 pub fn update_link_type_text(
     mut query: Query<(&mut Text, &Parent), With<Visible>>,
     black_hole_query: Query<&BlackHole>,
-    white_hole_query: Query<&WhiteHole>,
+    white_hole_query: Query<&WhiteHole, Changed<WhiteHole>>,
 ) {
     for (mut text, parent) in query.iter_mut() {
         if let Ok(hole) = black_hole_query.get(**parent) {
