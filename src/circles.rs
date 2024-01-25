@@ -441,9 +441,9 @@ pub fn update_num(
 
 pub fn update_net_from_op(
     mut query: Query<(&mut OpChanged, &mut Network, &mut NetIns)>,
-    mut radius_change_event: EventReader<OpChange>,
+    mut op_change_event: EventReader<OpChange>,
 ) {
-    for event in radius_change_event.read() {
+    for event in op_change_event.read() {
         let (mut op_changed, mut n, mut inputs) = query.get_mut(event.0).unwrap();
         op_changed.0 = true;
         match event.1.as_str() {
