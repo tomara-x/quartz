@@ -267,11 +267,17 @@ pub fn lt_to_string(n: i32) -> String {
 }
 
 // -------------------- tri mesh --------------------
+// an isosceles triangle defined by 2 points
 pub struct Tri {
+    // the midpoint of the base
     pub i: Vec2,
+    // the apex
     pub f: Vec2,
+    // padding/margin area (in pixles)
+    // it offsets where the triangle is drawn on either side
     pub ip: f32,
     pub fp: f32,
+    // half the width of the base
     pub b: f32,
 }
 
