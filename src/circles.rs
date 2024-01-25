@@ -519,14 +519,11 @@ pub fn remove_connections(
 pub fn delete_selected(
     keyboard_input: Res<Input<KeyCode>>,
     query: Query<Entity, With<Selected>>,
-    mut commands: Commands,
-    mut order_change: EventWriter<OrderChange>,
+    mut despawn_queue: ResMut<DespawnQueue>,
 ) {
-    let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
-    if !shift && keyboard_input.just_pressed(KeyCode::Delete) {
+    if keyboard_input.just_pressed(KeyCode::Delete) {
         for id in query.iter() {
-            commands.add(DespawnCircle(id));
-            order_change.send_default();
+            despawn_queue.0.push(id);
         }
     }
 }

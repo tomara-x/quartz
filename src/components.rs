@@ -171,6 +171,9 @@ pub struct SelectionCircle(pub Entity);
 #[derive(Resource)]
 pub struct ConnectingLine(pub Entity);
 
+#[derive(Resource, Default)]
+pub struct DespawnQueue(pub Vec<Entity>);
+
 // -------------------- events --------------------
 #[derive(Event, Default)]
 pub struct OrderChange;

@@ -11,7 +11,7 @@ use bevy::{
 use bevy::prelude::shape::Circle as BevyCircle;
 
 use bevy_pancam::{PanCam, PanCamPlugin};
-//use bevy_inspector_egui::quick::WorldInspectorPlugin;
+use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 use std::{fs::File, io::Write};
 
@@ -47,7 +47,7 @@ fn main() {
         })
 
         .add_plugins(PanCamPlugin::default())
-        //.add_plugins(WorldInspectorPlugin::new())
+        .add_plugins(WorldInspectorPlugin::new())
 
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(Msaa::Sample4)
@@ -60,7 +60,9 @@ fn main() {
         .add_systems(Update, save_scene)
         .add_systems(Update, load_scene)
         .add_systems(Update, post_load)
+        .add_systems(Update, clear_despawn_queue)
         .init_resource::<DragModes>()
+        .init_resource::<DespawnQueue>()
         // cursor
         .insert_resource(CursorInfo::default())
         .add_systems(Update, update_cursor_info)
@@ -355,4 +357,35 @@ fn draw_selection_circle(
     }
 }
 
+fn clear_despawn_queue(
+    mut despawn_queue: ResMut<DespawnQueue>,
+    mut commands: Commands,
+    mut order_change: EventWriter<OrderChange>,
+    children_query: Query<&Children>,
+    white_hole_query: Query<&WhiteHole>,
+    black_hole_query: Query<&BlackHole>,
+    arrow_query: Query<&ConnectionArrow>,
+    order_query: Query<&Order>,
+) {
+    if let Some(e) = despawn_queue.0.pop() {
+        if let Ok(children) = children_query.get(e) {
+            for child in children {
+                despawn_queue.0.push(*child);
+            }
+        }
+        if let Ok(wh) = white_hole_query.get(e) {
+            despawn_queue.0.push(wh.bh);
+            let arrow = arrow_query.get(e).unwrap().0;
+            despawn_queue.0.push(arrow);
+        } else if let Ok(bh) = black_hole_query.get(e) {
+            despawn_queue.0.push(bh.wh);
+        }
+        if order_query.contains(e) {
+            order_change.send_default();
+        }
+        if let Some(mut entity) = commands.get_entity(e) {
+            entity.despawn();
+        }
+    }
+}
 

@@ -151,6 +151,7 @@ pub fn process(
             },
             "empty" => {},
             "Var" => {
+                // use is_changed
                 let num = access.num_query.get(*id).unwrap().0;
                 if let Some(var) = &access.net_ins_query.get(*id).unwrap().0.get(0) {
                     var.set_value(num);
