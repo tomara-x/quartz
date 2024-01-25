@@ -353,9 +353,10 @@ pub fn update_mat(
     color_query: Query<(Entity, &Col), Changed<Col>>,
 ) {
     for (id, c) in color_query.iter() {
-        let mat_id = material_ids.get(id).unwrap();
-        let mat = mats.get_mut(mat_id).unwrap();
-        mat.color = c.0;
+        if let Ok(mat_id) = material_ids.get(id) {
+            let mat = mats.get_mut(mat_id).unwrap();
+            mat.color = c.0;
+        }
     }
 }
 
@@ -393,9 +394,10 @@ pub fn update_mesh(
     vertices_query: Query<(Entity, &Vertices, &Radius), Or<(Changed<Vertices>, Changed<Radius>)>>,
 ) {
     for (id, v, r) in vertices_query.iter() {
-        let Mesh2dHandle(mesh_id) = mesh_ids.get(id).unwrap();
-        let mesh = meshes.get_mut(mesh_id).unwrap();
-        *mesh = BevyCircle { radius: r.0, vertices: v.0 }.into();
+        if let Ok(Mesh2dHandle(mesh_id)) = mesh_ids.get(id) {
+            let mesh = meshes.get_mut(mesh_id).unwrap();
+            *mesh = BevyCircle { radius: r.0, vertices: v.0 }.into();
+        }
     }
 }
 

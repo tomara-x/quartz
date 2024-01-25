@@ -175,9 +175,6 @@ pub struct ConnectingLine(pub Entity);
 #[derive(Event, Default)]
 pub struct OrderChange;
 
-#[derive(Event, Default)]
-pub struct SceneLoaded;
-
 // -------------------- commands --------------------
 pub struct DespawnCircle(pub Entity);
 impl Command for DespawnCircle {

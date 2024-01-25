@@ -83,7 +83,6 @@ fn main() {
         .add_systems(Update, rotate_selected.after(update_selection).run_if(in_state(Mode::Edit)))
         // events
         .add_event::<OrderChange>()
-        .add_event::<SceneLoaded>()
         // connections
         .add_systems(Update, connect.run_if(in_state(Mode::Connect)))
         .add_systems(Update, update_connection_arrows)
@@ -269,7 +268,6 @@ fn load_scene(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     keyboard_input: Res<Input<KeyCode>>,
-    mut scene_load_event: EventWriter<SceneLoaded>,
 ) {
     let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
     if ctrl && keyboard_input.just_pressed(KeyCode::O) {
@@ -277,7 +275,6 @@ fn load_scene(
             scene: asset_server.load("scene.scn.ron"),
             ..default()
         });
-        scene_load_event.send_default();
     }
 }
 
