@@ -49,7 +49,7 @@ pub fn connect(
                         b: 2.
                     }.into()).into(),
                     material: materials.add(ColorMaterial::from(Color::hsla(0., 1., 1., 0.7))),
-                    transform: Transform::from_translation(Vec3::Z),
+                    transform: Transform::from_translation(cursor.i.extend(1.)),
                     ..default()
                 }
             ).id();
@@ -128,32 +128,35 @@ pub fn connect(
 pub fn update_connection_arrows(
     bh_query: Query<(Entity, &BlackHole), Or<(Changed<Transform>, Changed<Radius>)>>,
     wh_query: Query<(Entity, &WhiteHole), Or<(Changed<Transform>, Changed<Radius>)>>,
-    trans_query: Query<&GlobalTransform>,
+    global_trans_query: Query<&GlobalTransform>,
+    mut trans_query: Query<&mut Transform, (Without<BlackHole>, Without<WhiteHole>)>,
     radius_query: Query<&Radius>,
     arrow_query: Query<&ConnectionArrow>,
     mut meshes: ResMut<Assets<Mesh>>,
     mesh_ids: Query<&Mesh2dHandle>,
 ) {
     for (id, bh) in bh_query.iter() {
-        let i = trans_query.get(id).unwrap().translation().xy();
-        let f = trans_query.get(bh.wh).unwrap().translation().xy();
+        let i = global_trans_query.get(id).unwrap().translation().xy();
+        let f = global_trans_query.get(bh.wh).unwrap().translation().xy();
         let ip = radius_query.get(id).unwrap().0;
         let fp = radius_query.get(bh.wh).unwrap().0;
         if let Ok(arrow_id) = arrow_query.get(bh.wh) {
+            trans_query.get_mut(arrow_id.0).unwrap().translation = i.extend(1.);
             let Mesh2dHandle(mesh_id) = mesh_ids.get(arrow_id.0).unwrap();
             let mesh = meshes.get_mut(mesh_id).unwrap();
-            *mesh = Tri { i: i, f: f, ip:ip, fp:fp, b:2. } .into();
+            *mesh = Tri { i, f, ip, fp, b: 2. } .into();
         }
     }
     for (id, wh) in wh_query.iter() {
-        let f = trans_query.get(id).unwrap().translation().xy();
-        let i = trans_query.get(wh.bh).unwrap().translation().xy();
+        let f = global_trans_query.get(id).unwrap().translation().xy();
+        let i = global_trans_query.get(wh.bh).unwrap().translation().xy();
         let fp = radius_query.get(id).unwrap().0;
         let ip = radius_query.get(wh.bh).unwrap().0;
         if let Ok(arrow_id) = arrow_query.get(id) {
+            trans_query.get_mut(arrow_id.0).unwrap().translation = i.extend(1.);
             let Mesh2dHandle(mesh_id) = mesh_ids.get(arrow_id.0).unwrap();
             let mesh = meshes.get_mut(mesh_id).unwrap();
-            *mesh = Tri { i: i, f: f, ip:ip, fp:fp, b:2. } .into();
+            *mesh = Tri { i, f, ip, fp, b: 2. } .into();
         }
     }
 }
@@ -165,10 +168,12 @@ pub fn draw_connecting_arrow(
     id: Res<ConnectingLine>,
     mut meshes: ResMut<Assets<Mesh>>,
     mesh_ids: Query<&Mesh2dHandle>,
+    mut trans_query: Query<&mut Transform>,
 ) {
     if mouse_button_input.pressed(MouseButton::Left)
     && !mouse_button_input.just_pressed(MouseButton::Left)
     && !keyboard_input.pressed(KeyCode::Space) {
+        trans_query.get_mut(id.0).unwrap().translation = cursor.i.extend(1.);
         let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
         let mesh = meshes.get_mut(mesh_id).unwrap();
         *mesh = Tri { i: cursor.i, f: cursor.f, ip:0.0, fp:0.0, b:2. } .into();
