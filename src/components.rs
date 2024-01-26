@@ -239,13 +239,17 @@ impl From<Tri> for Mesh {
         let f = diff * -tri.fp;
         let perp = diff.perp() * tri.b;
         let vertices = vec!(
-            [tri.f.x-tri.i.x + f.x, tri.f.y-tri.i.y + f.y, 0.0],
-            [i.x + perp.x, i.y + perp.y, 0.0],
-            [i.x - perp.x, i.y - perp.y, 0.0]
+            [tri.f.x + f.x, tri.f.y + f.y, 0.0],
+            [tri.i.x + i.x + perp.x, tri.i.y + i.y + perp.y, 0.0],
+            [tri.i.x + i.x - perp.x, tri.i.y + i.y - perp.y, 0.0]
         );
+        let normals = vec!([0., 0., 1.], [0., 0., 1.], [0., 0., 1.]);
+        let uv = vec!([0., 1.], [0., 0.], [1., 0.]);
         let indices = Indices::U32(vec![0, 1, 2]);
         Mesh::new(PrimitiveTopology::TriangleList)
             .with_indices(Some(indices))
             .with_inserted_attribute(Mesh::ATTRIBUTE_POSITION, vertices)
+            .with_inserted_attribute(Mesh::ATTRIBUTE_NORMAL, normals)
+            .with_inserted_attribute(Mesh::ATTRIBUTE_UV_0, uv)
     }
 }
