@@ -171,10 +171,13 @@ pub fn draw_connecting_arrow(
     id: Res<ConnectingLine>,
     mut meshes: ResMut<Assets<Mesh>>,
     mesh_ids: Query<&Mesh2dHandle>,
+    mut aabb_query: Query<&mut Aabb>,
 ) {
     if mouse_button_input.pressed(MouseButton::Left)
     && !mouse_button_input.just_pressed(MouseButton::Left)
     && !keyboard_input.pressed(KeyCode::Space) {
+        let aabb = Aabb::enclosing([cursor.i.extend(1.), cursor.f.extend(1.)]).unwrap();
+        *aabb_query.get_mut(id.0).unwrap() = aabb;
         let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
         let mesh = meshes.get_mut(mesh_id).unwrap();
         *mesh = Tri { i: cursor.i, f: cursor.f, ip:0.0, fp:0.0, b:2. } .into();
