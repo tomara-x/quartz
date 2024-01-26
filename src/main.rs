@@ -225,7 +225,6 @@ fn save_scene(world: &mut World) {
 
         let mut query = world.query_filtered::<Entity, With<Save>>();
         let scene = DynamicSceneBuilder::from_world(&world)
-            //.allow_resource::<Queue>()
             .allow::<Radius>()
             .allow::<Col>()
             .allow::<Transform>()
@@ -248,7 +247,6 @@ fn save_scene(world: &mut World) {
             .allow::<Visibility>()
             .allow::<Vertices>()
             .extract_entities(query.iter(&world))
-            //.extract_resources()
             .build();
         let type_registry = world.resource::<AppTypeRegistry>();
         let serialized_scene = scene.serialize_ron(type_registry).unwrap();
