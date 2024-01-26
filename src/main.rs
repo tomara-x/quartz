@@ -67,6 +67,8 @@ fn main() {
         .insert_resource(CursorInfo::default())
         .add_systems(Update, update_cursor_info)
         // circles
+        .add_systems(Update, spawn_circles.run_if(in_state(Mode::Draw)))
+        .add_systems(Update, delete_selected.run_if(in_state(Mode::Edit)))
         .add_systems(Update, draw_selection_circle.run_if(not(in_state(Mode::Connect))))
         .add_systems(Update, mark_visible.after(update_cursor_info))
         .add_systems(Update, update_selection.after(mark_visible).run_if(in_state(Mode::Edit)))
@@ -84,7 +86,6 @@ fn main() {
         .add_systems(Update, duplicate_selected.run_if(in_state(Mode::Edit)))
         .add_systems(Update, rotate_selected.after(update_selection).run_if(in_state(Mode::Edit)))
         // events
-        .add_event::<OrderChange>()
         // connections
         .add_systems(Update, connect.run_if(in_state(Mode::Connect)))
         .add_systems(Update, update_connection_arrows)
@@ -92,12 +93,9 @@ fn main() {
         .add_systems(Update, update_link_type_text.run_if(in_state(Mode::Edit)))
         .add_systems(Update, mark_children_change)
         // order
-        // TODO(amy): do we have to chain those?
-        .add_systems(Update, (spawn_circles.run_if(in_state(Mode::Draw)),
-                              delete_selected.run_if(in_state(Mode::Edit)),
-                              apply_deferred, //to make sure the commands are applied
-                              sort_by_order.run_if(on_event::<OrderChange>())).chain())
         .init_resource::<Queue>()
+        .add_event::<OrderChange>()
+        .add_systems(Update, sort_by_order.run_if(on_event::<OrderChange>()))
         // process
         .add_systems(Update, process.after(sort_by_order))
         // commands
