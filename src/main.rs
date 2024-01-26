@@ -38,10 +38,10 @@ fn main() {
         }))
         .insert_resource(WinitSettings {
             focused_mode: UpdateMode::ReactiveLowPower {
-                wait: Duration::from_secs_f64(1.0 / 60.0),
+                wait: Duration::from_secs_f64(1.0 / 5.0),
             },
             unfocused_mode: UpdateMode::ReactiveLowPower {
-                wait: Duration::from_secs_f64(1.0 / 30.0),
+                wait: Duration::from_secs_f64(1.0 / 10.0),
             },
             ..default()
         })
