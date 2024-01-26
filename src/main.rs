@@ -343,13 +343,13 @@ fn draw_selection_circle(
         trans_query.get_mut(id.0).unwrap().translation = cursor.i.extend(1.);
         let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
         let mesh = meshes.get_mut(mesh_id).unwrap();
-        *mesh = BevyCircle { radius: cursor.i.distance(cursor.f), vertices: 12 }.into();
+        *mesh = BevyCircle { radius: cursor.i.distance(cursor.f), vertices: 8 }.into();
     }
     if mouse_button_input.just_released(MouseButton::Left) {
         trans_query.get_mut(id.0).unwrap().translation = Vec3::Z;
         let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
         let mesh = meshes.get_mut(mesh_id).unwrap();
-        *mesh = BevyCircle { radius: 0., vertices: 12 }.into();
+        *mesh = BevyCircle { radius: 0., vertices: 3 }.into();
     }
 }
 
