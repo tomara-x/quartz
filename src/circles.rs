@@ -510,6 +510,7 @@ pub fn delete_selected_circles(
     text_query: Query<Entity, With<Text>>,
     highlight_query: Query<Entity, With<Highlight>>,
     mut commands: Commands,
+    mut order_change: EventWriter<OrderChange>,
 ) {
     let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
     if keyboard_input.just_pressed(KeyCode::Delete) && !shift {
@@ -541,6 +542,7 @@ pub fn delete_selected_circles(
                 }
             }
             commands.entity(e).despawn();
+            order_change.send_default();
         }
     }
 }

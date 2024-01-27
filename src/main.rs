@@ -94,9 +94,9 @@ fn main() {
         // order
         .init_resource::<Queue>()
         .add_event::<OrderChange>()
-        .add_systems(Update, sort_by_order.run_if(on_event::<OrderChange>()))
+        .add_systems(PostUpdate, sort_by_order.run_if(on_event::<OrderChange>()))
         // process
-        .add_systems(Update, process.after(sort_by_order))
+        .add_systems(Update, process)
         // commands
         .add_systems(Update, command_parser)
 
