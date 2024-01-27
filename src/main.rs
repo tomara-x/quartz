@@ -363,18 +363,20 @@ fn clear_despawn_queue(
     arrow_query: Query<&ConnectionArrow>,
     order_query: Query<&Order>,
 ) {
-    if let Some(e) = despawn_queue.0.pop() {
-        if let Ok(children) = children_query.get(e) {
-            for child in children {
-                despawn_queue.0.push(*child);
-            }
-        }
+    while let Some(e) = despawn_queue.0.pop() {
         if let Ok(wh) = white_hole_query.get(e) {
-            despawn_queue.0.push(wh.bh);
+            if let Some(bh) = commands.get_entity(wh.bh) {
+                bh.despawn_recursive();
+            }
             let arrow = arrow_query.get(e).unwrap().0;
             despawn_queue.0.push(arrow);
         } else if let Ok(bh) = black_hole_query.get(e) {
             despawn_queue.0.push(bh.wh);
+        }
+        if let Ok(children) = children_query.get(e) {
+            for child in children {
+                despawn_queue.0.push(*child);
+            }
         }
         if order_query.contains(e) {
             order_change.send_default();
