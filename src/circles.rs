@@ -525,8 +525,7 @@ pub fn delete_selected_circles(
                         commands.entity(bh.wh).remove_parent();
                         commands.entity(bh.wh).despawn_recursive();
                     }
-                }
-                if let Ok(wh) = wh_query.get(*child) {
+                } else if let Ok(wh) = wh_query.get(*child) {
                     if bh_query.contains(wh.bh) {
                         let arrow = arrow_query.get(*child).unwrap().0;
                         commands.entity(arrow).despawn();
@@ -535,8 +534,7 @@ pub fn delete_selected_circles(
                         commands.entity(*child).remove_parent();
                         commands.entity(*child).despawn_recursive();
                     }
-                }
-                if text_query.contains(*child) || highlight_query.contains(*child) {
+                } else if text_query.contains(*child) || highlight_query.contains(*child) {
                     commands.entity(*child).remove_parent();
                     commands.entity(*child).despawn();
                 }
