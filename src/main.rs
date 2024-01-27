@@ -60,15 +60,12 @@ fn main() {
         .add_systems(Update, save_scene)
         .add_systems(Update, load_scene)
         .add_systems(Update, post_load)
-        .add_systems(Update, (mark_despawn_queue, despawn_marked))
         .init_resource::<DragModes>()
-        .init_resource::<DespawnQueue>()
         // cursor
         .insert_resource(CursorInfo::default())
         .add_systems(Update, update_cursor_info)
         // circles
         .add_systems(Update, spawn_circles.run_if(in_state(Mode::Draw)))
-        .add_systems(Update, delete_selected.run_if(in_state(Mode::Edit)))
         .add_systems(Update, draw_selection_circle.run_if(not(in_state(Mode::Connect))))
         .add_systems(Update, mark_visible.after(update_cursor_info))
         .add_systems(Update, update_selection.after(mark_visible).run_if(in_state(Mode::Edit)))
@@ -85,6 +82,8 @@ fn main() {
         .add_systems(Update, select_all.run_if(in_state(Mode::Edit)))
         .add_systems(Update, duplicate_selected.run_if(in_state(Mode::Edit)))
         .add_systems(Update, rotate_selected.after(update_selection).run_if(in_state(Mode::Edit)))
+        .add_systems(Update, (delete_selected_holes, delete_selected_circles)
+                            .chain().run_if(in_state(Mode::Edit)))
         // events
         // connections
         .add_systems(Update, connect.run_if(in_state(Mode::Connect)))
@@ -353,47 +352,3 @@ fn draw_selection_circle(
     }
 }
 
-fn mark_despawn_queue(
-    mut despawn_queue: ResMut<DespawnQueue>,
-    mut commands: Commands,
-    children_query: Query<&Children>,
-    white_hole_query: Query<&WhiteHole>,
-    black_hole_query: Query<&BlackHole>,
-    arrow_query: Query<&ConnectionArrow>,
-) {
-    while let Some(e) = despawn_queue.0.pop() {
-        if let Ok(children) = children_query.get(e) {
-            for child in children {
-                despawn_queue.0.push(*child);
-            }
-        }
-        if let Ok(wh) = white_hole_query.get(e) {
-            if let Ok(children) = children_query.get(wh.bh) {
-                for child in children {
-                    commands.entity(*child).insert(Delete);
-                }
-            }
-            commands.entity(wh.bh).insert(Delete);
-            let arrow = arrow_query.get(e).unwrap().0;
-            despawn_queue.0.push(arrow);
-        } else if let Ok(bh) = black_hole_query.get(e) {
-            despawn_queue.0.push(bh.wh);
-        }
-        // FIXME(amy): figure out why this can panic
-        commands.entity(e).insert(Delete);
-    }
-}
-
-fn despawn_marked(
-    mut commands: Commands,
-    order_query: Query<&Order>,
-    mut order_change: EventWriter<OrderChange>,
-    query: Query<Entity, With<Delete>>,
-) {
-    for e in query.iter() {
-        if order_query.contains(e) {
-            order_change.send_default();
-        }
-        commands.entity(e).despawn();
-    }
-}

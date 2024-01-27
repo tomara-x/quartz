@@ -501,14 +501,45 @@ pub fn update_circle_text(
     }
 }
 
-pub fn delete_selected(
+pub fn delete_selected_circles(
     keyboard_input: Res<Input<KeyCode>>,
-    query: Query<Entity, With<Selected>>,
-    mut despawn_queue: ResMut<DespawnQueue>,
+    query: Query<(Entity, &Children), (With<Selected>, With<Order>)>,
+    bh_query: Query<&BlackHole, Without<Selected>>,
+    wh_query: Query<&WhiteHole, Without<Selected>>,
+    arrow_query: Query<&ConnectionArrow>,
+    text_query: Query<Entity, With<Text>>,
+    highlight_query: Query<Entity, With<Highlight>>,
+    mut commands: Commands,
 ) {
     if keyboard_input.just_pressed(KeyCode::Delete) {
-        for id in query.iter() {
-            despawn_queue.0.push(id);
+        for (e, children) in query.iter() {
+            for child in children {
+                if let Ok(bh) = bh_query.get(*child) {
+                    if wh_query.contains(bh.wh) {
+                        let arrow = arrow_query.get(bh.wh).unwrap().0;
+                        commands.entity(arrow).despawn();
+                        commands.entity(*child).remove_parent();
+                        commands.entity(*child).despawn_recursive();
+                        commands.entity(bh.wh).remove_parent();
+                        commands.entity(bh.wh).despawn_recursive();
+                    }
+                }
+                if let Ok(wh) = wh_query.get(*child) {
+                    if bh_query.contains(wh.bh) {
+                        let arrow = arrow_query.get(*child).unwrap().0;
+                        commands.entity(arrow).despawn();
+                        commands.entity(wh.bh).remove_parent();
+                        commands.entity(wh.bh).despawn_recursive();
+                        commands.entity(*child).remove_parent();
+                        commands.entity(*child).despawn_recursive();
+                    }
+                }
+                if text_query.contains(*child) || highlight_query.contains(*child) {
+                    commands.entity(*child).remove_parent();
+                    commands.entity(*child).despawn();
+                }
+            }
+            commands.entity(e).despawn();
         }
     }
 }

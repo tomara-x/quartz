@@ -26,14 +26,12 @@ pub fn command_parser(
     keyboard_input: Res<Input<KeyCode>>,
     mut display: Query<&mut Text, With<CommandText>>,
     mut char_input_events: EventReader<ReceivedCharacter>,
-    entities: Query<Entity, With<Radius>>,
-    children_query: Query<&Children>,
+    //entities: Query<Entity, With<Radius>>,
     mut access: Access,
     mut mode: Local<i32>,
     mut in_progress: Local<bool>,
     mut next_state: ResMut<NextState<Mode>>,
     mut drag_modes: ResMut<DragModes>,
-    mut despawn_queue: ResMut<DespawnQueue>,
 ) {
     if char_input_events.is_empty() && !*in_progress { return; }
     let text = &mut display.single_mut().sections[0].value;
@@ -85,44 +83,6 @@ pub fn command_parser(
             for line in lines {
                 let mut command = line.split_ascii_whitespace();
                 match command.next() {
-                    Some(":d") | Some("d") => {
-                        if let Some(s) = command.next() {
-                            if let Ok(e) = str_to_id(s) {
-                                if entities.contains(e) {
-                                    despawn_queue.0.push(e);
-                                }
-                            }
-                        } else {
-                            for e in access.selected_query.iter() {
-                                despawn_queue.0.push(e);
-                            }
-                        }
-                    },
-                    Some(":dc") | Some("dc") => {
-                        if let Some(s) = command.next() {
-                            if let Ok(e) = str_to_id(s) {
-                                if let Ok(children) = children_query.get(e) {
-                                    for child in children {
-                                        if access.white_hole_query.contains(*child)
-                                        || access.black_hole_query.contains(*child) {
-                                            despawn_queue.0.push(*child);
-                                        }
-                                    }
-                                }
-                            }
-                        } else {
-                            for e in access.selected_query.iter() {
-                                if let Ok(children) = children_query.get(e) {
-                                    for child in children {
-                                        if access.white_hole_query.contains(*child)
-                                        || access.black_hole_query.contains(*child) {
-                                            despawn_queue.0.push(*child);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
                     Some(":lt") | Some("lt") => {
                         if let Some(s) = command.next() {
                             if let Ok(e) = str_to_id(s) {

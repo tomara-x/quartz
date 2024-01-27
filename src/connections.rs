@@ -205,3 +205,35 @@ pub fn update_link_type_text(
         }
     }
 }
+
+pub fn delete_selected_holes(
+    keyboard_input: Res<Input<KeyCode>>,
+    bh_query: Query<(Entity, &BlackHole), With<Selected>>,
+    wh_query: Query<(Entity, &WhiteHole), With<Selected>>,
+    unselected: Query<Entity, (Without<Selected>, Or<(With<BlackHole>, With<WhiteHole>)>)>,
+    arrow_query: Query<&ConnectionArrow>,
+    mut commands: Commands,
+) {
+    if keyboard_input.just_pressed(KeyCode::Delete) {
+        for (e, bh) in bh_query.iter() {
+            if let Ok(wh_id) = unselected.get(bh.wh) {
+                let arrow = arrow_query.get(wh_id).unwrap().0;
+                commands.entity(arrow).despawn();
+                commands.entity(wh_id).remove_parent();
+                commands.entity(wh_id).despawn_recursive();
+            }
+            commands.entity(e).remove_parent();
+            commands.entity(e).despawn_recursive();
+        }
+        for (e, wh) in wh_query.iter() {
+            if let Ok(bh_id) = unselected.get(wh.bh) {
+                commands.entity(bh_id).remove_parent();
+                commands.entity(bh_id).despawn_recursive();
+            }
+            let arrow = arrow_query.get(e).unwrap().0;
+            commands.entity(arrow).despawn();
+            commands.entity(e).remove_parent();
+            commands.entity(e).despawn_recursive();
+        }
+    }
+}

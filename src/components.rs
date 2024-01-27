@@ -63,9 +63,6 @@ pub struct Save;
 #[derive(Component)]
 pub struct Highlight;
 
-#[derive(Component)]
-pub struct Delete;
-
 #[derive(Component, Reflect)]
 #[reflect(Component, MapEntities)]
 pub struct WhiteHole {
@@ -172,9 +169,6 @@ pub struct SelectionCircle(pub Entity);
 
 #[derive(Resource)]
 pub struct ConnectingLine(pub Entity);
-
-#[derive(Resource, Default)]
-pub struct DespawnQueue(pub Vec<Entity>);
 
 // -------------------- events --------------------
 #[derive(Event, Default)]
