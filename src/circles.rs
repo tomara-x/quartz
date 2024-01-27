@@ -516,6 +516,7 @@ pub fn delete_selected_circles(
     if keyboard_input.just_pressed(KeyCode::Delete) && !shift {
         for (e, children) in query.iter() {
             for child in children {
+                // TODO(amy): do we need to remove parent?
                 if let Ok(bh) = bh_query.get(*child) {
                     if wh_query.contains(bh.wh) {
                         let arrow = arrow_query.get(bh.wh).unwrap().0;
@@ -527,6 +528,8 @@ pub fn delete_selected_circles(
                     }
                 } else if let Ok(wh) = wh_query.get(*child) {
                     if bh_query.contains(wh.bh) {
+                        // don't remove things that will get removed later
+                        if query.contains(wh.bh_parent) { continue; }
                         let arrow = arrow_query.get(*child).unwrap().0;
                         commands.entity(arrow).despawn();
                         commands.entity(wh.bh).remove_parent();
