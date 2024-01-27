@@ -511,7 +511,8 @@ pub fn delete_selected_circles(
     highlight_query: Query<Entity, With<Highlight>>,
     mut commands: Commands,
 ) {
-    if keyboard_input.just_pressed(KeyCode::Delete) {
+    let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
+    if keyboard_input.just_pressed(KeyCode::Delete) && !shift {
         for (e, children) in query.iter() {
             for child in children {
                 if let Ok(bh) = bh_query.get(*child) {
