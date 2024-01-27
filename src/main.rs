@@ -60,7 +60,7 @@ fn main() {
         .add_systems(Update, save_scene)
         .add_systems(Update, load_scene)
         .add_systems(Update, post_load)
-        .add_systems(Update, clear_despawn_queue)
+        .add_systems(Update, (mark_despawn_queue, despawn_marked))
         .init_resource::<DragModes>()
         .init_resource::<DespawnQueue>()
         // cursor
@@ -353,39 +353,47 @@ fn draw_selection_circle(
     }
 }
 
-fn clear_despawn_queue(
+fn mark_despawn_queue(
     mut despawn_queue: ResMut<DespawnQueue>,
     mut commands: Commands,
-    mut order_change: EventWriter<OrderChange>,
     children_query: Query<&Children>,
     white_hole_query: Query<&WhiteHole>,
     black_hole_query: Query<&BlackHole>,
     arrow_query: Query<&ConnectionArrow>,
-    order_query: Query<&Order>,
-    mut tmp: Local<Vec<Entity>>,
 ) {
-    for e in despawn_queue.0.iter() {
-        if let Ok(wh) = white_hole_query.get(*e) {
-            if let Some(bh) = commands.get_entity(wh.bh) {
-                bh.despawn_recursive();
-            }
-            let arrow = arrow_query.get(*e).unwrap().0;
-            tmp.push(arrow);
-        } else if let Ok(bh) = black_hole_query.get(*e) {
-            tmp.push(bh.wh);
-        }
-        if let Ok(children) = children_query.get(*e) {
+    while let Some(e) = despawn_queue.0.pop() {
+        if let Ok(children) = children_query.get(e) {
             for child in children {
-                tmp.push(*child);
+                despawn_queue.0.push(*child);
             }
         }
-        if order_query.contains(*e) {
-            order_change.send_default();
+        if let Ok(wh) = white_hole_query.get(e) {
+            if let Ok(children) = children_query.get(wh.bh) {
+                for child in children {
+                    commands.entity(*child).insert(Delete);
+                }
+            }
+            commands.entity(wh.bh).insert(Delete);
+            let arrow = arrow_query.get(e).unwrap().0;
+            despawn_queue.0.push(arrow);
+        } else if let Ok(bh) = black_hole_query.get(e) {
+            despawn_queue.0.push(bh.wh);
         }
-        if let Some(mut entity) = commands.get_entity(*e) {
-            entity.despawn();
-        }
+        // FIXME(amy): figure out why this can panic
+        commands.entity(e).insert(Delete);
     }
-    despawn_queue.0 = (*tmp.clone()).to_vec();
 }
 
+fn despawn_marked(
+    mut commands: Commands,
+    order_query: Query<&Order>,
+    mut order_change: EventWriter<OrderChange>,
+    query: Query<Entity, With<Delete>>,
+) {
+    for e in query.iter() {
+        if order_query.contains(e) {
+            order_change.send_default();
+        }
+        commands.entity(e).despawn();
+    }
+}

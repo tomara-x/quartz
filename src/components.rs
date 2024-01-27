@@ -63,6 +63,9 @@ pub struct Save;
 #[derive(Component)]
 pub struct Highlight;
 
+#[derive(Component)]
+pub struct Delete;
+
 #[derive(Component, Reflect)]
 #[reflect(Component, MapEntities)]
 pub struct WhiteHole {
