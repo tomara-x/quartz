@@ -1,7 +1,9 @@
 use bevy::{
+    prelude::*,
     render::view::VisibleEntities,
     sprite::Mesh2dHandle,
-    prelude::*};
+    render::primitives::Aabb,
+};
 use bevy::prelude::shape::Circle as BevyCircle;
 
 use fundsp::hacker32::*;
@@ -391,12 +393,13 @@ pub fn update_radius(
 pub fn update_mesh(
     mut meshes: ResMut<Assets<Mesh>>,
     mesh_ids: Query<&Mesh2dHandle>,
-    vertices_query: Query<(Entity, &Vertices, &Radius), Or<(Changed<Vertices>, Changed<Radius>)>>,
+    mut query: Query<(Entity, &Vertices, &Radius, &mut Aabb), Or<(Changed<Vertices>, Changed<Radius>)>>,
 ) {
-    for (id, v, r) in vertices_query.iter() {
+    for (id, v, r, mut aabb) in query.iter_mut() {
         if let Ok(Mesh2dHandle(mesh_id)) = mesh_ids.get(id) {
             let mesh = meshes.get_mut(mesh_id).unwrap();
             *mesh = BevyCircle { radius: r.0, vertices: v.0 }.into();
+            *aabb = mesh.compute_aabb().unwrap();
         }
     }
 }
