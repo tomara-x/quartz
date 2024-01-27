@@ -362,28 +362,30 @@ fn clear_despawn_queue(
     black_hole_query: Query<&BlackHole>,
     arrow_query: Query<&ConnectionArrow>,
     order_query: Query<&Order>,
+    mut tmp: Local<Vec<Entity>>,
 ) {
-    while let Some(e) = despawn_queue.0.pop() {
-        if let Ok(wh) = white_hole_query.get(e) {
+    for e in despawn_queue.0.iter() {
+        if let Ok(wh) = white_hole_query.get(*e) {
             if let Some(bh) = commands.get_entity(wh.bh) {
                 bh.despawn_recursive();
             }
-            let arrow = arrow_query.get(e).unwrap().0;
-            despawn_queue.0.push(arrow);
-        } else if let Ok(bh) = black_hole_query.get(e) {
-            despawn_queue.0.push(bh.wh);
+            let arrow = arrow_query.get(*e).unwrap().0;
+            tmp.push(arrow);
+        } else if let Ok(bh) = black_hole_query.get(*e) {
+            tmp.push(bh.wh);
         }
-        if let Ok(children) = children_query.get(e) {
+        if let Ok(children) = children_query.get(*e) {
             for child in children {
-                despawn_queue.0.push(*child);
+                tmp.push(*child);
             }
         }
-        if order_query.contains(e) {
+        if order_query.contains(*e) {
             order_change.send_default();
         }
-        if let Some(mut entity) = commands.get_entity(e) {
+        if let Some(mut entity) = commands.get_entity(*e) {
             entity.despawn();
         }
     }
+    despawn_queue.0 = (*tmp.clone()).to_vec();
 }
 
