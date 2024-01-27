@@ -82,8 +82,7 @@ fn main() {
         .add_systems(Update, select_all.run_if(in_state(Mode::Edit)))
         .add_systems(Update, duplicate_selected.run_if(in_state(Mode::Edit)))
         .add_systems(Update, rotate_selected.after(update_selection).run_if(in_state(Mode::Edit)))
-        .add_systems(Update, (delete_selected_holes, delete_selected_circles)
-                            .chain().run_if(in_state(Mode::Edit)))
+        .add_systems(Update, (delete_selected_holes, delete_selected_circles).run_if(in_state(Mode::Edit)))
         // events
         // connections
         .add_systems(Update, connect.run_if(in_state(Mode::Connect)))
