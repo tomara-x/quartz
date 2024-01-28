@@ -151,6 +151,10 @@ pub fn update_selection(
     cursor: Res<CursorInfo>,
     keyboard_input: Res<Input<KeyCode>>,
     mut top_clicked_circle: Local<Option<(Entity, f32)>>,
+    id: Res<SelectionCircle>,
+    mut trans_query: Query<&mut Transform>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mesh_ids: Query<&Mesh2dHandle>,
 ) {
     if keyboard_input.pressed(KeyCode::Space) { return; }
     let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
@@ -178,8 +182,17 @@ pub fn update_selection(
                 }
             }
         }
+    } else if mouse_button_input.pressed(MouseButton::Left) && top_clicked_circle.is_none() {
+        trans_query.get_mut(id.0).unwrap().translation = cursor.i.extend(1.);
+        let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
+        let mesh = meshes.get_mut(mesh_id).unwrap();
+        *mesh = BevyCircle { radius: cursor.i.distance(cursor.f), vertices: 8 }.into();
     }
     if mouse_button_input.just_released(MouseButton::Left) {
+        trans_query.get_mut(id.0).unwrap().translation = Vec3::Z;
+        let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
+        let mesh = meshes.get_mut(mesh_id).unwrap();
+        *mesh = BevyCircle { radius: 0., vertices: 3 }.into();
         if top_clicked_circle.is_none() {
             if !shift {
                 for entity in selected.iter() {

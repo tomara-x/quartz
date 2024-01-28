@@ -3,7 +3,6 @@ use bevy::{
         bloom::{BloomCompositeMode, BloomSettings},
         tonemapping::Tonemapping,
         },
-    sprite::Mesh2dHandle,
     utils::Duration,
     winit::{WinitSettings, UpdateMode},
     tasks::IoTaskPool,
@@ -66,9 +65,8 @@ fn main() {
         .add_systems(Update, update_cursor_info)
         // circles
         .add_systems(Update, spawn_circles.run_if(in_state(Mode::Draw)))
-        .add_systems(Update, draw_selection_circle.run_if(not(in_state(Mode::Connect))))
         .add_systems(Update, mark_visible.after(update_cursor_info))
-        .add_systems(Update, update_selection.after(mark_visible).run_if(in_state(Mode::Edit)))
+        .add_systems(Update, update_selection.after(mark_visible).run_if(not(in_state(Mode::Connect))))
         .add_systems(Update, move_selected.after(update_selection).run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_color.after(update_selection).run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_mat.run_if(in_state(Mode::Edit)))
@@ -323,31 +321,6 @@ fn post_load(
             );
         }
         order_change.send_default();
-    }
-}
-
-fn draw_selection_circle(
-    cursor: Res<CursorInfo>,
-    mouse_button_input: Res<Input<MouseButton>>,
-    keyboard_input: Res<Input<KeyCode>>,
-    id: Res<SelectionCircle>,
-    mut trans_query: Query<&mut Transform>,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mesh_ids: Query<&Mesh2dHandle>,
-) {
-    if mouse_button_input.pressed(MouseButton::Left) &&
-    ! mouse_button_input.just_pressed(MouseButton::Left) &&
-    !keyboard_input.pressed(KeyCode::Space) {
-        trans_query.get_mut(id.0).unwrap().translation = cursor.i.extend(1.);
-        let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
-        let mesh = meshes.get_mut(mesh_id).unwrap();
-        *mesh = BevyCircle { radius: cursor.i.distance(cursor.f), vertices: 8 }.into();
-    }
-    if mouse_button_input.just_released(MouseButton::Left) {
-        trans_query.get_mut(id.0).unwrap().translation = Vec3::Z;
-        let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
-        let mesh = meshes.get_mut(mesh_id).unwrap();
-        *mesh = BevyCircle { radius: 0., vertices: 3 }.into();
     }
 }
 
