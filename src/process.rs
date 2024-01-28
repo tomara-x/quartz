@@ -236,6 +236,7 @@ pub fn process(
                             let net = &access.net_query.get(wh.bh_parent).unwrap().0;
                             slot.0.set(Fade::Smooth, 0.1, Box::new(net.clone()));
                             wh.new_lt = false;
+                            access.net_changed_query.get_mut(wh.bh_parent).unwrap().0 = false;
                             continue 'entity;
                         }
                     }
