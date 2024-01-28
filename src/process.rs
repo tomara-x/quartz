@@ -39,7 +39,7 @@ pub struct Access<'w, 's> {
     trans_query: Query<'w, 's, &'static mut Transform>,
     arr_query: Query<'w, 's, &'static mut Arr>,
     tonemapping: Query<'w, 's, &'static mut Tonemapping, With<Camera>>,
-    op_changed_query: Query<'w, 's, &'static mut OpChanged>,
+    net_changed_query: Query<'w, 's, &'static mut NetChanged>,
     net_query: Query<'w, 's, &'static mut Network>,
     net_ins_query: Query<'w, 's, &'static mut NetIns>,
     col_query: Query<'w, 's, &'static mut Col>,
@@ -53,13 +53,10 @@ pub fn process(
     mut white_hole_query: Query<&mut WhiteHole>,
     mut access: Access,
     mut slot: ResMut<Slot>,
-    mut had_l: Local<bool>,
-    mut had_r: Local<bool>,
     mut oscil: Local<(u8, bool)>,
 ) {
     'entity: for id in queue.0.iter().flatten() {
         let children = children_query.get(*id).unwrap();
-        let op_changed = &mut access.op_changed_query.get_mut(*id).unwrap().0;
         match access.op_query.get(*id).unwrap().0.as_str() {
             "pass" => {
                 for child in children {
@@ -167,7 +164,7 @@ pub fn process(
                                 oscil.1 = true; // new wave
                             }
                         }
-                        if white_hole.link_types == (0, 1) && (white_hole.new_lt || oscil.1 || *op_changed) {
+                        if white_hole.link_types == (0, 1) && (white_hole.new_lt || oscil.1) {
                             white_hole.new_lt = false;
                             oscil.1 = false;
                             let input = access.net_query.get(white_hole.bh_parent).unwrap().0.clone();
@@ -178,10 +175,10 @@ pub fn process(
                                 2 => { *net = Net32::wrap(Box::new(input >> square())); },
                                 _ => {},
                             }
+                            access.net_changed_query.get_mut(*id).unwrap().0 = true;
                         }
                     }
                 }
-                *op_changed = false;
             },
             "Sum" => {
                 let mut changed = false;
@@ -191,13 +188,12 @@ pub fn process(
                         if white_hole.link_types.0 == 0 {
                             inputs.push(&access.net_query.get(white_hole.bh_parent).unwrap().0);
                         }
-                        if white_hole.new_lt || *op_changed {
+                        if white_hole.new_lt {
                             white_hole.new_lt = false;
                             changed = true;
                         }
                     }
                 }
-                *op_changed = false;
                 if changed {
                     let mut graph = Net32::wrap(Box::new(dc(0.)));
                     for i in inputs {
@@ -217,13 +213,12 @@ pub fn process(
                             inputs.push(&access.net_query.get(white_hole.bh_parent).unwrap().0);
                         }
                         // something is new so we'll update our output
-                        if white_hole.new_lt || *op_changed {
+                        if white_hole.new_lt {
                             white_hole.new_lt = false;
                             changed = true;
                         }
                     }
                 }
-                *op_changed = false;
                 if changed {
                     let mut graph = Net32::wrap(Box::new(dc(1.)));
                     for i in inputs {
@@ -234,48 +229,23 @@ pub fn process(
                 }
             },
             "Out" => {
-                let mut has_l = false;
-                let mut has_r = false;
                 for child in children {
-                    if let Ok(white_hole) = white_hole_query.get(*child) {
-                        if white_hole.link_types == (0, 1) { has_l = true; }
-                        if white_hole.link_types == (0, 2) { has_r = true; }
-                    }
-                }
-                if has_l || has_r { // we have inputs to 1 or 2
-                    for child in children {
-                        if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
-                            // if an input has a new net, we re-assign that slot
-                            if white_hole.link_types == (0, 1) && (white_hole.new_lt || *op_changed) {
-                                let l = &access.net_query.get(white_hole.bh_parent).unwrap().0;
-                                slot.0.set(Fade::Smooth, 0.1, Box::new(l.clone()));
-                                white_hole.new_lt = false;
-                                *had_l = true;
-                            }
-                            if white_hole.link_types == (0, 2) && (white_hole.new_lt || *op_changed) {
-                                let r = &access.net_query.get(white_hole.bh_parent).unwrap().0;
-                                slot.1.set(Fade::Smooth, 0.1, Box::new(r.clone()));
-                                white_hole.new_lt = false;
-                                *had_r = true;
-                            }
+                    if let Ok(mut wh) = white_hole_query.get_mut(*child) {
+                        let new_net = access.net_changed_query.get(wh.bh_parent).unwrap().0;
+                        if wh.link_types == (0, 1) && (wh.new_lt || new_net) {
+                            let net = &access.net_query.get(wh.bh_parent).unwrap().0;
+                            slot.0.set(Fade::Smooth, 0.1, Box::new(net.clone()));
+                            wh.new_lt = false;
+                            continue 'entity;
                         }
                     }
-                    *op_changed = false;
                 }
-                // an input was here but it's now removed. we output silence
-                if !has_l && *had_l {
-                    slot.0.set(Fade::Smooth, 0.1, Box::new(dc(0.)));
-                    *had_l = false;
-                }
-                if !has_r && *had_r {
-                    slot.1.set(Fade::Smooth, 0.1, Box::new(dc(0.)));
-                    *had_r = false;
-                }
+                //slot.0.set(Fade::Smooth, 0.1, Box::new(dc(0.)));
             },
             "Probe" => {
                 for child in children {
                     if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
-                        if white_hole.link_types == (0, 1) && (white_hole.new_lt || *op_changed) {
+                        if white_hole.link_types == (0, 1) && white_hole.new_lt {
                             let mut input_net = access.net_query.get(white_hole.bh_parent).unwrap().0.clone();
                             input_net.set_sample_rate(120.);
                             let net = &mut access.net_query.get_mut(*id).unwrap().0;
@@ -289,7 +259,6 @@ pub fn process(
                         }
                     }
                 }
-                *op_changed = false;
             },
             _ => {},
         }

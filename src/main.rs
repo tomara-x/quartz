@@ -110,7 +110,6 @@ fn main() {
         .register_type::<Visible>()
         .register_type::<Save>()
         .register_type::<Order>()
-        .register_type::<OpChanged>()
         .register_type::<BlackHole>()
         .register_type::<WhiteHole>()
         .register_type::<(i32, i32)>()
@@ -232,7 +231,6 @@ fn save_scene(world: &mut World) {
             .allow::<Visible>()
             .allow::<Save>()
             .allow::<Order>()
-            .allow::<OpChanged>()
             .allow::<BlackHole>()
             .allow::<WhiteHole>()
             .allow::<Parent>()
@@ -299,10 +297,12 @@ fn post_load(
                 commands.entity(e).insert((
                     Network(Net32::new(0,1)),
                     NetIns(Vec::new()),
+                    NetChanged(true),
                 ));
             } else if white_hole_query.contains(e) {
                 let arrow = commands.spawn( ColorMesh2dBundle {
                     // doesn't matter, it's gonna get replaced
+                    // TODO(amy): actually make it 3 verts
                     mesh: meshes.add(BevyCircle::new(0.).into()).into(),
                     material: materials.add(ColorMaterial::from(Color::hsla(0., 1., 1., 0.7))),
                     transform: Transform::from_translation(Vec3::Z),

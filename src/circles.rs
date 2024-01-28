@@ -35,7 +35,7 @@ pub fn spawn_circles(
             Col(color),
             Visible, //otherwise it can't be selected til after mark_visible is updated
             Order(0),
-            OpChanged(true),
+            NetChanged(true),
             Network(Net32::new(0,1)),
             NetIns(Vec::new()),
             crate::components::Num(0.),
@@ -455,10 +455,10 @@ pub fn update_num(
 }
 
 pub fn update_net_from_op(
-    mut query: Query<(&Op, &mut OpChanged, &mut Network, &mut NetIns), Changed<Op>>,
+    mut query: Query<(&Op, &mut NetChanged, &mut Network, &mut NetIns), Changed<Op>>,
 ) {
-    for (op, mut op_changed, mut n, mut inputs) in query.iter_mut() {
-        op_changed.0 = true;
+    for (op, mut net_changed, mut n, mut inputs) in query.iter_mut() {
+        net_changed.0 = true;
         match op.0.as_str() {
             "Var" => {
                 let input = shared(0.);

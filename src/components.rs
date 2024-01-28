@@ -48,7 +48,7 @@ pub struct Order(pub usize);
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
-pub struct OpChanged(pub bool);
+pub struct NetChanged(pub bool);
 
 #[derive(Component)]
 pub struct Network(pub Net32);
