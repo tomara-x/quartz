@@ -8,11 +8,10 @@ use fundsp::hacker32::*;
 use crate::components::*;
 
 pub fn ext_thread(mut commands: Commands) {
-    // create slots for outputs
-    let slot_l = Slot32::new(Box::new(dc(0.)));
-    let slot_r = Slot32::new(Box::new(dc(0.)));
-    // save thier frontends in a bevy resource
-    commands.insert_resource(Slot(slot_l.0, slot_r.0));
+    // create slot for output
+    let slot = Slot32::new(Box::new(dc(0.)));
+    // save its frontend in a bevy resource
+    commands.insert_resource(Slot(slot.0));
     std::thread::spawn(move || {
         let host = cpal::default_host();
         let device = host
@@ -20,10 +19,10 @@ pub fn ext_thread(mut commands: Commands) {
             .expect("Failed to find a default output device");
         let config = device.default_output_config().unwrap();
         match config.sample_format() {
-            // passing the slot backends inside
-            cpal::SampleFormat::F32 => run::<f32>(&device, &config.into(), slot_l.1, slot_r.1),
-            cpal::SampleFormat::I16 => run::<i16>(&device, &config.into(), slot_l.1, slot_r.1),
-            cpal::SampleFormat::U16 => run::<u16>(&device, &config.into(), slot_l.1, slot_r.1),
+            // passing the slot's backend inside
+            cpal::SampleFormat::F32 => run::<f32>(&device, &config.into(), slot.1),
+            cpal::SampleFormat::I16 => run::<i16>(&device, &config.into(), slot.1),
+            cpal::SampleFormat::U16 => run::<u16>(&device, &config.into(), slot.1),
             _ => panic!("Unsupported format"),
         }
     });
@@ -32,20 +31,17 @@ pub fn ext_thread(mut commands: Commands) {
 fn run<T>(
     device: &cpal::Device,
     config: &cpal::StreamConfig,
-    mut slot_l: SlotBackend32,
-    mut slot_r: SlotBackend32,
+    mut slot: SlotBackend32,
 ) where
     T: SizedSample + FromSample<f32>,
 {
     let sample_rate = config.sample_rate.0 as f64;
     let channels = config.channels as usize;
 
-    slot_l.set_sample_rate(sample_rate);
-    slot_r.set_sample_rate(sample_rate);
+    slot.set_sample_rate(sample_rate);
     let mut next_value = move || {
         assert_no_alloc(|| {
-            let l = slot_l.get_mono();
-            let r = slot_r.get_mono();
+            let (l, r) = slot.get_stereo();
             (
                 if l.is_normal() { l.clamp(-1., 1.) } else { 0. },
                 if r.is_normal() { r.clamp(-1., 1.) } else { 0. },

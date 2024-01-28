@@ -137,7 +137,7 @@ pub struct CursorInfo {
 }
 
 #[derive(Resource)]
-pub struct Slot(pub Slot32, pub Slot32);
+pub struct Slot(pub Slot32);
 
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
