@@ -90,7 +90,7 @@ pub fn highlight_selected(
     for (id, r, v) in added.iter() {
         let highlight = commands.spawn((
             ColorMesh2dBundle {
-                mesh: meshes.add(BevyCircle{ radius: r.0 * 1.05, vertices: v.0} .into()).into(),
+                mesh: meshes.add(BevyCircle{ radius: r.0 + 5., vertices: v.0} .into()).into(),
                 material: materials.add(ColorMaterial::from(Color::hsl(0.0,1.0,0.5))),
                 transform: Transform::from_translation(Vec3{z:-0.0000001, ..default()}),
                 ..default()
@@ -116,7 +116,7 @@ pub fn highlight_selected(
         if let Ok((v, r)) = resized.get(parent.get()) {
             if let Ok(Mesh2dHandle(mesh_id)) = mesh_ids.get(id) {
                 let mesh = meshes.get_mut(mesh_id).unwrap();
-                *mesh = BevyCircle { radius: r.0 * 1.05, vertices: v.0 }.into();
+                *mesh = BevyCircle { radius: r.0 + 5., vertices: v.0 }.into();
             }
         }
     }
