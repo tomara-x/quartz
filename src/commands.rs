@@ -85,7 +85,7 @@ pub fn command_parser(
                 match command.next() {
                     Some(":lt") | Some("lt") => {
                         if let Some(s) = command.next() {
-                            if let Ok(e) = str_to_id(s) {
+                            if let Some(e) = str_to_id(s) {
                                 if let Ok(mut wh) = access.white_hole_query.get_mut(e) {
                                     if let Some(s) = command.next() {
                                         wh.link_types.1 = str_to_lt(s);
@@ -112,7 +112,7 @@ pub fn command_parser(
                         match command.next() {
                             Some("n") => {
                                 if let Some(s) = command.next() {
-                                    if let Ok(e) = str_to_id(s) {
+                                    if let Some(e) = str_to_id(s) {
                                         if let Ok(mut num) = access.num_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = n.parse::<f32>() {
@@ -131,7 +131,7 @@ pub fn command_parser(
                             },
                             Some("r") => {
                                 if let Some(s) = command.next() {
-                                    if let Ok(e) = str_to_id(s) {
+                                    if let Some(e) = str_to_id(s) {
                                         if let Ok(mut radius) = access.radius_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = n.parse::<f32>() {
@@ -150,7 +150,7 @@ pub fn command_parser(
                             },
                             Some("x") => {
                                 if let Some(s) = command.next() {
-                                    if let Ok(e) = str_to_id(s) {
+                                    if let Some(e) = str_to_id(s) {
                                         if let Ok(mut t) = access.trans_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = n.parse::<f32>() {
@@ -169,7 +169,7 @@ pub fn command_parser(
                             },
                             Some("y") => {
                                 if let Some(s) = command.next() {
-                                    if let Ok(e) = str_to_id(s) {
+                                    if let Some(e) = str_to_id(s) {
                                         if let Ok(mut t) = access.trans_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = n.parse::<f32>() {
@@ -188,7 +188,7 @@ pub fn command_parser(
                             },
                             Some("z") => {
                                 if let Some(s) = command.next() {
-                                    if let Ok(e) = str_to_id(s) {
+                                    if let Some(e) = str_to_id(s) {
                                         if let Ok(mut t) = access.trans_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = n.parse::<f32>() {
@@ -207,7 +207,7 @@ pub fn command_parser(
                             },
                             Some("h") => {
                                 if let Some(s) = command.next() {
-                                    if let Ok(e) = str_to_id(s) {
+                                    if let Some(e) = str_to_id(s) {
                                         if let Ok(mut color) = access.col_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = n.parse::<f32>() {
@@ -226,7 +226,7 @@ pub fn command_parser(
                             },
                             Some("s") => {
                                 if let Some(s) = command.next() {
-                                    if let Ok(e) = str_to_id(s) {
+                                    if let Some(e) = str_to_id(s) {
                                         if let Ok(mut color) = access.col_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = n.parse::<f32>() {
@@ -245,7 +245,7 @@ pub fn command_parser(
                             },
                             Some("l") => {
                                 if let Some(s) = command.next() {
-                                    if let Ok(e) = str_to_id(s) {
+                                    if let Some(e) = str_to_id(s) {
                                         if let Ok(mut color) = access.col_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = n.parse::<f32>() {
@@ -264,7 +264,7 @@ pub fn command_parser(
                             },
                             Some("a") => {
                                 if let Some(s) = command.next() {
-                                    if let Ok(e) = str_to_id(s) {
+                                    if let Some(e) = str_to_id(s) {
                                         if let Ok(mut color) = access.col_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = n.parse::<f32>() {
@@ -283,7 +283,7 @@ pub fn command_parser(
                             },
                             Some("v") => {
                                 if let Some(s) = command.next() {
-                                    if let Ok(e) = str_to_id(s) {
+                                    if let Some(e) = str_to_id(s) {
                                         if let Ok(mut vertices) = access.vertices_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = n.parse::<usize>() {
@@ -302,7 +302,7 @@ pub fn command_parser(
                             },
                             Some("o") | Some("rot") | Some("rotation") => {
                                 if let Some(s) = command.next() {
-                                    if let Ok(e) = str_to_id(s) {
+                                    if let Some(e) = str_to_id(s) {
                                         if let Ok(mut t) = access.trans_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = n.parse::<f32>() {
@@ -321,7 +321,7 @@ pub fn command_parser(
                             },
                             Some("op") => {
                                 if let Some(s) = command.next() {
-                                    if let Ok(e) = str_to_id(s) {
+                                    if let Some(e) = str_to_id(s) {
                                         if let Ok(mut op) = access.op_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 op.1.0 = n.to_string();
@@ -338,7 +338,7 @@ pub fn command_parser(
                             },
                             Some("ord") | Some("order") => {
                                 if let Some(s) = command.next() {
-                                    if let Ok(e) = str_to_id(s) {
+                                    if let Some(e) = str_to_id(s) {
                                         if let Ok(mut order) = access.order_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = n.parse::<usize>() {
@@ -359,7 +359,7 @@ pub fn command_parser(
                             },
                             Some("arr") | Some("array") => {
                                 if let Some(s) = command.next() {
-                                    if let Ok(e) = str_to_id(s) {
+                                    if let Some(e) = str_to_id(s) {
                                         if let Ok(mut arr) = access.arr_query.get_mut(e) {
                                             arr.0.clear();
                                             for n in command {
@@ -524,17 +524,17 @@ pub fn command_parser(
     }
 }
 
-fn str_to_id(s: &str) -> Result<Entity, &str> {
+fn str_to_id(s: &str) -> Option<Entity> {
     let mut e = s.split('v');
     if let Some(i) = e.next() {
         if let Some(g) = e.next() {
             if let Ok(index) = i.parse::<u64>() {
                 if let Ok(gen) = g.parse::<u64>() {
                     let bits = gen << 32 | index;
-                    return Ok(Entity::from_bits(bits));
+                    return Some(Entity::from_bits(bits));
                 }
             }
         }
     }
-    return Err("errrrr");
+    None
 }
