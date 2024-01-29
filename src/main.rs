@@ -6,6 +6,7 @@ use bevy::{
     utils::Duration,
     winit::{WinitSettings, UpdateMode},
     tasks::IoTaskPool,
+    scene::SceneInstance,
     prelude::*};
 use bevy::prelude::shape::Circle as BevyCircle;
 
@@ -275,53 +276,111 @@ fn post_load(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
-    query: Query<(Entity, &Radius, &Transform, &Col, &Vertices)>,
-    text_query: Query<(Entity, &Text), With<Save>>,
-    keyboard_input: Res<Input<KeyCode>>,
+    main_query: Query<(&Radius, &Transform, &Col, &Vertices)>,
     op_query: Query<&Op>,
+    text_query: Query<&Text>,
     mut order_change: EventWriter<OrderChange>,
     white_hole_query: Query<With<WhiteHole>>,
+    black_hole_query: Query<With<BlackHole>>,
+    scene: Query<&Children, With<SceneInstance>>,
+    children_query: Query<&Children>,
 ) {
-    let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
-    if ctrl && keyboard_input.just_pressed(KeyCode::P) {
-        for (e, r, t, c, v) in query.iter() {
-            commands.entity(e).insert(
-                ColorMesh2dBundle {
-                    mesh: meshes.add(BevyCircle { radius: r.0, vertices: v.0 }.into()).into(),
-                    material: materials.add(ColorMaterial::from(c.0)),
-                    transform: *t,
-                    ..default()
-                },
-            );
-            // you can use an option in the main query instead (i think)
-            if op_query.contains(e) {
-                commands.entity(e).insert((
+    if let Ok(children) = scene.get_single() {
+        for child in children {
+            if let Ok((r, t, c, v)) = main_query.get(*child) {
+                commands.entity(*child).insert((
+                    ColorMesh2dBundle {
+                        mesh: meshes.add(BevyCircle { radius: r.0, vertices: v.0 }.into()).into(),
+                        material: materials.add(ColorMaterial::from(c.0)),
+                        transform: *t,
+                        ..default()
+                    },
                     Network(Net32::new(0,1)),
                     NetIns(Vec::new()),
                     NetChanged(true),
                 ));
-            } else if white_hole_query.contains(e) {
-                let arrow = commands.spawn( ColorMesh2dBundle {
-                    // doesn't matter, it's gonna get replaced
-                    // TODO(amy): actually make it 3 verts
-                    mesh: meshes.add(BevyCircle::new(0.).into()).into(),
-                    material: materials.add(ColorMaterial::from(Color::hsla(0., 1., 1., 0.7))),
-                    transform: Transform::from_translation(Vec3::Z),
-                    ..default()
-                }).id();
-                commands.entity(e).insert(ConnectionArrow(arrow));
-            }
-        }
-        for (e, t) in text_query.iter() {
-            commands.entity(e).insert(
-                Text2dBundle {
-                    text: t.clone(),
-                    transform: Transform::from_translation(Vec3{z:0.000001, ..default()}),
-                ..default()
+                let kids = children_query.get(*child).unwrap();
+                for kid in kids {
+                    if white_hole_query.contains(*kid) || black_hole_query.contains(*kid) {
+                        if let Ok((r, t, c, v)) = main_query.get(*kid) {
+                            commands.entity(*kid).insert(
+                                ColorMesh2dBundle {
+                                    mesh: meshes.add(BevyCircle { radius: r.0, vertices: v.0 }.into()).into(),
+                                    material: materials.add(ColorMaterial::from(c.0)),
+                                    transform: *t,
+                                    ..default()
+                                },
+                            );
+                        }
+                    }
+                    if white_hole_query.contains(*kid) {
+                        let arrow = commands.spawn( ColorMesh2dBundle {
+                            mesh: meshes.add(BevyCircle{radius:0., vertices:3}.into()).into(),
+                            material: materials.add(ColorMaterial::from(Color::hsla(0., 1., 1., 0.7))),
+                            transform: Transform::from_translation(Vec3::Z),
+                            ..default()
+                        }).id();
+                        commands.entity(*kid).insert(ConnectionArrow(arrow));
+                    }
                 }
-            );
+            }
+            commands.entity(*child).remove_parent();
         }
         order_change.send_default();
     }
 }
+
+//fn post_load(
+//    mut commands: Commands,
+//    mut meshes: ResMut<Assets<Mesh>>,
+//    mut materials: ResMut<Assets<ColorMaterial>>,
+//    query: Query<(Entity, &Radius, &Transform, &Col, &Vertices)>,
+//    text_query: Query<(Entity, &Text), With<Save>>,
+//    keyboard_input: Res<Input<KeyCode>>,
+//    op_query: Query<&Op>,
+//    mut order_change: EventWriter<OrderChange>,
+//    white_hole_query: Query<With<WhiteHole>>,
+//) {
+//    let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
+//    if ctrl && keyboard_input.just_pressed(KeyCode::P) {
+//        for (e, r, t, c, v) in query.iter() {
+//            commands.entity(e).insert(
+//                ColorMesh2dBundle {
+//                    mesh: meshes.add(BevyCircle { radius: r.0, vertices: v.0 }.into()).into(),
+//                    material: materials.add(ColorMaterial::from(c.0)),
+//                    transform: *t,
+//                    ..default()
+//                },
+//            );
+//            // you can use an option in the main query instead (i think)
+//            if op_query.contains(e) {
+//                commands.entity(e).insert((
+//                    Network(Net32::new(0,1)),
+//                    NetIns(Vec::new()),
+//                    NetChanged(true),
+//                ));
+//            } else if white_hole_query.contains(e) {
+//                let arrow = commands.spawn( ColorMesh2dBundle {
+//                    // doesn't matter, it's gonna get replaced
+//                    // TODO(amy): actually make it 3 verts
+//                    mesh: meshes.add(BevyCircle::new(0.).into()).into(),
+//                    material: materials.add(ColorMaterial::from(Color::hsla(0., 1., 1., 0.7))),
+//                    transform: Transform::from_translation(Vec3::Z),
+//                    ..default()
+//                }).id();
+//                commands.entity(e).insert(ConnectionArrow(arrow));
+//            }
+//        }
+//        for (e, t) in text_query.iter() {
+//            commands.entity(e).insert(
+//                Text2dBundle {
+//                    text: t.clone(),
+//                    transform: Transform::from_translation(Vec3{z:0.000001, ..default()}),
+//                ..default()
+//                }
+//            );
+//        }
+//        order_change.send_default();
+//    }
+//}
 
