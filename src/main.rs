@@ -282,10 +282,10 @@ fn post_load(
     mut order_change: EventWriter<OrderChange>,
     white_hole_query: Query<With<WhiteHole>>,
     black_hole_query: Query<With<BlackHole>>,
-    scene: Query<&Children, With<SceneInstance>>,
+    scene: Query<(Entity, &Children), With<SceneInstance>>,
     children_query: Query<&Children>,
 ) {
-    if let Ok(children) = scene.get_single() {
+    if let Ok((scene_entity, children)) = scene.get_single() {
         for child in children {
             if let Ok((r, t, c, v)) = main_query.get(*child) {
                 commands.entity(*child).insert((
@@ -336,6 +336,7 @@ fn post_load(
             );
         }
         order_change.send_default();
+        commands.entity(scene_entity).despawn();
     }
 }
 
