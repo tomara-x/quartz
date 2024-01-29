@@ -156,18 +156,20 @@ pub fn process(
             },
             "Oscil" => {
                 for child in children {
-                    if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
-                        if white_hole.link_types == (-1, 2) {
-                            let input = access.num_query.get(white_hole.bh_parent).unwrap().0;
+                    if let Ok(mut wh) = white_hole_query.get_mut(*child) {
+                        if wh.link_types == (-1, 2) {
+                            let input = access.num_query.get(wh.bh_parent).unwrap().0;
                             if (input as u8) != oscil.0 {
                                 oscil.0 = input as u8;
                                 oscil.1 = true; // new wave
                             }
                         }
-                        if white_hole.link_types == (0, 1) && (white_hole.new_lt || oscil.1) {
-                            white_hole.new_lt = false;
+                        let new_net = access.net_changed_query.get(wh.bh_parent).unwrap().0;
+                        if wh.link_types == (0, 1) && (wh.new_lt || oscil.1 || new_net) {
+                            wh.new_lt = false;
                             oscil.1 = false;
-                            let input = access.net_query.get(white_hole.bh_parent).unwrap().0.clone();
+                            access.net_changed_query.get_mut(wh.bh_parent).unwrap().0 = false;
+                            let input = access.net_query.get(wh.bh_parent).unwrap().0.clone();
                             let net = &mut access.net_query.get_mut(*id).unwrap().0;
                             match oscil.0 {
                                 0 => { *net = Net32::wrap(Box::new(input >> sine())); },
