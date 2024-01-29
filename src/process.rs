@@ -234,6 +234,7 @@ pub fn process(
                         let new_net = access.net_changed_query.get(wh.bh_parent).unwrap().0;
                         if wh.link_types == (0, 1) && (wh.new_lt || new_net) {
                             let net = &access.net_query.get(wh.bh_parent).unwrap().0;
+                            //if net.outputs() != 1 || net.outputs() != 2 { continue 'entity; }
                             slot.0.set(Fade::Smooth, 0.1, Box::new(net.clone()));
                             wh.new_lt = false;
                             access.net_changed_query.get_mut(wh.bh_parent).unwrap().0 = false;
@@ -241,7 +242,20 @@ pub fn process(
                         }
                     }
                 }
-                //slot.0.set(Fade::Smooth, 0.1, Box::new(dc(0.)));
+            },
+            "NOuts" => {
+                for child in children {
+                    if let Ok(mut wh) = white_hole_query.get_mut(*child) {
+                        let new_net = access.net_changed_query.get(wh.bh_parent).unwrap().0;
+                        if wh.link_types == (0, 1) && (wh.new_lt || new_net) {
+                            let net = &access.net_query.get(wh.bh_parent).unwrap().0;
+                            access.num_query.get_mut(*id).unwrap().0 = net.outputs() as f32;
+                            wh.new_lt = false;
+                            access.net_changed_query.get_mut(wh.bh_parent).unwrap().0 = false;
+                            continue 'entity;
+                        }
+                    }
+                }
             },
             "Probe" => {
                 for child in children {
