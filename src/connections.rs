@@ -189,6 +189,7 @@ pub fn draw_connecting_arrow(
     }
 }
 
+// TODO(amy): can this be better?
 pub fn update_link_type_text(
     mut query: Query<(&mut Text, &Parent), With<Visible>>,
     black_hole_query: Query<&BlackHole>,

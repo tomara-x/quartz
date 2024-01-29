@@ -520,7 +520,7 @@ pub fn command_parser(
             Some("l") => {
                 *text = ":lt ".to_string();
             }
-            Some("[") | Some("]") => {
+            Some("[") | Some("]") | Some("0") => {
                 text.clear();
             },
             _ => {},
