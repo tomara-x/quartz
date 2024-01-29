@@ -483,7 +483,7 @@ pub fn command_parser(
                 drag_modes.a = true;
                 text.clear();
             },
-            Some("eO") => {
+            Some("Eo") => {
                 drag_modes.o = true;
                 text.clear();
             },
