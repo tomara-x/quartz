@@ -51,6 +51,7 @@ pub fn process(
     queue: Res<Queue>,
     children_query: Query<&Children>,
     mut white_hole_query: Query<&mut WhiteHole>,
+    black_hole_query: Query<&BlackHole>,
     mut access: Access,
     mut slot: ResMut<Slot>,
     mut oscil: Local<(u8, bool)>,
@@ -164,9 +165,8 @@ pub fn process(
                                 oscil.1 = true; // new wave
                             }
                         }
-                        let new_net = access.net_changed_query.get(wh.bh_parent).unwrap().0;
-                        if wh.link_types == (0, 1) && (wh.new_lt || oscil.1 || new_net) {
-                            wh.new_lt = false;
+                        if wh.link_types == (0, 1) && (wh.open || oscil.1) {
+                            wh.open = false;
                             oscil.1 = false;
                             access.net_changed_query.get_mut(wh.bh_parent).unwrap().0 = false;
                             let input = access.net_query.get(wh.bh_parent).unwrap().0.clone();
@@ -186,13 +186,14 @@ pub fn process(
                 let mut changed = false;
                 let mut inputs = Vec::new();
                 for child in children {
-                    if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
-                        if white_hole.link_types.0 == 0 {
-                            inputs.push(&access.net_query.get(white_hole.bh_parent).unwrap().0);
+                    if let Ok(mut wh) = white_hole_query.get_mut(*child) {
+                        if wh.link_types.0 == 0 {
+                            inputs.push(&access.net_query.get(wh.bh_parent).unwrap().0);
                         }
-                        if white_hole.new_lt {
-                            white_hole.new_lt = false;
+                        if wh.open {
+                            wh.open = false;
                             changed = true;
+                            access.net_changed_query.get_mut(*id).unwrap().0 = true;
                         }
                     }
                 }
@@ -209,15 +210,16 @@ pub fn process(
                 let mut changed = false;
                 let mut inputs = Vec::new();
                 for child in children {
-                    if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
+                    if let Ok(mut wh) = white_hole_query.get_mut(*child) {
                         // grab everything connected through a correct connection
-                        if white_hole.link_types.0 == 0 {
-                            inputs.push(&access.net_query.get(white_hole.bh_parent).unwrap().0);
+                        if wh.link_types.0 == 0 {
+                            inputs.push(&access.net_query.get(wh.bh_parent).unwrap().0);
                         }
                         // something is new so we'll update our output
-                        if white_hole.new_lt {
-                            white_hole.new_lt = false;
+                        if wh.open {
+                            wh.open = false;
                             changed = true;
+                            access.net_changed_query.get_mut(*id).unwrap().0 = true;
                         }
                     }
                 }
@@ -233,13 +235,11 @@ pub fn process(
             "Out" => {
                 for child in children {
                     if let Ok(mut wh) = white_hole_query.get_mut(*child) {
-                        let new_net = access.net_changed_query.get(wh.bh_parent).unwrap().0;
-                        if wh.link_types == (0, 1) && (wh.new_lt || new_net) {
+                        if wh.link_types == (0, 1) && wh.open {
                             let net = &access.net_query.get(wh.bh_parent).unwrap().0;
                             //if net.outputs() != 1 || net.outputs() != 2 { continue 'entity; }
                             slot.0.set(Fade::Smooth, 0.1, Box::new(net.clone()));
-                            wh.new_lt = false;
-                            access.net_changed_query.get_mut(wh.bh_parent).unwrap().0 = false;
+                            wh.open = false;
                             continue 'entity;
                         }
                     }
@@ -256,12 +256,10 @@ pub fn process(
             "NOuts" => {
                 for child in children {
                     if let Ok(mut wh) = white_hole_query.get_mut(*child) {
-                        let new_net = access.net_changed_query.get(wh.bh_parent).unwrap().0;
-                        if wh.link_types == (0, 1) && (wh.new_lt || new_net) {
+                        if wh.link_types == (0, 1) && (wh.open) {
                             let net = &access.net_query.get(wh.bh_parent).unwrap().0;
                             access.num_query.get_mut(*id).unwrap().0 = net.outputs() as f32;
-                            wh.new_lt = false;
-                            access.net_changed_query.get_mut(wh.bh_parent).unwrap().0 = false;
+                            wh.open = false;
                             continue 'entity;
                         }
                     }
@@ -269,15 +267,15 @@ pub fn process(
             },
             "Probe" => {
                 for child in children {
-                    if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
-                        if white_hole.link_types == (0, 1) && white_hole.new_lt {
-                            let mut input_net = access.net_query.get(white_hole.bh_parent).unwrap().0.clone();
+                    if let Ok(mut wh) = white_hole_query.get_mut(*child) {
+                        if wh.link_types == (0, 1) && wh.open {
+                            let mut input_net = access.net_query.get(wh.bh_parent).unwrap().0.clone();
                             input_net.set_sample_rate(120.);
                             let net = &mut access.net_query.get_mut(*id).unwrap().0;
                             *net = Net32::wrap(Box::new(input_net));
-                            white_hole.new_lt = false;
+                            wh.open = false;
                         }
-                        if white_hole.link_types == (0, 1) {
+                        if wh.link_types == (0, 1) {
                             let net = &mut access.net_query.get_mut(*id).unwrap().0;
                             let num = &mut access.num_query.get_mut(*id).unwrap().0;
                             *num = net.get_mono();
@@ -286,6 +284,19 @@ pub fn process(
                 }
             },
             _ => {},
+        }
+        // open all white holes reading from this changed net
+        if access.net_changed_query.get(*id).unwrap().0 {
+            for child in children {
+                if let Ok(bh) = black_hole_query.get(*child) {
+                    if let Ok(wh) = white_hole_query.get_mut(bh.wh) {
+                        if wh.link_types.0 == 0 {
+                            white_hole_query.get_mut(bh.wh).unwrap().open = true;
+                        }
+                    }
+                }
+            }
+            access.net_changed_query.get_mut(*id).unwrap().0 = false;
         }
         for child in children {
             if let Ok(white_hole) = white_hole_query.get(*child) {

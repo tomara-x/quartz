@@ -89,24 +89,24 @@ pub fn command_parser(
                                 if let Ok(mut wh) = access.white_hole_query.get_mut(e) {
                                     if let Some(s) = command.next() {
                                         wh.link_types.1 = str_to_lt(s);
-                                        wh.new_lt = true;
+                                        wh.open = true;
                                     }
                                 } else if let Ok(bh) = access.black_hole_query.get(e) {
                                     let wh = &mut access.white_hole_query.get_mut(bh.wh).unwrap();
                                     if let Some(s) = command.next() {
                                         wh.link_types.0 = str_to_lt(s);
-                                        wh.new_lt = true;
+                                        wh.open = true;
                                     }
                                 }
                             } else {
                                 for id in access.selected_query.iter() {
                                     if let Ok(mut wh) = access.white_hole_query.get_mut(id) {
                                         wh.link_types.1 = str_to_lt(s);
-                                        wh.new_lt = true;
+                                        wh.open = true;
                                     } else if let Ok(bh) = access.black_hole_query.get(id) {
                                         let wh = &mut access.white_hole_query.get_mut(bh.wh).unwrap();
                                         wh.link_types.0 = str_to_lt(s);
-                                        wh.new_lt = true;
+                                        wh.open = true;
                                     }
                                 }
                             }
