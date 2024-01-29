@@ -242,6 +242,14 @@ pub fn process(
                         }
                     }
                 }
+                for child in children {
+                    if let Ok(wh) = white_hole_query.get_mut(*child) {
+                        if wh.link_types == (0, 1) {
+                            continue 'entity;
+                        }
+                    }
+                }
+                slot.0.set(Fade::Smooth, 0.1, Box::new(dc(0.)));
             },
             "NOuts" => {
                 for child in children {
