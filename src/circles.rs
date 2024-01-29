@@ -534,6 +534,8 @@ pub fn shake_order (
     }
 }
 
+// FIXME(amy): you can loop the Visible (view vis)
+// that'd avoid the just-created glitch
 pub fn update_circle_text(
     mut query: Query<(&mut Text, &Parent), With<Visible>>,
     order_query: Query<&Order, Changed<Order>>,
