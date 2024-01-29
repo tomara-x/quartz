@@ -466,6 +466,22 @@ pub fn update_net_from_op(
                 inputs.0.clear();
                 inputs.0.push(input);
             },
+            // testing
+            "0outs" => {
+                n.0 = Net32::new(0,0);
+            },
+            "1outs" => {
+                n.0 = Net32::new(0,1);
+            },
+            "2outs" => {
+                n.0 = Net32::new(0,2);
+            },
+            "3outs" => {
+                n.0 = Net32::new(0,3);
+            },
+            "4outs" => {
+                n.0 = Net32::new(0,4);
+            },
             _ => {
                 n.0 = Net32::wrap(Box::new(dc(0.)));
                 inputs.0.clear();

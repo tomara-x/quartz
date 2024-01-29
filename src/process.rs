@@ -182,6 +182,10 @@ pub fn process(
                     }
                 }
             },
+            //"Pan" => {
+            //    for child in children {
+            //        if let Ok(mut wh) = white_hole_query.get_mut(*child) {
+            //},
             "Sum" => {
                 let mut changed = false;
                 let mut inputs = Vec::new();
@@ -210,6 +214,7 @@ pub fn process(
                 let mut changed = false;
                 let mut inputs = Vec::new();
                 for child in children {
+                    // a way to check if a connection's been removed?
                     if let Ok(mut wh) = white_hole_query.get_mut(*child) {
                         // grab everything connected through a correct connection
                         if wh.link_types.0 == 0 {
@@ -237,7 +242,8 @@ pub fn process(
                     if let Ok(mut wh) = white_hole_query.get_mut(*child) {
                         if wh.link_types == (0, 1) && wh.open {
                             let net = &access.net_query.get(wh.bh_parent).unwrap().0;
-                            //if net.outputs() != 1 || net.outputs() != 2 { continue 'entity; }
+                            // instead of giving up, can we get the first 2 outs in a net?
+                            if net.outputs() != 1 || net.outputs() != 2 { continue 'entity; }
                             slot.0.set(Fade::Smooth, 0.1, Box::new(net.clone()));
                             wh.open = false;
                             continue 'entity;
