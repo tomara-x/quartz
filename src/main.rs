@@ -85,6 +85,7 @@ fn main() {
         .add_systems(Update, (delete_selected_holes, delete_selected_circles).run_if(in_state(Mode::Edit)))
         .add_systems(Update, shake_order.run_if(in_state(Mode::Edit)))
         // events
+        .add_event::<SaveCommand>()
         // connections
         .add_systems(Update, connect.run_if(in_state(Mode::Connect)))
         .add_systems(Update, update_connection_arrows)
@@ -217,10 +218,10 @@ fn toggle_pan(
 }
 
 fn save_scene(world: &mut World) {
-    let keyboard_input = world.resource::<Input<KeyCode>>();
-    let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
-    if ctrl && keyboard_input.just_pressed(KeyCode::S) {
-
+    let mut save_events = world.resource_mut::<Events<SaveCommand>>();
+    let events: Vec<SaveCommand> = save_events.drain().collect();
+    for event in events {
+        let name = event.0.to_string();
         let mut query = world.query_filtered::<Entity, With<Save>>();
         let scene = DynamicSceneBuilder::from_world(&world)
             .allow::<Radius>()
@@ -251,7 +252,7 @@ fn save_scene(world: &mut World) {
         #[cfg(not(target_arch = "wasm32"))]
         IoTaskPool::get()
             .spawn(async move {
-                File::create(format!("scene.scn.ron"))
+                File::create(format!("assets/{}.ron", name))
                     .and_then(|mut file| file.write(serialized_scene.as_bytes()))
                     .expect("Error while writing scene to file");
             })

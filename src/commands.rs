@@ -20,6 +20,7 @@ pub struct Access<'w, 's> {
     black_hole_query: Query<'w, 's, &'static mut BlackHole>,
     order_change: EventWriter<'w, OrderChange>,
     vertices_query: Query<'w, 's, (Entity, &'static mut Vertices)>,
+    save_event: EventWriter<'w, SaveCommand>,
 }
 
 pub fn command_parser(
@@ -83,6 +84,11 @@ pub fn command_parser(
             for line in lines {
                 let mut command = line.split_ascii_whitespace();
                 match command.next() {
+                    Some(":w") => {
+                        if let Some(s) = command.next() {
+                            access.save_event.send(SaveCommand(s.to_string()));
+                        }
+                    },
                     Some(":lt") | Some("lt") => {
                         if let Some(s) = command.next() {
                             if let Some(e) = str_to_id(s) {

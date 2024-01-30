@@ -174,6 +174,9 @@ pub struct ConnectingLine(pub Entity);
 #[derive(Event, Default)]
 pub struct OrderChange;
 
+#[derive(Event)]
+pub struct SaveCommand(pub String);
+
 // -------------------- helper-functions --------------------
 pub fn str_to_lt(s: &str) -> i32 {
     if let Ok(n) = s.parse::<i32>() {
