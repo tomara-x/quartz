@@ -141,6 +141,29 @@ pub fn mark_visible(
     }
 }
 
+pub fn draw_drawing_circle(
+    id: Res<SelectionCircle>,
+    mut trans_query: Query<&mut Transform>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mesh_ids: Query<&Mesh2dHandle>,
+    mouse_button_input: Res<Input<MouseButton>>,
+    cursor: Res<CursorInfo>,
+) {
+    if mouse_button_input.pressed(MouseButton::Left) 
+    && !mouse_button_input.just_pressed(MouseButton::Left) {
+        trans_query.get_mut(id.0).unwrap().translation = cursor.i.extend(1.);
+        let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
+        let mesh = meshes.get_mut(mesh_id).unwrap();
+        *mesh = BevyCircle { radius: cursor.i.distance(cursor.f), vertices: 8 }.into();
+    }
+    if mouse_button_input.just_released(MouseButton::Left) {
+        trans_query.get_mut(id.0).unwrap().translation = Vec3::Z;
+        let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
+        let mesh = meshes.get_mut(mesh_id).unwrap();
+        *mesh = BevyCircle { radius: 0., vertices: 3 }.into();
+    }
+}
+
 //optimize all those distance calls, use a distance squared instead
 pub fn update_selection(
     mut commands: Commands,
