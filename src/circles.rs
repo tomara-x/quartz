@@ -33,7 +33,6 @@ pub fn spawn_circles(
             },
             Radius(r),
             Col(color),
-            Visible, //otherwise it can't be selected til after mark_visible is updated
             Order(0),
             NetChanged(true),
             Network(Net32::new(0,1)),
@@ -122,32 +121,12 @@ pub fn highlight_selected(
     }
 }
 
-// loop over the visible entities and give them a Visible component
-// so we can query just the visible entities
-pub fn mark_visible(
-    mouse_button_input: Res<Input<MouseButton>>,
-    mut commands: Commands,
-    query: Query<Entity, With<Visible>>,
-    visible: Query<&VisibleEntities>,
-) {
-    if mouse_button_input.just_released(MouseButton::Left) {
-        for e in query.iter() {
-            commands.entity(e).remove::<Visible>();
-        }
-        let vis = visible.single();
-        for e in vis.iter() {
-            commands.entity(*e).insert(Visible);
-        }
-    }
-}
-
 //optimize all those distance calls, use a distance squared instead
 pub fn update_selection(
     mut commands: Commands,
     mouse_button_input: Res<Input<MouseButton>>,
-    query: Query<(Entity, &Radius, &GlobalTransform), Or<(With<Visible>, With<Selected>)>>,
+    query: Query<(&Radius, &GlobalTransform)>,
     selected: Query<Entity, With<Selected>>,
-    selected_query: Query<&Selected>,
     cursor: Res<CursorInfo>,
     keyboard_input: Res<Input<KeyCode>>,
     mut top_clicked_circle: Local<Option<(Entity, f32)>>,
@@ -155,24 +134,28 @@ pub fn update_selection(
     mut trans_query: Query<&mut Transform>,
     mut meshes: ResMut<Assets<Mesh>>,
     mesh_ids: Query<&Mesh2dHandle>,
+    visible: Query<&VisibleEntities>,
 ) {
     if keyboard_input.pressed(KeyCode::Space) { return; }
     let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
     if mouse_button_input.just_pressed(MouseButton::Left) {
-        for (e, r, t) in query.iter() {
-            if top_clicked_circle.is_some() {
-                if t.translation().z > top_clicked_circle.unwrap().1 &&
-                    cursor.i.distance(t.translation().xy()) < r.0 {
-                    *top_clicked_circle = Some((e, t.translation().z));
-                }
-            } else {
-                if cursor.i.distance(t.translation().xy()) < r.0 {
-                    *top_clicked_circle = Some((e, t.translation().z));
+        let vis = visible.single();
+        for e in vis.iter() {
+            if let Ok((r, t)) = query.get(*e) {
+                if top_clicked_circle.is_some() {
+                    if t.translation().z > top_clicked_circle.unwrap().1 &&
+                        cursor.i.distance(t.translation().xy()) < r.0 {
+                        *top_clicked_circle = Some((*e, t.translation().z));
+                    }
+                } else {
+                    if cursor.i.distance(t.translation().xy()) < r.0 {
+                        *top_clicked_circle = Some((*e, t.translation().z));
+                    }
                 }
             }
         }
         if let Some(top) = *top_clicked_circle {
-            if !selected_query.contains(top.0) {
+            if !selected.contains(top.0) {
                 if shift { commands.entity(top.0).insert(Selected); }
                 else {
                     for entity in selected.iter() {
@@ -200,9 +183,12 @@ pub fn update_selection(
                 }
             }
             // select those in the dragged area
-            for (e, r, t) in query.iter() {
-                if cursor.i.distance(cursor.f) + r.0 > cursor.i.distance(t.translation().xy()) {
-                    commands.entity(e).insert(Selected);
+            let vis = visible.single();
+            for e in vis.iter() {
+                if let Ok((r, t)) = query.get(*e) {
+                    if cursor.i.distance(cursor.f) + r.0 > cursor.i.distance(t.translation().xy()) {
+                        commands.entity(*e).insert(Selected);
+                    }
                 }
             }
         }
@@ -534,23 +520,25 @@ pub fn shake_order (
     }
 }
 
-// FIXME(amy): you can loop the Visible (view vis)
-// that'd avoid the just-created glitch
 pub fn update_circle_text(
-    mut query: Query<(&mut Text, &Parent), With<Visible>>,
+    mut query: Query<(&mut Text, &Parent)>,
     order_query: Query<&Order, Changed<Order>>,
     num_query: Query<&crate::components::Num, Changed<crate::components::Num>>,
     op_query: Query<&Op, Changed<Op>>,
+    visible: Query<&VisibleEntities>,
 ) {
-    for (mut text, parent) in query.iter_mut() {
-        if let Ok(order) = order_query.get(**parent) {
-            text.sections[1].value = "order: ".to_string() + &order.0.to_string() + "\n";
-        }
-        if let Ok(op) = op_query.get(**parent) {
-            text.sections[2].value = op.0.clone() + "\n";
-        }
-        if let Ok(num) = num_query.get(**parent) {
-            text.sections[3].value = num.0.to_string();
+    let vis = visible.single();
+    for e in vis.iter() {
+        if let Ok((mut text, parent)) = query.get_mut(*e) {
+            if let Ok(order) = order_query.get(**parent) {
+                text.sections[1].value = "order: ".to_string() + &order.0.to_string() + "\n";
+            }
+            if let Ok(op) = op_query.get(**parent) {
+                text.sections[2].value = op.0.clone() + "\n";
+            }
+            if let Ok(num) = num_query.get(**parent) {
+                text.sections[3].value = num.0.to_string();
+            }
         }
     }
 }

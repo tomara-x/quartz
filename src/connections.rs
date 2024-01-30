@@ -1,7 +1,10 @@
 use bevy::{
     prelude::*,
     sprite::Mesh2dHandle,
-    render::primitives::Aabb
+    render::{
+        primitives::Aabb,
+        view::VisibleEntities,
+    },
 };
 
 use crate::components::*;
@@ -9,7 +12,7 @@ use crate::components::*;
 pub fn connect(
     mouse_button_input: Res<Input<MouseButton>>,
     mut commands: Commands,
-    query: Query<(Entity, &Radius, &GlobalTransform), (With<Visible>, With<Order>)>,
+    query: Query<(&Radius, &GlobalTransform), With<Order>>,
     cursor: Res<CursorInfo>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
@@ -18,19 +21,23 @@ pub fn connect(
     keyboard_input: Res<Input<KeyCode>>,
     mut order_query: Query<&mut Order>,
     mut order_change: EventWriter<OrderChange>,
+    visible: Query<&VisibleEntities>,
 ) {
     if mouse_button_input.just_released(MouseButton::Left) &&
     !keyboard_input.pressed(KeyCode::Space) {
         let mut source_entity: (Option<Entity>, f32) = (None, f32::MIN);
         let mut sink_entity: (Option<Entity>, f32) = (None, f32::MIN);
-        for (e, r, t) in query.iter() {
-            if cursor.i.distance(t.translation().xy()) < r.0
-                && t.translation().z > source_entity.1 {
-                source_entity = (Some(e), t.translation().z);
-            }
-            if cursor.f.distance(t.translation().xy()) < r.0
-                && t.translation().z > sink_entity.1 {
-                sink_entity = (Some(e), t.translation().z);
+        let vis = visible.single();
+        for e in vis.iter() {
+            if let Ok((r, t)) = query.get(*e) {
+                if cursor.i.distance(t.translation().xy()) < r.0
+                    && t.translation().z > source_entity.1 {
+                    source_entity = (Some(*e), t.translation().z);
+                }
+                if cursor.f.distance(t.translation().xy()) < r.0
+                    && t.translation().z > sink_entity.1 {
+                    sink_entity = (Some(*e), t.translation().z);
+                }
             }
         }
 
@@ -69,7 +76,6 @@ pub fn connect(
                     transform: Transform::from_translation((cursor.i - src_trans.xy()).extend(0.000001)),
                     ..default()
                 },
-                Visible,
                 Radius(src_radius * 0.15),
                 Col(Color::BLACK),
                 Vertices(6),
@@ -81,7 +87,6 @@ pub fn connect(
                     transform: Transform::from_translation((cursor.f - snk_trans.xy()).extend(0.000001)),
                     ..default()
                 },
-                Visible,
                 Radius(snk_radius * 0.15),
                 Col(Color::WHITE),
                 Vertices(6),
@@ -201,20 +206,23 @@ pub fn draw_connecting_arrow(
     }
 }
 
-// TODO(amy): can this be better?
 pub fn update_link_type_text(
-    mut query: Query<(&mut Text, &Parent), With<Visible>>,
+    mut query: Query<(&mut Text, &Parent)>,
     black_hole_query: Query<&BlackHole>,
     white_hole_query: Query<&WhiteHole, Changed<WhiteHole>>,
+    visible: Query<&VisibleEntities>,
 ) {
-    for (mut text, parent) in query.iter_mut() {
-        if let Ok(hole) = black_hole_query.get(**parent) {
-            if let Ok(wh) = white_hole_query.get(hole.wh) {
-                text.sections[0].value = lt_to_string(wh.link_types.0);
+    let vis = visible.single();
+    for e in vis.iter() {
+        if let Ok((mut text, parent)) = query.get_mut(*e) {
+            if let Ok(hole) = black_hole_query.get(**parent) {
+                if let Ok(wh) = white_hole_query.get(hole.wh) {
+                    text.sections[0].value = lt_to_string(wh.link_types.0);
+                }
             }
-        }
-        if let Ok(hole) = white_hole_query.get(**parent) {
-            text.sections[0].value = lt_to_string(hole.link_types.1);
+            if let Ok(hole) = white_hole_query.get(**parent) {
+                text.sections[0].value = lt_to_string(hole.link_types.1);
+            }
         }
     }
 }

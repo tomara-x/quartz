@@ -40,10 +40,6 @@ pub struct Selected;
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
-pub struct Visible;
-
-#[derive(Component, Reflect, Default)]
-#[reflect(Component)]
 pub struct Order(pub usize);
 
 #[derive(Component, Reflect, Default)]
