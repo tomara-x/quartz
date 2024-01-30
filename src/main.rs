@@ -59,7 +59,6 @@ fn main() {
         .add_systems(Update, toggle_pan)
         .add_state::<Mode>()
         .add_systems(Update, save_scene)
-        .add_systems(Update, load_scene)
         .add_systems(Update, post_load)
         .init_resource::<DragModes>()
         // cursor
@@ -252,25 +251,11 @@ fn save_scene(world: &mut World) {
         #[cfg(not(target_arch = "wasm32"))]
         IoTaskPool::get()
             .spawn(async move {
-                File::create(format!("assets/{}.ron", name))
+                File::create(format!("assets/{}.scn.ron", name))
                     .and_then(|mut file| file.write(serialized_scene.as_bytes()))
                     .expect("Error while writing scene to file");
             })
             .detach();
-    }
-}
-
-fn load_scene(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    keyboard_input: Res<Input<KeyCode>>,
-) {
-    let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
-    if ctrl && keyboard_input.just_pressed(KeyCode::O) {
-        commands.spawn(DynamicSceneBundle {
-            scene: asset_server.load("scene.scn.ron"),
-            ..default()
-        });
     }
 }
 

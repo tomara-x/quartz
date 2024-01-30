@@ -33,6 +33,8 @@ pub fn command_parser(
     mut in_progress: Local<bool>,
     mut next_state: ResMut<NextState<Mode>>,
     mut drag_modes: ResMut<DragModes>,
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
 ) {
     if char_input_events.is_empty() && !*in_progress { return; }
     let text = &mut display.single_mut().sections[0].value;
@@ -84,6 +86,14 @@ pub fn command_parser(
             for line in lines {
                 let mut command = line.split_ascii_whitespace();
                 match command.next() {
+                    Some(":e") => {
+                        if let Some(s) = command.next() {
+                            commands.spawn(DynamicSceneBundle {
+                                scene: asset_server.load(format!("{}.scn.ron", s)),
+                                ..default()
+                            });
+                        }
+                    },
                     Some(":w") => {
                         if let Some(s) = command.next() {
                             access.save_event.send(SaveCommand(s.to_string()));
