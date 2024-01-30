@@ -76,7 +76,7 @@ fn main() {
         .add_systems(Update, update_num.after(update_selection).run_if(in_state(Mode::Edit)))
         .add_systems(Update, highlight_selected.run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_order.run_if(in_state(Mode::Edit)))
-        .add_systems(Update, update_net_from_op.run_if(in_state(Mode::Edit)))
+        .add_systems(Update, update_net_from_op)
         .add_systems(Update, update_circle_text.run_if(not(in_state(Mode::Draw))))
         .add_systems(Update, select_all.run_if(in_state(Mode::Edit)))
         .add_systems(Update, duplicate_selected.run_if(in_state(Mode::Edit)))
@@ -267,6 +267,7 @@ fn post_load(
     black_hole_query: Query<With<BlackHole>>,
     scene: Query<(Entity, &Children), With<SceneInstance>>,
     children_query: Query<&Children>,
+    mut op_query: Query<&mut Op>,
 ) {
     if let Ok((scene_entity, children)) = scene.get_single() {
         for child in children {
@@ -278,7 +279,7 @@ fn post_load(
                         transform: *t,
                         ..default()
                     },
-                    Network(Net32::new(0,0)),
+                    Network(Net32::new(0,1)),
                     NetIns(Vec::new()),
                     NetChanged(true),
                 ));
@@ -308,6 +309,7 @@ fn post_load(
                 }
             }
             commands.entity(*child).remove_parent();
+            op_query.get_mut(*child).unwrap().set_changed();
         }
         for (e, t) in text_query.iter() {
             commands.entity(e).insert(
