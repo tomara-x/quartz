@@ -239,9 +239,6 @@ fn save_scene(world: &mut World) {
             .allow::<Parent>()
             .allow::<Children>()
             .allow::<Text>()
-            .allow::<ViewVisibility>()
-            .allow::<InheritedVisibility>()
-            .allow::<Visibility>()
             .allow::<Vertices>()
             .extract_entities(query.iter(&world))
             .build();
