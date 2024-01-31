@@ -35,13 +35,16 @@ pub fn connect(
         }
 
         if let (Some(src), Some(snk)) = (source_entity.0, sink_entity.0) {
+            // don't connect entity to itself
             if source_entity.0 == sink_entity.0 { return; }
+            // increment order of sink
             let src_order = order_query.get(src).unwrap().0;
             let snk_order = order_query.get(snk).unwrap().0;
             if snk_order <= src_order {
                 order_query.get_mut(snk).unwrap().0 = src_order + 1;
                 order_change.send_default();
             }
+            // get radius and transform
             let src_radius = rad_query.get(src).unwrap().0;
             let snk_radius = rad_query.get(snk).unwrap().0;
             let src_trans = trans_query.get(src).unwrap().translation();
