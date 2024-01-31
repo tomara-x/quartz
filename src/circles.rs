@@ -45,32 +45,32 @@ pub fn spawn_circles(
             Save,
         )).id();
 
-        // have the circle adopt a text entity
-        let text = commands.spawn((Text2dBundle {
-            text: Text::from_sections([
-                TextSection::new(
-                    id.index().to_string() + "v" + &id.generation().to_string() + "\n",
-                    TextStyle { color: Color::BLACK, font_size: 18., ..default() },
-                ),
-                TextSection::new(
-                    "order: 0\n",
-                    TextStyle { color: Color::BLACK, ..default() },
-                ),
-                TextSection::new(
-                    "empty\n",
-                    TextStyle { color: Color::BLACK, ..default() },
-                ),
-                TextSection::new(
-                    "0",
-                    TextStyle { color: Color::BLACK, ..default() },
-                ),
-            ]),
-            transform: Transform::from_translation(Vec3{z:0.000001, ..default()}),
-            ..default()
-        },
-        Save,
-        )).id();
-        commands.entity(id).add_child(text);
+        //// have the circle adopt a text entity
+        //let text = commands.spawn((Text2dBundle {
+        //    text: Text::from_sections([
+        //        TextSection::new(
+        //            id.index().to_string() + "v" + &id.generation().to_string() + "\n",
+        //            TextStyle { color: Color::BLACK, font_size: 18., ..default() },
+        //        ),
+        //        TextSection::new(
+        //            "order: 0\n",
+        //            TextStyle { color: Color::BLACK, ..default() },
+        //        ),
+        //        TextSection::new(
+        //            "empty\n",
+        //            TextStyle { color: Color::BLACK, ..default() },
+        //        ),
+        //        TextSection::new(
+        //            "0",
+        //            TextStyle { color: Color::BLACK, ..default() },
+        //        ),
+        //    ]),
+        //    transform: Transform::from_translation(Vec3{z:0.000001, ..default()}),
+        //    ..default()
+        //},
+        //Save,
+        //)).id();
+        //commands.entity(id).add_child(text);
 
         *depth += 0.00001;
     }
@@ -557,26 +557,26 @@ pub fn shake_order (
     }
 }
 
-// FIXME(amy): you can loop the Visible (view vis)
-// that'd avoid the just-created glitch
-pub fn update_circle_text(
-    mut query: Query<(&mut Text, &Parent), With<Visible>>,
-    order_query: Query<&Order, Changed<Order>>,
-    num_query: Query<&crate::components::Num, Changed<crate::components::Num>>,
-    op_query: Query<&Op, Changed<Op>>,
-) {
-    for (mut text, parent) in query.iter_mut() {
-        if let Ok(order) = order_query.get(**parent) {
-            text.sections[1].value = "order: ".to_string() + &order.0.to_string() + "\n";
-        }
-        if let Ok(op) = op_query.get(**parent) {
-            text.sections[2].value = op.0.clone() + "\n";
-        }
-        if let Ok(num) = num_query.get(**parent) {
-            text.sections[3].value = num.0.to_string();
-        }
-    }
-}
+//// FIXME(amy): you can loop the Visible (view vis)
+//// that'd avoid the just-created glitch
+//pub fn update_circle_text(
+//    mut query: Query<(&mut Text, &Parent), With<Visible>>,
+//    order_query: Query<&Order, Changed<Order>>,
+//    num_query: Query<&crate::components::Num, Changed<crate::components::Num>>,
+//    op_query: Query<&Op, Changed<Op>>,
+//) {
+//    for (mut text, parent) in query.iter_mut() {
+//        if let Ok(order) = order_query.get(**parent) {
+//            text.sections[1].value = "order: ".to_string() + &order.0.to_string() + "\n";
+//        }
+//        if let Ok(op) = op_query.get(**parent) {
+//            text.sections[2].value = op.0.clone() + "\n";
+//        }
+//        if let Ok(num) = num_query.get(**parent) {
+//            text.sections[3].value = num.0.to_string();
+//        }
+//    }
+//}
 
 pub fn delete_selected_circles(
     keyboard_input: Res<Input<KeyCode>>,

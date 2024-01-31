@@ -109,30 +109,30 @@ pub fn connect(
             commands.entity(src).add_child(black_hole);
             commands.entity(snk).add_child(white_hole);
 
-            // add link type text
-            let black_hole_text = commands.spawn((Text2dBundle {
-                text: Text::from_section(
-                    0.to_string(),
-                    TextStyle { color: Color::WHITE, ..default() },
-                    ),
-                transform: Transform::from_translation(Vec3{z:0.000001, ..default()}),
-                ..default()
-                },
-                Save,
-                )).id();
-            commands.entity(black_hole).add_child(black_hole_text);
+            //// add link type text
+            //let black_hole_text = commands.spawn((Text2dBundle {
+            //    text: Text::from_section(
+            //        0.to_string(),
+            //        TextStyle { color: Color::WHITE, ..default() },
+            //        ),
+            //    transform: Transform::from_translation(Vec3{z:0.000001, ..default()}),
+            //    ..default()
+            //    },
+            //    Save,
+            //    )).id();
+            //commands.entity(black_hole).add_child(black_hole_text);
 
-            let white_hole_text = commands.spawn((Text2dBundle {
-                text: Text::from_section(
-                    0.to_string(),
-                    TextStyle { color: Color::BLACK, ..default() },
-                    ),
-                transform: Transform::from_translation(Vec3{z:0.000001, ..default()}),
-                ..default()
-                },
-                Save,
-                )).id();
-            commands.entity(white_hole).add_child(white_hole_text);
+            //let white_hole_text = commands.spawn((Text2dBundle {
+            //    text: Text::from_section(
+            //        0.to_string(),
+            //        TextStyle { color: Color::BLACK, ..default() },
+            //        ),
+            //    transform: Transform::from_translation(Vec3{z:0.000001, ..default()}),
+            //    ..default()
+            //    },
+            //    Save,
+            //    )).id();
+            //commands.entity(white_hole).add_child(white_hole_text);
         }
     }
 }
@@ -204,23 +204,23 @@ pub fn draw_connecting_arrow(
     }
 }
 
-// TODO(amy): can this be better?
-pub fn update_link_type_text(
-    mut query: Query<(&mut Text, &Parent), With<Visible>>,
-    black_hole_query: Query<&BlackHole>,
-    white_hole_query: Query<&WhiteHole, Changed<WhiteHole>>,
-) {
-    for (mut text, parent) in query.iter_mut() {
-        if let Ok(hole) = black_hole_query.get(**parent) {
-            if let Ok(wh) = white_hole_query.get(hole.wh) {
-                text.sections[0].value = lt_to_string(wh.link_types.0);
-            }
-        }
-        if let Ok(hole) = white_hole_query.get(**parent) {
-            text.sections[0].value = lt_to_string(hole.link_types.1);
-        }
-    }
-}
+//// TODO(amy): can this be better?
+//pub fn update_link_type_text(
+//    mut query: Query<(&mut Text, &Parent), With<Visible>>,
+//    black_hole_query: Query<&BlackHole>,
+//    white_hole_query: Query<&WhiteHole, Changed<WhiteHole>>,
+//) {
+//    for (mut text, parent) in query.iter_mut() {
+//        if let Ok(hole) = black_hole_query.get(**parent) {
+//            if let Ok(wh) = white_hole_query.get(hole.wh) {
+//                text.sections[0].value = lt_to_string(wh.link_types.0);
+//            }
+//        }
+//        if let Ok(hole) = white_hole_query.get(**parent) {
+//            text.sections[0].value = lt_to_string(hole.link_types.1);
+//        }
+//    }
+//}
 
 pub fn delete_selected_holes(
     keyboard_input: Res<Input<KeyCode>>,
