@@ -78,19 +78,20 @@ fn main() {
         .add_systems(Update, highlight_selected)
         .add_systems(Update, update_order.run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_net_from_op)
-        //.add_systems(Update, update_circle_text)
         .add_systems(Update, select_all.run_if(in_state(Mode::Edit)))
         .add_systems(Update, duplicate_selected.run_if(in_state(Mode::Edit)))
         .add_systems(Update, rotate_selected.after(update_selection).run_if(in_state(Mode::Edit)))
         .add_systems(Update, (delete_selected_holes, delete_selected_circles).run_if(in_state(Mode::Edit)))
         .add_systems(Update, shake_order.run_if(in_state(Mode::Edit)))
+        // text
+        .add_systems(Update, insert_info_text)
+        .add_systems(Update, update_info_text)
         // events
         .add_event::<SaveCommand>()
         // connections
         .add_systems(Update, connect.run_if(in_state(Mode::Connect)))
         .add_systems(Update, update_connection_arrows)
         .add_systems(Update, draw_connecting_arrow.run_if(in_state(Mode::Connect)))
-        //.add_systems(Update, update_link_type_text.run_if(in_state(Mode::Edit)))
         .add_systems(Update, mark_children_change)
         // order
         .init_resource::<Queue>()
@@ -239,7 +240,6 @@ fn save_scene(world: &mut World) {
             .allow::<WhiteHole>()
             .allow::<Parent>()
             .allow::<Children>()
-            .allow::<Text>()
             .allow::<Vertices>()
             .extract_entities(query.iter(&world))
             .build();

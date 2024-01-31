@@ -114,6 +114,9 @@ impl MapEntities for BlackHole {
 #[derive(Component)]
 pub struct CommandText;
 
+#[derive(Component)]
+pub struct InfoText(pub Entity);
+
 // -------------------- states --------------------
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 pub enum Mode {

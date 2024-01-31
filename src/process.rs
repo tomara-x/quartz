@@ -57,6 +57,7 @@ pub fn process(
     mut oscil: Local<(u8, bool)>,
 ) {
     'entity: for id in queue.0.iter().flatten() {
+        // if let this
         let children = &children_query.get(*id).unwrap();
         match access.op_query.get(*id).unwrap().0.as_str() {
             "pass" => {
