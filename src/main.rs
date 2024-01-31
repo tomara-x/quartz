@@ -118,6 +118,8 @@ fn main() {
         .register_type::<WhiteHole>()
         .register_type::<(i32, i32)>()
         .register_type::<Vertices>()
+        .register_type::<WHCount>()
+        .register_type::<BHCount>()
         .run();
 }
 
@@ -241,6 +243,8 @@ fn save_scene(world: &mut World) {
             .allow::<Children>()
             .allow::<Text>()
             .allow::<Vertices>()
+            .allow::<WHCount>()
+            .allow::<BHCount>()
             .extract_entities(query.iter(&world))
             .build();
         let type_registry = world.resource::<AppTypeRegistry>();

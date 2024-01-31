@@ -42,6 +42,8 @@ pub fn spawn_circles(
             Arr(vec!(42., 105., 420., 1729.)),
             Op("empty".to_string()),
             Vertices(v),
+            BHCount(0),
+            WHCount(0),
             Save,
         )).id();
 

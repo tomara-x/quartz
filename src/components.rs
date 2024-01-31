@@ -63,6 +63,14 @@ pub struct Save;
 #[derive(Component)]
 pub struct Highlight;
 
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
+pub struct WHCount(pub usize);
+
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
+pub struct BHCount(pub usize);
+
 #[derive(Component, Reflect)]
 #[reflect(Component, MapEntities)]
 pub struct WhiteHole {
