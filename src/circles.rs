@@ -24,7 +24,7 @@ pub fn spawn_circles(
         let r = cursor.f.distance(cursor.i);
         let v = 8;
         let color = Color::hsla(300., 1., 0.5, 1.);
-        let id = commands.spawn((
+        commands.spawn((
             ColorMesh2dBundle {
                 mesh: meshes.add(BevyCircle { radius: r, vertices: v} .into()).into(),
                 material: materials.add(ColorMaterial::from(color)),
@@ -43,8 +43,7 @@ pub fn spawn_circles(
             Op("empty".to_string()),
             Vertices(v),
             Save,
-        )).id();
-
+        ));
         *depth += 0.00001;
     }
 }
@@ -531,11 +530,10 @@ pub fn shake_order (
 }
 
 pub fn insert_info_text(
-    query: Query<(Entity, &GlobalTransform), (With<Radius>, Without<InfoText>)>,
+    query: Query<Entity, (With<Radius>, Without<InfoText>)>,
     mut commands: Commands,
 ) {
-    for (e, t) in query.iter() {
-        let t = t.translation();
+    for e in query.iter() {
         let text = commands.spawn(
             Text2dBundle {
                 text: Text::from_sections([
@@ -548,15 +546,15 @@ pub fn insert_info_text(
                         TextStyle { color: Color::BLACK, ..default() },
                     ),
                     TextSection::new(
-                        "empty\n",
+                        "",
                         TextStyle { color: Color::BLACK, ..default() },
                     ),
                     TextSection::new(
-                        "0",
+                        "",
                         TextStyle { color: Color::BLACK, ..default() },
                     ),
                 ]),
-                transform: Transform::from_translation(t.xy().extend(t.z + 0.00000001)),
+                transform: Transform::from_translation(Vec3::ZERO),
                 ..default()
             }
         ).id();
@@ -567,12 +565,12 @@ pub fn insert_info_text(
 pub fn update_info_text(
     mut text_query: Query<&mut Text>,
     mut text_trans: Query<&mut Transform, Without<Radius>>,
-    trans_query: Query<(&GlobalTransform, &InfoText), (Changed<Transform>, With<Radius>)>,
-    order_query: Query<(&Order, &InfoText), Changed<Order>>,
-    num_query: Query<(&crate::components::Num, &InfoText), Changed<crate::components::Num>>,
-    op_query: Query<(&Op, &InfoText), Changed<Op>>,
-    white_hole_query: Query<(&WhiteHole, &InfoText), Changed<WhiteHole>>,
-    black_hole_query: Query<(&BlackHole, &InfoText)>,
+    trans_query: Query<(&GlobalTransform, &InfoText), (Or<(Changed<Transform>, Added<InfoText>)>, With<Radius>)>,
+    order_query: Query<(&Order, &InfoText), Or<(Changed<Order>, Added<InfoText>)>>,
+    num_query: Query<(&crate::components::Num, &InfoText), Or<(Changed<crate::components::Num>, Added<InfoText>)>>,
+    op_query: Query<(&Op, &InfoText), Or<(Changed<Op>, Added<InfoText>)>>,
+    white_hole_query: Query<(&WhiteHole, &InfoText), Or<(Changed<WhiteHole>, Added<InfoText>)>>,
+    black_hole_query: Query<&InfoText, With<BlackHole>>,
 ) {
     for (trans, text) in trans_query.iter() {
         let t = trans.translation();
@@ -581,13 +579,18 @@ pub fn update_info_text(
     for (order, text) in order_query.iter() {
         text_query.get_mut(text.0).unwrap().sections[1].value = format!("order: {}\n", order.0);
     }
-
-        //if let Ok(op) = op_query.get(**parent) {
-        //    text.sections[2].value = op.0.clone() + "\n";
-        //}
-        //if let Ok(num) = num_query.get(**parent) {
-        //    text.sections[3].value = num.0.to_string();
-        //}
+    for (wh, text) in white_hole_query.iter() {
+        text_query.get_mut(text.0).unwrap().sections[1].value = lt_to_string(wh.link_types.1);
+        let bh_text = black_hole_query.get(wh.bh).unwrap();
+        text_query.get_mut(bh_text.0).unwrap().sections[1].value = lt_to_string(wh.link_types.0);
+    }
+    for (op, text) in op_query.iter() {
+        text_query.get_mut(text.0).unwrap().sections[2].value = format!("{}\n", op.0);
+    }
+    for (n, text) in num_query.iter() {
+        text_query.get_mut(text.0).unwrap().sections[3].value = n.0.to_string();
+    }
+    // TODO(amy): a query for <changed color or added info> and change text color to make it contrasty
 }
 
 pub fn delete_selected_circles(
