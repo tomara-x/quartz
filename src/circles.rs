@@ -599,10 +599,10 @@ pub fn delete_selected_circles(
     bh_query: Query<&BlackHole, Without<Selected>>,
     wh_query: Query<&WhiteHole, Without<Selected>>,
     arrow_query: Query<&ConnectionArrow>,
-    text_query: Query<Entity, With<Text>>,
     highlight_query: Query<Entity, With<Highlight>>,
     mut commands: Commands,
     mut order_change: EventWriter<OrderChange>,
+    info_text_query: Query<&InfoText>,
 ) {
     let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
     if keyboard_input.just_pressed(KeyCode::Delete) && !shift {
@@ -617,6 +617,12 @@ pub fn delete_selected_circles(
                         commands.entity(*child).despawn_recursive();
                         commands.entity(bh.wh).remove_parent();
                         commands.entity(bh.wh).despawn_recursive();
+                        if let Ok(wh_text) = info_text_query.get(bh.wh) {
+                            commands.entity(wh_text.0).despawn();
+                        }
+                        if let Ok(bh_text) = info_text_query.get(*child) {
+                            commands.entity(bh_text.0).despawn();
+                        }
                     }
                 } else if let Ok(wh) = wh_query.get(*child) {
                     if bh_query.contains(wh.bh) {
@@ -628,11 +634,20 @@ pub fn delete_selected_circles(
                         commands.entity(wh.bh).despawn_recursive();
                         commands.entity(*child).remove_parent();
                         commands.entity(*child).despawn_recursive();
+                        if let Ok(wh_text) = info_text_query.get(*child) {
+                            commands.entity(wh_text.0).despawn();
+                        }
+                        if let Ok(bh_text) = info_text_query.get(wh.bh) {
+                            commands.entity(bh_text.0).despawn();
+                        }
                     }
-                } else if text_query.contains(*child) || highlight_query.contains(*child) {
+                } else if highlight_query.contains(*child) {
                     commands.entity(*child).remove_parent();
                     commands.entity(*child).despawn();
                 }
+            }
+            if let Ok(text) = info_text_query.get(e) {
+                commands.entity(text.0).despawn();
             }
             commands.entity(e).despawn();
             order_change.send_default();

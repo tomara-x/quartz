@@ -7,7 +7,6 @@ use bevy::{
     winit::{WinitSettings, UpdateMode},
     tasks::IoTaskPool,
     scene::SceneInstance,
-    sprite::Anchor,
     prelude::*};
 use bevy::prelude::shape::Circle as BevyCircle;
 
@@ -259,7 +258,6 @@ fn post_load(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     main_query: Query<(&Radius, &Transform, &Col, &Vertices)>,
-    text_query: Query<(Entity, &Text), Without<Anchor>>,
     mut order_change: EventWriter<OrderChange>,
     white_hole_query: Query<With<WhiteHole>>,
     black_hole_query: Query<With<BlackHole>>,
@@ -308,15 +306,6 @@ fn post_load(
             }
             commands.entity(*child).remove_parent();
             op_query.get_mut(*child).unwrap().set_changed();
-        }
-        for (e, t) in text_query.iter() {
-            commands.entity(e).insert(
-                Text2dBundle {
-                    text: t.clone(),
-                    transform: Transform::from_translation(Vec3{z:0.000001, ..default()}),
-                ..default()
-                }
-            );
         }
         order_change.send_default();
         commands.entity(scene_entity).despawn();
