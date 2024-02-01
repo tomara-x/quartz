@@ -538,7 +538,7 @@ pub fn insert_info_text(
             Text2dBundle {
                 text: Text::from_sections([
                     TextSection::new(
-                        format!("{:?}\n", e),
+                        "",
                         TextStyle { color: Color::BLACK, ..default() },
                     ),
                     TextSection::new(

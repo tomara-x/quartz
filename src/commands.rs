@@ -35,6 +35,9 @@ pub fn command_parser(
     mut drag_modes: ResMut<DragModes>,
     mut commands: Commands,
     asset_server: Res<AssetServer>,
+    info_text_query: Query<(Entity, &InfoText)>,
+    mut text_query: Query<&mut Text, Without<CommandText>>,
+    mut ids_shown: Local<bool>,
 ) {
     if char_input_events.is_empty() && !*in_progress { return; }
     let text = &mut display.single_mut().sections[0].value;
@@ -537,6 +540,19 @@ pub fn command_parser(
                 *text = ":lt ".to_string();
             }
             Some("[") | Some("]") | Some("0") => {
+                text.clear();
+            },
+            Some("ii") => {
+                if *ids_shown {
+                    for (_, t) in info_text_query.iter() {
+                        text_query.get_mut(t.0).unwrap().sections[0].value = String::new();
+                    }
+                } else {
+                    for (e, t) in info_text_query.iter() {
+                        text_query.get_mut(t.0).unwrap().sections[0].value = format!("{:?}\n", e);
+                    }
+                }
+                *ids_shown = !*ids_shown;
                 text.clear();
             },
             _ => {},
