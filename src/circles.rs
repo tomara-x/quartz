@@ -539,10 +539,6 @@ pub fn insert_info_text(
                 text: Text::from_sections([
                     TextSection::new(
                         format!("{:?}\n", e),
-                        TextStyle { color: Color::BLACK, font_size: 18., ..default() },
-                    ),
-                    TextSection::new(
-                        "",
                         TextStyle { color: Color::BLACK, ..default() },
                     ),
                     TextSection::new(
@@ -553,7 +549,11 @@ pub fn insert_info_text(
                         "",
                         TextStyle { color: Color::BLACK, ..default() },
                     ),
-                ]),
+                    TextSection::new(
+                        "",
+                        TextStyle { color: Color::BLACK, ..default() },
+                    ),
+                ]).with_alignment(TextAlignment::Center),
                 transform: Transform::from_translation(Vec3::ZERO),
                 ..default()
             }
@@ -571,6 +571,7 @@ pub fn update_info_text(
     op_query: Query<(&Op, &InfoText), Or<(Changed<Op>, Added<InfoText>)>>,
     white_hole_query: Query<(&WhiteHole, &InfoText), Or<(Changed<WhiteHole>, Added<InfoText>)>>,
     black_hole_query: Query<&InfoText, With<BlackHole>>,
+    color_query: Query<(&Col, &InfoText), Or<(Changed<Col>, Added<InfoText>)>>,
 ) {
     for (trans, text) in trans_query.iter() {
         let t = trans.translation();
@@ -590,7 +591,14 @@ pub fn update_info_text(
     for (n, text) in num_query.iter() {
         text_query.get_mut(text.0).unwrap().sections[3].value = n.0.to_string();
     }
-    // TODO(amy): a query for <changed color or added info> and change text color to make it contrasty
+    for (col, text) in color_query.iter() {
+        let l = if col.0.l() < 0.3 {1.} else {0.};
+        let opposite_color = Color::hsl(0., 1.0, l);
+        let t = &mut text_query.get_mut(text.0).unwrap();
+        for section in &mut t.sections {
+            section.style.color = opposite_color;
+        }
+    }
 }
 
 pub fn delete_selected_circles(
