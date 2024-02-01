@@ -92,6 +92,7 @@ pub fn command_parser(
             for line in lines {
                 let mut command = line.split_ascii_whitespace();
                 match command.next() {
+                    // open scene file
                     Some(":e") => {
                         if let Some(s) = command.next() {
                             commands.spawn(DynamicSceneBundle {
@@ -100,11 +101,15 @@ pub fn command_parser(
                             });
                         }
                     },
+                    // save scene file
                     Some(":w") => {
                         if let Some(s) = command.next() {
                             access.save_event.send(SaveCommand(s.to_string()));
                         }
                     },
+                    // white hole / black hole link type
+                    // TODO(amy): set-both-ends version
+                    // can be moved to :set
                     Some(":lt") | Some("lt") => {
                         if let Some(s) = command.next() {
                             if let Some(e) = str_to_id(s) {
@@ -130,6 +135,16 @@ pub fn command_parser(
                                         wh.link_types.0 = str_to_lt(s);
                                         wh.open = true;
                                     }
+                                }
+                            }
+                        }
+                    },
+                    // toggle open a white hole (by id)
+                    Some(":ht") | Some("ht") => {
+                        if let Some(s) = command.next() {
+                            if let Some(e) = str_to_id(s) {
+                                if let Ok(mut wh) = access.white_hole_query.get_mut(e) {
+                                    wh.open = !wh.open;
                                 }
                             }
                         }
@@ -509,7 +524,7 @@ pub fn command_parser(
                 drag_modes.o = true;
                 text.clear();
             },
-
+            // toggle open white holes (selected)
             Some("ht") => {
                 for id in access.selected_query.iter() {
                     if let Ok(mut wh) = access.white_hole_query.get_mut(id) {
@@ -518,6 +533,7 @@ pub fn command_parser(
                 }
                 text.clear();
             },
+            // open white hole for one frame
             Some("hf") => {
                 if *in_progress {
                     for id in access.selected_query.iter() {
@@ -536,12 +552,14 @@ pub fn command_parser(
                     *in_progress = true;
                 }
             },
+            // shortcuts
             Some("o") => {
                 *text = ":set op ".to_string();
             },
             Some("l") => {
                 *text = ":lt ".to_string();
             }
+            // ignore
             Some("[") | Some("]") | Some("0") => {
                 text.clear();
             },
