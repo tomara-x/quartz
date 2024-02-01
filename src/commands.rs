@@ -79,6 +79,8 @@ pub fn command_parser(
     // edit mode
     if *mode == 0 {
         for event in char_input_events.read() {
+            if let Some(">") = text.get(0..1) { text.clear(); }
+            if event.char == ' ' && text.ends_with(" ") { continue; }
             if !event.char.is_control() { text.push(event.char); }
         }
         if keyboard_input.just_pressed(KeyCode::Back) { text.pop(); }
@@ -542,7 +544,7 @@ pub fn command_parser(
             Some("[") | Some("]") | Some("0") => {
                 text.clear();
             },
-            Some("ii") => {
+            Some("II") => {
                 if *ids_shown {
                     for (_, t) in info_text_query.iter() {
                         text_query.get_mut(t.0).unwrap().sections[0].value = String::new();
@@ -554,6 +556,45 @@ pub fn command_parser(
                 }
                 *ids_shown = !*ids_shown;
                 text.clear();
+            },
+            Some("ii") => {
+                let mut t = String::new();
+                for e in access.selected_query.iter() {
+                    t = t + &format!("{:?} ", e);
+                }
+                *text = format!(">ID: {}", t);
+            },
+            Some("in") => {
+                let mut t = String::new();
+                for e in access.selected_query.iter() {
+                    let n = access.num_query.get(e).unwrap().0;
+                    t = t + &format!("{:?}: {} ", e, n);
+                }
+                *text = format!(">NUM: {}", t);
+            },
+            Some("ira") => {
+            },
+            Some("ix") => {
+            },
+            Some("iy") => {
+            },
+            Some("iz") => {
+            },
+            Some("ih") => {
+            },
+            Some("is") => {
+            },
+            Some("il") => {
+            },
+            Some("ia") => {
+            },
+            Some("iv") => {
+            },
+            Some("iro") => {
+            },
+            Some("ior") => {
+            },
+            Some("iop") => {
             },
             _ => {},
         }
