@@ -83,7 +83,6 @@ fn main() {
         .add_systems(Update, (delete_selected_holes, delete_selected_circles).run_if(in_state(Mode::Edit)))
         .add_systems(Update, shake_order.run_if(in_state(Mode::Edit)))
         // text
-        .add_systems(Update, insert_info_text)
         .add_systems(Update, update_info_text)
         // events
         .add_event::<SaveCommand>()

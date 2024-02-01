@@ -545,7 +545,50 @@ pub fn command_parser(
             Some("[") | Some("]") | Some("0") => {
                 text.clear();
             },
+            // insert info texts for selected entities
             Some("II") => {
+                for e in access.selected_query.iter() {
+                    if info_text_query.contains(e) { continue; }
+                    let info_text = commands.spawn(
+                        Text2dBundle {
+                            text: Text::from_sections([
+                                TextSection::new(
+                                    "",
+                                    TextStyle { color: Color::BLACK, ..default() },
+                                ),
+                                TextSection::new(
+                                    "",
+                                    TextStyle { color: Color::BLACK, ..default() },
+                                ),
+                                TextSection::new(
+                                    "",
+                                    TextStyle { color: Color::BLACK, ..default() },
+                                ),
+                                TextSection::new(
+                                    "",
+                                    TextStyle { color: Color::BLACK, ..default() },
+                                ),
+                            ]).with_alignment(TextAlignment::Center),
+                            transform: Transform::from_translation(Vec3::ZERO),
+                            ..default()
+                        }
+                    ).id();
+                    commands.entity(e).insert(InfoText(info_text));
+                }
+                text.clear();
+            },
+            // despawn selected entities' info texts
+            Some("IC") => {
+                for e in access.selected_query.iter() {
+                    if let Ok((_, info_text)) = info_text_query.get(e) {
+                        commands.entity(info_text.0).despawn();
+                        commands.entity(e).remove::<InfoText>();
+                    }
+                }
+                text.clear();
+            },
+            // toggle ids in info texts
+            Some("ID") => {
                 if *ids_shown {
                     for (_, t) in info_text_query.iter() {
                         text_query.get_mut(t.0).unwrap().sections[0].value = String::new();
@@ -558,6 +601,7 @@ pub fn command_parser(
                 *ids_shown = !*ids_shown;
                 text.clear();
             },
+            // inspect commands
             Some("ii") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
@@ -671,6 +715,19 @@ pub fn command_parser(
                     }
                 }
                 *text = format!(">OP: {}", t);
+            },
+            Some("iL") => {
+                let mut t = String::new();
+                for e in access.selected_query.iter() {
+                    if let Ok(wh) = access.white_hole_query.get(e) {
+                        t = t + &format!("{:?}: {} ", e, lt_to_string(wh.link_types.1));
+                    }
+                    if let Ok(bh) = access.black_hole_query.get(e) {
+                        let wh = access.white_hole_query.get(bh.wh).unwrap();
+                        t = t + &format!("{:?}: {} ", e, lt_to_string(wh.link_types.0));
+                    }
+                }
+                *text = format!(">LINK TYPE: {}", t);
             },
             _ => {},
         }

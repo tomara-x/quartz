@@ -529,39 +529,6 @@ pub fn shake_order (
     }
 }
 
-pub fn insert_info_text(
-    query: Query<Entity, (With<Radius>, Without<InfoText>)>,
-    mut commands: Commands,
-) {
-    for e in query.iter() {
-        let text = commands.spawn(
-            Text2dBundle {
-                text: Text::from_sections([
-                    TextSection::new(
-                        "",
-                        TextStyle { color: Color::BLACK, ..default() },
-                    ),
-                    TextSection::new(
-                        "",
-                        TextStyle { color: Color::BLACK, ..default() },
-                    ),
-                    TextSection::new(
-                        "",
-                        TextStyle { color: Color::BLACK, ..default() },
-                    ),
-                    TextSection::new(
-                        "",
-                        TextStyle { color: Color::BLACK, ..default() },
-                    ),
-                ]).with_alignment(TextAlignment::Center),
-                transform: Transform::from_translation(Vec3::ZERO),
-                ..default()
-            }
-        ).id();
-        commands.entity(e).insert(InfoText(text));
-    }
-}
-
 pub fn update_info_text(
     mut text_query: Query<&mut Text>,
     mut text_trans: Query<&mut Transform, Without<Radius>>,
@@ -572,6 +539,9 @@ pub fn update_info_text(
     white_hole_query: Query<(&WhiteHole, &InfoText), Or<(Changed<WhiteHole>, Added<InfoText>)>>,
     black_hole_query: Query<&InfoText, With<BlackHole>>,
     color_query: Query<(&Col, &InfoText), Or<(Changed<Col>, Added<InfoText>)>>,
+    // TODO(amy): cleanup!
+    added_bh_query: Query<(&BlackHole, &InfoText), Added<InfoText>>,
+    generic_wh_query: Query<&WhiteHole>,
 ) {
     for (trans, text) in trans_query.iter() {
         let t = trans.translation();
@@ -583,8 +553,14 @@ pub fn update_info_text(
     // this is messy as it changes every time the wh changes (open / lt change)
     for (wh, text) in white_hole_query.iter() {
         text_query.get_mut(text.0).unwrap().sections[1].value = lt_to_string(wh.link_types.1);
-        let bh_text = black_hole_query.get(wh.bh).unwrap();
-        text_query.get_mut(bh_text.0).unwrap().sections[1].value = lt_to_string(wh.link_types.0);
+        if let Ok(bh_text) = black_hole_query.get(wh.bh) {
+            text_query.get_mut(bh_text.0).unwrap().sections[1].value = lt_to_string(wh.link_types.0);
+        }
+    }
+    // more duck tape
+    for (bh, text) in added_bh_query.iter() {
+        let wh = generic_wh_query.get(bh.wh).unwrap();
+        text_query.get_mut(text.0).unwrap().sections[1].value = lt_to_string(wh.link_types.0);
     }
     for (op, text) in op_query.iter() {
         text_query.get_mut(text.0).unwrap().sections[2].value = format!("{}\n", op.0);
