@@ -580,6 +580,7 @@ pub fn update_info_text(
     for (order, text) in order_query.iter() {
         text_query.get_mut(text.0).unwrap().sections[1].value = format!("order: {}\n", order.0);
     }
+    // this is messy as it changes every time the wh changes (open / lt change)
     for (wh, text) in white_hole_query.iter() {
         text_query.get_mut(text.0).unwrap().sections[1].value = lt_to_string(wh.link_types.1);
         let bh_text = black_hole_query.get(wh.bh).unwrap();
