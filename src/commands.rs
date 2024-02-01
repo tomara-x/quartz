@@ -8,10 +8,10 @@ use crate::components::*;
 
 #[derive(SystemParam)]
 pub struct Access<'w, 's> {
-    op_query: Query<'w, 's, (Entity, &'static mut Op)>,
+    op_query: Query<'w, 's, &'static mut Op>,
     num_query: Query<'w, 's, &'static mut Num>,
-    radius_query: Query<'w, 's, (Entity, &'static mut Radius)>,
-    col_query: Query<'w, 's, (Entity, &'static mut Col)>,
+    radius_query: Query<'w, 's, &'static mut Radius>,
+    col_query: Query<'w, 's, &'static mut Col>,
     trans_query: Query<'w, 's, &'static mut Transform>,
     arr_query: Query<'w, 's, &'static mut Arr>,
     order_query: Query<'w, 's, &'static mut Order>,
@@ -19,7 +19,7 @@ pub struct Access<'w, 's> {
     white_hole_query: Query<'w, 's, &'static mut WhiteHole>,
     black_hole_query: Query<'w, 's, &'static mut BlackHole>,
     order_change: EventWriter<'w, OrderChange>,
-    vertices_query: Query<'w, 's, (Entity, &'static mut Vertices)>,
+    vertices_query: Query<'w, 's, &'static mut Vertices>,
     save_event: EventWriter<'w, SaveCommand>,
 }
 
@@ -38,6 +38,7 @@ pub fn command_parser(
     info_text_query: Query<(Entity, &InfoText)>,
     mut text_query: Query<&mut Text, Without<CommandText>>,
     mut ids_shown: Local<bool>,
+    global_trans_rights: Query<&GlobalTransform>,
 ) {
     if char_input_events.is_empty() && !*in_progress { return; }
     let text = &mut display.single_mut().sections[0].value;
@@ -160,14 +161,14 @@ pub fn command_parser(
                                         if let Ok(mut radius) = access.radius_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = n.parse::<f32>() {
-                                                    radius.1.0 = n.max(0.);
+                                                    radius.0 = n.max(0.);
                                                 }
                                             }
                                         }
                                     } else if let Ok(n) = s.parse::<f32>() {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut radius) = access.radius_query.get_mut(id) {
-                                                radius.1.0 = n.max(0.);
+                                                radius.0 = n.max(0.);
                                             }
                                         }
                                     }
@@ -236,14 +237,14 @@ pub fn command_parser(
                                         if let Ok(mut color) = access.col_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = n.parse::<f32>() {
-                                                    color.1.0.set_h(n);
+                                                    color.0.set_h(n);
                                                 }
                                             }
                                         }
                                     } else if let Ok(n) = s.parse::<f32>() {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut color) = access.col_query.get_mut(id) {
-                                                color.1.0.set_h(n);
+                                                color.0.set_h(n);
                                             }
                                         }
                                     }
@@ -255,14 +256,14 @@ pub fn command_parser(
                                         if let Ok(mut color) = access.col_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = n.parse::<f32>() {
-                                                    color.1.0.set_s(n);
+                                                    color.0.set_s(n);
                                                 }
                                             }
                                         }
                                     } else if let Ok(n) = s.parse::<f32>() {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut color) = access.col_query.get_mut(id) {
-                                                color.1.0.set_s(n);
+                                                color.0.set_s(n);
                                             }
                                         }
                                     }
@@ -274,14 +275,14 @@ pub fn command_parser(
                                         if let Ok(mut color) = access.col_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = n.parse::<f32>() {
-                                                    color.1.0.set_l(n);
+                                                    color.0.set_l(n);
                                                 }
                                             }
                                         }
                                     } else if let Ok(n) = s.parse::<f32>() {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut color) = access.col_query.get_mut(id) {
-                                                color.1.0.set_l(n);
+                                                color.0.set_l(n);
                                             }
                                         }
                                     }
@@ -293,14 +294,14 @@ pub fn command_parser(
                                         if let Ok(mut color) = access.col_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = n.parse::<f32>() {
-                                                    color.1.0.set_a(n);
+                                                    color.0.set_a(n);
                                                 }
                                             }
                                         }
                                     } else if let Ok(n) = s.parse::<f32>() {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut color) = access.col_query.get_mut(id) {
-                                                color.1.0.set_a(n);
+                                                color.0.set_a(n);
                                             }
                                         }
                                     }
@@ -312,14 +313,14 @@ pub fn command_parser(
                                         if let Ok(mut vertices) = access.vertices_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = n.parse::<usize>() {
-                                                    vertices.1.0 = n.max(3);
+                                                    vertices.0 = n.max(3);
                                                 }
                                             }
                                         }
                                     } else if let Ok(n) = s.parse::<usize>() {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut vertices) = access.vertices_query.get_mut(id) {
-                                                vertices.1.0 = n.max(3);
+                                                vertices.0 = n.max(3);
                                             }
                                         }
                                     }
@@ -349,13 +350,13 @@ pub fn command_parser(
                                     if let Some(e) = str_to_id(s) {
                                         if let Ok(mut op) = access.op_query.get_mut(e) {
                                             if let Some(n) = command.next() {
-                                                op.1.0 = n.to_string();
+                                                op.0 = n.to_string();
                                             }
                                         }
                                     } else {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut op) = access.op_query.get_mut(id) {
-                                                op.1.0 = s.to_string();
+                                                op.0 = s.to_string();
                                             }
                                         }
                                     }
@@ -567,34 +568,109 @@ pub fn command_parser(
             Some("in") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
-                    let n = access.num_query.get(e).unwrap().0;
-                    t = t + &format!("{:?}: {} ", e, n);
+                    if let Ok(n) = access.num_query.get(e) {
+                        t = t + &format!("{:?}: {} ", e, n.0);
+                    }
                 }
                 *text = format!(">NUM: {}", t);
             },
             Some("ira") => {
+                let mut t = String::new();
+                for e in access.selected_query.iter() {
+                    let ra = access.radius_query.get(e).unwrap().0;
+                    t = t + &format!("{:?}: {} ", e, ra);
+                }
+                *text = format!(">RADIUS: {}", t);
             },
             Some("ix") => {
+                let mut t = String::new();
+                for e in access.selected_query.iter() {
+                    let x = global_trans_rights.get(e).unwrap().translation().x;
+                    t = t + &format!("{:?}: {} ", e, x);
+                }
+                *text = format!(">X: {}", t);
             },
             Some("iy") => {
+                let mut t = String::new();
+                for e in access.selected_query.iter() {
+                    let y = global_trans_rights.get(e).unwrap().translation().y;
+                    t = t + &format!("{:?}: {} ", e, y);
+                }
+                *text = format!(">Y: {}", t);
             },
             Some("iz") => {
+                let mut t = String::new();
+                for e in access.selected_query.iter() {
+                    let z = global_trans_rights.get(e).unwrap().translation().z;
+                    t = t + &format!("{:?}: {} ", e, z);
+                }
+                *text = format!(">Z: {}", t);
             },
             Some("ih") => {
+                let mut t = String::new();
+                for e in access.selected_query.iter() {
+                    let h = access.col_query.get(e).unwrap().0.h();
+                    t = t + &format!("{:?}: {} ", e, h);
+                }
+                *text = format!(">HUE: {}", t);
             },
             Some("is") => {
+                let mut t = String::new();
+                for e in access.selected_query.iter() {
+                    let s = access.col_query.get(e).unwrap().0.s();
+                    t = t + &format!("{:?}: {} ", e, s);
+                }
+                *text = format!(">SATURATION: {}", t);
             },
             Some("il") => {
+                let mut t = String::new();
+                for e in access.selected_query.iter() {
+                    let l = access.col_query.get(e).unwrap().0.l();
+                    t = t + &format!("{:?}: {} ", e, l);
+                }
+                *text = format!(">LIGHTNESS: {}", t);
             },
             Some("ia") => {
+                let mut t = String::new();
+                for e in access.selected_query.iter() {
+                    let a = access.col_query.get(e).unwrap().0.a();
+                    t = t + &format!("{:?}: {} ", e, a);
+                }
+                *text = format!(">ALPHA: {}", t);
             },
             Some("iv") => {
+                let mut t = String::new();
+                for e in access.selected_query.iter() {
+                    let v = access.vertices_query.get(e).unwrap().0;
+                    t = t + &format!("{:?}: {} ", e, v);
+                }
+                *text = format!(">VERTICES: {}", t);
             },
             Some("iro") => {
+                let mut t = String::new();
+                for e in access.selected_query.iter() {
+                    let ro = access.trans_query.get(e).unwrap().rotation.to_euler(EulerRot::XYZ).2;
+                    t = t + &format!("{:?}: {} ", e, ro);
+                }
+                *text = format!(">ROTATION: {}", t);
             },
             Some("ior") => {
+                let mut t = String::new();
+                for e in access.selected_query.iter() {
+                    if let Ok(or) = access.order_query.get(e) {
+                        t = t + &format!("{:?}: {} ", e, or.0);
+                    }
+                }
+                *text = format!(">ORDER: {}", t);
             },
             Some("iop") => {
+                let mut t = String::new();
+                for e in access.selected_query.iter() {
+                    if let Ok(op) = &access.op_query.get(e) {
+                        t = t + &format!("{:?}: {} ", e, op.0);
+                    }
+                }
+                *text = format!(">OP: {}", t);
             },
             _ => {},
         }
