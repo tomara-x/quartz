@@ -65,6 +65,22 @@ pub struct Highlight(pub Entity);
 
 #[derive(Component, Reflect)]
 #[reflect(Component, MapEntities)]
+pub struct Targets(pub Vec<Entity>);
+impl FromWorld for Targets {
+    fn from_world(_world: &mut World) -> Self {
+        Targets(Vec::new())
+    }
+}
+impl MapEntities for Targets {
+    fn map_entities(&mut self, entity_mapper: &mut EntityMapper) {
+        for entity in &mut self.0 {
+            *entity = entity_mapper.get_or_reserve(*entity);
+        }
+    }
+}
+
+#[derive(Component, Reflect)]
+#[reflect(Component, MapEntities)]
 pub struct WhiteHole {
     pub bh: Entity,
     pub bh_parent: Entity,
