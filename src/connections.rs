@@ -67,7 +67,7 @@ pub fn connect(
                 }
             ).id();
             // spawn circles
-            let mut bh_depth = 0.001;
+            let mut bh_depth: f32 = 0.001;
             if let Ok(children) = children_query.get(src) { bh_depth *= (children.len() + 1) as f32; }
             let black_hole = commands.spawn(( ColorMesh2dBundle {
                     mesh: meshes.add(shape::Circle { radius: src_radius * 0.15, vertices: 6 }.into()).into(),
@@ -81,7 +81,7 @@ pub fn connect(
                 Vertices(6),
                 Save,
             )).id();
-            let mut wh_depth = 0.001;
+            let mut wh_depth: f32 = 0.001;
             if let Ok(children) = children_query.get(snk) { wh_depth *= (children.len() + 1) as f32; }
             let white_hole = commands.spawn(( ColorMesh2dBundle {
                     mesh: meshes.add(shape::Circle { radius: snk_radius * 0.15, vertices: 6 }.into()).into(),
