@@ -21,6 +21,8 @@ todo!();
     - assert_no_alloc https://github.com/Windfisch/rust-assert-no-alloc
     - bevy_github_ci_template https://github.com/bevyengine/bevy_github_ci_template
     - tracy https://github.com/wolfpld/tracy
+    - vim https://github.com/vim/vim
+    - void linux https://voidlinux.org/
 - learning / inspiration / used for a while:
     - bevy_fundsp https://github.com/harudagondi/bevy_fundsp
     - bevy_kira_audio https://github.com/NiklasEi/bevy_kira_audio
@@ -30,6 +32,9 @@ todo!();
     - knyst https://github.com/ErikNatanael/knyst
     - rust-ants-colony-simulation https://github.com/bones-ai/rust-ants-colony-simulation
     - anyhow https://github.com/dtolnay/anyhow
+    - plugdata https://github.com/plugdata-team/plugdata
+    - faust https://faust.grame.fr/
+    - csound https://csound.com/
 
 ## license
 
