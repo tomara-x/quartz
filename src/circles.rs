@@ -207,6 +207,7 @@ pub fn update_selection(
                 if cursor.i.distance(cursor.f) + r.0 > cursor.i.distance(t.translation().xy()) {
                     // only select holes if ctrl is held
                     if ctrl && order_query.contains(e) { continue; }
+                    // only select non-holes if alt is held
                     else if alt && !order_query.contains(e) { continue; }
                     commands.entity(e).insert(Selected);
                 }
