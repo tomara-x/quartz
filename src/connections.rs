@@ -61,7 +61,7 @@ pub fn connect(
                         b: 2.
                     }.into()).into(),
                     material: materials.add(ColorMaterial::from(Color::hsla(0., 1., 1., 0.7))),
-                    transform: Transform::from_translation(Vec3::Z),
+                    transform: Transform::from_translation(Vec3::new(0.,0.,100.)),
                     ..default()
                 }
             ).id();
