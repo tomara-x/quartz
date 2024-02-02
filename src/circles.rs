@@ -99,21 +99,21 @@ pub fn transform_highlights(
     }
 }
 
-// loop over the visible entities and give them a Visible component
-// so we can query just the visible entities
-pub fn mark_visible(
+pub fn mark_visible_circles(
     mouse_button_input: Res<Input<MouseButton>>,
     mut commands: Commands,
-    query: Query<Entity, With<Visible>>,
+    marked_circles: Query<Entity, With<Visible>>,
+    circles_query: Query<With<Radius>>,
     visible: Query<&VisibleEntities>,
 ) {
     if mouse_button_input.just_released(MouseButton::Left) {
-        for e in query.iter() {
+        for e in marked_circles.iter() {
             commands.entity(e).remove::<Visible>();
         }
-        let vis = visible.single();
-        for e in vis.iter() {
-            commands.entity(*e).insert(Visible);
+        for e in visible.single().iter() {
+            if circles_query.contains(*e) {
+                commands.entity(*e).insert(Visible);
+            }
         }
     }
 }
