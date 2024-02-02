@@ -61,7 +61,7 @@ pub struct NetIns(pub Vec<Shared<f32>>);
 pub struct Save;
 
 #[derive(Component)]
-pub struct Highlight;
+pub struct Highlight(pub Entity);
 
 #[derive(Component, Reflect)]
 #[reflect(Component, MapEntities)]

@@ -75,6 +75,7 @@ fn main() {
         .add_systems(Update, update_mesh)
         .add_systems(Update, update_num.after(update_selection).run_if(in_state(Mode::Edit)))
         .add_systems(Update, highlight_selected)
+        .add_systems(PreUpdate, transform_highlights)
         .add_systems(Update, update_order.run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_net_from_op)
         .add_systems(Update, select_all.run_if(in_state(Mode::Edit)))

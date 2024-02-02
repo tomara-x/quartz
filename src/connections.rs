@@ -187,6 +187,7 @@ pub fn delete_selected_holes(
     arrow_query: Query<&ConnectionArrow>,
     mut commands: Commands,
     info_text_query: Query<&InfoText>,
+    highlight_query: Query<&Highlight>,
 ) {
     if keyboard_input.just_pressed(KeyCode::Delete) {
         for (e, bh) in bh_query.iter() {
@@ -198,11 +199,17 @@ pub fn delete_selected_holes(
                 if let Ok(wh_text) = info_text_query.get(wh_id) {
                     commands.entity(wh_text.0).despawn();
                 }
+                if let Ok(highlight) = highlight_query.get(wh_id) {
+                    commands.entity(highlight.0).despawn();
+                }
             }
             commands.entity(e).remove_parent();
             commands.entity(e).despawn_recursive();
             if let Ok(bh_text) = info_text_query.get(e) {
                 commands.entity(bh_text.0).despawn();
+            }
+            if let Ok(highlight) = highlight_query.get(e) {
+                commands.entity(highlight.0).despawn();
             }
         }
         for (e, wh) in wh_query.iter() {
@@ -212,6 +219,9 @@ pub fn delete_selected_holes(
                 if let Ok(bh_text) = info_text_query.get(bh_id) {
                     commands.entity(bh_text.0).despawn();
                 }
+                if let Ok(highlight) = highlight_query.get(bh_id) {
+                    commands.entity(highlight.0).despawn();
+                }
             }
             let arrow = arrow_query.get(e).unwrap().0;
             commands.entity(arrow).despawn();
@@ -219,6 +229,9 @@ pub fn delete_selected_holes(
             commands.entity(e).despawn_recursive();
             if let Ok(wh_text) = info_text_query.get(e) {
                 commands.entity(wh_text.0).despawn();
+            }
+            if let Ok(highlight) = highlight_query.get(e) {
+                commands.entity(highlight.0).despawn();
             }
         }
     }
