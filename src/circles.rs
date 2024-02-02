@@ -84,7 +84,7 @@ pub fn transform_highlights(
 ) {
     for (t, h) in moved.iter() {
         let t = t.compute_transform();
-        let trans = t.translation.xy().extend(t.translation.z - 0.00000001);
+        let trans = t.translation.xy().extend(t.translation.z - 0.0000001);
         trans_query.get_mut(h.0).unwrap().translation = trans;
         trans_query.get_mut(h.0).unwrap().rotation = t.rotation;
     }
