@@ -771,7 +771,7 @@ pub fn command_parser(
             },
             // TODO(amy): yyp
             Some("\u{71}\u{75}\u{61}\u{72}\u{74}\u{7a}") => {
-                *text = String::from("drink some water!");
+                *text = String::from(">drink some water!");
             },
             _ => {},
         }

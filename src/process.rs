@@ -55,10 +55,24 @@ pub fn process(
     mut access: Access,
     mut slot: ResMut<Slot>,
     mut oscil: Local<(u8, bool)>,
+    cursor: Res<CursorInfo>,
+    mouse_button_input: Res<Input<MouseButton>>,
 ) {
     'entity: for id in queue.0.iter().flatten() {
         if let Ok(children) = &children_query.get(*id) {
             match access.op_query.get(*id).unwrap().0.as_str() {
+                "butt" => {
+                    if mouse_button_input.just_pressed(MouseButton::Left) {
+                        let t = access.trans_query.get(*id).unwrap().translation.xy();
+                        let r = access.radius_query.get(*id).unwrap().0;
+                        if cursor.i.distance_squared(t) < r*r {
+                            access.num_query.get_mut(*id).unwrap().0 = 1.;
+                        }
+                    }
+                    if mouse_button_input.just_released(MouseButton::Left) {
+                        access.num_query.get_mut(*id).unwrap().0 = 0.;
+                    }
+                },
                 "pass" => {
                     for child in children {
                         if let Ok(white_hole) = white_hole_query.get(*child) {
