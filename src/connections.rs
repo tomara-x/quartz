@@ -69,7 +69,7 @@ pub fn connect(
             let black_hole = commands.spawn(( ColorMesh2dBundle {
                     mesh: meshes.add(shape::Circle { radius: src_radius * 0.15, vertices: 6 }.into()).into(),
                     material: materials.add(ColorMaterial::from(Color::BLACK)),
-                    transform: Transform::from_translation((cursor.i - src_trans.xy()).extend(0.000001)),
+                    transform: Transform::from_translation((cursor.i - src_trans.xy()).extend(0.001)),
                     ..default()
                 },
                 Visible,
@@ -81,7 +81,7 @@ pub fn connect(
             let white_hole = commands.spawn(( ColorMesh2dBundle {
                     mesh: meshes.add(shape::Circle { radius: snk_radius * 0.15, vertices: 6 }.into()).into(),
                     material: materials.add(ColorMaterial::from(Color::WHITE)),
-                    transform: Transform::from_translation((cursor.f - snk_trans.xy()).extend(0.000001)),
+                    transform: Transform::from_translation((cursor.f - snk_trans.xy()).extend(0.001)),
                     ..default()
                 },
                 Visible,

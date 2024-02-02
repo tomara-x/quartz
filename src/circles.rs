@@ -44,7 +44,7 @@ pub fn spawn_circles(
             Vertices(v),
             Save,
         ));
-        *depth += 0.00001;
+        *depth += 0.01;
     }
 }
 
@@ -84,7 +84,7 @@ pub fn transform_highlights(
 ) {
     for (t, h) in moved.iter() {
         let t = t.compute_transform();
-        let trans = t.translation.xy().extend(t.translation.z - 0.0000001);
+        let trans = t.translation.xy().extend(t.translation.z - 0.00001);
         trans_query.get_mut(h.0).unwrap().translation = trans;
         trans_query.get_mut(h.0).unwrap().rotation = t.rotation;
     }
@@ -537,7 +537,7 @@ pub fn update_info_text(
 ) {
     for (trans, text) in trans_query.iter() {
         let t = trans.translation();
-        text_trans.get_mut(text.0).unwrap().translation = t.xy().extend(t.z + 0.00000001);
+        text_trans.get_mut(text.0).unwrap().translation = t.xy().extend(t.z + 0.00001);
     }
     for (order, text) in order_query.iter() {
         text_query.get_mut(text.0).unwrap().sections[1].value = format!("order: {}\n", order.0);
