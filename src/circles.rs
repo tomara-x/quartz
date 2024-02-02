@@ -160,6 +160,7 @@ pub fn update_selection(
     if keyboard_input.pressed(KeyCode::Space) { return; }
     let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
     let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
+    let alt = keyboard_input.any_pressed([KeyCode::AltLeft, KeyCode::AltRight]);
     if mouse_button_input.just_pressed(MouseButton::Left) {
         for (e, r, t) in query.iter() {
             if top_clicked_circle.is_some() {
@@ -206,6 +207,7 @@ pub fn update_selection(
                 if cursor.i.distance(cursor.f) + r.0 > cursor.i.distance(t.translation().xy()) {
                     // only select holes if ctrl is held
                     if ctrl && order_query.contains(e) { continue; }
+                    else if alt && !order_query.contains(e) { continue; }
                     commands.entity(e).insert(Selected);
                 }
             }
