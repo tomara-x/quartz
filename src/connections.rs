@@ -18,6 +18,7 @@ pub fn connect(
     keyboard_input: Res<Input<KeyCode>>,
     mut order_query: Query<&mut Order>,
     mut order_change: EventWriter<OrderChange>,
+    children_query: Query<&Children>,
 ) {
     if mouse_button_input.just_released(MouseButton::Left) &&
     !keyboard_input.pressed(KeyCode::Space) {
@@ -66,10 +67,12 @@ pub fn connect(
                 }
             ).id();
             // spawn circles
+            let mut bh_depth = 0.001;
+            if let Ok(children) = children_query.get(src) { bh_depth *= (children.len() + 1) as f32; }
             let black_hole = commands.spawn(( ColorMesh2dBundle {
                     mesh: meshes.add(shape::Circle { radius: src_radius * 0.15, vertices: 6 }.into()).into(),
                     material: materials.add(ColorMaterial::from(Color::BLACK)),
-                    transform: Transform::from_translation((cursor.i - src_trans.xy()).extend(0.001)),
+                    transform: Transform::from_translation((cursor.i - src_trans.xy()).extend(bh_depth)),
                     ..default()
                 },
                 Visible,
@@ -78,10 +81,12 @@ pub fn connect(
                 Vertices(6),
                 Save,
             )).id();
+            let mut wh_depth = 0.001;
+            if let Ok(children) = children_query.get(snk) { wh_depth *= (children.len() + 1) as f32; }
             let white_hole = commands.spawn(( ColorMesh2dBundle {
                     mesh: meshes.add(shape::Circle { radius: snk_radius * 0.15, vertices: 6 }.into()).into(),
                     material: materials.add(ColorMaterial::from(Color::WHITE)),
-                    transform: Transform::from_translation((cursor.f - snk_trans.xy()).extend(0.001)),
+                    transform: Transform::from_translation((cursor.f - snk_trans.xy()).extend(wh_depth)),
                     ..default()
                 },
                 Visible,
