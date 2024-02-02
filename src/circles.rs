@@ -155,9 +155,11 @@ pub fn update_selection(
     mut trans_query: Query<&mut Transform>,
     mut meshes: ResMut<Assets<Mesh>>,
     mesh_ids: Query<&Mesh2dHandle>,
+    order_query: Query<With<Order>>, // non-hole circle
 ) {
     if keyboard_input.pressed(KeyCode::Space) { return; }
     let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
+    let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
     if mouse_button_input.just_pressed(MouseButton::Left) {
         for (e, r, t) in query.iter() {
             if top_clicked_circle.is_some() {
@@ -202,6 +204,8 @@ pub fn update_selection(
             // select those in the dragged area
             for (e, r, t) in query.iter() {
                 if cursor.i.distance(cursor.f) + r.0 > cursor.i.distance(t.translation().xy()) {
+                    // only select holes if ctrl is held
+                    if ctrl && order_query.contains(e) { continue; }
                     commands.entity(e).insert(Selected);
                 }
             }
