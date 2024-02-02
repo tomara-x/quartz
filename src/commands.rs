@@ -27,7 +27,7 @@ pub fn command_parser(
     keyboard_input: Res<Input<KeyCode>>,
     mut display: Query<&mut Text, With<CommandText>>,
     mut char_input_events: EventReader<ReceivedCharacter>,
-    //entities: Query<Entity, With<Radius>>,
+    circles_query: Query<Entity, With<Radius>>,
     mut access: Access,
     mut mode: Local<i32>,
     mut in_progress: Local<bool>,
@@ -746,6 +746,28 @@ pub fn command_parser(
                     }
                 }
                 *text = format!(">LINK TYPE: {}", t);
+            },
+            Some("sa") => {
+                for e in circles_query.iter() {
+                    commands.entity(e).insert(Selected);
+                }
+                text.clear();
+            },
+            Some("sc") => {
+                for e in circles_query.iter() {
+                    if access.order_query.contains(e) {
+                        commands.entity(e).insert(Selected);
+                    }
+                }
+                text.clear();
+            },
+            Some("sh") => {
+                for e in circles_query.iter() {
+                    if !access.order_query.contains(e) {
+                        commands.entity(e).insert(Selected);
+                    }
+                }
+                text.clear();
             },
             _ => {},
         }

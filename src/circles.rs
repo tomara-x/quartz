@@ -217,23 +217,6 @@ pub fn update_selection(
     }
 }
 
-pub fn select_all(
-    mut commands: Commands,
-    order_query: Query<Entity, With<Order>>,
-    connection_query: Query<Entity, Or<(With<BlackHole>, With<WhiteHole>)>>,
-    keyboard_input: Res<Input<KeyCode>>,
-) {
-    let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
-    let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
-    if ctrl && keyboard_input.pressed(KeyCode::A) {
-        if shift {
-            for e in connection_query.iter() { commands.entity(e).insert(Selected); }
-        } else {
-            for e in order_query.iter() { commands.entity(e).insert(Selected); }
-        }
-    }
-}
-
 // TODO(amy): use scenes
 pub fn duplicate_selected() {}
 
