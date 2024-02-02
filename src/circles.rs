@@ -217,9 +217,6 @@ pub fn update_selection(
     }
 }
 
-// TODO(amy): use scenes
-pub fn duplicate_selected() {}
-
 pub fn move_selected(
     mouse_button_input: Res<Input<MouseButton>>,
     cursor: Res<CursorInfo>,

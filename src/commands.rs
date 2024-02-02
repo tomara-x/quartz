@@ -769,6 +769,7 @@ pub fn command_parser(
                 }
                 text.clear();
             },
+            // TODO(amy): yyp
             _ => {},
         }
     }
