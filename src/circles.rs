@@ -462,6 +462,10 @@ pub fn update_net_from_op(
                 n.0 = Net32::wrap(Box::new(pass()));
                 inputs.0.clear();
             },
+            "Stack" => {
+                n.0 = Net32::new(0,0);
+                inputs.0.clear();
+            },
             // testing
             "0outs" => {
                 n.0 = Net32::new(0,0);
