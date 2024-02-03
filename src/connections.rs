@@ -19,6 +19,7 @@ pub fn connect(
     mut order_query: Query<&mut Order>,
     mut order_change: EventWriter<OrderChange>,
     children_query: Query<&Children>,
+    mut targets_query: Query<&mut Targets>,
 ) {
     if mouse_button_input.just_released(MouseButton::Left) &&
     !keyboard_input.pressed(KeyCode::Space) {
@@ -38,6 +39,11 @@ pub fn connect(
         if let (Some(src), Some(snk)) = (source_entity.0, sink_entity.0) {
             // don't connect entity to itself
             if source_entity.0 == sink_entity.0 { return; }
+            // if T is held, we just add snk to src's targets
+            if keyboard_input.pressed(KeyCode::T) {
+                targets_query.get_mut(src).unwrap().0.push(snk);
+                return;
+            }
             // increment order of sink
             let src_order = order_query.get(src).unwrap().0;
             let snk_order = order_query.get(snk).unwrap().0;

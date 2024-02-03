@@ -42,6 +42,7 @@ pub fn spawn_circles(
             Arr(vec!(42., 105., 420., 1729.)),
             Op("empty".to_string()),
             Vertices(v),
+            Targets(Vec::new()),
             Save,
         ));
         *depth += 0.01;

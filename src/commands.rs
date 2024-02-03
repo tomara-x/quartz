@@ -40,7 +40,8 @@ pub fn command_parser(
     mut ids_shown: Local<bool>,
     global_trans_rights: Query<&GlobalTransform>,
 ) {
-    if char_input_events.is_empty() && !*in_progress { return; }
+    if char_input_events.is_empty() && !*in_progress &&
+    !keyboard_input.just_released(KeyCode::T) { return; }
     let text = &mut display.single_mut().sections[0].value;
 
     // draw mode
@@ -68,6 +69,13 @@ pub fn command_parser(
             *mode = 0;
             next_state.set(Mode::Edit);
             char_input_events.clear();
+        }
+        // target
+        let t = keyboard_input.pressed(KeyCode::T);
+        if t {
+            *text = "-- TARGET --".to_string();
+        } else {
+            *text = "-- CONNECT --".to_string();
         }
         // switch to draw mode
         if keyboard_input.just_pressed(KeyCode::D) {

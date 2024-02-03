@@ -116,6 +116,7 @@ fn main() {
         .register_type::<WhiteHole>()
         .register_type::<(i32, i32)>()
         .register_type::<Vertices>()
+        .register_type::<Targets>()
         .run();
 }
 
@@ -235,6 +236,7 @@ fn save_scene(world: &mut World) {
             .allow::<Parent>()
             .allow::<Children>()
             .allow::<Vertices>()
+            .allow::<Targets>()
             .extract_entities(query.iter(&world))
             .build();
         let type_registry = world.resource::<AppTypeRegistry>();
