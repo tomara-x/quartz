@@ -263,6 +263,34 @@ pub fn process(
                         *output = Net32::wrap(Box::new(graph));
                     }
                 },
+                "Stack" => {
+                    let mut changed = false;
+                    let mut inputs = Vec::new();
+                    for child in children {
+                        if let Ok(mut wh) = white_hole_query.get_mut(*child) {
+                            if wh.link_types.0 == 0 {
+                                let index = wh.link_types.1 as usize;
+                                if inputs.len() <= index { inputs.resize(index+1, None); }
+                                inputs[index] = Some(&access.net_query.get(wh.bh_parent).unwrap().0);
+                            }
+                            if wh.open {
+                                wh.open = false;
+                                changed = true;
+                                access.net_changed_query.get_mut(*id).unwrap().0 = true;
+                            }
+                        }
+                    }
+                    if changed {
+                        let mut graph = Net32::new(0,0);
+                        for i in inputs {
+                            if let Some(i) = i {
+                                graph = graph | i.clone();
+                            }
+                        }
+                        let output = &mut access.net_query.get_mut(*id).unwrap().0;
+                        *output = Net32::wrap(Box::new(graph));
+                    }
+                },
                 "Out" => {
                     for child in children {
                         if let Ok(mut wh) = white_hole_query.get_mut(*child) {
