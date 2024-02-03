@@ -437,6 +437,7 @@ pub fn command_parser(
                                         tmp.push(e);
                                     }
                                 }
+                                // set the rest (crd) as the targets of first (car)
                                 if access.selected_query.is_empty() {
                                     if tmp.len() != 0 {
                                         let controller = tmp.swap_remove(0);
@@ -445,6 +446,7 @@ pub fn command_parser(
                                         }
                                     }
                                 } else {
+                                    // all selected circles get the list of entities as targets
                                     for e in access.selected_query.iter() {
                                         if let Ok(mut c) = access.targets_query.get_mut(e) {
                                             c.0 = tmp.clone();
