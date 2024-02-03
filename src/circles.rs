@@ -454,6 +454,14 @@ pub fn update_net_from_op(
                 inputs.0.clear();
                 inputs.0.push(input);
             },
+            "Sink" => {
+                n.0 = Net32::wrap(Box::new(sink()));
+                inputs.0.clear();
+            },
+            "Pass" => {
+                n.0 = Net32::wrap(Box::new(pass()));
+                inputs.0.clear();
+            },
             // testing
             "0outs" => {
                 n.0 = Net32::new(0,0);
