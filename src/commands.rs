@@ -21,6 +21,7 @@ pub struct Access<'w, 's> {
     order_change: EventWriter<'w, OrderChange>,
     vertices_query: Query<'w, 's, &'static mut Vertices>,
     save_event: EventWriter<'w, SaveCommand>,
+    targets_query: Query<'w, 's, &'static mut Targets>,
 }
 
 pub fn command_parser(
@@ -425,6 +426,28 @@ pub fn command_parser(
                                             if let Ok(mut arr) = access.arr_query.get_mut(id) {
                                                 arr.0 = tmp.clone();
                                             }
+                                        }
+                                    }
+                                }
+                            },
+                            Some("tar") | Some("targets") => {
+                                let mut tmp = Vec::new();
+                                for e in command {
+                                    if let Some(e) = str_to_id(e) {
+                                        tmp.push(e);
+                                    }
+                                }
+                                if access.selected_query.is_empty() {
+                                    if tmp.len() != 0 {
+                                        let controller = tmp.swap_remove(0);
+                                        if let Ok(mut c) = access.targets_query.get_mut(controller) {
+                                            c.0 = tmp;
+                                        }
+                                    }
+                                } else {
+                                    for e in access.selected_query.iter() {
+                                        if let Ok(mut c) = access.targets_query.get_mut(e) {
+                                            c.0 = tmp.clone();
                                         }
                                     }
                                 }
