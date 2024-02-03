@@ -19,10 +19,10 @@ pub fn connect(
     mut order_query: Query<&mut Order>,
     mut order_change: EventWriter<OrderChange>,
     children_query: Query<&Children>,
-    mut targets_query: Query<&mut Targets>,
 ) {
-    if mouse_button_input.just_released(MouseButton::Left) &&
-    !keyboard_input.pressed(KeyCode::Space) {
+    if mouse_button_input.just_released(MouseButton::Left)
+    && !keyboard_input.pressed(KeyCode::T)
+    && !keyboard_input.pressed(KeyCode::Space) {
         let mut source_entity: (Option<Entity>, f32) = (None, f32::MIN);
         let mut sink_entity: (Option<Entity>, f32) = (None, f32::MIN);
         for (e, r, t) in query.iter() {
@@ -39,11 +39,6 @@ pub fn connect(
         if let (Some(src), Some(snk)) = (source_entity.0, sink_entity.0) {
             // don't connect entity to itself
             if source_entity.0 == sink_entity.0 { return; }
-            // if T is held, we just add snk to src's targets
-            if keyboard_input.pressed(KeyCode::T) {
-                targets_query.get_mut(src).unwrap().0.push(snk);
-                return;
-            }
             // increment order of sink
             let src_order = order_query.get(src).unwrap().0;
             let snk_order = order_query.get(snk).unwrap().0;
@@ -119,6 +114,38 @@ pub fn connect(
             // add to parents
             commands.entity(src).add_child(black_hole);
             commands.entity(snk).add_child(white_hole);
+        }
+    }
+}
+
+pub fn target(
+    mouse_button_input: Res<Input<MouseButton>>,
+    query: Query<(Entity, &Radius, &GlobalTransform), With<Visible>>,
+    cursor: Res<CursorInfo>,
+    keyboard_input: Res<Input<KeyCode>>,
+    mut targets_query: Query<&mut Targets>,
+) {
+    if mouse_button_input.just_released(MouseButton::Left)
+    && keyboard_input.pressed(KeyCode::T)
+    && !keyboard_input.pressed(KeyCode::Space) {
+        let mut source_entity: (Option<Entity>, f32) = (None, f32::MIN);
+        let mut sink_entity: (Option<Entity>, f32) = (None, f32::MIN);
+        for (e, r, t) in query.iter() {
+            if cursor.i.distance(t.translation().xy()) < r.0
+            && t.translation().z > source_entity.1 {
+                source_entity = (Some(e), t.translation().z);
+            }
+            if cursor.f.distance(t.translation().xy()) < r.0
+            && t.translation().z > sink_entity.1 {
+                sink_entity = (Some(e), t.translation().z);
+            }
+        }
+        if let (Some(src), Some(snk)) = (source_entity.0, sink_entity.0) {
+            // don't target self
+            if source_entity.0 == sink_entity.0 { return; }
+            if let Ok(mut targets) = targets_query.get_mut(src) {
+                targets.0.push(snk);
+            }
         }
     }
 }
