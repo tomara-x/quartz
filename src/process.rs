@@ -313,6 +313,7 @@ pub fn process(
                         if let (Some(lhs), Some(rhs)) = (lhs, rhs) {
                             // TODO(amy): move the other changed marking to the inside like this
                             access.net_changed_query.get_mut(*id).unwrap().0 = true;
+                            // FIXME(amy): check for mismatched connectivity
                             access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(lhs >> rhs));
                         }
                     }
