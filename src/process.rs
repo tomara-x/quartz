@@ -291,6 +291,32 @@ pub fn process(
                         *output = Net32::wrap(Box::new(graph));
                     }
                 },
+                // TODO(amy): try to break this
+                "Pipe" => {
+                    let mut changed = false;
+                    let mut lhs = None;
+                    let mut rhs = None;
+                    for child in children {
+                        if let Ok(mut wh) = white_hole_query.get_mut(*child) {
+                            if wh.link_types == (0, 1) {
+                                lhs = Some(access.net_query.get(wh.bh_parent).unwrap().0.clone());
+                            } else if wh.link_types == (0, 2) {
+                                rhs = Some(access.net_query.get(wh.bh_parent).unwrap().0.clone());
+                            }
+                            if wh.open {
+                                wh.open = false;
+                                changed = true;
+                            }
+                        }
+                    }
+                    if changed {
+                        if let (Some(lhs), Some(rhs)) = (lhs, rhs) {
+                            // TODO(amy): move the other changed marking to the inside like this
+                            access.net_changed_query.get_mut(*id).unwrap().0 = true;
+                            access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(lhs >> rhs));
+                        }
+                    }
+                },
                 "Out" => {
                     for child in children {
                         if let Ok(mut wh) = white_hole_query.get_mut(*child) {
