@@ -279,28 +279,29 @@ fn post_load(
                     NetIns(Vec::new()),
                     NetChanged(true),
                 ));
-                let holes = children_query.get(*child).unwrap();
-                for hole in holes {
-                    if white_hole_query.contains(*hole) || black_hole_query.contains(*hole) {
-                        if let Ok((r, t, c, v)) = main_query.get(*hole) {
-                            commands.entity(*hole).insert(
-                                ColorMesh2dBundle {
-                                    mesh: meshes.add(BevyCircle { radius: r.0, vertices: v.0 }.into()).into(),
-                                    material: materials.add(ColorMaterial::from(c.0)),
-                                    transform: *t,
-                                    ..default()
-                                },
-                            );
+                if let Ok(holes) = children_query.get(*child) {
+                    for hole in holes {
+                        if white_hole_query.contains(*hole) || black_hole_query.contains(*hole) {
+                            if let Ok((r, t, c, v)) = main_query.get(*hole) {
+                                commands.entity(*hole).insert(
+                                    ColorMesh2dBundle {
+                                        mesh: meshes.add(BevyCircle { radius: r.0, vertices: v.0 }.into()).into(),
+                                        material: materials.add(ColorMaterial::from(c.0)),
+                                        transform: *t,
+                                        ..default()
+                                    },
+                                );
+                            }
                         }
-                    }
-                    if white_hole_query.contains(*hole) {
-                        let arrow = commands.spawn( ColorMesh2dBundle {
-                            mesh: meshes.add(BevyCircle{radius:0., vertices:3}.into()).into(),
-                            material: materials.add(ColorMaterial::from(Color::hsla(0., 1., 1., 0.7))),
-                            transform: Transform::from_translation(Vec3::Z),
-                            ..default()
-                        }).id();
-                        commands.entity(*hole).insert(ConnectionArrow(arrow));
+                        if white_hole_query.contains(*hole) {
+                            let arrow = commands.spawn( ColorMesh2dBundle {
+                                mesh: meshes.add(BevyCircle{radius:0., vertices:3}.into()).into(),
+                                material: materials.add(ColorMaterial::from(Color::hsla(0., 1., 1., 0.7))),
+                                transform: Transform::from_translation(Vec3::Z),
+                                ..default()
+                            }).id();
+                            commands.entity(*hole).insert(ConnectionArrow(arrow));
+                        }
                     }
                 }
             }
