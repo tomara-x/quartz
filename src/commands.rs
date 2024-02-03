@@ -71,12 +71,8 @@ pub fn command_parser(
             char_input_events.clear();
         }
         // target
-        let t = keyboard_input.pressed(KeyCode::T);
-        if t {
-            *text = "-- TARGET --".to_string();
-        } else {
-            *text = "-- CONNECT --".to_string();
-        }
+        if keyboard_input.just_pressed(KeyCode::T) { *text = "-- TARGET --".to_string(); }
+        if keyboard_input.just_released(KeyCode::T) { *text = "-- CONNECT --".to_string(); }
         // switch to draw mode
         if keyboard_input.just_pressed(KeyCode::D) {
             *text = "-- DRAW --".to_string();
