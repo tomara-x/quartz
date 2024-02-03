@@ -199,6 +199,8 @@ pub fn process(
                                     0 => { *net = Net32::wrap(Box::new(input >> sine())); },
                                     1 => { *net = Net32::wrap(Box::new(input >> saw())); },
                                     2 => { *net = Net32::wrap(Box::new(input >> square())); },
+                                    3 => { *net = Net32::wrap(Box::new(input >> organ())); },
+                                    //4 => { *net = Net32::wrap(Box::new(input >> (pass() | dc(0.5)) >> pulse())); },
                                     _ => {},
                                 }
                                 access.net_changed_query.get_mut(*id).unwrap().0 = true;
