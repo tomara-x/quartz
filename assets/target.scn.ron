@@ -1,0 +1,175 @@
+(
+  resources: {},
+  entities: {
+    6: (
+      components: {
+        "bevy_transform::components::transform::Transform": (
+          translation: (
+            x: -17.521856,
+            y: 143.34741,
+            z: 0.0,
+          ),
+          rotation: (
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+            w: 1.0,
+          ),
+          scale: (
+            x: 1.0,
+            y: 1.0,
+            z: 1.0,
+          ),
+        ),
+        "quartz::components::Vertices": (8),
+        "quartz::components::Radius": (69.63509),
+        "quartz::components::Order": (0),
+        "quartz::components::Num": (0.0),
+        "quartz::components::Op": ("empty"),
+        "quartz::components::Col": (Hsla(
+          hue: 300.0,
+          saturation: 1.0,
+          lightness: 0.5,
+          alpha: 1.0,
+        )),
+        "quartz::components::Targets": ([
+          7,
+          8,
+          9,
+        ]),
+        "quartz::components::Arr": ([
+          42.0,
+          105.0,
+          420.0,
+          1729.0,
+        ]),
+        "quartz::components::Save": (),
+      },
+    ),
+    7: (
+      components: {
+        "bevy_transform::components::transform::Transform": (
+          translation: (
+            x: -40.319744,
+            y: -78.4225,
+            z: 0.01,
+          ),
+          rotation: (
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+            w: 1.0,
+          ),
+          scale: (
+            x: 1.0,
+            y: 1.0,
+            z: 1.0,
+          ),
+        ),
+        "quartz::components::Vertices": (8),
+        "quartz::components::Radius": (73.63225),
+        "quartz::components::Order": (0),
+        "quartz::components::Num": (0.0),
+        "quartz::components::Op": ("empty"),
+        "quartz::components::Col": (Hsla(
+          hue: 300.0,
+          saturation: 1.0,
+          lightness: 0.5,
+          alpha: 1.0,
+        )),
+        "quartz::components::Targets": ([]),
+        "quartz::components::Arr": ([
+          42.0,
+          105.0,
+          420.0,
+          1729.0,
+        ]),
+        "quartz::components::Save": (),
+      },
+    ),
+    8: (
+      components: {
+        "bevy_transform::components::transform::Transform": (
+          translation: (
+            x: 240.30072,
+            y: 41.869183,
+            z: 0.02,
+          ),
+          rotation: (
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+            w: 1.0,
+          ),
+          scale: (
+            x: 1.0,
+            y: 1.0,
+            z: 1.0,
+          ),
+        ),
+        "quartz::components::Vertices": (8),
+        "quartz::components::Radius": (70.99627),
+        "quartz::components::Order": (0),
+        "quartz::components::Num": (0.0),
+        "quartz::components::Op": ("empty"),
+        "quartz::components::Col": (Hsla(
+          hue: 300.0,
+          saturation: 1.0,
+          lightness: 0.5,
+          alpha: 1.0,
+        )),
+        "quartz::components::Targets": ([]),
+        "quartz::components::Arr": ([
+          42.0,
+          105.0,
+          420.0,
+          1729.0,
+        ]),
+        "quartz::components::Save": (),
+      },
+    ),
+    9: (
+      components: {
+        "bevy_transform::components::transform::Transform": (
+          translation: (
+            x: 449.4034,
+            y: 152.7539,
+            z: 0.03,
+          ),
+          rotation: (
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+            w: 1.0,
+          ),
+          scale: (
+            x: 1.0,
+            y: 1.0,
+            z: 1.0,
+          ),
+        ),
+        "quartz::components::Vertices": (8),
+        "quartz::components::Radius": (71.75241),
+        "quartz::components::Order": (0),
+        "quartz::components::Num": (0.0),
+        "quartz::components::Op": ("empty"),
+        "quartz::components::Col": (Hsla(
+          hue: 300.0,
+          saturation: 1.0,
+          lightness: 0.5,
+          alpha: 1.0,
+        )),
+        "quartz::components::Targets": ([
+          8,
+        ]),
+        "quartz::components::Arr": ([
+          42.0,
+          105.0,
+          420.0,
+          1729.0,
+        ]),
+        "quartz::components::Save": (),
+      },
+    ),
+  },
+)
