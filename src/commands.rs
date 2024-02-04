@@ -776,6 +776,15 @@ pub fn command_parser(
                 }
                 *text = format!(">LINK TYPE: {}", t);
             },
+            Some("iO") => {
+                let mut t = String::new();
+                for e in access.selected_query.iter() {
+                    if let Ok(wh) = access.white_hole_query.get(e) {
+                        t = t + &format!("[{:?}]{}  ", e, wh.open);
+                    }
+                }
+                *text = format!(">WH_OPEN: {}", t);
+            },
             Some("sa") => {
                 for e in circles_query.iter() {
                     commands.entity(e).insert(Selected);
