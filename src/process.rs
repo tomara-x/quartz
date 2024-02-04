@@ -54,7 +54,6 @@ pub fn process(
     black_hole_query: Query<&BlackHole>,
     mut access: Access,
     mut slot: ResMut<Slot>,
-    mut oscil: Local<(u8, bool)>,
     cursor: Res<CursorInfo>,
     mouse_button_input: Res<Input<MouseButton>>,
 ) {
@@ -191,33 +190,34 @@ pub fn process(
                     }
                 },
                 "Oscil" => {
-                    for child in children {
-                        if let Ok(mut wh) = white_hole_query.get_mut(*child) {
-                            if wh.link_types == (-1, 2) {
-                                let input = access.num_query.get(wh.bh_parent).unwrap().0;
-                                if (input as u8) != oscil.0 {
-                                    oscil.0 = input as u8;
-                                    oscil.1 = true; // new wave
-                                }
-                            }
-                            if wh.link_types == (0, 1) && (wh.open || oscil.1) {
-                                wh.open = false;
-                                oscil.1 = false;
-                                access.net_changed_query.get_mut(wh.bh_parent).unwrap().0 = false;
-                                let input = access.net_query.get(wh.bh_parent).unwrap().0.clone();
-                                let net = &mut access.net_query.get_mut(*id).unwrap().0;
-                                match oscil.0 {
-                                    0 => { *net = Net32::wrap(Box::new(input >> sine())); },
-                                    1 => { *net = Net32::wrap(Box::new(input >> saw())); },
-                                    2 => { *net = Net32::wrap(Box::new(input >> square())); },
-                                    3 => { *net = Net32::wrap(Box::new(input >> organ())); },
-                                    //4 => { *net = Net32::wrap(Box::new(input >> (pass() | dc(0.5)) >> pulse())); },
-                                    _ => {},
-                                }
-                                access.net_changed_query.get_mut(*id).unwrap().0 = true;
-                            }
-                        }
-                    }
+                    //for child in children {
+                    //    if let Ok(mut wh) = white_hole_query.get_mut(*child) {
+                    //        // can't depend on local vars, cause there's more than one instance
+                    //        if wh.link_types == (-1, 2) {
+                    //            let input = access.num_query.get(wh.bh_parent).unwrap().0;
+                    //            if (input as u8) != oscil.0 {
+                    //                oscil.0 = input as u8;
+                    //                oscil.1 = true; // new wave
+                    //            }
+                    //        }
+                    //        if wh.link_types == (0, 1) && (wh.open || oscil.1) {
+                    //            wh.open = false;
+                    //            oscil.1 = false;
+                    //            access.net_changed_query.get_mut(wh.bh_parent).unwrap().0 = false;
+                    //            let input = access.net_query.get(wh.bh_parent).unwrap().0.clone();
+                    //            let net = &mut access.net_query.get_mut(*id).unwrap().0;
+                    //            match oscil.0 {
+                    //                0 => { *net = Net32::wrap(Box::new(input >> sine())); },
+                    //                1 => { *net = Net32::wrap(Box::new(input >> saw())); },
+                    //                2 => { *net = Net32::wrap(Box::new(input >> square())); },
+                    //                3 => { *net = Net32::wrap(Box::new(input >> organ())); },
+                    //                //4 => { *net = Net32::wrap(Box::new(input >> (pass() | dc(0.5)) >> pulse())); },
+                    //                _ => {},
+                    //            }
+                    //            access.net_changed_query.get_mut(*id).unwrap().0 = true;
+                    //        }
+                    //    }
+                    //}
                 },
                 //"Pan" => {
                 //    for child in children {
@@ -323,27 +323,23 @@ pub fn process(
                     if changed {
                         if let (Some(lhs), Some(rhs)) = (lhs, rhs) {
                             access.net_changed_query.get_mut(*id).unwrap().0 = true;
-                            // FIXME(amy): check for mismatched connectivity
-                            access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(lhs >> rhs));
+                            if lhs.outputs() == rhs.inputs() {
+                                access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(lhs >> rhs));
+                            }
                         }
                     }
                 },
                 "Out" => {
                     for child in children {
                         if let Ok(mut wh) = white_hole_query.get_mut(*child) {
-                            if wh.link_types == (0, 1) && wh.open {
-                                let net = &access.net_query.get(wh.bh_parent).unwrap().0;
-                                // instead of giving up, can we get the first 2 outs in a net?
-                                if net.outputs() != 1 && net.outputs() != 2 { continue 'entity; }
-                                slot.0.set(Fade::Smooth, 0.1, Box::new(net.clone()));
-                                wh.open = false;
-                                continue 'entity;
-                            }
-                        }
-                    }
-                    for child in children {
-                        if let Ok(wh) = white_hole_query.get_mut(*child) {
                             if wh.link_types == (0, 1) {
+                                if wh.open {
+                                    let net = &access.net_query.get(wh.bh_parent).unwrap().0;
+                                    // instead of giving up, can we get the first 2 outs in a net?
+                                    if net.outputs() != 1 && net.outputs() != 2 { continue 'entity; }
+                                    slot.0.set(Fade::Smooth, 0.1, Box::new(net.clone()));
+                                    wh.open = false;
+                                }
                                 continue 'entity;
                             }
                         }
@@ -449,6 +445,17 @@ pub fn process(
                         _ => {},
                     }
                 }
+            }
+        // no children (connections)
+        } else {
+            match access.op_query.get(*id).unwrap().0.as_str() {
+                "Out" => {
+                    if access.net_changed_query.get(*id).unwrap().0 {
+                        slot.0.set(Fade::Smooth, 0.1, Box::new(dc(0.)));
+                        access.net_changed_query.get_mut(*id).unwrap().0 = false;
+                    }
+                },
+                _ => {},
             }
         }
     }

@@ -490,6 +490,22 @@ pub fn update_net_from_op(
                 n.0 = Net32::new(0,0);
                 inputs.0.clear();
             },
+            "Sine" => {
+                n.0 = Net32::wrap(Box::new(sine()));
+                inputs.0.clear();
+            },
+            "Saw" => {
+                n.0 = Net32::wrap(Box::new(saw()));
+                inputs.0.clear();
+            },
+            "Square" => {
+                n.0 = Net32::wrap(Box::new(square()));
+                inputs.0.clear();
+            },
+            "Organ" => {
+                n.0 = Net32::wrap(Box::new(organ()));
+                inputs.0.clear();
+            },
             // testing
             "0outs" => {
                 n.0 = Net32::new(0,0);
