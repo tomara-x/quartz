@@ -98,7 +98,6 @@ pub fn connect(
                     bh_parent: src,
                     bh: black_hole,
                     link_types: (0, 0),
-                    new_lt: true,
                     open: true,
                 },
                 Save,

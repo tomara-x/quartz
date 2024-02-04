@@ -85,7 +85,6 @@ pub struct WhiteHole {
     pub bh: Entity,
     pub bh_parent: Entity,
     pub link_types: (i32, i32), //(black, white)
-    pub new_lt: bool,
     pub open: bool,
 }
 impl FromWorld for WhiteHole {
@@ -94,7 +93,6 @@ impl FromWorld for WhiteHole {
             bh: Entity::PLACEHOLDER,
             bh_parent: Entity::PLACEHOLDER,
             link_types: (0, 0),
-            new_lt: true,
             open: true,
         }
     }
