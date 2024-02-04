@@ -83,6 +83,17 @@ pub fn process(
                         }
                     }
                 },
+                "tbutt" => {
+                    if mouse_button_input.just_pressed(MouseButton::Left) {
+                        let t = access.trans_query.get(*id).unwrap().translation.xy();
+                        let r = access.radius_query.get(*id).unwrap().0;
+                        if cursor.i.distance_squared(t) < r*r {
+                            access.num_query.get_mut(*id).unwrap().0 = 1.;
+                        }
+                    } else {
+                        access.num_query.get_mut(*id).unwrap().0 = 0.;
+                    }
+                },
                 "pass" => {
                     for child in children {
                         if let Ok(white_hole) = white_hole_query.get(*child) {
