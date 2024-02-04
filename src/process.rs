@@ -235,11 +235,11 @@ pub fn process(
                             if wh.open {
                                 wh.open = false;
                                 changed = true;
-                                access.net_changed_query.get_mut(*id).unwrap().0 = true;
                             }
                         }
                     }
                     if changed {
+                        access.net_changed_query.get_mut(*id).unwrap().0 = true;
                         let mut graph = Net32::wrap(Box::new(dc(0.)));
                         for i in inputs {
                             graph = graph + i.clone();
@@ -261,11 +261,11 @@ pub fn process(
                             if wh.open {
                                 wh.open = false;
                                 changed = true;
-                                access.net_changed_query.get_mut(*id).unwrap().0 = true;
                             }
                         }
                     }
                     if changed {
+                        access.net_changed_query.get_mut(*id).unwrap().0 = true;
                         let mut graph = Net32::wrap(Box::new(dc(1.)));
                         for i in inputs {
                             graph = graph * i.clone();
@@ -287,11 +287,11 @@ pub fn process(
                             if wh.open {
                                 wh.open = false;
                                 changed = true;
-                                access.net_changed_query.get_mut(*id).unwrap().0 = true;
                             }
                         }
                     }
                     if changed {
+                        access.net_changed_query.get_mut(*id).unwrap().0 = true;
                         let mut graph = Net32::new(0,0);
                         for i in inputs {
                             if let Some(i) = i {
@@ -322,7 +322,6 @@ pub fn process(
                     }
                     if changed {
                         if let (Some(lhs), Some(rhs)) = (lhs, rhs) {
-                            // TODO(amy): move the other changed marking to the inside like this
                             access.net_changed_query.get_mut(*id).unwrap().0 = true;
                             // FIXME(amy): check for mismatched connectivity
                             access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(lhs >> rhs));
