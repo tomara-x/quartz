@@ -401,6 +401,25 @@ pub fn update_radius(
     }
 }
 
+pub fn update_vertices(
+    mut query: Query<&mut Vertices, With<Selected>>,
+    keyboard_input: Res<Input<KeyCode>>,
+    drag_modes: Res<DragModes>,
+) {
+    if drag_modes.v {
+        if keyboard_input.any_just_pressed([KeyCode::Up, KeyCode::Right]) {
+            for mut v in query.iter_mut() {
+                v.0 += 1;
+            }
+        }
+        if keyboard_input.any_just_pressed([KeyCode::Down, KeyCode::Left]) {
+            for mut v in query.iter_mut() {
+                v.0 = Ord::max(v.0 - 1, 3);
+            }
+        }
+    }
+}
+
 pub fn update_mesh(
     mut meshes: ResMut<Assets<Mesh>>,
     mesh_ids: Query<&Mesh2dHandle>,

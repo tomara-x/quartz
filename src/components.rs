@@ -167,6 +167,7 @@ pub struct DragModes {
     pub l: bool,
     pub a: bool,
     pub o: bool,
+    pub v: bool,
 }
 impl DragModes {
     pub fn falsify(&mut self) {
@@ -178,6 +179,7 @@ impl DragModes {
         self.l = false;
         self.a = false;
         self.o = false;
+        self.v = false;
     }
 }
 

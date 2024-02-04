@@ -515,6 +515,11 @@ pub fn command_parser(
                 drag_modes.o = true;
                 text.clear();
             },
+            Some("ev") => {
+                drag_modes.falsify();
+                drag_modes.v = true;
+                text.clear();
+            },
 
             Some("ee") => {
                 drag_modes.falsify();
@@ -551,6 +556,10 @@ pub fn command_parser(
             },
             Some("Eo") => {
                 drag_modes.o = true;
+                text.clear();
+            },
+            Some("Ev") => {
+                drag_modes.v = true;
                 text.clear();
             },
             // toggle open white holes (selected)
