@@ -118,6 +118,7 @@ fn main() {
         .register_type::<(i32, i32)>()
         .register_type::<Vertices>()
         .register_type::<Targets>()
+        .register_type::<NetChanged>()
         .run();
 }
 

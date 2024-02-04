@@ -599,6 +599,8 @@ pub fn delete_selected_circles(
     info_text_query: Query<&InfoText>,
     children_query: Query<&Children>,
     highlight_query: Query<&Highlight>,
+    parent_query: Query<&Parent>,
+    mut net_changed_query: Query<&mut NetChanged>,
 ) {
     let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
     if keyboard_input.just_pressed(KeyCode::Delete) && !shift {
@@ -626,6 +628,9 @@ pub fn delete_selected_circles(
                             if let Ok(highlight) = highlight_query.get(*child) {
                                 commands.entity(highlight.0).despawn();
                             }
+                            // mark the parent's net as changed
+                            let parent = parent_query.get(bh.wh).unwrap();
+                            net_changed_query.get_mut(**parent).unwrap().0 = true;
                         }
                     } else if let Ok(wh) = wh_query.get(*child) {
                         if bh_query.contains(wh.bh) {
