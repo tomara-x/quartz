@@ -307,6 +307,7 @@ pub fn process(
                     let mut changed = false;
                     let mut lhs = None;
                     let mut rhs = None;
+                    // if net changed (connection change), we wanna update, set changed to true here
                     for child in children {
                         if let Ok(mut wh) = white_hole_query.get_mut(*child) {
                             if wh.link_types == (0, 1) {
@@ -326,7 +327,7 @@ pub fn process(
                             if lhs.outputs() == rhs.inputs() {
                                 access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(lhs >> rhs));
                             }
-                        }
+                        }// else we don't have the needed connections, we clear the net
                     }
                 },
                 "Out" => {
