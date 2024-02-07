@@ -35,9 +35,9 @@ pub fn spawn_circles(
             Col(color),
             Visible, //otherwise it can't be selected til after mark_visible is updated
             Order(0),
-            NetChanged(true),
-            Network(Net32::new(0,1)),
-            NetIns(Vec::new()),
+            //NetChanged(true),
+            //Network(Net32::new(0,1)),
+            //NetIns(Vec::new()),
             crate::components::Num(0.),
             Arr(vec!(42., 105., 420., 1729.)),
             Op("empty".to_string()),
@@ -461,74 +461,74 @@ pub fn update_num(
     }
 }
 
-pub fn update_net_from_op(
-    mut query: Query<(&Op, &mut NetChanged, &mut Network, &mut NetIns), Changed<Op>>,
-) {
-    for (op, mut net_changed, mut n, mut inputs) in query.iter_mut() {
-        net_changed.0 = true;
-        match op.0.as_str() {
-            "Var" => {
-                let input = shared(0.);
-                n.0 = Net32::wrap(Box::new(var(&input)));
-                inputs.0.clear();
-                inputs.0.push(input);
-            },
-            "Sink" => {
-                n.0 = Net32::wrap(Box::new(sink()));
-                inputs.0.clear();
-            },
-            "Pass" => {
-                n.0 = Net32::wrap(Box::new(pass()));
-                inputs.0.clear();
-            },
-            // TODO(amy): i think this needs to run before process
-            "Stack" => {
-                n.0 = Net32::new(0,0);
-                inputs.0.clear();
-            },
-            "Pipe" => {
-                n.0 = Net32::new(0,0);
-                inputs.0.clear();
-            },
-            "Sine" => {
-                n.0 = Net32::wrap(Box::new(sine()));
-                inputs.0.clear();
-            },
-            "Saw" => {
-                n.0 = Net32::wrap(Box::new(saw()));
-                inputs.0.clear();
-            },
-            "Square" => {
-                n.0 = Net32::wrap(Box::new(square()));
-                inputs.0.clear();
-            },
-            "Organ" => {
-                n.0 = Net32::wrap(Box::new(organ()));
-                inputs.0.clear();
-            },
-            // testing
-            "0outs" => {
-                n.0 = Net32::new(0,0);
-            },
-            "1outs" => {
-                n.0 = Net32::new(0,1);
-            },
-            "2outs" => {
-                n.0 = Net32::new(0,2);
-            },
-            "3outs" => {
-                n.0 = Net32::new(0,3);
-            },
-            "4outs" => {
-                n.0 = Net32::new(0,4);
-            },
-            _ => {
-                n.0 = Net32::wrap(Box::new(dc(0.)));
-                inputs.0.clear();
-            },
-        }
-    }
-}
+//pub fn update_net_from_op(
+//    mut query: Query<(&Op, &mut NetChanged, &mut Network, &mut NetIns), Changed<Op>>,
+//) {
+//    for (op, mut net_changed, mut n, mut inputs) in query.iter_mut() {
+//        net_changed.0 = true;
+//        match op.0.as_str() {
+//            "Var" => {
+//                let input = shared(0.);
+//                n.0 = Net32::wrap(Box::new(var(&input)));
+//                inputs.0.clear();
+//                inputs.0.push(input);
+//            },
+//            "Sink" => {
+//                n.0 = Net32::wrap(Box::new(sink()));
+//                inputs.0.clear();
+//            },
+//            "Pass" => {
+//                n.0 = Net32::wrap(Box::new(pass()));
+//                inputs.0.clear();
+//            },
+//            // TODO(amy): i think this needs to run before process
+//            "Stack" => {
+//                n.0 = Net32::new(0,0);
+//                inputs.0.clear();
+//            },
+//            "Pipe" => {
+//                n.0 = Net32::new(0,0);
+//                inputs.0.clear();
+//            },
+//            "Sine" => {
+//                n.0 = Net32::wrap(Box::new(sine()));
+//                inputs.0.clear();
+//            },
+//            "Saw" => {
+//                n.0 = Net32::wrap(Box::new(saw()));
+//                inputs.0.clear();
+//            },
+//            "Square" => {
+//                n.0 = Net32::wrap(Box::new(square()));
+//                inputs.0.clear();
+//            },
+//            "Organ" => {
+//                n.0 = Net32::wrap(Box::new(organ()));
+//                inputs.0.clear();
+//            },
+//            // testing
+//            "0outs" => {
+//                n.0 = Net32::new(0,0);
+//            },
+//            "1outs" => {
+//                n.0 = Net32::new(0,1);
+//            },
+//            "2outs" => {
+//                n.0 = Net32::new(0,2);
+//            },
+//            "3outs" => {
+//                n.0 = Net32::new(0,3);
+//            },
+//            "4outs" => {
+//                n.0 = Net32::new(0,4);
+//            },
+//            _ => {
+//                n.0 = Net32::wrap(Box::new(dc(0.)));
+//                inputs.0.clear();
+//            },
+//        }
+//    }
+//}
 
 pub fn update_order (
     keyboard_input: Res<Input<KeyCode>>,
@@ -634,8 +634,8 @@ pub fn delete_selected_circles(
     info_text_query: Query<&InfoText>,
     children_query: Query<&Children>,
     highlight_query: Query<&Highlight>,
-    parent_query: Query<&Parent>,
-    mut net_changed_query: Query<&mut NetChanged>,
+    //parent_query: Query<&Parent>,
+    //mut net_changed_query: Query<&mut NetChanged>,
 ) {
     let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
     if keyboard_input.just_pressed(KeyCode::Delete) && !shift {
@@ -664,8 +664,8 @@ pub fn delete_selected_circles(
                                 commands.entity(highlight.0).despawn();
                             }
                             // mark the parent's net as changed
-                            let parent = parent_query.get(bh.wh).unwrap();
-                            net_changed_query.get_mut(**parent).unwrap().0 = true;
+                            //let parent = parent_query.get(bh.wh).unwrap();
+                            //net_changed_query.get_mut(**parent).unwrap().0 = true;
                         }
                     } else if let Ok(wh) = wh_query.get(*child) {
                         if bh_query.contains(wh.bh) {

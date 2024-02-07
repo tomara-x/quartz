@@ -78,7 +78,7 @@ fn main() {
         .add_systems(Update, highlight_selected)
         .add_systems(PreUpdate, transform_highlights)
         .add_systems(Update, update_order.run_if(in_state(Mode::Edit)))
-        .add_systems(Update, update_net_from_op)
+        //.add_systems(Update, update_net_from_op)
         .add_systems(Update, rotate_selected.after(update_selection).run_if(in_state(Mode::Edit)))
         .add_systems(Update, (delete_selected_holes, delete_selected_circles).run_if(in_state(Mode::Edit)))
         .add_systems(Update, shake_order.run_if(in_state(Mode::Edit)))
@@ -119,7 +119,7 @@ fn main() {
         .register_type::<(i32, i32)>()
         .register_type::<Vertices>()
         .register_type::<Targets>()
-        .register_type::<NetChanged>()
+        //.register_type::<NetChanged>()
         .run();
 }
 
@@ -278,9 +278,9 @@ fn post_load(
                         transform: *t,
                         ..default()
                     },
-                    Network(Net32::new(0,1)),
-                    NetIns(Vec::new()),
-                    NetChanged(true),
+                    //Network(Net32::new(0,1)),
+                    //NetIns(Vec::new()),
+                    //NetChanged(true),
                 ));
                 if let Ok(holes) = children_query.get(*child) {
                     for hole in holes {

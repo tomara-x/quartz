@@ -225,8 +225,8 @@ pub fn delete_selected_holes(
     mut commands: Commands,
     info_text_query: Query<&InfoText>,
     highlight_query: Query<&Highlight>,
-    parent_query: Query<&Parent>,
-    mut net_changed_query: Query<&mut NetChanged>,
+    //parent_query: Query<&Parent>,
+    //mut net_changed_query: Query<&mut NetChanged>,
 ) {
     if keyboard_input.just_pressed(KeyCode::Delete) {
         for (e, bh) in bh_query.iter() {
@@ -242,8 +242,8 @@ pub fn delete_selected_holes(
                     commands.entity(highlight.0).despawn();
                 }
                 // mark parent's net as changed
-                let parent = parent_query.get(wh_id).unwrap();
-                net_changed_query.get_mut(**parent).unwrap().0 = true;
+                //let parent = parent_query.get(wh_id).unwrap();
+                //net_changed_query.get_mut(**parent).unwrap().0 = true;
             }
             commands.entity(e).remove_parent();
             commands.entity(e).despawn_recursive();
@@ -276,8 +276,8 @@ pub fn delete_selected_holes(
                 commands.entity(highlight.0).despawn();
             }
             // mark parent's net as changed
-            let parent = parent_query.get(e).unwrap();
-            net_changed_query.get_mut(**parent).unwrap().0 = true;
+            //let parent = parent_query.get(e).unwrap();
+            //net_changed_query.get_mut(**parent).unwrap().0 = true;
         }
     }
 }

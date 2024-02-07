@@ -46,15 +46,30 @@ pub struct Visible;
 #[reflect(Component)]
 pub struct Order(pub usize);
 
+//#[derive(Component, Reflect, Default)]
+//#[reflect(Component)]
+//pub struct NetChanged(pub bool);
+//
+//#[derive(Component)]
+//pub struct Network(pub Net32);
+//
+//#[derive(Component)]
+//pub struct NetIns(pub Vec<Shared<f32>>);
+
+#[derive(Component)]
+pub struct SharedVar(pub Shared<f32>);
+
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
-pub struct NetChanged(pub bool);
+pub struct Text(pub String);
 
-#[derive(Component)]
-pub struct Network(pub Net32);
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
+pub struct GainedWH(pub bool);
 
-#[derive(Component)]
-pub struct NetIns(pub Vec<Shared<f32>>);
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
+pub struct LostWH(pub bool);
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
