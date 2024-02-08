@@ -32,17 +32,21 @@ pub fn spawn_circles(
                 ..default()
             },
             Radius(r),
+            Vertices(v),
             Col(color),
-            Visible, //otherwise it can't be selected til after mark_visible is updated
+            crate::components::Num(0.),
+            Arr(vec!(0., 1., 2., 3., 4., 5., 6., 7., 8., 9.)),
+            Op("empty".to_string()),
+            Targets(Vec::new()),
             Order(0),
-            NetChanged(true),
             Network(Net32::new(0,1)),
             NetIns(Vec::new()),
-            crate::components::Num(0.),
-            Arr(vec!(42., 105., 420., 1729.)),
-            Op("empty".to_string()),
-            Vertices(v),
-            Targets(Vec::new()),
+            (
+                NetChanged(true),
+                GainedWH(false),
+                LostWH(false),
+            ),
+            Visible,
             Save,
         ));
         *depth += 0.01;
@@ -635,7 +639,7 @@ pub fn delete_selected_circles(
     children_query: Query<&Children>,
     highlight_query: Query<&Highlight>,
     parent_query: Query<&Parent>,
-    mut net_changed_query: Query<&mut NetChanged>,
+    mut lost_wh_query: Query<&mut LostWH>,
 ) {
     let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
     if keyboard_input.just_pressed(KeyCode::Delete) && !shift {
@@ -663,9 +667,9 @@ pub fn delete_selected_circles(
                             if let Ok(highlight) = highlight_query.get(*child) {
                                 commands.entity(highlight.0).despawn();
                             }
-                            // mark the parent's net as changed
+                            // parent of wh lost a connection
                             let parent = parent_query.get(bh.wh).unwrap();
-                            net_changed_query.get_mut(**parent).unwrap().0 = true;
+                            lost_wh_query.get_mut(**parent).unwrap().0 = true;
                         }
                     } else if let Ok(wh) = wh_query.get(*child) {
                         if bh_query.contains(wh.bh) {

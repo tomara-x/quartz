@@ -448,6 +448,7 @@ pub fn process(
                 }
             }
         // no children (connections)
+        // TODO(mara): they are isolated, so you can yeet them out the queue
         } else {
             match access.op_query.get(*id).unwrap().0.as_str() {
                 "Out" => {

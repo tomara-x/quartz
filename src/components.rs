@@ -58,6 +58,14 @@ pub struct NetIns(pub Vec<Shared<f32>>);
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
+pub struct GainedWH(pub bool);
+
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
+pub struct LostWH(pub bool);
+
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
 pub struct Save;
 
 #[derive(Component)]

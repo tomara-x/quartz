@@ -120,6 +120,8 @@ fn main() {
         .register_type::<Vertices>()
         .register_type::<Targets>()
         .register_type::<NetChanged>()
+        .register_type::<GainedWH>()
+        .register_type::<LostWH>()
         .run();
 }
 
@@ -281,6 +283,8 @@ fn post_load(
                     Network(Net32::new(0,1)),
                     NetIns(Vec::new()),
                     NetChanged(true),
+                    GainedWH(false),
+                    LostWH(false),
                 ));
                 if let Ok(holes) = children_query.get(*child) {
                     for hole in holes {

@@ -19,6 +19,7 @@ pub fn connect(
     mut order_query: Query<&mut Order>,
     mut order_change: EventWriter<OrderChange>,
     children_query: Query<&Children>,
+    mut gained_wh_query: Query<&mut GainedWH>,
 ) {
     if mouse_button_input.just_released(MouseButton::Left)
     && !keyboard_input.pressed(KeyCode::T)
@@ -39,6 +40,8 @@ pub fn connect(
         if let (Some(src), Some(snk)) = (source_entity.0, sink_entity.0) {
             // don't connect entity to itself
             if source_entity.0 == sink_entity.0 { return; }
+            // sink has gained a connection
+            gained_wh_query.get_mut(snk).unwrap().0 = true;
             // increment order of sink
             let src_order = order_query.get(src).unwrap().0;
             let snk_order = order_query.get(snk).unwrap().0;
@@ -226,7 +229,7 @@ pub fn delete_selected_holes(
     info_text_query: Query<&InfoText>,
     highlight_query: Query<&Highlight>,
     parent_query: Query<&Parent>,
-    mut net_changed_query: Query<&mut NetChanged>,
+    mut lost_wh_query: Query<&mut LostWH>,
 ) {
     if keyboard_input.just_pressed(KeyCode::Delete) {
         for (e, bh) in bh_query.iter() {
@@ -241,9 +244,9 @@ pub fn delete_selected_holes(
                 if let Ok(highlight) = highlight_query.get(wh_id) {
                     commands.entity(highlight.0).despawn();
                 }
-                // mark parent's net as changed
+                // parent has lost a connection
                 let parent = parent_query.get(wh_id).unwrap();
-                net_changed_query.get_mut(**parent).unwrap().0 = true;
+                lost_wh_query.get_mut(**parent).unwrap().0 = true;
             }
             commands.entity(e).remove_parent();
             commands.entity(e).despawn_recursive();
@@ -275,9 +278,9 @@ pub fn delete_selected_holes(
             if let Ok(highlight) = highlight_query.get(e) {
                 commands.entity(highlight.0).despawn();
             }
-            // mark parent's net as changed
+            // parent has lost a connection
             let parent = parent_query.get(e).unwrap();
-            net_changed_query.get_mut(**parent).unwrap().0 = true;
+            lost_wh_query.get_mut(**parent).unwrap().0 = true;
         }
     }
 }
