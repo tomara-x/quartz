@@ -39,6 +39,8 @@ fn run<T>(
     let channels = config.channels as usize;
 
     slot.set_sample_rate(sample_rate);
+    let mut slot = BlockRateAdapter32::new(Box::new(slot));
+
     let mut next_value = move || {
         assert_no_alloc(|| {
             let (l, r) = slot.get_stereo();
