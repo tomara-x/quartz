@@ -22,6 +22,8 @@ pub struct Access<'w, 's> {
     vertices_query: Query<'w, 's, &'static mut Vertices>,
     save_event: EventWriter<'w, SaveCommand>,
     targets_query: Query<'w, 's, &'static mut Targets>,
+    gained_wh_query: Query<'w, 's, &'static mut GainedWH>,
+    text_query: Query<'w, 's, &'static mut Text, Without<CommandText>>,
 }
 
 pub fn command_parser(
@@ -37,9 +39,9 @@ pub fn command_parser(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     info_text_query: Query<(Entity, &InfoText)>,
-    mut text_query: Query<&mut Text, Without<CommandText>>,
     mut ids_shown: Local<bool>,
     global_trans_rights: Query<&GlobalTransform>,
+    parent_query: Query<&Parent>,
 ) {
     if char_input_events.is_empty() && !*in_progress &&
     !keyboard_input.just_released(KeyCode::T) { return; }
@@ -122,12 +124,16 @@ pub fn command_parser(
                                     if let Some(s) = command.next() {
                                         wh.link_types.1 = str_to_lt(s);
                                         wh.open = true;
+                                        let parent = parent_query.get(e).unwrap();
+                                        access.gained_wh_query.get_mut(**parent).unwrap().0 = true;
                                     }
                                 } else if let Ok(bh) = access.black_hole_query.get(e) {
                                     let wh = &mut access.white_hole_query.get_mut(bh.wh).unwrap();
                                     if let Some(s) = command.next() {
                                         wh.link_types.0 = str_to_lt(s);
                                         wh.open = true;
+                                        let parent = parent_query.get(bh.wh).unwrap();
+                                        access.gained_wh_query.get_mut(**parent).unwrap().0 = true;
                                     }
                                 }
                             } else {
@@ -135,10 +141,14 @@ pub fn command_parser(
                                     if let Ok(mut wh) = access.white_hole_query.get_mut(id) {
                                         wh.link_types.1 = str_to_lt(s);
                                         wh.open = true;
+                                        let parent = parent_query.get(id).unwrap();
+                                        access.gained_wh_query.get_mut(**parent).unwrap().0 = true;
                                     } else if let Ok(bh) = access.black_hole_query.get(id) {
                                         let wh = &mut access.white_hole_query.get_mut(bh.wh).unwrap();
                                         wh.link_types.0 = str_to_lt(s);
                                         wh.open = true;
+                                        let parent = parent_query.get(id).unwrap();
+                                        access.gained_wh_query.get_mut(**parent).unwrap().0 = true;
                                     }
                                 }
                             }
@@ -647,11 +657,11 @@ pub fn command_parser(
             Some("ID") => {
                 if *ids_shown {
                     for (_, t) in info_text_query.iter() {
-                        text_query.get_mut(t.0).unwrap().sections[0].value = String::new();
+                        access.text_query.get_mut(t.0).unwrap().sections[0].value = String::new();
                     }
                 } else {
                     for (e, t) in info_text_query.iter() {
-                        text_query.get_mut(t.0).unwrap().sections[0].value = format!("{:?}\n", e);
+                        access.text_query.get_mut(t.0).unwrap().sections[0].value = format!("{:?}\n", e);
                     }
                 }
                 *ids_shown = !*ids_shown;
