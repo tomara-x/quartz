@@ -39,12 +39,14 @@ pub struct Access<'w, 's> {
     trans_query: Query<'w, 's, &'static mut Transform>,
     arr_query: Query<'w, 's, &'static mut Arr>,
     tonemapping: Query<'w, 's, &'static mut Tonemapping, With<Camera>>,
-    net_changed_query: Query<'w, 's, &'static mut NetChanged>,
     net_query: Query<'w, 's, &'static mut Network>,
     net_ins_query: Query<'w, 's, &'static mut NetIns>,
     col_query: Query<'w, 's, &'static mut Col>,
     order_change: EventWriter<'w, OrderChange>,
     vertices_query: Query<'w, 's, &'static mut Vertices>,
+    net_changed_query: Query<'w, 's, &'static mut NetChanged>,
+    gained_wh_query: Query<'w, 's, &'static mut GainedWH>,
+    lost_wh_query: Query<'w, 's, &'static mut LostWH>,
 }
 
 pub fn process(
@@ -307,7 +309,9 @@ pub fn process(
                     let mut changed = false;
                     let mut lhs = None;
                     let mut rhs = None;
-                    // if net changed (connection change), we wanna update, set changed to true here
+                    let net_changed = access.net_changed_query.get(*id).unwrap().0;
+                    let gained = access.gained_wh_query.get(*id).unwrap().0;
+                    let lost = access.lost_wh_query.get(*id).unwrap().0;
                     for child in children {
                         if let Ok(mut wh) = white_hole_query.get_mut(*child) {
                             if wh.link_types == (0, 1) {
@@ -321,13 +325,16 @@ pub fn process(
                             }
                         }
                     }
-                    if changed {
+                    if gained || lost || net_changed || changed {
                         if let (Some(lhs), Some(rhs)) = (lhs, rhs) {
                             access.net_changed_query.get_mut(*id).unwrap().0 = true;
                             if lhs.outputs() == rhs.inputs() {
                                 access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(lhs >> rhs));
                             }
-                        }// else we don't have the needed connections, we clear the net
+                        } else {
+                            access.net_query.get_mut(*id).unwrap().0 = Net32::new(0,0);
+                        }
+                        info!("{}", access.net_query.get(*id).unwrap().0.outputs());
                     }
                 },
                 "Out" => {
@@ -390,8 +397,10 @@ pub fn process(
                         }
                     }
                 }
-                access.net_changed_query.get_mut(*id).unwrap().0 = false;
             }
+            access.net_changed_query.get_mut(*id).unwrap().0 = false;
+            access.gained_wh_query.get_mut(*id).unwrap().0 = false;
+            access.lost_wh_query.get_mut(*id).unwrap().0 = false;
             for child in children {
                 if let Ok(white_hole) = white_hole_query.get(*child) {
                     if !white_hole.open { continue; }
