@@ -59,16 +59,21 @@ pub struct Order(pub usize);
 #[derive(Component)]
 pub struct SharedVar(pub Shared<f32>);
 
-#[derive(Component, Reflect, Default)]
-#[reflect(Component)]
-pub struct Text(pub String);
+//#[derive(Component, Reflect, Default)]
+//#[reflect(Component)]
+//pub struct Text(pub String);
 
-#[derive(Component, Reflect, Default)]
-#[reflect(Component)]
+enum GraphAtom {
+    Atom(String),
+    List(Vec<GraphAtom>),
+}
+#[derive(Component)]
+pub struct Graph(pub Vec<GraphAtom>);
+
+#[derive(Component)]
 pub struct GainedWH(pub bool);
 
-#[derive(Component, Reflect, Default)]
-#[reflect(Component)]
+#[derive(Component)]
 pub struct LostWH(pub bool);
 
 #[derive(Component, Reflect, Default)]
