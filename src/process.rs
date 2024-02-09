@@ -168,10 +168,20 @@ pub fn process(
                 "sum" => {
                     let mut out = 0.;
                     for child in children {
-                        if let Ok(white_hole) = white_hole_query.get(*child) {
-                            if !white_hole.open { continue; }
-                            if white_hole.link_types.0 == -1 {
-                                out += access.num_query.get(white_hole.bh_parent).unwrap().0;
+                        if let Ok(wh) = white_hole_query.get(*child) {
+                            if wh.open && wh.link_types.0 == -1 {
+                                out += access.num_query.get(wh.bh_parent).unwrap().0;
+                            }
+                        }
+                    }
+                    access.num_query.get_mut(*id).unwrap().0 = out;
+                },
+                "product" => {
+                    let mut out = 1.;
+                    for child in children {
+                        if let Ok(wh) = white_hole_query.get(*child) {
+                            if wh.link_types.0 == -1 {
+                                out *= access.num_query.get(wh.bh_parent).unwrap().0;
                             }
                         }
                     }
