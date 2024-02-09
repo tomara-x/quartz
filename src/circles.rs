@@ -509,6 +509,10 @@ pub fn update_net_from_op(
                 n.0 = Net32::wrap(Box::new(organ()));
                 inputs.0.clear();
             },
+            "panner()" => {
+                n.0 = Net32::wrap(Box::new(panner()));
+                inputs.0.clear();
+            },
             _ => {
                 n.0 = Net32::wrap(Box::new(dc(0.)));
                 inputs.0.clear();
