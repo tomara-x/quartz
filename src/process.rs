@@ -184,7 +184,7 @@ pub fn process(
                     }
                 },
                 "empty" => {},
-                "Var" => {
+                "var()" => {
                     // use is_changed
                     let num = access.num_query.get(*id).unwrap().0;
                     if let Some(var) = &access.net_ins_query.get(*id).unwrap().0.get(0) {
@@ -192,7 +192,7 @@ pub fn process(
                     }
                 },
                 // TODO(mara): overhaul these 2 as well
-                "Sum" => {
+                "sum()" => {
                     let mut changed = false;
                     let mut inputs = Vec::new();
                     for child in children {
@@ -216,7 +216,7 @@ pub fn process(
                         *output = Net32::wrap(Box::new(graph));
                     }
                 },
-                "Product" => {
+                "product()" => {
                     let mut changed = false;
                     let mut inputs = Vec::new();
                     for child in children {
@@ -243,7 +243,7 @@ pub fn process(
                     }
                 },
                 // TODO(amy): try to break stack and pipe
-                "Stack" => {
+                "stack()" => {
                     let mut changed = false;
                     let mut lhs = None;
                     let mut rhs = None;
@@ -272,7 +272,7 @@ pub fn process(
                         }
                     }
                 },
-                "Pipe" => {
+                "pipe()" => {
                     let mut changed = false;
                     let mut lhs = None;
                     let mut rhs = None;
@@ -303,7 +303,7 @@ pub fn process(
                         }
                     }
                 },
-                "Out" => {
+                "out()" => {
                     let net_changed = access.net_changed_query.get(*id).unwrap().0;
                     let gained = access.gained_wh_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
@@ -333,7 +333,7 @@ pub fn process(
                     }
                 },
                 // TODO(mara): overhaul these 2
-                "NOuts" => {
+                "outputs()" => {
                     for child in children {
                         if let Ok(mut wh) = white_hole_query.get_mut(*child) {
                             if wh.link_types == (0, 1) && (wh.open) {
@@ -345,7 +345,7 @@ pub fn process(
                         }
                     }
                 },
-                "Probe" => {
+                "probe()" => {
                     for child in children {
                         if let Ok(mut wh) = white_hole_query.get_mut(*child) {
                             if wh.link_types == (0, 1) && wh.open {

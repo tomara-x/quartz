@@ -471,61 +471,61 @@ pub fn update_net_from_op(
     for (op, mut net_changed, mut n, mut inputs) in query.iter_mut() {
         net_changed.0 = true;
         match op.0.as_str() {
-            "Var" => {
+            "var()" => {
                 let input = shared(0.);
                 n.0 = Net32::wrap(Box::new(var(&input)));
                 inputs.0.clear();
                 inputs.0.push(input);
             },
-            "Sink" => {
+            "sink()" => {
                 n.0 = Net32::wrap(Box::new(sink()));
                 inputs.0.clear();
             },
-            "Pass" => {
+            "pass()" => {
                 n.0 = Net32::wrap(Box::new(pass()));
                 inputs.0.clear();
             },
             // TODO(amy): i think this needs to run before process
-            "Stack" => {
+            "stack()" => {
                 n.0 = Net32::new(0,0);
                 inputs.0.clear();
             },
-            "Pipe" => {
+            "pipe()" => {
                 n.0 = Net32::new(0,0);
                 inputs.0.clear();
             },
-            "Sine" => {
+            "sine()" => {
                 n.0 = Net32::wrap(Box::new(sine()));
                 inputs.0.clear();
             },
-            "Saw" => {
+            "saw()" => {
                 n.0 = Net32::wrap(Box::new(saw()));
                 inputs.0.clear();
             },
-            "Square" => {
+            "square()" => {
                 n.0 = Net32::wrap(Box::new(square()));
                 inputs.0.clear();
             },
-            "Organ" => {
+            "organ()" => {
                 n.0 = Net32::wrap(Box::new(organ()));
                 inputs.0.clear();
             },
-            // testing
-            "0outs" => {
-                n.0 = Net32::new(0,0);
-            },
-            "1outs" => {
-                n.0 = Net32::new(0,1);
-            },
-            "2outs" => {
-                n.0 = Net32::new(0,2);
-            },
-            "3outs" => {
-                n.0 = Net32::new(0,3);
-            },
-            "4outs" => {
-                n.0 = Net32::new(0,4);
-            },
+            //// testing
+            //"0outs" => {
+            //    n.0 = Net32::new(0,0);
+            //},
+            //"1outs" => {
+            //    n.0 = Net32::new(0,1);
+            //},
+            //"2outs" => {
+            //    n.0 = Net32::new(0,2);
+            //},
+            //"3outs" => {
+            //    n.0 = Net32::new(0,3);
+            //},
+            //"4outs" => {
+            //    n.0 = Net32::new(0,4);
+            //},
             _ => {
                 n.0 = Net32::wrap(Box::new(dc(0.)));
                 inputs.0.clear();
