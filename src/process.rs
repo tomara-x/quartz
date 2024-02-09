@@ -191,6 +191,7 @@ pub fn process(
                         var.set_value(num);
                     }
                 },
+                // TODO(mara): overhaul these 2 as well
                 "Sum" => {
                     let mut changed = false;
                     let mut inputs = Vec::new();
@@ -331,6 +332,7 @@ pub fn process(
                         }
                     }
                 },
+                // TODO(mara): overhaul these 2
                 "NOuts" => {
                     for child in children {
                         if let Ok(mut wh) = white_hole_query.get_mut(*child) {
