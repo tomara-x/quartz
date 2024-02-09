@@ -241,6 +241,7 @@ pub fn process(
                         *output = Net32::wrap(Box::new(graph));
                     }
                 },
+                // TODO(amy): try to break stack and pipe
                 "Stack" => {
                     let mut changed = false;
                     let mut lhs = None;
@@ -270,7 +271,6 @@ pub fn process(
                         }
                     }
                 },
-                // TODO(amy): try to break this
                 "Pipe" => {
                     let mut changed = false;
                     let mut lhs = None;
@@ -302,6 +302,7 @@ pub fn process(
                         }
                     }
                 },
+                // TODO(tomara): give this an option like stack ^
                 "Out" => {
                     for child in children {
                         if let Ok(mut wh) = white_hole_query.get_mut(*child) {
@@ -425,17 +426,15 @@ pub fn process(
                 }
             }
         // no children (connections)
-        // TODO(mara): they are isolated, so you can yeet them out the queue
         } else {
             match access.op_query.get(*id).unwrap().0.as_str() {
                 "Out" => {
-                    if access.net_changed_query.get(*id).unwrap().0 {
-                        slot.0.set(Fade::Smooth, 0.1, Box::new(dc(0.)));
-                        access.net_changed_query.get_mut(*id).unwrap().0 = false;
-                    }
+                    slot.0.set(Fade::Smooth, 0.1, Box::new(dc(0.) | dc(0.)));
                 },
                 _ => {},
             }
+            // go back to oder 0 (doesn't get processed)
+            access.order_query.get_mut(*id).unwrap().0 = 0;
         }
     }
 }
