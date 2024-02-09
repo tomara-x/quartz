@@ -144,6 +144,16 @@ pub fn process(
                         }
                     }
                 },
+                "semi_ratio" => {
+                    for child in children {
+                        if let Ok(wh) = white_hole_query.get(*child) {
+                            if wh.open && wh.link_types == (-1, 1) {
+                                let input = access.num_query.get(wh.bh_parent).unwrap().0;
+                                access.num_query.get_mut(*id).unwrap().0 = semitone_ratio(input);
+                            }
+                        }
+                    }
+                },
                 "pass" => {
                     for child in children {
                         if let Ok(white_hole) = white_hole_query.get(*child) {
