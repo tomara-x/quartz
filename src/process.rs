@@ -309,15 +309,18 @@ pub fn process(
                                 if wh.open {
                                     let net = &access.net_query.get(wh.bh_parent).unwrap().0;
                                     // instead of giving up, can we get the first 2 outs in a net?
-                                    if net.outputs() != 1 && net.outputs() != 2 { continue 'entity; }
-                                    slot.0.set(Fade::Smooth, 0.1, Box::new(net.clone()));
+                                    if net.outputs() == 1 {
+                                        slot.0.set(Fade::Smooth, 0.1, Box::new(net.clone() | dc(0.)));
+                                    } else if net.outputs() == 2 {
+                                        slot.0.set(Fade::Smooth, 0.1, Box::new(net.clone()));
+                                    }
                                     wh.open = false;
                                 }
                                 continue 'entity;
                             }
                         }
                     }
-                    slot.0.set(Fade::Smooth, 0.1, Box::new(dc(0.)));
+                    slot.0.set(Fade::Smooth, 0.1, Box::new(dc(0.) | dc(0.)));
                 },
                 "NOuts" => {
                     for child in children {

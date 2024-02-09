@@ -9,7 +9,7 @@ use crate::components::*;
 
 pub fn ext_thread(mut commands: Commands) {
     // create slot for output
-    let slot = Slot32::new(Box::new(dc(0.)));
+    let slot = Slot32::new(Box::new(dc(0.) | dc(0.)));
     // save its frontend in a bevy resource
     commands.insert_resource(Slot(slot.0));
     std::thread::spawn(move || {
