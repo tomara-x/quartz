@@ -98,6 +98,7 @@ fn main() {
         .add_systems(PostUpdate, sort_by_order.run_if(on_event::<OrderChange>()))
         // process
         .add_systems(Update, process)
+        .add_systems(Update, open_white_holes)
         // commands
         .add_systems(Update, command_parser)
 

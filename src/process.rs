@@ -381,7 +381,8 @@ pub fn process(
             access.gained_wh_query.get_mut(*id).unwrap().0 = false;
             access.lost_wh_query.get_mut(*id).unwrap().0 = false;
             for child in children {
-                if let Ok(white_hole) = white_hole_query.get(*child) {
+                let mut lt_to_open = 0;
+                if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
                     if !white_hole.open { continue; }
                     let mut input = 0.;
                     match white_hole.link_types.0 {
@@ -433,6 +434,20 @@ pub fn process(
                         },
                         _ => {},
                     }
+                    lt_to_open = white_hole.link_types.1;
+                    white_hole.open = false;
+                }
+                // open all white holes reading whatever just changed
+                if lt_to_open != 0 {
+                    for child in children {
+                        if let Ok(bh) = black_hole_query.get(*child) {
+                            if let Ok(wh) = white_hole_query.get(bh.wh) {
+                                if wh.link_types.0 == lt_to_open {
+                                    white_hole_query.get_mut(bh.wh).unwrap().open = true;
+                                }
+                            }
+                        }
+                    }
                 }
             }
         // no children (connections)
@@ -446,6 +461,28 @@ pub fn process(
             // go back to oder 0 (doesn't get processed)
             access.order_query.get_mut(*id).unwrap().0 = 0;
             access.order_change.send_default();
+        }
+    }
+}
+
+// open the white holes reading any changed value
+// it's gonna overlap with whatever `process` changed, but that's okay
+// process needs to do things in order, but this is to catch any external change
+// TODO(amy): skip change detection in `process`?
+pub fn open_white_holes(
+    num_query: Query<&Children, Changed<crate::components::Num>>,
+    mut white_hole_query: Query<&mut WhiteHole>,
+    black_hole_query: Query<&BlackHole>,
+) {
+    for children in num_query.iter() {
+        for child in children {
+            if let Ok(bh) = black_hole_query.get(*child) {
+                if let Ok(wh) = white_hole_query.get(bh.wh) {
+                    if wh.link_types.0 == -1 {
+                        white_hole_query.get_mut(bh.wh).unwrap().open = true;
+                    }
+                }
+            }
         }
     }
 }
