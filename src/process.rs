@@ -502,7 +502,7 @@ pub fn process(
         // no children (connections)
         } else {
             match access.op_query.get(*id).unwrap().0.as_str() {
-                "Out" => {
+                "out()" => {
                     slot.0.set(Fade::Smooth, 0.1, Box::new(dc(0.) | dc(0.)));
                 },
                 _ => {},
