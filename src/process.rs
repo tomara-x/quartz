@@ -471,6 +471,11 @@ pub fn process(
 // TODO(amy): skip change detection in `process`?
 pub fn open_white_holes(
     num_query: Query<&Children, Changed<crate::components::Num>>,
+    radius_query: Query<&Children, Changed<Radius>>,
+    trans_query: Query<&Children, Changed<Transform>>,
+    col_query: Query<&Children, Changed<Col>>,
+    order_query: Query<&Children, Changed<Order>>,
+    vertices_query: Query<&Children, Changed<Vertices>>,
     mut white_hole_query: Query<&mut WhiteHole>,
     black_hole_query: Query<&BlackHole>,
 ) {
@@ -479,6 +484,67 @@ pub fn open_white_holes(
             if let Ok(bh) = black_hole_query.get(*child) {
                 if let Ok(wh) = white_hole_query.get(bh.wh) {
                     if wh.link_types.0 == -1 {
+                        white_hole_query.get_mut(bh.wh).unwrap().open = true;
+                    }
+                }
+            }
+        }
+    }
+    for children in radius_query.iter() {
+        for child in children {
+            if let Ok(bh) = black_hole_query.get(*child) {
+                if let Ok(wh) = white_hole_query.get(bh.wh) {
+                    if wh.link_types.0 == -2 {
+                        white_hole_query.get_mut(bh.wh).unwrap().open = true;
+                    }
+                }
+            }
+        }
+    }
+    for children in trans_query.iter() {
+        for child in children {
+            if let Ok(bh) = black_hole_query.get(*child) {
+                if let Ok(wh) = white_hole_query.get(bh.wh) {
+                    if wh.link_types.0 == -3
+                    || wh.link_types.0 == -4
+                    || wh.link_types.0 == -5
+                    || wh.link_types.0 == -12 {
+                        white_hole_query.get_mut(bh.wh).unwrap().open = true;
+                    }
+                }
+            }
+        }
+    }
+    for children in col_query.iter() {
+        for child in children {
+            if let Ok(bh) = black_hole_query.get(*child) {
+                if let Ok(wh) = white_hole_query.get(bh.wh) {
+                    if wh.link_types.0 == -6
+                    || wh.link_types.0 == -7
+                    || wh.link_types.0 == -8
+                    || wh.link_types.0 == -9 {
+                        white_hole_query.get_mut(bh.wh).unwrap().open = true;
+                    }
+                }
+            }
+        }
+    }
+    for children in order_query.iter() {
+        for child in children {
+            if let Ok(bh) = black_hole_query.get(*child) {
+                if let Ok(wh) = white_hole_query.get(bh.wh) {
+                    if wh.link_types.0 == -10 {
+                        white_hole_query.get_mut(bh.wh).unwrap().open = true;
+                    }
+                }
+            }
+        }
+    }
+    for children in vertices_query.iter() {
+        for child in children {
+            if let Ok(bh) = black_hole_query.get(*child) {
+                if let Ok(wh) = white_hole_query.get(bh.wh) {
+                    if wh.link_types.0 == -11 {
                         white_hole_query.get_mut(bh.wh).unwrap().open = true;
                     }
                 }
