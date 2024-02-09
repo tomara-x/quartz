@@ -302,26 +302,34 @@ pub fn process(
                         }
                     }
                 },
-                // TODO(tomara): give this an option like stack ^
                 "Out" => {
+                    let net_changed = access.net_changed_query.get(*id).unwrap().0;
+                    let gained = access.gained_wh_query.get(*id).unwrap().0;
+                    let lost = access.lost_wh_query.get(*id).unwrap().0;
+                    let mut changed = false;
+                    let mut net = None;
                     for child in children {
                         if let Ok(mut wh) = white_hole_query.get_mut(*child) {
                             if wh.link_types == (0, 1) {
-                                if wh.open {
-                                    let net = &access.net_query.get(wh.bh_parent).unwrap().0;
-                                    // instead of giving up, can we get the first 2 outs in a net?
-                                    if net.outputs() == 1 {
-                                        slot.0.set(Fade::Smooth, 0.1, Box::new(net.clone() | dc(0.)));
-                                    } else if net.outputs() == 2 {
-                                        slot.0.set(Fade::Smooth, 0.1, Box::new(net.clone()));
-                                    }
-                                    wh.open = false;
-                                }
-                                continue 'entity;
+                                net = Some(access.net_query.get(wh.bh_parent).unwrap().0.clone());
+                            }
+                            if wh.open {
+                                wh.open = false;
+                                changed = true;
                             }
                         }
                     }
-                    slot.0.set(Fade::Smooth, 0.1, Box::new(dc(0.) | dc(0.)));
+                    if gained || lost || net_changed || changed {
+                        if let Some(net) = net {
+                            if net.outputs() == 1 {
+                                slot.0.set(Fade::Smooth, 0.1, Box::new(net.clone() | dc(0.)));
+                            } else if net.outputs() == 2 {
+                                slot.0.set(Fade::Smooth, 0.1, Box::new(net.clone()));
+                            }
+                        } else {
+                            slot.0.set(Fade::Smooth, 0.1, Box::new(dc(0.) | dc(0.)));
+                        }
+                    }
                 },
                 "NOuts" => {
                     for child in children {
