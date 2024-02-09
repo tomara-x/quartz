@@ -6387,7 +6387,6 @@
           bh: 186,
           bh_parent: 184,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -6515,7 +6514,6 @@
           bh: 190,
           bh_parent: 159,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -6643,7 +6641,6 @@
           bh: 194,
           bh_parent: 161,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -6771,7 +6768,6 @@
           bh: 198,
           bh_parent: 61,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -6899,7 +6895,6 @@
           bh: 202,
           bh_parent: 81,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -7027,7 +7022,6 @@
           bh: 206,
           bh_parent: 47,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -7155,7 +7149,6 @@
           bh: 210,
           bh_parent: 49,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -7283,7 +7276,6 @@
           bh: 214,
           bh_parent: 51,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -7411,7 +7403,6 @@
           bh: 218,
           bh_parent: 111,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -7539,7 +7530,6 @@
           bh: 222,
           bh_parent: 79,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -7667,7 +7657,6 @@
           bh: 226,
           bh_parent: 109,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -7795,7 +7784,6 @@
           bh: 230,
           bh_parent: 53,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -7923,7 +7911,6 @@
           bh: 234,
           bh_parent: 71,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -8051,7 +8038,6 @@
           bh: 238,
           bh_parent: 55,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -8179,7 +8165,6 @@
           bh: 242,
           bh_parent: 59,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -8307,7 +8292,6 @@
           bh: 246,
           bh_parent: 57,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -8435,7 +8419,6 @@
           bh: 250,
           bh_parent: 163,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -8563,7 +8546,6 @@
           bh: 254,
           bh_parent: 165,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -8691,7 +8673,6 @@
           bh: 258,
           bh_parent: 167,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -8819,7 +8800,6 @@
           bh: 262,
           bh_parent: 169,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -8947,7 +8927,6 @@
           bh: 266,
           bh_parent: 171,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -9075,7 +9054,6 @@
           bh: 270,
           bh_parent: 133,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -9203,7 +9181,6 @@
           bh: 274,
           bh_parent: 131,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -9331,7 +9308,6 @@
           bh: 278,
           bh_parent: 137,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -9459,7 +9435,6 @@
           bh: 282,
           bh_parent: 135,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -9587,7 +9562,6 @@
           bh: 286,
           bh_parent: 17,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -9715,7 +9689,6 @@
           bh: 290,
           bh_parent: 139,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -9843,7 +9816,6 @@
           bh: 294,
           bh_parent: 15,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -9971,7 +9943,6 @@
           bh: 298,
           bh_parent: 19,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -10099,7 +10070,6 @@
           bh: 302,
           bh_parent: 75,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -10227,7 +10197,6 @@
           bh: 306,
           bh_parent: 21,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -10355,7 +10324,6 @@
           bh: 310,
           bh_parent: 73,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -10483,7 +10451,6 @@
           bh: 314,
           bh_parent: 13,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -10611,7 +10578,6 @@
           bh: 318,
           bh_parent: 141,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -10739,7 +10705,6 @@
           bh: 322,
           bh_parent: 125,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -10867,7 +10832,6 @@
           bh: 326,
           bh_parent: 9,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -10995,7 +10959,6 @@
           bh: 330,
           bh_parent: 87,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -11123,7 +11086,6 @@
           bh: 334,
           bh_parent: 29,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -11251,7 +11213,6 @@
           bh: 338,
           bh_parent: 101,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -11379,7 +11340,6 @@
           bh: 342,
           bh_parent: 27,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -11507,7 +11467,6 @@
           bh: 346,
           bh_parent: 83,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -11635,7 +11594,6 @@
           bh: 350,
           bh_parent: 127,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -11763,7 +11721,6 @@
           bh: 354,
           bh_parent: 11,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -11891,7 +11848,6 @@
           bh: 358,
           bh_parent: 85,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -12019,7 +11975,6 @@
           bh: 362,
           bh_parent: 23,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -12147,7 +12102,6 @@
           bh: 366,
           bh_parent: 77,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -12275,7 +12229,6 @@
           bh: 370,
           bh_parent: 107,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -12403,7 +12356,6 @@
           bh: 374,
           bh_parent: 25,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -12531,7 +12483,6 @@
           bh: 378,
           bh_parent: 129,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -12659,7 +12610,6 @@
           bh: 382,
           bh_parent: 103,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -12787,7 +12737,6 @@
           bh: 386,
           bh_parent: 45,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -12915,7 +12864,6 @@
           bh: 390,
           bh_parent: 105,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -13043,7 +12991,6 @@
           bh: 394,
           bh_parent: 69,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -13171,7 +13118,6 @@
           bh: 398,
           bh_parent: 113,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -13299,7 +13245,6 @@
           bh: 402,
           bh_parent: 115,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -13427,7 +13372,6 @@
           bh: 406,
           bh_parent: 63,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -13555,7 +13499,6 @@
           bh: 410,
           bh_parent: 43,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -13683,7 +13626,6 @@
           bh: 414,
           bh_parent: 41,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -13811,7 +13753,6 @@
           bh: 418,
           bh_parent: 67,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -13939,7 +13880,6 @@
           bh: 422,
           bh_parent: 117,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -14067,7 +14007,6 @@
           bh: 426,
           bh_parent: 157,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -14195,7 +14134,6 @@
           bh: 430,
           bh_parent: 178,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -14323,7 +14261,6 @@
           bh: 434,
           bh_parent: 565,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -14451,7 +14388,6 @@
           bh: 438,
           bh_parent: 65,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -14579,7 +14515,6 @@
           bh: 442,
           bh_parent: 119,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -14707,7 +14642,6 @@
           bh: 446,
           bh_parent: 180,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -14835,7 +14769,6 @@
           bh: 450,
           bh_parent: 154,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -14963,7 +14896,6 @@
           bh: 454,
           bh_parent: 564,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -15091,7 +15023,6 @@
           bh: 458,
           bh_parent: 152,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -15219,7 +15150,6 @@
           bh: 462,
           bh_parent: 567,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -15347,7 +15277,6 @@
           bh: 466,
           bh_parent: 176,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -15475,7 +15404,6 @@
           bh: 470,
           bh_parent: 148,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -15603,7 +15531,6 @@
           bh: 474,
           bh_parent: 150,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -15731,7 +15658,6 @@
           bh: 478,
           bh_parent: 121,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -15859,7 +15785,6 @@
           bh: 482,
           bh_parent: 182,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -15987,7 +15912,6 @@
           bh: 486,
           bh_parent: 35,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -16115,7 +16039,6 @@
           bh: 490,
           bh_parent: 99,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -16243,7 +16166,6 @@
           bh: 494,
           bh_parent: 39,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -16371,7 +16293,6 @@
           bh: 498,
           bh_parent: 95,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -16499,7 +16420,6 @@
           bh: 502,
           bh_parent: 37,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -16627,7 +16547,6 @@
           bh: 506,
           bh_parent: 97,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -16755,7 +16674,6 @@
           bh: 510,
           bh_parent: 33,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -16883,7 +16801,6 @@
           bh: 514,
           bh_parent: 93,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -17011,7 +16928,6 @@
           bh: 518,
           bh_parent: 31,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -17139,7 +17055,6 @@
           bh: 522,
           bh_parent: 89,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -17267,7 +17182,6 @@
           bh: 526,
           bh_parent: 7,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -17395,7 +17309,6 @@
           bh: 530,
           bh_parent: 123,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -17523,7 +17436,6 @@
           bh: 534,
           bh_parent: 144,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -17651,7 +17563,6 @@
           bh: 538,
           bh_parent: 146,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -17779,7 +17690,6 @@
           bh: 542,
           bh_parent: 563,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -17907,7 +17817,6 @@
           bh: 546,
           bh_parent: 566,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -18035,7 +17944,6 @@
           bh: 550,
           bh_parent: 91,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -18163,7 +18071,6 @@
           bh: 554,
           bh_parent: 571,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -18291,7 +18198,6 @@
           bh: 558,
           bh_parent: 174,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Hsla(
@@ -18836,7 +18742,6 @@
           bh: 42949673802,
           bh_parent: 566,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -18910,7 +18815,6 @@
           bh: 42949673805,
           bh_parent: 91,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -18984,7 +18888,6 @@
           bh: 42949673808,
           bh_parent: 571,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -19058,7 +18961,6 @@
           bh: 42949673811,
           bh_parent: 174,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -19132,7 +19034,6 @@
           bh: 47244640926,
           bh_parent: 146,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -19206,7 +19107,6 @@
           bh: 47244640929,
           bh_parent: 144,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -19280,7 +19180,6 @@
           bh: 47244640932,
           bh_parent: 123,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -19354,7 +19253,6 @@
           bh: 47244640935,
           bh_parent: 7,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -19428,7 +19326,6 @@
           bh: 47244640938,
           bh_parent: 89,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -19502,7 +19399,6 @@
           bh: 47244640941,
           bh_parent: 31,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -19576,7 +19472,6 @@
           bh: 47244640944,
           bh_parent: 93,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -19650,7 +19545,6 @@
           bh: 47244640947,
           bh_parent: 33,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -19724,7 +19618,6 @@
           bh: 47244640950,
           bh_parent: 97,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -19798,7 +19691,6 @@
           bh: 47244640953,
           bh_parent: 37,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -19872,7 +19764,6 @@
           bh: 47244640956,
           bh_parent: 95,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -19946,7 +19837,6 @@
           bh: 47244640959,
           bh_parent: 39,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -20020,7 +19910,6 @@
           bh: 47244640962,
           bh_parent: 99,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -20094,7 +19983,6 @@
           bh: 47244640965,
           bh_parent: 35,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -20168,7 +20056,6 @@
           bh: 47244640968,
           bh_parent: 182,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -20242,7 +20129,6 @@
           bh: 47244640971,
           bh_parent: 121,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -20316,7 +20202,6 @@
           bh: 47244640974,
           bh_parent: 150,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -20390,7 +20275,6 @@
           bh: 47244640977,
           bh_parent: 148,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -20464,7 +20348,6 @@
           bh: 47244640980,
           bh_parent: 176,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -20538,7 +20421,6 @@
           bh: 47244640983,
           bh_parent: 567,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -20612,7 +20494,6 @@
           bh: 47244640986,
           bh_parent: 152,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -20686,7 +20567,6 @@
           bh: 47244640989,
           bh_parent: 564,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -20760,7 +20640,6 @@
           bh: 47244640992,
           bh_parent: 154,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -20834,7 +20713,6 @@
           bh: 47244640995,
           bh_parent: 180,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -20908,7 +20786,6 @@
           bh: 47244640998,
           bh_parent: 119,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -20982,7 +20859,6 @@
           bh: 47244641001,
           bh_parent: 65,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -21056,7 +20932,6 @@
           bh: 47244640923,
           bh_parent: 563,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -21130,7 +21005,6 @@
           bh: 64424510190,
           bh_parent: 21,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -21204,7 +21078,6 @@
           bh: 64424510193,
           bh_parent: 75,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -21278,7 +21151,6 @@
           bh: 64424510196,
           bh_parent: 19,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -21352,7 +21224,6 @@
           bh: 64424510199,
           bh_parent: 15,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -21426,7 +21297,6 @@
           bh: 64424510202,
           bh_parent: 139,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -21500,7 +21370,6 @@
           bh: 64424510205,
           bh_parent: 17,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -21574,7 +21443,6 @@
           bh: 64424510208,
           bh_parent: 135,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -21648,7 +21516,6 @@
           bh: 64424510211,
           bh_parent: 137,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -21722,7 +21589,6 @@
           bh: 64424510214,
           bh_parent: 131,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -21796,7 +21662,6 @@
           bh: 64424510217,
           bh_parent: 133,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -21870,7 +21735,6 @@
           bh: 64424510220,
           bh_parent: 171,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -21944,7 +21808,6 @@
           bh: 64424510223,
           bh_parent: 169,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -22018,7 +21881,6 @@
           bh: 64424510226,
           bh_parent: 167,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -22092,7 +21954,6 @@
           bh: 64424510229,
           bh_parent: 165,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -22166,7 +22027,6 @@
           bh: 64424510232,
           bh_parent: 163,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -22240,7 +22100,6 @@
           bh: 64424510235,
           bh_parent: 57,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -22314,7 +22173,6 @@
           bh: 64424510238,
           bh_parent: 59,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -22388,7 +22246,6 @@
           bh: 64424510241,
           bh_parent: 55,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -22497,7 +22354,6 @@
           bh: 64424510300,
           bh_parent: 178,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -22571,7 +22427,6 @@
           bh: 64424510303,
           bh_parent: 157,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -22645,7 +22500,6 @@
           bh: 64424510306,
           bh_parent: 117,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -22719,7 +22573,6 @@
           bh: 64424510309,
           bh_parent: 67,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -22793,7 +22646,6 @@
           bh: 64424510312,
           bh_parent: 41,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -22867,7 +22719,6 @@
           bh: 64424510315,
           bh_parent: 43,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -22941,7 +22792,6 @@
           bh: 64424510318,
           bh_parent: 63,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -23015,7 +22865,6 @@
           bh: 64424510321,
           bh_parent: 115,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -23089,7 +22938,6 @@
           bh: 64424510324,
           bh_parent: 113,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -23163,7 +23011,6 @@
           bh: 64424510327,
           bh_parent: 69,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -23237,7 +23084,6 @@
           bh: 64424510330,
           bh_parent: 105,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -23311,7 +23157,6 @@
           bh: 64424510333,
           bh_parent: 45,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -23385,7 +23230,6 @@
           bh: 64424510336,
           bh_parent: 103,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -23459,7 +23303,6 @@
           bh: 64424510339,
           bh_parent: 129,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -23533,7 +23376,6 @@
           bh: 64424510342,
           bh_parent: 25,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -23607,7 +23449,6 @@
           bh: 64424510345,
           bh_parent: 107,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -23681,7 +23522,6 @@
           bh: 64424510348,
           bh_parent: 77,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -23755,7 +23595,6 @@
           bh: 64424510351,
           bh_parent: 23,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -23829,7 +23668,6 @@
           bh: 64424510354,
           bh_parent: 85,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -23903,7 +23741,6 @@
           bh: 64424510357,
           bh_parent: 11,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -23977,7 +23814,6 @@
           bh: 64424510360,
           bh_parent: 127,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -24051,7 +23887,6 @@
           bh: 64424510363,
           bh_parent: 83,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -24125,7 +23960,6 @@
           bh: 64424510366,
           bh_parent: 27,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -24199,7 +24033,6 @@
           bh: 64424510369,
           bh_parent: 101,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -24273,7 +24106,6 @@
           bh: 64424510372,
           bh_parent: 29,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -24347,7 +24179,6 @@
           bh: 64424510375,
           bh_parent: 87,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -24421,7 +24252,6 @@
           bh: 64424510378,
           bh_parent: 9,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -24495,7 +24325,6 @@
           bh: 64424510381,
           bh_parent: 125,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -24569,7 +24398,6 @@
           bh: 64424510384,
           bh_parent: 141,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -24643,7 +24471,6 @@
           bh: 64424510387,
           bh_parent: 13,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -24717,7 +24544,6 @@
           bh: 64424510297,
           bh_parent: 565,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -24791,7 +24617,6 @@
           bh: 77309412145,
           bh_parent: 79,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -24865,7 +24690,6 @@
           bh: 81604379430,
           bh_parent: 61,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -24939,7 +24763,6 @@
           bh: 81604379433,
           bh_parent: 161,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -25013,7 +24836,6 @@
           bh: 81604379436,
           bh_parent: 159,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -25087,7 +24909,6 @@
           bh: 81604379479,
           bh_parent: 184,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -25126,7 +24947,6 @@
           bh: 85899346745,
           bh_parent: 71,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -25200,7 +25020,6 @@
           bh: 64424510187,
           bh_parent: 73,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -25239,7 +25058,6 @@
           bh: 90194314056,
           bh_parent: 109,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -25313,7 +25131,6 @@
           bh: 85899346742,
           bh_parent: 53,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -25387,7 +25204,6 @@
           bh: 81604379427,
           bh_parent: 81,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -25461,7 +25277,6 @@
           bh: 85899346748,
           bh_parent: 47,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -25535,7 +25350,6 @@
           bh: 85899346751,
           bh_parent: 49,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -25609,7 +25423,6 @@
           bh: 85899346754,
           bh_parent: 51,
           link_types: (-6, -6),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(
@@ -25683,7 +25496,6 @@
           bh: 85899346757,
           bh_parent: 111,
           link_types: (-2, -2),
-          new_lt: true,
           open: true,
         ),
         "quartz::components::Col": (Rgba(

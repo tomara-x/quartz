@@ -29,7 +29,7 @@
         "quartz::components::Radius": (73.03049),
         "quartz::components::Order": (3),
         "quartz::components::Num": (0.0),
-        "quartz::components::Op": ("Out"),
+        "quartz::components::Op": ("out()"),
         "quartz::components::Col": (Hsla(
           hue: 47.370262,
           saturation: 1.0,
@@ -99,7 +99,7 @@
         "quartz::components::Radius": (79.953964),
         "quartz::components::Order": (2),
         "quartz::components::Num": (0.0),
-        "quartz::components::Op": ("Pipe"),
+        "quartz::components::Op": ("pipe()"),
         "quartz::components::Col": (Hsla(
           hue: 217.26584,
           saturation: 1.0,
@@ -167,7 +167,7 @@
         "quartz::components::Radius": (62.683975),
         "quartz::components::Order": (1),
         "quartz::components::Num": (0.0),
-        "quartz::components::Op": ("Sine"),
+        "quartz::components::Op": ("sine()"),
         "quartz::components::Col": (Hsla(
           hue: 300.0,
           saturation: 0.0,
@@ -235,7 +235,7 @@
         "quartz::components::Radius": (74.73857),
         "quartz::components::Order": (1),
         "quartz::components::Num": (55.0),
-        "quartz::components::Op": ("Var"),
+        "quartz::components::Op": ("var()"),
         "quartz::components::Col": (Hsla(
           hue: 312.976,
           saturation: 1.0,
