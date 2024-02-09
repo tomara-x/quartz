@@ -191,41 +191,6 @@ pub fn process(
                         var.set_value(num);
                     }
                 },
-                "Oscil" => {
-                    //for child in children {
-                    //    if let Ok(mut wh) = white_hole_query.get_mut(*child) {
-                    //        // can't depend on local vars, cause there's more than one instance
-                    //        if wh.link_types == (-1, 2) {
-                    //            let input = access.num_query.get(wh.bh_parent).unwrap().0;
-                    //            if (input as u8) != oscil.0 {
-                    //                oscil.0 = input as u8;
-                    //                oscil.1 = true; // new wave
-                    //            }
-                    //        }
-                    //        if wh.link_types == (0, 1) && (wh.open || oscil.1) {
-                    //            wh.open = false;
-                    //            oscil.1 = false;
-                    //            access.net_changed_query.get_mut(wh.bh_parent).unwrap().0 = false;
-                    //            let input = access.net_query.get(wh.bh_parent).unwrap().0.clone();
-                    //            let net = &mut access.net_query.get_mut(*id).unwrap().0;
-                    //            match oscil.0 {
-                    //                0 => { *net = Net32::wrap(Box::new(input >> sine())); },
-                    //                1 => { *net = Net32::wrap(Box::new(input >> saw())); },
-                    //                2 => { *net = Net32::wrap(Box::new(input >> square())); },
-                    //                3 => { *net = Net32::wrap(Box::new(input >> organ())); },
-                    //                //4 => { *net = Net32::wrap(Box::new(input >> (pass() | dc(0.5)) >> pulse())); },
-                    //                _ => {},
-                    //            }
-                    //            access.net_changed_query.get_mut(*id).unwrap().0 = true;
-                    //        }
-                    //    }
-                    //}
-                },
-                //"Pan" => {
-                //    for child in children {
-                //        if let Ok(mut wh) = white_hole_query.get_mut(*child) {}
-                //    }
-                //},
                 "Sum" => {
                     let mut changed = false;
                     let mut inputs = Vec::new();
@@ -278,13 +243,17 @@ pub fn process(
                 },
                 "Stack" => {
                     let mut changed = false;
-                    let mut inputs = Vec::new();
+                    let mut lhs = None;
+                    let mut rhs = None;
+                    let net_changed = access.net_changed_query.get(*id).unwrap().0;
+                    let gained = access.gained_wh_query.get(*id).unwrap().0;
+                    let lost = access.lost_wh_query.get(*id).unwrap().0;
                     for child in children {
                         if let Ok(mut wh) = white_hole_query.get_mut(*child) {
-                            if wh.link_types.0 == 0 {
-                                let index = wh.link_types.1 as usize;
-                                if inputs.len() <= index { inputs.resize(index+1, None); }
-                                inputs[index] = Some(&access.net_query.get(wh.bh_parent).unwrap().0);
+                            if wh.link_types == (0, 1) {
+                                lhs = Some(access.net_query.get(wh.bh_parent).unwrap().0.clone());
+                            } else if wh.link_types == (0, 2) {
+                                rhs = Some(access.net_query.get(wh.bh_parent).unwrap().0.clone());
                             }
                             if wh.open {
                                 wh.open = false;
@@ -292,16 +261,13 @@ pub fn process(
                             }
                         }
                     }
-                    if changed {
-                        access.net_changed_query.get_mut(*id).unwrap().0 = true;
-                        let mut graph = Net32::new(0,0);
-                        for i in inputs {
-                            if let Some(i) = i {
-                                graph = graph | i.clone();
-                            }
+                    if gained || lost || net_changed || changed {
+                        if let (Some(lhs), Some(rhs)) = (lhs, rhs) {
+                            access.net_changed_query.get_mut(*id).unwrap().0 = true;
+                            access.net_query.get_mut(*id).unwrap().0 = Net32::stack_op(lhs, rhs);
+                        } else {
+                            access.net_query.get_mut(*id).unwrap().0 = Net32::new(0,0);
                         }
-                        let output = &mut access.net_query.get_mut(*id).unwrap().0;
-                        *output = Net32::wrap(Box::new(graph));
                     }
                 },
                 // TODO(amy): try to break this
@@ -329,12 +295,11 @@ pub fn process(
                         if let (Some(lhs), Some(rhs)) = (lhs, rhs) {
                             access.net_changed_query.get_mut(*id).unwrap().0 = true;
                             if lhs.outputs() == rhs.inputs() {
-                                access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(lhs >> rhs));
+                                access.net_query.get_mut(*id).unwrap().0 = Net32::pipe_op(lhs, rhs);
                             }
                         } else {
                             access.net_query.get_mut(*id).unwrap().0 = Net32::new(0,0);
                         }
-                        info!("{}", access.net_query.get(*id).unwrap().0.outputs());
                     }
                 },
                 "Out" => {
