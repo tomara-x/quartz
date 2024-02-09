@@ -67,11 +67,33 @@ pub fn process(
                         let t = access.trans_query.get(*id).unwrap().translation.xy();
                         let r = access.radius_query.get(*id).unwrap().0;
                         if cursor.i.distance_squared(t) < r*r {
-                            access.num_query.get_mut(*id).unwrap().0 = 1.;
+                            access.num_query.get_mut(*id).unwrap().bypass_change_detection().0 = 1.;
+                            for child in children {
+                                if let Ok(bh) = black_hole_query.get(*child) {
+                                    if let Ok(wh) = white_hole_query.get_mut(bh.wh) {
+                                        if wh.link_types.0 == -1 {
+                                            white_hole_query.get_mut(bh.wh).unwrap().open = true;
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                     if mouse_button_input.just_released(MouseButton::Left) {
-                        access.num_query.get_mut(*id).unwrap().0 = 0.;
+                        let t = access.trans_query.get(*id).unwrap().translation.xy();
+                        let r = access.radius_query.get(*id).unwrap().0;
+                        if cursor.i.distance_squared(t) < r*r {
+                            access.num_query.get_mut(*id).unwrap().bypass_change_detection().0 = 0.;
+                            for child in children {
+                                if let Ok(bh) = black_hole_query.get(*child) {
+                                    if let Ok(wh) = white_hole_query.get_mut(bh.wh) {
+                                        if wh.link_types.0 == -1 {
+                                            white_hole_query.get_mut(bh.wh).unwrap().open = true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 },
                 "toggle" => {
@@ -80,7 +102,16 @@ pub fn process(
                         let r = access.radius_query.get(*id).unwrap().0;
                         if cursor.i.distance_squared(t) < r*r {
                             let n = access.num_query.get(*id).unwrap().0;
-                            access.num_query.get_mut(*id).unwrap().0 = 1. - n;
+                            access.num_query.get_mut(*id).unwrap().bypass_change_detection().0 = 1. - n;
+                            for child in children {
+                                if let Ok(bh) = black_hole_query.get(*child) {
+                                    if let Ok(wh) = white_hole_query.get_mut(bh.wh) {
+                                        if wh.link_types.0 == -1 {
+                                            white_hole_query.get_mut(bh.wh).unwrap().open = true;
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 },
@@ -89,10 +120,28 @@ pub fn process(
                         let t = access.trans_query.get(*id).unwrap().translation.xy();
                         let r = access.radius_query.get(*id).unwrap().0;
                         if cursor.i.distance_squared(t) < r*r {
-                            access.num_query.get_mut(*id).unwrap().0 = 1.;
+                            access.num_query.get_mut(*id).unwrap().bypass_change_detection().0 = 1.;
+                            for child in children {
+                                if let Ok(bh) = black_hole_query.get(*child) {
+                                    if let Ok(wh) = white_hole_query.get_mut(bh.wh) {
+                                        if wh.link_types.0 == -1 {
+                                            white_hole_query.get_mut(bh.wh).unwrap().open = true;
+                                        }
+                                    }
+                                }
+                            }
                         }
-                    } else {
-                        access.num_query.get_mut(*id).unwrap().0 = 0.;
+                    } else if access.num_query.get(*id).unwrap().0 != 0. {
+                        access.num_query.get_mut(*id).unwrap().bypass_change_detection().0 = 0.;
+                        for child in children {
+                            if let Ok(bh) = black_hole_query.get(*child) {
+                                if let Ok(wh) = white_hole_query.get_mut(bh.wh) {
+                                    if wh.link_types.0 == -1 {
+                                        white_hole_query.get_mut(bh.wh).unwrap().open = true;
+                                    }
+                                }
+                            }
+                        }
                     }
                 },
                 "pass" => {
