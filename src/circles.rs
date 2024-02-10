@@ -4,9 +4,8 @@ use bevy::{
     sprite::Mesh2dHandle,
     render::primitives::Aabb,
 };
-use bevy::prelude::shape::Circle as BevyCircle;
 
-use fundsp::hacker32::*;
+use fundsp::net::Net32;
 
 use crate::components::*;
 
@@ -26,7 +25,7 @@ pub fn spawn_circles(
         let color = Color::hsla(300., 1., 0.5, 1.);
         commands.spawn((
             ColorMesh2dBundle {
-                mesh: meshes.add(BevyCircle { radius: r, vertices: v} .into()).into(),
+                mesh: meshes.add(shape::Circle { radius: r, vertices: v} .into()).into(),
                 material: materials.add(ColorMaterial::from(color)),
                 transform: Transform::from_translation(cursor.i.extend(*depth)),
                 ..default()
@@ -34,7 +33,7 @@ pub fn spawn_circles(
             Radius(r),
             Vertices(v),
             Col(color),
-            crate::components::Num(0.),
+            Num(0.),
             Arr(vec!(0., 1., 2., 3., 4., 5., 6., 7., 8., 9.)),
             Op("empty".to_string()),
             Targets(Vec::new()),
@@ -64,7 +63,7 @@ pub fn highlight_selected(
     for e in selected.iter() {
         let highlight = commands.spawn(
             ColorMesh2dBundle {
-                mesh: meshes.add(BevyCircle{ radius: 0., vertices: 3} .into()).into(),
+                mesh: meshes.add(shape::Circle{ radius: 0., vertices: 3} .into()).into(),
                 material: materials.add(ColorMaterial::from(Color::hsl(0.0,1.0,0.5))),
                 transform: Transform::from_translation(Vec3::Z),
                 ..default()
@@ -96,7 +95,7 @@ pub fn transform_highlights(
     for (v, r, h) in resized.iter() {
         if let Ok(Mesh2dHandle(mesh_id)) = mesh_ids.get(h.0) {
             let mesh = meshes.get_mut(mesh_id).unwrap();
-            *mesh = BevyCircle { radius: r.0 + 5., vertices: v.0 }.into();
+            *mesh = shape::Circle { radius: r.0 + 5., vertices: v.0 }.into();
             if let Ok(mut aabb) = aabb_query.get_mut(h.0) {
                 *aabb = mesh.compute_aabb().unwrap();
             }
@@ -136,13 +135,13 @@ pub fn draw_drawing_circle(
         trans_query.get_mut(id.0).unwrap().translation = cursor.i.extend(1.);
         let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
         let mesh = meshes.get_mut(mesh_id).unwrap();
-        *mesh = BevyCircle { radius: cursor.i.distance(cursor.f), vertices: 8 }.into();
+        *mesh = shape::Circle { radius: cursor.i.distance(cursor.f), vertices: 8 }.into();
     }
     if mouse_button_input.just_released(MouseButton::Left) {
         trans_query.get_mut(id.0).unwrap().translation = Vec3::Z;
         let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
         let mesh = meshes.get_mut(mesh_id).unwrap();
-        *mesh = BevyCircle { radius: 0., vertices: 3 }.into();
+        *mesh = shape::Circle { radius: 0., vertices: 3 }.into();
     }
 }
 
@@ -194,13 +193,13 @@ pub fn update_selection(
         trans_query.get_mut(id.0).unwrap().translation = cursor.i.extend(1.);
         let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
         let mesh = meshes.get_mut(mesh_id).unwrap();
-        *mesh = BevyCircle { radius: cursor.i.distance(cursor.f), vertices: 8 }.into();
+        *mesh = shape::Circle { radius: cursor.i.distance(cursor.f), vertices: 8 }.into();
     }
     if mouse_button_input.just_released(MouseButton::Left) {
         trans_query.get_mut(id.0).unwrap().translation = Vec3::Z;
         let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
         let mesh = meshes.get_mut(mesh_id).unwrap();
-        *mesh = BevyCircle { radius: 0., vertices: 3 }.into();
+        *mesh = shape::Circle { radius: 0., vertices: 3 }.into();
         if top_clicked_circle.is_none() {
             if !shift {
                 for entity in selected.iter() {
@@ -432,14 +431,14 @@ pub fn update_mesh(
     for (id, v, r, mut aabb) in query.iter_mut() {
         if let Ok(Mesh2dHandle(mesh_id)) = mesh_ids.get(id) {
             let mesh = meshes.get_mut(mesh_id).unwrap();
-            *mesh = BevyCircle { radius: r.0, vertices: v.0 }.into();
+            *mesh = shape::Circle { radius: r.0, vertices: v.0 }.into();
             *aabb = mesh.compute_aabb().unwrap();
         }
     }
 }
 
 pub fn update_num(
-    mut query: Query<&mut crate::components::Num, With<Selected>>,
+    mut query: Query<&mut Num, With<Selected>>,
     keyboard_input: Res<Input<KeyCode>>,
     cursor: Res<CursorInfo>,
     mouse_button_input: Res<Input<MouseButton>>,
@@ -461,62 +460,6 @@ pub fn update_num(
             for mut n in query.iter_mut() {
                 n.0 -= 0.01;
             }
-        }
-    }
-}
-
-pub fn update_net_from_op(
-    mut query: Query<(&Op, &mut NetChanged, &mut Network, &mut NetIns), Changed<Op>>,
-) {
-    for (op, mut net_changed, mut n, mut inputs) in query.iter_mut() {
-        net_changed.0 = true;
-        match op.0.as_str() {
-            "var()" => {
-                let input = shared(0.);
-                n.0 = Net32::wrap(Box::new(var(&input)));
-                inputs.0.clear();
-                inputs.0.push(input);
-            },
-            "sink()" => {
-                n.0 = Net32::wrap(Box::new(sink()));
-                inputs.0.clear();
-            },
-            "pass()" => {
-                n.0 = Net32::wrap(Box::new(pass()));
-                inputs.0.clear();
-            },
-            "stack()" => {
-                n.0 = Net32::new(0,0);
-                inputs.0.clear();
-            },
-            "pipe()" => {
-                n.0 = Net32::new(0,0);
-                inputs.0.clear();
-            },
-            "sine()" => {
-                n.0 = Net32::wrap(Box::new(sine()));
-                inputs.0.clear();
-            },
-            "saw()" => {
-                n.0 = Net32::wrap(Box::new(saw()));
-                inputs.0.clear();
-            },
-            "square()" => {
-                n.0 = Net32::wrap(Box::new(square()));
-                inputs.0.clear();
-            },
-            "organ()" => {
-                n.0 = Net32::wrap(Box::new(organ()));
-                inputs.0.clear();
-            },
-            "panner()" => {
-                n.0 = Net32::wrap(Box::new(panner()));
-                inputs.0.clear();
-            },
-            _ => {
-                n.0 = Net32::wrap(Box::new(dc(0.)));
-                inputs.0.clear();
-            },
         }
     }
 }
@@ -570,7 +513,7 @@ pub fn update_info_text(
     mut text_trans: Query<&mut Transform, Without<Radius>>,
     trans_query: Query<(&GlobalTransform, &InfoText), (Or<(Changed<Transform>, Added<InfoText>)>, With<Radius>)>,
     order_query: Query<(&Order, &InfoText), Or<(Changed<Order>, Added<InfoText>)>>,
-    num_query: Query<(&crate::components::Num, &InfoText), Or<(Changed<crate::components::Num>, Added<InfoText>)>>,
+    num_query: Query<(&Num, &InfoText), Or<(Changed<Num>, Added<InfoText>)>>,
     op_query: Query<(&Op, &InfoText), Or<(Changed<Op>, Added<InfoText>)>>,
     white_hole_query: Query<(&WhiteHole, &InfoText), Or<(Changed<WhiteHole>, Added<InfoText>)>>,
     black_hole_query: Query<&InfoText, With<BlackHole>>,

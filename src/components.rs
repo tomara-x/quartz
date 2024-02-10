@@ -8,7 +8,11 @@ use bevy::{
         reflect::{ReflectComponent, ReflectMapEntities},
     },
     prelude::*};
-use fundsp::hacker32::*;
+use fundsp::{
+    net::Net32,
+    shared::Shared,
+    slot::Slot32,
+};
 // -------------------- components --------------------
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]

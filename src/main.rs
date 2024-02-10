@@ -8,14 +8,13 @@ use bevy::{
     tasks::IoTaskPool,
     scene::SceneInstance,
     prelude::*};
-use bevy::prelude::shape::Circle as BevyCircle;
 
 use bevy_pancam::{PanCam, PanCamPlugin};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 use std::{fs::File, io::Write};
 
-use fundsp::hacker32::*;
+use fundsp::net::Net32;
 
 mod components;
 mod process;
@@ -78,7 +77,7 @@ fn main() {
         .add_systems(Update, highlight_selected)
         .add_systems(PreUpdate, transform_highlights)
         .add_systems(Update, update_order.run_if(in_state(Mode::Edit)))
-        .add_systems(Update, update_net_from_op)
+        //.add_systems(Update, update_net_from_op)
         .add_systems(Update, rotate_selected.after(update_selection).run_if(in_state(Mode::Edit)))
         .add_systems(Update, (delete_selected_holes, delete_selected_circles).run_if(in_state(Mode::Edit)))
         .add_systems(Update, shake_order.run_if(in_state(Mode::Edit)))
@@ -108,7 +107,7 @@ fn main() {
         .register_type::<Radius>()
         .register_type::<Col>()
         .register_type::<Op>()
-        .register_type::<crate::components::Num>()
+        .register_type::<Num>()
         .register_type::<Arr>()
         .register_type::<Vec<f32>>()
         .register_type::<Selected>()
@@ -188,7 +187,7 @@ fn setup(
         // selection / drawing circle
         let id = commands.spawn((
             ColorMesh2dBundle {
-                mesh: meshes.add(BevyCircle {radius: 0., vertices: 12} .into()).into(),
+                mesh: meshes.add(shape::Circle {radius: 0., vertices: 12} .into()).into(),
                 material: materials.add(ColorMaterial::from(Color::hsla(0., 1., 0.5, 0.3))),
                 transform: Transform::from_translation(Vec3::Z),
                 ..default()
@@ -199,7 +198,7 @@ fn setup(
         // connecting line
         let id = commands.spawn((
             ColorMesh2dBundle {
-                mesh: meshes.add(BevyCircle {radius: 0., vertices: 3} .into()).into(),
+                mesh: meshes.add(shape::Circle {radius: 0., vertices: 3} .into()).into(),
                 material: materials.add(ColorMaterial::from(Color::hsla(0., 1., 0.5, 0.3))),
                 transform: Transform::from_translation(Vec3::Z),
                 ..default()
@@ -233,7 +232,7 @@ fn save_scene(world: &mut World) {
             .allow::<Col>()
             .allow::<Transform>()
             .allow::<Op>()
-            .allow::<crate::components::Num>()
+            .allow::<Num>()
             .allow::<Arr>()
             .allow::<Save>()
             .allow::<Order>()
@@ -276,7 +275,7 @@ fn post_load(
             if let Ok((r, t, c, v)) = main_query.get(*child) {
                 commands.entity(*child).insert((
                     ColorMesh2dBundle {
-                        mesh: meshes.add(BevyCircle { radius: r.0, vertices: v.0 }.into()).into(),
+                        mesh: meshes.add(shape::Circle { radius: r.0, vertices: v.0 }.into()).into(),
                         material: materials.add(ColorMaterial::from(c.0)),
                         transform: *t,
                         ..default()
@@ -293,7 +292,7 @@ fn post_load(
                             if let Ok((r, t, c, v)) = main_query.get(*hole) {
                                 commands.entity(*hole).insert(
                                     ColorMesh2dBundle {
-                                        mesh: meshes.add(BevyCircle { radius: r.0, vertices: v.0 }.into()).into(),
+                                        mesh: meshes.add(shape::Circle { radius: r.0, vertices: v.0 }.into()).into(),
                                         material: materials.add(ColorMaterial::from(c.0)),
                                         transform: *t,
                                         ..default()
@@ -303,7 +302,7 @@ fn post_load(
                         }
                         if white_hole_query.contains(*hole) {
                             let arrow = commands.spawn( ColorMesh2dBundle {
-                                mesh: meshes.add(BevyCircle{radius:0., vertices:3}.into()).into(),
+                                mesh: meshes.add(shape::Circle{radius:0., vertices:3}.into()).into(),
                                 material: materials.add(ColorMaterial::from(Color::hsla(0., 1., 1., 0.7))),
                                 transform: Transform::from_translation(Vec3::Z),
                                 ..default()
