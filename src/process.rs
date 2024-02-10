@@ -60,7 +60,8 @@ pub fn process(
     mouse_button_input: Res<Input<MouseButton>>,
 ) {
     'entity: for id in queue.0.iter().flatten() {
-        if access.op_query.get_mut(*id).unwrap().is_changed() {
+        if access.op_query.get_mut(*id).unwrap().is_changed()
+        || access.op_query.get_mut(*id).unwrap().is_added() {
             access.net_changed_query.get_mut(*id).unwrap().0 = true;
             access.net_ins_query.get_mut(*id).unwrap().0.clear();
             let net = &mut access.net_query.get_mut(*id).unwrap().0;
