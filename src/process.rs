@@ -414,9 +414,9 @@ pub fn process(
                     }
                     if gained || lost || net_changed || changed {
                         if let Some(net) = net {
-                            if net.outputs() == 1 {
+                            if net.outputs() == 1 && net.inputs() == 0 {
                                 slot.0.set(Fade::Smooth, 0.1, Box::new(net.clone() | dc(0.)));
-                            } else if net.outputs() == 2 {
+                            } else if net.outputs() == 2 && net.inputs() == 0 {
                                 slot.0.set(Fade::Smooth, 0.1, Box::new(net.clone()));
                             }
                         } else {
