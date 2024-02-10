@@ -60,29 +60,6 @@ pub fn process(
     mouse_button_input: Res<Input<MouseButton>>,
 ) {
     'entity: for id in queue.0.iter().flatten() {
-        if access.op_query.get_mut(*id).unwrap().is_changed()
-        || access.op_query.get_mut(*id).unwrap().is_added() {
-            access.net_changed_query.get_mut(*id).unwrap().0 = true;
-            access.net_ins_query.get_mut(*id).unwrap().0.clear();
-            let net = &mut access.net_query.get_mut(*id).unwrap().0;
-            match access.op_query.get(*id).unwrap().0.as_str() {
-                "var()" => {
-                    let input = shared(0.);
-                    *net = Net32::wrap(Box::new(var(&input)));
-                    access.net_ins_query.get_mut(*id).unwrap().0.push(input);
-                },
-                "sink()" => { *net = Net32::wrap(Box::new(sink())); },
-                "pass()" => { *net = Net32::wrap(Box::new(pass())); },
-                "stack()" => { *net = Net32::new(0,0); },
-                "pipe()" => { *net = Net32::new(0,0); },
-                "sine()" => { *net = Net32::wrap(Box::new(sine())); },
-                "saw()" => { *net = Net32::wrap(Box::new(saw())); },
-                "square()" => { *net = Net32::wrap(Box::new(square())); },
-                "organ()" => { *net = Net32::wrap(Box::new(organ())); },
-                "panner()" => { *net = Net32::wrap(Box::new(panner())); },
-                _ => { *net = Net32::wrap(Box::new(dc(0.))); },
-            }
-        }
         if let Ok(children) = &children_query.get(*id) {
             match access.op_query.get(*id).unwrap().0.as_str() {
                 "butt" => {
@@ -553,6 +530,32 @@ pub fn process(
             // go back to oder 0 (doesn't get processed)
             access.order_query.get_mut(*id).unwrap().0 = 0;
             access.order_change.send_default();
+        }
+    }
+}
+
+pub fn update_net(
+    mut query: Query<(&Op, &mut NetChanged, &mut Network, &mut NetIns), Changed<Op>>,
+) {
+    for (op, mut net_changed, mut n, mut inputs) in query.iter_mut() {
+        net_changed.0 = true;
+        inputs.0.clear();
+        match op.0.as_str() {
+            "var()" => {
+                let input = shared(0.);
+                n.0 = Net32::wrap(Box::new(var(&input)));
+                inputs.0.push(input);
+            },
+            "sink()" => { n.0 = Net32::wrap(Box::new(sink())); },
+            "pass()" => { n.0 = Net32::wrap(Box::new(pass())); },
+            "stack()" => { n.0 = Net32::new(0,0); },
+            "pipe()" => { n.0 = Net32::new(0,0); },
+            "sine()" => { n.0 = Net32::wrap(Box::new(sine())); },
+            "saw()" => { n.0 = Net32::wrap(Box::new(saw())); },
+            "square()" => { n.0 = Net32::wrap(Box::new(square())); },
+            "organ()" => { n.0 = Net32::wrap(Box::new(organ())); },
+            "panner()" => { n.0 = Net32::wrap(Box::new(panner())); },
+            _ => { n.0 = Net32::wrap(Box::new(dc(0.))); },
         }
     }
 }
