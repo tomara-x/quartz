@@ -791,6 +791,15 @@ pub fn command_parser(
                 }
                 *text = format!(">ARRAY: {}", t);
             },
+            Some("it") => {
+                let mut t = String::new();
+                for e in access.selected_query.iter() {
+                    if let Ok(targets) = access.targets_query.get(e) {
+                        t = t + &format!("[{:?}]{:?}  ", e, targets.0);
+                    }
+                }
+                *text = format!(">TARGETS: {}", t);
+            },
             Some("iL") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
