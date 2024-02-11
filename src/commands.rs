@@ -740,7 +740,7 @@ pub fn command_parser(
                 }
                 *text = format!(">LIGHTNESS: {}", t);
             },
-            Some("ia") => {
+            Some("ial") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
                     let a = access.col_query.get(e).unwrap().0.a();
@@ -781,6 +781,15 @@ pub fn command_parser(
                     }
                 }
                 *text = format!(">OP: {}", t);
+            },
+            Some("iar") => {
+                let mut t = String::new();
+                for e in access.selected_query.iter() {
+                    if let Ok(arr) = access.arr_query.get(e) {
+                        t = t + &format!("[{:?}]{:?}  ", e, arr.0);
+                    }
+                }
+                *text = format!(">ARRAY: {}", t);
             },
             Some("iL") => {
                 let mut t = String::new();
