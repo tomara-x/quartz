@@ -311,6 +311,17 @@ pub fn process(
                         *output = Net32::wrap(Box::new(graph));
                     }
                 },
+                "adsr()" => {
+                    // the first 4 values of the array will control the params of adsr
+                    if access.arr_query.get_mut(*id).unwrap().is_changed() {
+                        if let Some(adsr) = access.arr_query.get(*id).unwrap().0.get(0..4) {
+                            access.net_changed_query.get_mut(*id).unwrap().0 = true;
+                            access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(
+                                Box::new(adsr_live(adsr[0], adsr[1], adsr[2], adsr[3]))
+                            );
+                        }
+                    }
+                },
                 // TODO(amy): try to break stack and pipe
                 "stack()" => {
                     let mut changed = false;
@@ -558,6 +569,7 @@ pub fn update_net(
             "brown()" => { n.0 = Net32::wrap(Box::new(brown())); },
             "pink()" => { n.0 = Net32::wrap(Box::new(pink())); },
             "white()" => { n.0 = Net32::wrap(Box::new(white())); },
+            "adsr()" => { n.0 = Net32::wrap(Box::new(adsr_live(0.1, 0.1, 0.5, 0.2))); },
             _ => { n.0 = Net32::wrap(Box::new(dc(0.))); },
         }
     }
