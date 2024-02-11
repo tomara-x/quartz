@@ -429,10 +429,10 @@ pub fn process(
                     for child in children {
                         if let Ok(mut wh) = white_hole_query.get_mut(*child) {
                             if wh.link_types == (0, 1) && wh.open {
-                                let mut input_net = access.net_query.get(wh.bh_parent).unwrap().0.clone();
-                                input_net.set_sample_rate(120.);
+                                let input_net = access.net_query.get(wh.bh_parent).unwrap().0.clone();
                                 let net = &mut access.net_query.get_mut(*id).unwrap().0;
                                 *net = Net32::wrap(Box::new(input_net));
+                                net.set_sample_rate(120.);
                                 wh.open = false;
                             }
                             if wh.link_types == (0, 1) {
@@ -578,7 +578,7 @@ pub fn update_net(
 // open the white holes reading any changed value
 // it's gonna overlap with whatever `process` changed, but that's okay
 // process needs to do things in order, but this is to catch any external change
-// TODO(amy): skip change detection in `process`?
+// TODO(amy): bypass_change_detection in `process`
 pub fn open_white_holes(
     num_query: Query<&Children, Changed<crate::components::Num>>,
     radius_query: Query<&Children, Changed<Radius>>,
