@@ -555,6 +555,9 @@ pub fn update_net(
             "square()" => { n.0 = Net32::wrap(Box::new(square())); },
             "organ()" => { n.0 = Net32::wrap(Box::new(organ())); },
             "panner()" => { n.0 = Net32::wrap(Box::new(panner())); },
+            "brown()" => { n.0 = Net32::wrap(Box::new(brown())); },
+            "pink()" => { n.0 = Net32::wrap(Box::new(pink())); },
+            "white()" => { n.0 = Net32::wrap(Box::new(white())); },
             _ => { n.0 = Net32::wrap(Box::new(dc(0.))); },
         }
     }
