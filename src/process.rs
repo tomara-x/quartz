@@ -169,7 +169,7 @@ pub fn process(
                     let mut out = 0.;
                     for child in children {
                         if let Ok(wh) = white_hole_query.get(*child) {
-                            if wh.open && wh.link_types == (-1, 1) {
+                            if wh.link_types == (-1, 1) {
                                 out += access.num_query.get(wh.bh_parent).unwrap().0;
                             }
                         }
