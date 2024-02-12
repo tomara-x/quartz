@@ -430,9 +430,12 @@ pub fn process(
                         if let Ok(mut wh) = white_hole_query.get_mut(*child) {
                             if wh.link_types == (0, 1) && wh.open {
                                 let input_net = access.net_query.get(wh.bh_parent).unwrap().0.clone();
-                                let net = &mut access.net_query.get_mut(*id).unwrap().0;
-                                *net = Net32::wrap(Box::new(input_net));
-                                net.set_sample_rate(120.);
+                                if input_net.outputs() == 1 || input_net.outputs() == 2 {
+                                    let net = &mut access.net_query.get_mut(*id).unwrap().0;
+                                    *net = Net32::wrap(Box::new(input_net));
+                                    // no! you don't do that!
+                                    net.set_sample_rate(60.);
+                                }
                                 wh.open = false;
                             }
                             if wh.link_types == (0, 1) {
@@ -570,6 +573,14 @@ pub fn update_net(
             "pink()" => { n.0 = Net32::wrap(Box::new(pink())); },
             "white()" => { n.0 = Net32::wrap(Box::new(white())); },
             "adsr()" => { n.0 = Net32::wrap(Box::new(adsr_live(0.1, 0.1, 0.5, 0.2))); },
+            "pulse()" => { n.0 = Net32::wrap(Box::new(pulse())); },
+            "ramp()" => {
+                n.0 = Net32::wrap(
+                    Box::new(
+                        lfo_in(|t, i: &Frame<f32, U1>| (t*i[0]).rem_euclid(1.))
+                    )
+                );
+            },
             _ => { n.0 = Net32::wrap(Box::new(dc(0.))); },
         }
     }
