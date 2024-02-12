@@ -454,7 +454,7 @@ pub fn process(
                     }
                     if gained || lost || net_changed || changed {
                         if let Some(net) = net {
-                            if net.outputs() == 1 || net.outputs() == 2 && net.inputs() == 0 {
+                            if (net.outputs() == 1 || net.outputs() == 2) && net.inputs() == 0 {
                                 access.net_query.get_mut(*id).unwrap().0 = net;
                             }
                         } else {
