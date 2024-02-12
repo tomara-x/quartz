@@ -446,37 +446,18 @@ pub fn process(
                         if let Some(net) = net {
                             if net.outputs() == 1 || net.outputs() == 2 && net.inputs() == 0 {
                                 access.net_query.get_mut(*id).unwrap().0 = net;
-                                access.net_query.get_mut(*id).unwrap().0.set_sample_rate(60.);
                             }
                         } else {
                             // [road work] lies! clearly road not work! (same with out)
                             access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(dc(0.)));
                         }
                     }
+                    let mut x = 0.;
                     let net = &mut access.net_query.get_mut(*id).unwrap().0;
                     let num = &mut access.num_query.get_mut(*id).unwrap().0;
-                    *num = net.get_mono();
-                },
-                "sub_probe()" => {
-                    for child in children {
-                        if let Ok(mut wh) = white_hole_query.get_mut(*child) {
-                            if wh.link_types == (0, 1) && wh.open {
-                                let input_net = access.net_query.get(wh.bh_parent).unwrap().0.clone();
-                                if input_net.outputs() == 1 || input_net.outputs() == 2 {
-                                    let net = &mut access.net_query.get_mut(*id).unwrap().0;
-                                    *net = Net32::wrap(Box::new(input_net));
-                                    // no!!!! you'll only encourage it!
-                                    net.set_sample_rate(2000.);
-                                }
-                                wh.open = false;
-                            }
-                            if wh.link_types == (0, 1) {
-                                let net = &mut access.net_query.get_mut(*id).unwrap().0;
-                                let num = &mut access.num_query.get_mut(*id).unwrap().0;
-                                *num = net.get_mono();
-                            }
-                        }
-                    }
+                    // 44100/60 (samples in a visual frame) (we just use the last one)
+                    for _ in 0..736 { x = net.get_mono(); }
+                    *num = x;
                 },
                 _ => {},
             }
