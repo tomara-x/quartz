@@ -446,6 +446,27 @@ pub fn process(
                         }
                     }
                 },
+                "sub_probe()" => {
+                    for child in children {
+                        if let Ok(mut wh) = white_hole_query.get_mut(*child) {
+                            if wh.link_types == (0, 1) && wh.open {
+                                let input_net = access.net_query.get(wh.bh_parent).unwrap().0.clone();
+                                if input_net.outputs() == 1 || input_net.outputs() == 2 {
+                                    let net = &mut access.net_query.get_mut(*id).unwrap().0;
+                                    *net = Net32::wrap(Box::new(input_net));
+                                    // no!!!! you'll only encourage it!
+                                    net.set_sample_rate(2000.);
+                                }
+                                wh.open = false;
+                            }
+                            if wh.link_types == (0, 1) {
+                                let net = &mut access.net_query.get_mut(*id).unwrap().0;
+                                let num = &mut access.num_query.get_mut(*id).unwrap().0;
+                                *num = net.get_mono();
+                            }
+                        }
+                    }
+                },
                 _ => {},
             }
             // open all white holes reading from this changed net
