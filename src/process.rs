@@ -165,6 +165,16 @@ pub fn process(
                         }
                     }
                 },
+                "cold" => {
+                    for child in children {
+                        if let Ok(wh) = white_hole_query.get(*child) {
+                            if wh.link_types == (-1, 1) {
+                                let n = access.num_query.get(wh.bh_parent).unwrap().0;
+                                access.num_query.get_mut(*id).unwrap().bypass_change_detection().0 = n;
+                            }
+                        }
+                    }
+                },
                 "sum" => {
                     let mut out = 0.;
                     for child in children {
