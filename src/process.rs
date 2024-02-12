@@ -58,6 +58,7 @@ pub fn process(
     mut slot: ResMut<Slot>,
     cursor: Res<CursorInfo>,
     mouse_button_input: Res<Input<MouseButton>>,
+    mut char_input_events: EventReader<ReceivedCharacter>,
 ) {
     'entity: for id in queue.0.iter().flatten() {
         if let Ok(children) = &children_query.get(*id) {
@@ -142,6 +143,11 @@ pub fn process(
                                 }
                             }
                         }
+                    }
+                },
+                "key" => {
+                    for event in char_input_events.read() {
+                        access.num_query.get_mut(*id).unwrap().0 = (event.char as i32) as f32;
                     }
                 },
                 "semi_ratio" => {
