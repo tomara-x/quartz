@@ -585,16 +585,28 @@ pub fn update_net(
             "pass()" => { n.0 = Net32::wrap(Box::new(pass())); },
             "stack()" => { n.0 = Net32::new(0,0); },
             "pipe()" => { n.0 = Net32::new(0,0); },
+
+            "panner()" => { n.0 = Net32::wrap(Box::new(panner())); },
+
             "sine()" => { n.0 = Net32::wrap(Box::new(sine())); },
             "saw()" => { n.0 = Net32::wrap(Box::new(saw())); },
             "square()" => { n.0 = Net32::wrap(Box::new(square())); },
+            "triangle()" => { n.0 = Net32::wrap(Box::new(triangle())); },
             "organ()" => { n.0 = Net32::wrap(Box::new(organ())); },
-            "panner()" => { n.0 = Net32::wrap(Box::new(panner())); },
+
+            "pulse()" => { n.0 = Net32::wrap(Box::new(pulse())); },
             "brown()" => { n.0 = Net32::wrap(Box::new(brown())); },
             "pink()" => { n.0 = Net32::wrap(Box::new(pink())); },
             "white()" => { n.0 = Net32::wrap(Box::new(white())); },
+            // add constant control using the array
+            "pan()" => { n.0 = Net32::wrap(Box::new(pan(0.))); },
+            "sine_hz()" => { n.0 = Net32::wrap(Box::new(sine_hz(55.))); },
+            "saw_hz()" => { n.0 = Net32::wrap(Box::new(saw_hz(55.))); },
+            "square_hz()" => { n.0 = Net32::wrap(Box::new(square_hz(55.))); },
+            "triangle_hz()" => { n.0 = Net32::wrap(Box::new(triangle_hz(55.))); },
+            "organ_hz()" => { n.0 = Net32::wrap(Box::new(organ_hz(55.))); },
+
             "adsr()" => { n.0 = Net32::wrap(Box::new(adsr_live(0.1, 0.1, 0.5, 0.2))); },
-            "pulse()" => { n.0 = Net32::wrap(Box::new(pulse())); },
             "ramp()" => {
                 n.0 = Net32::wrap(
                     Box::new(
