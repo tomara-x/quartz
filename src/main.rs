@@ -44,6 +44,7 @@ fn main() {
             },
             ..default()
         })
+        .insert_resource(Time::<Fixed>::from_seconds(1./60.))
 
         .add_plugins(PanCamPlugin::default())
         .add_plugins(WorldInspectorPlugin::new())
@@ -96,7 +97,7 @@ fn main() {
         .add_event::<OrderChange>()
         .add_systems(PostUpdate, sort_by_order.before(process).run_if(on_event::<OrderChange>()))
         // process
-        .add_systems(PostUpdate, process)
+        .add_systems(FixedUpdate, process)
         .add_systems(Update, open_white_holes)
         // commands
         .add_systems(Update, command_parser)
