@@ -448,6 +448,9 @@ pub fn process(
                                 access.net_query.get_mut(*id).unwrap().0 = net;
                                 access.net_query.get_mut(*id).unwrap().0.set_sample_rate(60.);
                             }
+                        } else {
+                            // [road work] lies! clearly road not work! (same with out)
+                            access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(dc(0.)));
                         }
                     }
                     let net = &mut access.net_query.get_mut(*id).unwrap().0;
@@ -567,6 +570,9 @@ pub fn process(
             match access.op_query.get(*id).unwrap().0.as_str() {
                 "out()" => {
                     slot.0.set(Fade::Smooth, 0.1, Box::new(dc(0.) | dc(0.)));
+                },
+                "probe()" => {
+                    access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(dc(0.)));
                 },
                 _ => {},
             }
