@@ -611,6 +611,10 @@ pub fn update_net(
 
             "allpass()" => { n.0 = Net32::wrap(Box::new(allpass())); },
             "allpole()" => { n.0 = Net32::wrap(Box::new(allpole())); },
+            "bandpass()" => { n.0 = Net32::wrap(Box::new(bandpass())); },
+            "bandrez()" => { n.0 = Net32::wrap(Box::new(bandrez())); },
+            "bell()" => { n.0 = Net32::wrap(Box::new(bell())); },
+            "butterpass()" => { n.0 = Net32::wrap(Box::new(butterpass())); },
             // add constant control using the array
             "pan()" => { n.0 = Net32::wrap(Box::new(pan(0.))); },
             "sine_hz()" => { n.0 = Net32::wrap(Box::new(sine_hz(55.))); },
@@ -622,6 +626,14 @@ pub fn update_net(
             "allpass_hz()" => { n.0 = Net32::wrap(Box::new(allpass_hz(1729.,0.5))); },
             "allpass_q()" => { n.0 = Net32::wrap(Box::new(allpass_q(0.5))); },
             "allpole_delay()" => { n.0 = Net32::wrap(Box::new(allpole_delay(1.))); },
+            "bandpass_hz()" => { n.0 = Net32::wrap(Box::new(bandpass_hz(1729.,0.5))); },
+            "bandpass_q()" => { n.0 = Net32::wrap(Box::new(bandpass_q(0.5))); },
+            "bandrez_hz()" => { n.0 = Net32::wrap(Box::new(bandrez_hz(1729.,0.5))); },
+            "bandrez_q()" => { n.0 = Net32::wrap(Box::new(bandrez_q(0.5))); },
+            "bell_hz()" => { n.0 = Net32::wrap(Box::new(bell_hz(1729.,0.5,1.))); },
+            "bell_q()" => { n.0 = Net32::wrap(Box::new(bell_q(0.5,1.))); },
+            "biquad()" => { n.0 = Net32::wrap(Box::new(biquad(1.,0.,0.,0.,0.))); },
+            "butterpass_hz()" => { n.0 = Net32::wrap(Box::new(butterpass_hz(1729.))); },
 
             "adsr()" => { n.0 = Net32::wrap(Box::new(adsr_live(0.1, 0.1, 0.5, 0.2))); },
             "ramp()" => {
