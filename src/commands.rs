@@ -443,7 +443,6 @@ pub fn command_parser(
                                     }
                                 }
                             },
-                            // TODO(tomara): set all selected as targets of specified id
                             Some("tar") | Some("targets") => {
                                 let mut tmp = Vec::new();
                                 for e in command {
