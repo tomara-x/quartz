@@ -321,6 +321,8 @@ pub fn process(
                         access.net_changed_query.get_mut(*id).unwrap().0 = true;
                         let mut graph = Net32::wrap(Box::new(dc(1.)));
                         for i in inputs {
+                            // FIXME(tomara): this is dirty, clean it
+                            if i.outputs() != 1 { continue; }
                             graph = graph * i.clone();
                         }
                         let output = &mut access.net_query.get_mut(*id).unwrap().0;
