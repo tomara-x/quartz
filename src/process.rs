@@ -608,6 +608,9 @@ pub fn update_net(
             "brown()" => { n.0 = Net32::wrap(Box::new(brown())); },
             "pink()" => { n.0 = Net32::wrap(Box::new(pink())); },
             "white()" => { n.0 = Net32::wrap(Box::new(white())); },
+
+            "allpass()" => { n.0 = Net32::wrap(Box::new(allpass())); },
+            "allpole()" => { n.0 = Net32::wrap(Box::new(allpole())); },
             // add constant control using the array
             "pan()" => { n.0 = Net32::wrap(Box::new(pan(0.))); },
             "sine_hz()" => { n.0 = Net32::wrap(Box::new(sine_hz(55.))); },
@@ -615,6 +618,10 @@ pub fn update_net(
             "square_hz()" => { n.0 = Net32::wrap(Box::new(square_hz(55.))); },
             "triangle_hz()" => { n.0 = Net32::wrap(Box::new(triangle_hz(55.))); },
             "organ_hz()" => { n.0 = Net32::wrap(Box::new(organ_hz(55.))); },
+            "add()" => { n.0 = Net32::wrap(Box::new(add(1.))); },
+            "allpass_hz()" => { n.0 = Net32::wrap(Box::new(allpass_hz(1729.,0.5))); },
+            "allpass_q()" => { n.0 = Net32::wrap(Box::new(allpass_q(0.5))); },
+            "allpole_delay()" => { n.0 = Net32::wrap(Box::new(allpole_delay(1.))); },
 
             "adsr()" => { n.0 = Net32::wrap(Box::new(adsr_live(0.1, 0.1, 0.5, 0.2))); },
             "ramp()" => {
