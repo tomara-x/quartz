@@ -582,7 +582,7 @@ pub fn process(
 pub fn update_net(
     mut query: Query<(&Op, &mut NetChanged, &mut Network, &mut NetIns), Changed<Op>>,
 ) {
-    'entity: for (op, mut net_changed, mut n, mut inputs) in query.iter_mut() {
+    for (op, mut net_changed, mut n, mut inputs) in query.iter_mut() {
         net_changed.0 = true;
         inputs.0.clear();
         // "cat()" -> ["cat", "", ""],  "cat(mew, mrp)" -> ["cat", "mew, mrp", ""]
@@ -629,30 +629,107 @@ pub fn update_net(
             "butterpass" => { n.0 = Net32::wrap(Box::new(butterpass())); },
 
             "pan" => {
-                if let Some(p0) = p.get(0) {
-                    n.0 = Net32::wrap(Box::new(pan(*p0)));
+                if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(pan(*p)));
                 }
             },
-            "sine_hz" => { n.0 = Net32::wrap(Box::new(sine_hz(55.))); },
-            "saw_hz" => { n.0 = Net32::wrap(Box::new(saw_hz(55.))); },
-            "square_hz" => { n.0 = Net32::wrap(Box::new(square_hz(55.))); },
-            "triangle_hz" => { n.0 = Net32::wrap(Box::new(triangle_hz(55.))); },
-            "organ_hz" => { n.0 = Net32::wrap(Box::new(organ_hz(55.))); },
-            "add" => { n.0 = Net32::wrap(Box::new(add(1.))); },
-            "allpass_hz" => { n.0 = Net32::wrap(Box::new(allpass_hz(1729.,0.5))); },
-            "allpass_q" => { n.0 = Net32::wrap(Box::new(allpass_q(0.5))); },
-            "allpole_delay" => { n.0 = Net32::wrap(Box::new(allpole_delay(1.))); },
-            "bandpass_hz" => { n.0 = Net32::wrap(Box::new(bandpass_hz(1729.,0.5))); },
-            "bandpass_q" => { n.0 = Net32::wrap(Box::new(bandpass_q(0.5))); },
-            "bandrez_hz" => { n.0 = Net32::wrap(Box::new(bandrez_hz(1729.,0.5))); },
-            "bandrez_q" => { n.0 = Net32::wrap(Box::new(bandrez_q(0.5))); },
-            "bell_hz" => { n.0 = Net32::wrap(Box::new(bell_hz(1729.,0.5,1.))); },
-            "bell_q" => { n.0 = Net32::wrap(Box::new(bell_q(0.5,1.))); },
-            "biquad" => { n.0 = Net32::wrap(Box::new(biquad(1.,0.,0.,0.,0.))); },
-            "butterpass_hz" => { n.0 = Net32::wrap(Box::new(butterpass_hz(1729.))); },
-            "chorus" => { n.0 = Net32::wrap(Box::new(chorus(0, 0.015, 0.005, 0.5))); },
+            "sine_hz" => {
+                if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(sine_hz(*p)));
+                }
+            },
+            "saw_hz" => {
+                if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(saw_hz(*p)));
+                }
+            },
+            "square_hz" => {
+                if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(square_hz(*p)));
+                }
+            },
+            "triangle_hz" => {
+                if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(triangle_hz(*p)));
+                }
+            },
+            "organ_hz" => {
+                if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(organ_hz(*p)));
+                }
+            },
+            "add" => {
+                if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(add(*p)));
+                }
+            },
+            "allpass_hz" => {
+                if let Some(p) = p.get(0..2) {
+                    n.0 = Net32::wrap(Box::new(allpass_hz(p[0], p[1])));
+                }
+            },
+            "allpass_q" => {
+                if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(allpass_q(*p)));
+                }
+            },
+            "allpole_delay" => {
+                if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(allpole_delay(*p)));
+                }
+            },
+            "bandpass_hz" => {
+                if let Some(p) = p.get(0..2) {
+                    n.0 = Net32::wrap(Box::new(bandpass_hz(p[0], p[1])));
+                }
+            },
+            "bandpass_q" => {
+                if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(bandpass_q(*p)));
+                }
+            },
+            "bandrez_hz" => {
+                if let Some(p) = p.get(0..2) {
+                    n.0 = Net32::wrap(Box::new(bandrez_hz(p[0], p[1])));
+                }
+            },
+            "bandrez_q" => {
+                if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(bandrez_q(*p)));
+                }
+            },
+            "bell_hz" => {
+                if let Some(p) = p.get(0..3) {
+                    n.0 = Net32::wrap(Box::new(bell_hz(p[0], p[1], p[2])));
+                }
+            },
+            "bell_q" => {
+                if let Some(p) = p.get(0..2) {
+                    n.0 = Net32::wrap(Box::new(bell_q(p[0], p[1])));
+                }
+            },
+            "biquad" => {
+                if let Some(p) = p.get(0..5) {
+                    n.0 = Net32::wrap(Box::new(biquad(p[0],p[1],p[2],p[3],p[4])));
+                }
+            },
+            "butterpass_hz" => {
+                if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(butterpass_hz(*p)));
+                }
+            },
+            "chorus" => {
+                if let Some(p) = p.get(0..4) {
+                    n.0 = Net32::wrap(Box::new(chorus(p[0] as i64, p[1], p[2], p[3])));
+                }
+            },
 
-            "adsr" => { n.0 = Net32::wrap(Box::new(adsr_live(0.1, 0.1, 0.5, 0.2))); },
+            "adsr" => {
+                if let Some(p) = p.get(0..4) {
+                    n.0 = Net32::wrap(Box::new(adsr_live(p[0], p[1], p[2], p[3])));
+                }
+            },
+
             "ramp" => {
                 n.0 = Net32::wrap(
                     Box::new(
@@ -660,6 +737,7 @@ pub fn update_net(
                     )
                 );
             },
+
             ">" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| if i[0]>i[1] {1.} else {0.}))); },
             "<" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| if i[0]<i[1] {1.} else {0.}))); },
             "==" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| if i[0]==i[1] {1.} else {0.}))); },
