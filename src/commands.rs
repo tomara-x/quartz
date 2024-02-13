@@ -87,6 +87,7 @@ pub fn command_parser(
     // edit mode
     if *mode == 0 {
         for event in char_input_events.read() {
+            if *text == "F" { continue; }
             if let Some(">") = text.get(0..1) { text.clear(); }
             if event.char == ' ' && text.ends_with(" ") { continue; }
             if !event.char.is_control() { text.push(event.char); }
