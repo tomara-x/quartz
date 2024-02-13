@@ -587,21 +587,16 @@ pub fn update_net(
         inputs.0.clear();
         // "cat()" -> ["cat", "", ""],  "cat(mew, mrp)" -> ["cat", "mew, mrp", ""]
         let args: Vec<&str> = op.0.as_str().split(['(', ')']).collect();
-        if args.len() != 3 {
-            n.0 = Net32::wrap(Box::new(dc(0.)));
-            continue;
-        }
         // parse the parameters (between parentheses)
-        let params: Vec<&str> = args[1].split(',').collect();
         let mut p = Vec::new();
-        for s in params {
-            if let Ok(n) = s.parse::<f32>() {
-                p.push(n);
-            } else {
-                continue 'entity
+        if let Some(params) = args.get(1) {
+            let params = params.split(',').collect::<Vec<&str>>();
+            for s in params {
+                if let Ok(n) = s.parse::<f32>() {
+                    p.push(n);
+                }
             }
         }
-        info!("{:?}", p);
         match args[0] {
             "var" => {
                 let input = shared(0.);
@@ -633,7 +628,11 @@ pub fn update_net(
             "bell" => { n.0 = Net32::wrap(Box::new(bell())); },
             "butterpass" => { n.0 = Net32::wrap(Box::new(butterpass())); },
 
-            "pan" => { n.0 = Net32::wrap(Box::new(pan(0.))); },
+            "pan" => {
+                if let Some(p0) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(pan(*p0)));
+                }
+            },
             "sine_hz" => { n.0 = Net32::wrap(Box::new(sine_hz(55.))); },
             "saw_hz" => { n.0 = Net32::wrap(Box::new(saw_hz(55.))); },
             "square_hz" => { n.0 = Net32::wrap(Box::new(square_hz(55.))); },
