@@ -419,13 +419,25 @@ pub fn process(
                         }
                     }
                 },
-                // TODO(mara): overhaul these 2
+                // TODO(mara): overhaul these 3
                 "outputs()" => {
                     for child in children {
                         if let Ok(mut wh) = white_hole_query.get_mut(*child) {
                             if wh.link_types == (0, 1) && (wh.open) {
                                 let net = &access.net_query.get(wh.bh_parent).unwrap().0;
                                 access.num_query.get_mut(*id).unwrap().0 = net.outputs() as f32;
+                                wh.open = false;
+                                continue 'entity;
+                            }
+                        }
+                    }
+                },
+                "inputs()" => {
+                    for child in children {
+                        if let Ok(mut wh) = white_hole_query.get_mut(*child) {
+                            if wh.link_types == (0, 1) && (wh.open) {
+                                let net = &access.net_query.get(wh.bh_parent).unwrap().0;
+                                access.num_query.get_mut(*id).unwrap().0 = net.inputs() as f32;
                                 wh.open = false;
                                 continue 'entity;
                             }
@@ -619,6 +631,10 @@ pub fn update_net(
             "bell" => { n.0 = Net32::wrap(Box::new(bell())); },
             "butterpass" => { n.0 = Net32::wrap(Box::new(butterpass())); },
             "clip" => { n.0 = Net32::wrap(Box::new(clip())); },
+            "dcblock" => { n.0 = Net32::wrap(Box::new(dcblock())); },
+            "declick" => { n.0 = Net32::wrap(Box::new(declick())); },
+            "dsf_saw" => { n.0 = Net32::wrap(Box::new(dsf_saw())); },
+            "dsf_square" => { n.0 = Net32::wrap(Box::new(dsf_square())); },
 
             "pan" => {
                 if let Some(p) = p.get(0) {
@@ -733,6 +749,31 @@ pub fn update_net(
                     [p0, p1, ..] => { n.0 = Net32::wrap(Box::new(constant((p0, p1)))); },
                     [p0, ..] => { n.0 = Net32::wrap(Box::new(constant(p0))); },
                     _ => { n.0 = Net32::wrap(Box::new(constant(0.))); },
+                }
+            },
+            "dcblock_hz" => {
+                if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(dcblock_hz(*p)));
+                }
+            },
+            "declick_s" => {
+                if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(declick_s(*p)));
+                }
+            },
+            "delay" => {
+                if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(delay(*p)));
+                }
+            },
+            "dsf_saw_r" => {
+                if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(dsf_saw_r(*p)));
+                }
+            },
+            "dsf_square_r" => {
+                if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(dsf_square_r(*p)));
                 }
             },
 
