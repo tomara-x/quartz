@@ -618,6 +618,7 @@ pub fn update_net(
             "bandrez" => { n.0 = Net32::wrap(Box::new(bandrez())); },
             "bell" => { n.0 = Net32::wrap(Box::new(bell())); },
             "butterpass" => { n.0 = Net32::wrap(Box::new(butterpass())); },
+            "clip" => { n.0 = Net32::wrap(Box::new(clip())); },
 
             "pan" => {
                 if let Some(p) = p.get(0) {
@@ -649,9 +650,15 @@ pub fn update_net(
                     n.0 = Net32::wrap(Box::new(organ_hz(*p)));
                 }
             },
+
             "add" => {
                 if let Some(p) = p.get(0) {
                     n.0 = Net32::wrap(Box::new(add(*p)));
+                }
+            },
+            "adsr" => {
+                if let Some(p) = p.get(0..4) {
+                    n.0 = Net32::wrap(Box::new(adsr_live(p[0], p[1], p[2], p[3])));
                 }
             },
             "allpass_hz" => {
@@ -714,10 +721,14 @@ pub fn update_net(
                     n.0 = Net32::wrap(Box::new(chorus(p[0] as i64, p[1], p[2], p[3])));
                 }
             },
-
-            "adsr" => {
-                if let Some(p) = p.get(0..4) {
-                    n.0 = Net32::wrap(Box::new(adsr_live(p[0], p[1], p[2], p[3])));
+            "clip_to" => {
+                if let Some(p) = p.get(0..2) {
+                    n.0 = Net32::wrap(Box::new(clip_to(p[0], p[1])));
+                }
+            },
+            "constant" => {
+                if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(constant(p[0])));
                 }
             },
 
