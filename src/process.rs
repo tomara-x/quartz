@@ -726,9 +726,13 @@ pub fn update_net(
                     n.0 = Net32::wrap(Box::new(clip_to(p[0], p[1])));
                 }
             },
-            "constant" => {
-                if let Some(p) = p.get(0) {
-                    n.0 = Net32::wrap(Box::new(constant(p[0])));
+            "constant" | "dc" => {
+                match p[..] {
+                    [p0, p1, p2, p3, ..] => { n.0 = Net32::wrap(Box::new(constant((p0, p1, p2, p3)))); },
+                    [p0, p1, p2, ..] => { n.0 = Net32::wrap(Box::new(constant((p0, p1, p2)))); },
+                    [p0, p1, ..] => { n.0 = Net32::wrap(Box::new(constant((p0, p1)))); },
+                    [p0, ..] => { n.0 = Net32::wrap(Box::new(constant(p0))); },
+                    _ => { n.0 = Net32::wrap(Box::new(constant(0.))); },
                 }
             },
 
