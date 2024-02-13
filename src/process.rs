@@ -464,7 +464,6 @@ pub fn process(
                                 access.net_query.get_mut(*id).unwrap().0 = net;
                             }
                         } else {
-                            // [road work] lies! clearly road not work! (same with out)
                             access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(dc(0.)));
                         }
                     }
