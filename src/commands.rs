@@ -389,7 +389,9 @@ pub fn command_parser(
                                     } else {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut op) = access.op_query.get_mut(id) {
-                                                op.0 = s.to_string();
+                                                op.0.clear();
+                                                op.0.push_str(s);
+                                                for a in command.clone() { op.0.push_str(a); }
                                             }
                                         }
                                     }

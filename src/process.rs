@@ -327,17 +327,17 @@ pub fn process(
                         *output = Net32::wrap(Box::new(graph));
                     }
                 },
-                "adsr()" => {
-                    // the first 4 values of the array will control the params of adsr
-                    if access.arr_query.get_mut(*id).unwrap().is_changed() {
-                        if let Some(adsr) = access.arr_query.get(*id).unwrap().0.get(0..4) {
-                            access.net_changed_query.get_mut(*id).unwrap().0 = true;
-                            access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(
-                                Box::new(adsr_live(adsr[0], adsr[1], adsr[2], adsr[3]))
-                            );
-                        }
-                    }
-                },
+                //"adsr()" => {
+                //    // the first 4 values of the array will control the params of adsr
+                //    if access.arr_query.get_mut(*id).unwrap().is_changed() {
+                //        if let Some(adsr) = access.arr_query.get(*id).unwrap().0.get(0..4) {
+                //            access.net_changed_query.get_mut(*id).unwrap().0 = true;
+                //            access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(
+                //                Box::new(adsr_live(adsr[0], adsr[1], adsr[2], adsr[3]))
+                //            );
+                //        }
+                //    }
+                //},
                 // TODO(amy): try to break stack and pipe
                 "stack()" => {
                     let mut changed = false;
@@ -582,73 +582,91 @@ pub fn process(
 pub fn update_net(
     mut query: Query<(&Op, &mut NetChanged, &mut Network, &mut NetIns), Changed<Op>>,
 ) {
-    for (op, mut net_changed, mut n, mut inputs) in query.iter_mut() {
+    'entity: for (op, mut net_changed, mut n, mut inputs) in query.iter_mut() {
         net_changed.0 = true;
         inputs.0.clear();
-        match op.0.as_str() {
-            "var()" => {
+        // "cat()" -> ["cat", "", ""],  "cat(mew, mrp)" -> ["cat", "mew, mrp", ""]
+        let args: Vec<&str> = op.0.as_str().split(['(', ')']).collect();
+        if args.len() != 3 {
+            n.0 = Net32::wrap(Box::new(dc(0.)));
+            continue;
+        }
+        // parse the parameters (between parentheses)
+        let params: Vec<&str> = args[1].split(',').collect();
+        let mut p = Vec::new();
+        for s in params {
+            if let Ok(n) = s.parse::<f32>() {
+                p.push(n);
+            } else {
+                continue 'entity
+            }
+        }
+        info!("{:?}", p);
+        match args[0] {
+            "var" => {
                 let input = shared(0.);
                 n.0 = Net32::wrap(Box::new(var(&input)));
                 inputs.0.push(input);
             },
-            "sink()" => { n.0 = Net32::wrap(Box::new(sink())); },
-            "pass()" => { n.0 = Net32::wrap(Box::new(pass())); },
-            "stack()" => { n.0 = Net32::new(0,0); },
-            "pipe()" => { n.0 = Net32::new(0,0); },
+            "sink" => { n.0 = Net32::wrap(Box::new(sink())); },
+            "pass" => { n.0 = Net32::wrap(Box::new(pass())); },
+            "stack" => { n.0 = Net32::new(0,0); },
+            "pipe" => { n.0 = Net32::new(0,0); },
 
-            "panner()" => { n.0 = Net32::wrap(Box::new(panner())); },
+            "panner" => { n.0 = Net32::wrap(Box::new(panner())); },
 
-            "sine()" => { n.0 = Net32::wrap(Box::new(sine())); },
-            "saw()" => { n.0 = Net32::wrap(Box::new(saw())); },
-            "square()" => { n.0 = Net32::wrap(Box::new(square())); },
-            "triangle()" => { n.0 = Net32::wrap(Box::new(triangle())); },
-            "organ()" => { n.0 = Net32::wrap(Box::new(organ())); },
+            "sine" => { n.0 = Net32::wrap(Box::new(sine())); },
+            "saw" => { n.0 = Net32::wrap(Box::new(saw())); },
+            "square" => { n.0 = Net32::wrap(Box::new(square())); },
+            "triangle" => { n.0 = Net32::wrap(Box::new(triangle())); },
+            "organ" => { n.0 = Net32::wrap(Box::new(organ())); },
 
-            "pulse()" => { n.0 = Net32::wrap(Box::new(pulse())); },
-            "brown()" => { n.0 = Net32::wrap(Box::new(brown())); },
-            "pink()" => { n.0 = Net32::wrap(Box::new(pink())); },
-            "white()" => { n.0 = Net32::wrap(Box::new(white())); },
+            "pulse" => { n.0 = Net32::wrap(Box::new(pulse())); },
+            "brown" => { n.0 = Net32::wrap(Box::new(brown())); },
+            "pink" => { n.0 = Net32::wrap(Box::new(pink())); },
+            "white" => { n.0 = Net32::wrap(Box::new(white())); },
 
-            "allpass()" => { n.0 = Net32::wrap(Box::new(allpass())); },
-            "allpole()" => { n.0 = Net32::wrap(Box::new(allpole())); },
-            "bandpass()" => { n.0 = Net32::wrap(Box::new(bandpass())); },
-            "bandrez()" => { n.0 = Net32::wrap(Box::new(bandrez())); },
-            "bell()" => { n.0 = Net32::wrap(Box::new(bell())); },
-            "butterpass()" => { n.0 = Net32::wrap(Box::new(butterpass())); },
-            // add constant control using the array
-            "pan()" => { n.0 = Net32::wrap(Box::new(pan(0.))); },
-            "sine_hz()" => { n.0 = Net32::wrap(Box::new(sine_hz(55.))); },
-            "saw_hz()" => { n.0 = Net32::wrap(Box::new(saw_hz(55.))); },
-            "square_hz()" => { n.0 = Net32::wrap(Box::new(square_hz(55.))); },
-            "triangle_hz()" => { n.0 = Net32::wrap(Box::new(triangle_hz(55.))); },
-            "organ_hz()" => { n.0 = Net32::wrap(Box::new(organ_hz(55.))); },
-            "add()" => { n.0 = Net32::wrap(Box::new(add(1.))); },
-            "allpass_hz()" => { n.0 = Net32::wrap(Box::new(allpass_hz(1729.,0.5))); },
-            "allpass_q()" => { n.0 = Net32::wrap(Box::new(allpass_q(0.5))); },
-            "allpole_delay()" => { n.0 = Net32::wrap(Box::new(allpole_delay(1.))); },
-            "bandpass_hz()" => { n.0 = Net32::wrap(Box::new(bandpass_hz(1729.,0.5))); },
-            "bandpass_q()" => { n.0 = Net32::wrap(Box::new(bandpass_q(0.5))); },
-            "bandrez_hz()" => { n.0 = Net32::wrap(Box::new(bandrez_hz(1729.,0.5))); },
-            "bandrez_q()" => { n.0 = Net32::wrap(Box::new(bandrez_q(0.5))); },
-            "bell_hz()" => { n.0 = Net32::wrap(Box::new(bell_hz(1729.,0.5,1.))); },
-            "bell_q()" => { n.0 = Net32::wrap(Box::new(bell_q(0.5,1.))); },
-            "biquad()" => { n.0 = Net32::wrap(Box::new(biquad(1.,0.,0.,0.,0.))); },
-            "butterpass_hz()" => { n.0 = Net32::wrap(Box::new(butterpass_hz(1729.))); },
+            "allpass" => { n.0 = Net32::wrap(Box::new(allpass())); },
+            "allpole" => { n.0 = Net32::wrap(Box::new(allpole())); },
+            "bandpass" => { n.0 = Net32::wrap(Box::new(bandpass())); },
+            "bandrez" => { n.0 = Net32::wrap(Box::new(bandrez())); },
+            "bell" => { n.0 = Net32::wrap(Box::new(bell())); },
+            "butterpass" => { n.0 = Net32::wrap(Box::new(butterpass())); },
 
-            "adsr()" => { n.0 = Net32::wrap(Box::new(adsr_live(0.1, 0.1, 0.5, 0.2))); },
-            "ramp()" => {
+            "pan" => { n.0 = Net32::wrap(Box::new(pan(0.))); },
+            "sine_hz" => { n.0 = Net32::wrap(Box::new(sine_hz(55.))); },
+            "saw_hz" => { n.0 = Net32::wrap(Box::new(saw_hz(55.))); },
+            "square_hz" => { n.0 = Net32::wrap(Box::new(square_hz(55.))); },
+            "triangle_hz" => { n.0 = Net32::wrap(Box::new(triangle_hz(55.))); },
+            "organ_hz" => { n.0 = Net32::wrap(Box::new(organ_hz(55.))); },
+            "add" => { n.0 = Net32::wrap(Box::new(add(1.))); },
+            "allpass_hz" => { n.0 = Net32::wrap(Box::new(allpass_hz(1729.,0.5))); },
+            "allpass_q" => { n.0 = Net32::wrap(Box::new(allpass_q(0.5))); },
+            "allpole_delay" => { n.0 = Net32::wrap(Box::new(allpole_delay(1.))); },
+            "bandpass_hz" => { n.0 = Net32::wrap(Box::new(bandpass_hz(1729.,0.5))); },
+            "bandpass_q" => { n.0 = Net32::wrap(Box::new(bandpass_q(0.5))); },
+            "bandrez_hz" => { n.0 = Net32::wrap(Box::new(bandrez_hz(1729.,0.5))); },
+            "bandrez_q" => { n.0 = Net32::wrap(Box::new(bandrez_q(0.5))); },
+            "bell_hz" => { n.0 = Net32::wrap(Box::new(bell_hz(1729.,0.5,1.))); },
+            "bell_q" => { n.0 = Net32::wrap(Box::new(bell_q(0.5,1.))); },
+            "biquad" => { n.0 = Net32::wrap(Box::new(biquad(1.,0.,0.,0.,0.))); },
+            "butterpass_hz" => { n.0 = Net32::wrap(Box::new(butterpass_hz(1729.))); },
+            "chorus" => { n.0 = Net32::wrap(Box::new(chorus(0, 0.015, 0.005, 0.5))); },
+
+            "adsr" => { n.0 = Net32::wrap(Box::new(adsr_live(0.1, 0.1, 0.5, 0.2))); },
+            "ramp" => {
                 n.0 = Net32::wrap(
                     Box::new(
                         lfo_in(|t, i: &Frame<f32, U1>| (t*i[0]).rem_euclid(1.))
                     )
                 );
             },
-            ">()" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| if i[0]>i[1] {1.} else {0.}))); },
-            "<()" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| if i[0]<i[1] {1.} else {0.}))); },
-            "==()" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| if i[0]==i[1] {1.} else {0.}))); },
-            "!=()" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| if i[0]!=i[1] {1.} else {0.}))); },
-            ">=()" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| if i[0]>=i[1] {1.} else {0.}))); },
-            "<=()" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| if i[0]<=i[1] {1.} else {0.}))); },
+            ">" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| if i[0]>i[1] {1.} else {0.}))); },
+            "<" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| if i[0]<i[1] {1.} else {0.}))); },
+            "==" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| if i[0]==i[1] {1.} else {0.}))); },
+            "!=" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| if i[0]!=i[1] {1.} else {0.}))); },
+            ">=" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| if i[0]>=i[1] {1.} else {0.}))); },
+            "<=" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| if i[0]<=i[1] {1.} else {0.}))); },
             _ => { n.0 = Net32::wrap(Box::new(dc(0.))); },
         }
     }
