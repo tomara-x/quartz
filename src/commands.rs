@@ -2,6 +2,7 @@ use bevy::{
     prelude::*,
     ecs::system::SystemParam,
     window::ReceivedCharacter,
+    render::view::RenderLayers,
 };
 
 use crate::components::*;
@@ -24,6 +25,7 @@ pub struct Access<'w, 's> {
     targets_query: Query<'w, 's, &'static mut Targets>,
     gained_wh_query: Query<'w, 's, &'static mut GainedWH>,
     text_query: Query<'w, 's, &'static mut Text, Without<CommandText>>,
+    render_layers: Query<'w, 's, &'static mut RenderLayers, With<Camera>>,
 }
 
 pub fn command_parser(
@@ -843,6 +845,47 @@ pub fn command_parser(
                     if !access.order_query.contains(e) {
                         commands.entity(e).insert(Selected);
                     }
+                }
+                text.clear();
+            },
+            // render layers
+            Some("vv") => {
+                *access.render_layers.single_mut() = RenderLayers::all();
+                text.clear();
+            },
+            Some("vc") => {
+                let mut rl = access.render_layers.single_mut();
+                if rl.intersects(&RenderLayers::layer(1)) {
+                    *rl = rl.without(1);
+                } else {
+                    *rl = rl.with(1);
+                }
+                text.clear();
+            },
+            Some("vb") => {
+                let mut rl = access.render_layers.single_mut();
+                if rl.intersects(&RenderLayers::layer(2)) {
+                    *rl = rl.without(2);
+                } else {
+                    *rl = rl.with(2);
+                }
+                text.clear();
+            },
+            Some("vw") => {
+                let mut rl = access.render_layers.single_mut();
+                if rl.intersects(&RenderLayers::layer(3)) {
+                    *rl = rl.without(3);
+                } else {
+                    *rl = rl.with(3);
+                }
+                text.clear();
+            },
+            Some("va") => {
+                let mut rl = access.render_layers.single_mut();
+                if rl.intersects(&RenderLayers::layer(4)) {
+                    *rl = rl.without(4);
+                } else {
+                    *rl = rl.with(4);
                 }
                 text.clear();
             },

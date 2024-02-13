@@ -7,10 +7,11 @@ use bevy::{
     winit::{WinitSettings, UpdateMode},
     tasks::IoTaskPool,
     scene::SceneInstance,
+    render::view::RenderLayers,
     prelude::*};
 
 use bevy_pancam::{PanCam, PanCamPlugin};
-use bevy_inspector_egui::quick::WorldInspectorPlugin;
+//use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 use std::{fs::File, io::Write};
 
@@ -46,7 +47,7 @@ fn main() {
         })
 
         .add_plugins(PanCamPlugin::default())
-        .add_plugins(WorldInspectorPlugin::new())
+        //.add_plugins(WorldInspectorPlugin::new())
 
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(Msaa::Sample4)
@@ -154,6 +155,7 @@ fn setup(
             min_scale: 0.005,
             ..default()
         },
+        RenderLayers::all(),
     ));
 
     // command line
@@ -285,6 +287,7 @@ fn post_load(
                     NetChanged(true),
                     GainedWH(false),
                     LostWH(false),
+                    RenderLayers::layer(1),
                 ));
                 if let Ok(holes) = children_query.get(*child) {
                     for hole in holes {
@@ -300,14 +303,22 @@ fn post_load(
                                 );
                             }
                         }
+                        if black_hole_query.contains(*hole) {
+                            commands.entity(*hole).insert(RenderLayers::layer(2));
+                        }
                         if white_hole_query.contains(*hole) {
-                            let arrow = commands.spawn( ColorMesh2dBundle {
+                            let arrow = commands.spawn(( ColorMesh2dBundle {
                                 mesh: meshes.add(shape::Circle{radius:0., vertices:3}.into()).into(),
                                 material: materials.add(ColorMaterial::from(Color::hsla(0., 1., 1., 0.7))),
                                 transform: Transform::from_translation(Vec3::Z),
                                 ..default()
-                            }).id();
-                            commands.entity(*hole).insert(ConnectionArrow(arrow));
+                            },
+                            RenderLayers::layer(4),
+                            )).id();
+                            commands.entity(*hole).insert((
+                                ConnectionArrow(arrow),
+                                RenderLayers::layer(3),
+                            ));
                         }
                     }
                 }

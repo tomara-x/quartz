@@ -1,7 +1,10 @@
 use bevy::{
     prelude::*,
     sprite::Mesh2dHandle,
-    render::primitives::Aabb
+    render::{
+        primitives::Aabb,
+        view::RenderLayers,
+    },
 };
 
 use crate::components::*;
@@ -56,7 +59,7 @@ pub fn connect(
             let snk_trans = trans_query.get(snk).unwrap().translation();
 
             // spawn connection arrow
-            let arrow = commands.spawn(
+            let arrow = commands.spawn((
                 ColorMesh2dBundle {
                     mesh: meshes.add(Tri {
                         i: cursor.i,
@@ -68,8 +71,9 @@ pub fn connect(
                     material: materials.add(ColorMaterial::from(Color::hsla(0., 1., 1., 0.7))),
                     transform: Transform::from_translation(Vec3::new(0.,0.,100.)),
                     ..default()
-                }
-            ).id();
+                },
+                RenderLayers::layer(4),
+            )).id();
             // spawn circles
             let mut bh_depth: f32 = 0.001;
             if let Ok(children) = children_query.get(src) { bh_depth *= (children.len() + 1) as f32; }
@@ -83,6 +87,7 @@ pub fn connect(
                 Radius(src_radius * 0.15),
                 Col(Color::BLACK),
                 Vertices(6),
+                RenderLayers::layer(2),
                 Save,
             )).id();
             let mut wh_depth: f32 = 0.001;
@@ -103,6 +108,7 @@ pub fn connect(
                     link_types: (0, 0),
                     open: true,
                 },
+                RenderLayers::layer(3),
                 Save,
                 ConnectionArrow(arrow),
             )).id();

@@ -2,7 +2,10 @@ use bevy::{
     prelude::*,
     render::view::VisibleEntities,
     sprite::Mesh2dHandle,
-    render::primitives::Aabb,
+    render::{
+        primitives::Aabb,
+        view::RenderLayers,
+    },
 };
 
 use fundsp::net::Net32;
@@ -38,13 +41,14 @@ pub fn spawn_circles(
             Op("empty".to_string()),
             Targets(Vec::new()),
             Order(0),
-            Network(Net32::new(0,1)),
-            NetIns(Vec::new()),
             (
+                Network(Net32::new(0,1)),
+                NetIns(Vec::new()),
                 NetChanged(true),
                 GainedWH(false),
                 LostWH(false),
             ),
+            RenderLayers::layer(1),
             Visible,
             Save,
         ));
