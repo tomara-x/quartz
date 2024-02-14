@@ -573,6 +573,12 @@ pub fn process(
                 "probe()" => {
                     access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(dc(0.)));
                 },
+                "sum()" | "product()" | "pipe()" | "stack()" => {
+                    access.net_query.get_mut(*id).unwrap().0 = Net32::new(0,0);
+                },
+                "inputs()" | "outputs()" => {
+                    access.num_query.get_mut(*id).unwrap().0 = 0.;
+                },
                 _ => {},
             }
             // go back to oder 0 (doesn't get processed)
