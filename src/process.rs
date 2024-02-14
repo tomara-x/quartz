@@ -276,7 +276,6 @@ pub fn process(
                         var.set_value(num);
                     }
                 },
-                // TODO(mara): overhaul these 2 as well
                 "sum()" => {
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
                     let mut changed = false;
@@ -351,24 +350,20 @@ pub fn process(
                         }
                     }
                     if changed || lost {
-                        if inputs.is_empty() {
-                            access.net_query.get_mut(*id).unwrap().0 = Net32::new(0,0);
-                        } else {
-                            let mut graph = Net32::new(0,0);
-                            let mut empty = true;
-                            for i in inputs {
-                                if let Some(i) = i {
-                                    if empty {
-                                        graph = i.clone();
-                                        empty = false;
-                                    } else {
-                                        graph = graph | i.clone();
-                                    }
+                        let mut graph = Net32::new(0,0);
+                        let mut empty = true;
+                        for i in inputs {
+                            if let Some(i) = i {
+                                if empty {
+                                    graph = i.clone();
+                                    empty = false;
+                                } else {
+                                    graph = graph | i.clone();
                                 }
                             }
-                            access.net_changed_query.get_mut(*id).unwrap().0 = true;
-                            access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(graph));
                         }
+                        access.net_changed_query.get_mut(*id).unwrap().0 = true;
+                        access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(graph));
                     }
                 },
                 "pipe()" => {
@@ -391,25 +386,21 @@ pub fn process(
                         }
                     }
                     if changed || lost {
-                        if inputs.is_empty() {
-                            access.net_query.get_mut(*id).unwrap().0 = Net32::new(0,0);
-                        } else {
-                            let mut graph = Net32::new(0,0);
-                            let mut empty = true;
-                            for i in inputs {
-                                if let Some(i) = i {
-                                    if empty {
-                                        graph = i.clone();
-                                        empty = false;
-                                    }
-                                    else if graph.outputs() == i.inputs() {
-                                        graph = graph >> i.clone();
-                                    }
+                        let mut graph = Net32::new(0,0);
+                        let mut empty = true;
+                        for i in inputs {
+                            if let Some(i) = i {
+                                if empty {
+                                    graph = i.clone();
+                                    empty = false;
+                                }
+                                else if graph.outputs() == i.inputs() {
+                                    graph = graph >> i.clone();
                                 }
                             }
-                            access.net_changed_query.get_mut(*id).unwrap().0 = true;
-                            access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(graph));
                         }
+                        access.net_changed_query.get_mut(*id).unwrap().0 = true;
+                        access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(graph));
                     }
                 },
                 "out()" => {
