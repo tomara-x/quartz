@@ -330,18 +330,17 @@ pub fn process(
                     }
                 },
                 "stack()" => {
-                    let mut changed = false;
-                    let mut lhs = None;
-                    let mut rhs = None;
-                    let net_changed = access.net_changed_query.get(*id).unwrap().0;
-                    let gained = access.gained_wh_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
+                    let mut changed = false;
+                    let mut inputs = Vec::new();
                     for child in children {
                         if let Ok(mut wh) = white_hole_query.get_mut(*child) {
-                            if wh.link_types == (0, 1) {
-                                lhs = Some(access.net_query.get(wh.bh_parent).unwrap().0.clone());
-                            } else if wh.link_types == (0, 2) {
-                                rhs = Some(access.net_query.get(wh.bh_parent).unwrap().0.clone());
+                            if wh.link_types.0 == 0 {
+                                let index = wh.link_types.1 as usize;
+                                if index >= inputs.len() {
+                                    inputs.resize(index+1, None);
+                                }
+                                inputs[index] = Some(&access.net_query.get(wh.bh_parent).unwrap().0);
                             }
                             if wh.open {
                                 wh.open = false;
@@ -349,28 +348,31 @@ pub fn process(
                             }
                         }
                     }
-                    if gained || lost || net_changed || changed {
-                        if let (Some(lhs), Some(rhs)) = (lhs, rhs) {
-                            access.net_changed_query.get_mut(*id).unwrap().0 = true;
-                            access.net_query.get_mut(*id).unwrap().0 = Net32::stack_op(lhs, rhs);
-                        } else {
+                    if changed || lost {
+                        if inputs.is_empty() {
                             access.net_query.get_mut(*id).unwrap().0 = Net32::new(0,0);
+                        } else {
+                            let mut graph = Net32::new(0,0);
+                            for i in inputs {
+                                if let Some(i) = i { graph = graph | i.clone(); }
+                            }
+                            access.net_changed_query.get_mut(*id).unwrap().0 = true;
+                            access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(graph));
                         }
                     }
                 },
                 "pipe()" => {
-                    let mut changed = false;
-                    let mut lhs = None;
-                    let mut rhs = None;
-                    let net_changed = access.net_changed_query.get(*id).unwrap().0;
-                    let gained = access.gained_wh_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
+                    let mut changed = false;
+                    let mut inputs = Vec::new();
                     for child in children {
                         if let Ok(mut wh) = white_hole_query.get_mut(*child) {
-                            if wh.link_types == (0, 1) {
-                                lhs = Some(access.net_query.get(wh.bh_parent).unwrap().0.clone());
-                            } else if wh.link_types == (0, 2) {
-                                rhs = Some(access.net_query.get(wh.bh_parent).unwrap().0.clone());
+                            if wh.link_types.0 == 0 {
+                                let index = wh.link_types.1 as usize;
+                                if index >= inputs.len() {
+                                    inputs.resize(index+1, None);
+                                }
+                                inputs[index] = Some(&access.net_query.get(wh.bh_parent).unwrap().0);
                             }
                             if wh.open {
                                 wh.open = false;
@@ -378,14 +380,20 @@ pub fn process(
                             }
                         }
                     }
-                    if gained || lost || net_changed || changed {
-                        if let (Some(lhs), Some(rhs)) = (lhs, rhs) {
-                            access.net_changed_query.get_mut(*id).unwrap().0 = true;
-                            if lhs.outputs() == rhs.inputs() {
-                                access.net_query.get_mut(*id).unwrap().0 = Net32::pipe_op(lhs, rhs);
-                            }
-                        } else {
+                    if changed || lost {
+                        if inputs.is_empty() {
                             access.net_query.get_mut(*id).unwrap().0 = Net32::new(0,0);
+                        } else {
+                            let mut graph = Net32::new(0,0);
+                            for i in inputs {
+                                if let Some(i) = i {
+                                    if graph.outputs() == i.inputs() {
+                                        graph = graph >> i.clone();
+                                    }
+                                }
+                            }
+                            access.net_changed_query.get_mut(*id).unwrap().0 = true;
+                            access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(graph));
                         }
                     }
                 },
