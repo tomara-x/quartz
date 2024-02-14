@@ -329,7 +329,6 @@ pub fn process(
                         *output = Net32::wrap(Box::new(graph));
                     }
                 },
-                // TODO(amy): try to break stack and pipe
                 "stack()" => {
                     let mut changed = false;
                     let mut lhs = None;
@@ -419,7 +418,7 @@ pub fn process(
                         }
                     }
                 },
-                // TODO(mara): overhaul these 3
+                // TODO(mara): overhaul these 2
                 "outputs()" => {
                     for child in children {
                         if let Ok(mut wh) = white_hole_query.get_mut(*child) {
@@ -470,12 +469,12 @@ pub fn process(
                             access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(dc(0.)));
                         }
                     }
-                    let mut x = 0.;
                     let net = &mut access.net_query.get_mut(*id).unwrap().0;
                     let num = &mut access.num_query.get_mut(*id).unwrap().0;
                     // 44100/60 (samples in a visual frame) (we just use the last one)
-                    for _ in 0..736 { x = net.get_mono(); }
-                    *num = x;
+                    // this will never be accurate
+                    for _ in 0..734 { net.get_mono(); }
+                    *num = net.get_mono();
                 },
                 _ => {},
             }
@@ -599,7 +598,7 @@ pub fn update_net(
                     p.push(n);
                 }
             }
-        }
+        } else { continue; } // no parentheses
         match args[0] {
             "var" => {
                 let input = shared(0.);
