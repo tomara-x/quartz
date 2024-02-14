@@ -839,6 +839,17 @@ pub fn update_net(
                     n.0 = Net32::wrap(Box::new(hold_hz(p[0], p[1])));
                 }
             },
+            "join" => {
+                if let Some(p) = p.get(0) {
+                    match *p as usize {
+                        2 => { n.0 = Net32::wrap(Box::new(join::<U2>())); },
+                        4 => { n.0 = Net32::wrap(Box::new(join::<U4>())); },
+                        8 => { n.0 = Net32::wrap(Box::new(join::<U8>())); },
+                        _ => {},
+                    }
+                }
+            },
+
 
             "ramp" => {
                 n.0 = Net32::wrap(
