@@ -440,7 +440,7 @@ pub fn process(
                         }
                     }
                 },
-                "outputs()" => {
+                "outputs()" | "inputs()" => {
                     let net_changed = access.net_changed_query.get(*id).unwrap().0;
                     let gained = access.gained_wh_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
@@ -449,33 +449,11 @@ pub fn process(
                     for child in children {
                         if let Ok(mut wh) = white_hole_query.get_mut(*child) {
                             if wh.link_types == (0, 1) {
-                                n = Some(access.net_query.get(wh.bh_parent).unwrap().0.outputs());
-                                if wh.open {
-                                    wh.open = false;
-                                    changed = true;
+                                if access.op_query.get(*id).unwrap().0 == "outputs()" {
+                                    n = Some(access.net_query.get(wh.bh_parent).unwrap().0.outputs());
+                                } else {
+                                    n = Some(access.net_query.get(wh.bh_parent).unwrap().0.inputs());
                                 }
-                                break;
-                            }
-                        }
-                    }
-                    if gained || lost || net_changed || changed {
-                        if let Some(n) = n {
-                            access.num_query.get_mut(*id).unwrap().0 = n as f32;
-                        } else {
-                            access.num_query.get_mut(*id).unwrap().0 = 0.;
-                        }
-                    }
-                },
-                "inputs()" => {
-                    let net_changed = access.net_changed_query.get(*id).unwrap().0;
-                    let gained = access.gained_wh_query.get(*id).unwrap().0;
-                    let lost = access.lost_wh_query.get(*id).unwrap().0;
-                    let mut changed = false;
-                    let mut n: Option<usize> = None;
-                    for child in children {
-                        if let Ok(mut wh) = white_hole_query.get_mut(*child) {
-                            if wh.link_types == (0, 1) {
-                                n = Some(access.net_query.get(wh.bh_parent).unwrap().0.inputs());
                                 if wh.open {
                                     wh.open = false;
                                     changed = true;
