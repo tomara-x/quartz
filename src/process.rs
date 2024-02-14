@@ -45,7 +45,7 @@ pub struct Access<'w, 's> {
     order_change: EventWriter<'w, OrderChange>,
     vertices_query: Query<'w, 's, &'static mut Vertices>,
     net_changed_query: Query<'w, 's, &'static mut NetChanged>,
-    gained_wh_query: Query<'w, 's, &'static mut GainedWH>,
+    //gained_wh_query: Query<'w, 's, &'static mut GainedWH>,
     lost_wh_query: Query<'w, 's, &'static mut LostWH>,
 }
 
@@ -387,7 +387,7 @@ pub fn process(
                 },
                 "out()" | "dac()" => {
                     let net_changed = access.net_changed_query.get(*id).unwrap().0;
-                    let gained = access.gained_wh_query.get(*id).unwrap().0;
+                    //let gained = access.gained_wh_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
                     let mut changed = false;
                     let mut net = None;
@@ -402,7 +402,7 @@ pub fn process(
                             }
                         }
                     }
-                    if gained || lost || net_changed || changed {
+                    if /*gained ||*/ lost || net_changed || changed {
                         if let Some(net) = net {
                             if net.outputs() == 1 && net.inputs() == 0 {
                                 slot.0.set(Fade::Smooth, 0.1, Box::new(net.clone() | dc(0.)));
@@ -416,7 +416,7 @@ pub fn process(
                 },
                 "outputs()" | "inputs()" => {
                     let net_changed = access.net_changed_query.get(*id).unwrap().0;
-                    let gained = access.gained_wh_query.get(*id).unwrap().0;
+                    //let gained = access.gained_wh_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
                     let mut changed = false;
                     let mut n: Option<usize> = None;
@@ -436,7 +436,7 @@ pub fn process(
                             }
                         }
                     }
-                    if gained || lost || net_changed || changed {
+                    if /*gained ||*/ lost || net_changed || changed {
                         if let Some(n) = n {
                             access.num_query.get_mut(*id).unwrap().0 = n as f32;
                         } else {
@@ -446,7 +446,7 @@ pub fn process(
                 },
                 "probe()" => {
                     let net_changed = access.net_changed_query.get(*id).unwrap().0;
-                    let gained = access.gained_wh_query.get(*id).unwrap().0;
+                    //let gained = access.gained_wh_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
                     let mut changed = false;
                     let mut net = None;
@@ -461,7 +461,7 @@ pub fn process(
                             }
                         }
                     }
-                    if gained || lost || net_changed || changed {
+                    if /*gained ||*/ lost || net_changed || changed {
                         if let Some(net) = net {
                             if (net.outputs() == 1 || net.outputs() == 2) && net.inputs() == 0 {
                                 access.net_query.get_mut(*id).unwrap().0 = net;
@@ -492,7 +492,7 @@ pub fn process(
                 }
             }
             access.net_changed_query.get_mut(*id).unwrap().0 = false;
-            access.gained_wh_query.get_mut(*id).unwrap().0 = false;
+            //access.gained_wh_query.get_mut(*id).unwrap().0 = false;
             access.lost_wh_query.get_mut(*id).unwrap().0 = false;
             for child in children {
                 let mut lt_to_open = 0;
