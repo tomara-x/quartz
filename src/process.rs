@@ -387,9 +387,14 @@ pub fn process(
                             access.net_query.get_mut(*id).unwrap().0 = Net32::new(0,0);
                         } else {
                             let mut graph = Net32::new(0,0);
+                            let mut empty = true;
                             for i in inputs {
                                 if let Some(i) = i {
-                                    if graph.outputs() == i.inputs() {
+                                    if empty {
+                                        graph = i.clone();
+                                        empty = false;
+                                    }
+                                    else if graph.outputs() == i.inputs() {
                                         graph = graph >> i.clone();
                                     }
                                 }
