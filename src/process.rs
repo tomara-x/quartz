@@ -355,8 +355,16 @@ pub fn process(
                             access.net_query.get_mut(*id).unwrap().0 = Net32::new(0,0);
                         } else {
                             let mut graph = Net32::new(0,0);
+                            let mut empty = true;
                             for i in inputs {
-                                if let Some(i) = i { graph = graph | i.clone(); }
+                                if let Some(i) = i {
+                                    if empty {
+                                        graph = i.clone();
+                                        empty = false;
+                                    } else {
+                                        graph = graph | i.clone();
+                                    }
+                                }
                             }
                             access.net_changed_query.get_mut(*id).unwrap().0 = true;
                             access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(graph));
