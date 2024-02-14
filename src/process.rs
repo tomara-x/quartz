@@ -641,6 +641,10 @@ pub fn update_net(
             "declick" => { n.0 = Net32::wrap(Box::new(declick())); },
             "dsf_saw" => { n.0 = Net32::wrap(Box::new(dsf_saw())); },
             "dsf_square" => { n.0 = Net32::wrap(Box::new(dsf_square())); },
+            "hammond" => { n.0 = Net32::wrap(Box::new(hammond())); },
+            "highpass" => { n.0 = Net32::wrap(Box::new(highpass())); },
+            "highpole" => { n.0 = Net32::wrap(Box::new(highpole())); },
+            "highshelf" => { n.0 = Net32::wrap(Box::new(highshelf())); },
 
             "pan" => {
                 if let Some(p) = p.get(0) {
@@ -783,6 +787,56 @@ pub fn update_net(
             "dsf_square_r" => {
                 if let Some(p) = p.get(0) {
                     n.0 = Net32::wrap(Box::new(dsf_square_r(*p)));
+                }
+            },
+            "fir3" => {
+                //if let Some(p) = p.get(0) {
+                //    n.0 = Net32::wrap(Box::new(fir3(*p)));
+                //}
+            },
+            "follow" => {
+                if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(follow(*p)));
+                }
+            },
+            "hammond_hz" => {
+                if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(hammond_hz(*p)));
+                }
+            },
+            "highpass_hz" => {
+                if let Some(p) = p.get(0..2) {
+                    n.0 = Net32::wrap(Box::new(highpass_hz(p[0], p[1])));
+                }
+            },
+            "highpass_q" => {
+                if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(highpass_q(*p)));
+                }
+            },
+            "highpole_hz" => {
+                if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(highpole_hz(*p)));
+                }
+            },
+            "highshelf_hz" => {
+                if let Some(p) = p.get(0..3) {
+                    n.0 = Net32::wrap(Box::new(highshelf_hz(p[0], p[1], p[2])));
+                }
+            },
+            "highshelf_q" => {
+                if let Some(p) = p.get(0..2) {
+                    n.0 = Net32::wrap(Box::new(highshelf_q(p[0], p[1])));
+                }
+            },
+            "hold" => {
+                if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(hold(*p)));
+                }
+            },
+            "hold_hz" => {
+                if let Some(p) = p.get(0..2) {
+                    n.0 = Net32::wrap(Box::new(hold_hz(p[0], p[1])));
                 }
             },
 
