@@ -25,7 +25,7 @@ pub fn spawn_circles(
     !keyboard_input.pressed(KeyCode::Space) {
         let r = cursor.f.distance(cursor.i);
         let v = 8;
-        let color = Color::hsla(300., 1., 0.5, 1.);
+        let color = Color::hsla(1., 1., 0.84, 1.);
         commands.spawn((
             ColorMesh2dBundle {
                 mesh: meshes.add(shape::Circle { radius: r, vertices: v} .into()).into(),
