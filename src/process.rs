@@ -750,6 +750,9 @@ pub fn update_net(
                     [p0, ..] => { n.0 = Net32::wrap(Box::new(constant(p0))); },
                     _ => { n.0 = Net32::wrap(Box::new(constant(0.))); },
                 }
+                // try to figure out this size type stuff
+                // let x: &Frame<f32,U4> = Frame::from_slice(p.as_slice());
+                // n.0 = Net32::wrap(Box::new(constant(*x)));
             },
             "dcblock_hz" => {
                 if let Some(p) = p.get(0) {
