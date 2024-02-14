@@ -278,6 +278,7 @@ pub fn process(
                 },
                 // TODO(mara): overhaul these 2 as well
                 "sum()" => {
+                    let lost = access.lost_wh_query.get(*id).unwrap().0;
                     let mut changed = false;
                     let mut inputs = Vec::new();
                     for child in children {
@@ -291,7 +292,7 @@ pub fn process(
                             }
                         }
                     }
-                    if changed {
+                    if changed || lost {
                         access.net_changed_query.get_mut(*id).unwrap().0 = true;
                         let mut graph = Net32::wrap(Box::new(dc(0.)));
                         for i in inputs {
@@ -302,6 +303,7 @@ pub fn process(
                     }
                 },
                 "product()" => {
+                    let lost = access.lost_wh_query.get(*id).unwrap().0;
                     let mut changed = false;
                     let mut inputs = Vec::new();
                     for child in children {
@@ -317,7 +319,7 @@ pub fn process(
                             }
                         }
                     }
-                    if changed {
+                    if changed || lost {
                         access.net_changed_query.get_mut(*id).unwrap().0 = true;
                         let mut graph = Net32::wrap(Box::new(dc(1.)));
                         for i in inputs {
