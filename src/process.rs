@@ -276,7 +276,8 @@ pub fn process(
                         var.set_value(num);
                     }
                 },
-                "sum()" => {
+                "sum()" | "product()" => {
+                    let net_changed = access.net_changed_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
                     let mut changed = false;
                     let mut inputs = Vec::new();
@@ -291,7 +292,7 @@ pub fn process(
                             }
                         }
                     }
-                    if changed || lost {
+                    if changed || lost || net_changed {
                         let mut graph = Net32::new(0,0);
                         let mut empty = true;
                         for i in inputs {
@@ -299,38 +300,11 @@ pub fn process(
                                 graph = i.clone();
                                 empty = false;
                             } else if graph.outputs() == i.outputs() {
-                                graph = graph + i.clone();
-                            }
-                        }
-                        access.net_changed_query.get_mut(*id).unwrap().0 = true;
-                        let output = &mut access.net_query.get_mut(*id).unwrap().0;
-                        *output = Net32::wrap(Box::new(graph));
-                    }
-                },
-                "product()" => {
-                    let lost = access.lost_wh_query.get(*id).unwrap().0;
-                    let mut changed = false;
-                    let mut inputs = Vec::new();
-                    for child in children {
-                        if let Ok(mut wh) = white_hole_query.get_mut(*child) {
-                            if wh.link_types.0 == 0 {
-                                inputs.push(&access.net_query.get(wh.bh_parent).unwrap().0);
-                            }
-                            if wh.open {
-                                wh.open = false;
-                                changed = true;
-                            }
-                        }
-                    }
-                    if changed || lost {
-                        let mut graph = Net32::new(0,0);
-                        let mut empty = true;
-                        for i in inputs {
-                            if empty {
-                                graph = i.clone();
-                                empty = false;
-                            } else if graph.outputs() == i.outputs() {
-                                graph = graph * i.clone();
+                                if access.op_query.get(*id).unwrap().0 == "sum()" {
+                                    graph = graph + i.clone();
+                                } else {
+                                    graph = graph * i.clone();
+                                }
                             }
                         }
                         access.net_changed_query.get_mut(*id).unwrap().0 = true;
