@@ -292,11 +292,17 @@ pub fn process(
                         }
                     }
                     if changed || lost {
-                        access.net_changed_query.get_mut(*id).unwrap().0 = true;
-                        let mut graph = Net32::wrap(Box::new(dc(0.)));
+                        let mut graph = Net32::new(0,0);
+                        let mut empty = true;
                         for i in inputs {
-                            graph = graph + i.clone();
+                            if empty {
+                                graph = i.clone();
+                                empty = false;
+                            } else if graph.outputs() == i.outputs() {
+                                graph = graph + i.clone();
+                            }
                         }
+                        access.net_changed_query.get_mut(*id).unwrap().0 = true;
                         let output = &mut access.net_query.get_mut(*id).unwrap().0;
                         *output = Net32::wrap(Box::new(graph));
                     }
@@ -307,11 +313,9 @@ pub fn process(
                     let mut inputs = Vec::new();
                     for child in children {
                         if let Ok(mut wh) = white_hole_query.get_mut(*child) {
-                            // grab everything connected through a correct connection
                             if wh.link_types.0 == 0 {
                                 inputs.push(&access.net_query.get(wh.bh_parent).unwrap().0);
                             }
-                            // something is new so we'll update our output
                             if wh.open {
                                 wh.open = false;
                                 changed = true;
@@ -319,13 +323,17 @@ pub fn process(
                         }
                     }
                     if changed || lost {
-                        access.net_changed_query.get_mut(*id).unwrap().0 = true;
-                        let mut graph = Net32::wrap(Box::new(dc(1.)));
+                        let mut graph = Net32::new(0,0);
+                        let mut empty = true;
                         for i in inputs {
-                            // FIXME(tomara): this is dirty, clean it
-                            if i.outputs() != 1 { continue; }
-                            graph = graph * i.clone();
+                            if empty {
+                                graph = i.clone();
+                                empty = false;
+                            } else if graph.outputs() == i.outputs() {
+                                graph = graph * i.clone();
+                            }
                         }
+                        access.net_changed_query.get_mut(*id).unwrap().0 = true;
                         let output = &mut access.net_query.get_mut(*id).unwrap().0;
                         *output = Net32::wrap(Box::new(graph));
                     }
