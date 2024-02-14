@@ -411,7 +411,7 @@ pub fn process(
                         access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(graph));
                     }
                 },
-                "out()" => {
+                "out()" | "dac()" => {
                     let net_changed = access.net_changed_query.get(*id).unwrap().0;
                     let gained = access.gained_wh_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
@@ -440,28 +440,55 @@ pub fn process(
                         }
                     }
                 },
-                // TODO(mara): overhaul these 2
                 "outputs()" => {
+                    let net_changed = access.net_changed_query.get(*id).unwrap().0;
+                    let gained = access.gained_wh_query.get(*id).unwrap().0;
+                    let lost = access.lost_wh_query.get(*id).unwrap().0;
+                    let mut changed = false;
+                    let mut n: Option<usize> = None;
                     for child in children {
                         if let Ok(mut wh) = white_hole_query.get_mut(*child) {
-                            if wh.link_types == (0, 1) && (wh.open) {
-                                let net = &access.net_query.get(wh.bh_parent).unwrap().0;
-                                access.num_query.get_mut(*id).unwrap().0 = net.outputs() as f32;
-                                wh.open = false;
-                                continue 'entity;
+                            if wh.link_types == (0, 1) {
+                                n = Some(access.net_query.get(wh.bh_parent).unwrap().0.outputs());
+                                if wh.open {
+                                    wh.open = false;
+                                    changed = true;
+                                }
+                                break;
                             }
+                        }
+                    }
+                    if gained || lost || net_changed || changed {
+                        if let Some(n) = n {
+                            access.num_query.get_mut(*id).unwrap().0 = n as f32;
+                        } else {
+                            access.num_query.get_mut(*id).unwrap().0 = 0.;
                         }
                     }
                 },
                 "inputs()" => {
+                    let net_changed = access.net_changed_query.get(*id).unwrap().0;
+                    let gained = access.gained_wh_query.get(*id).unwrap().0;
+                    let lost = access.lost_wh_query.get(*id).unwrap().0;
+                    let mut changed = false;
+                    let mut n: Option<usize> = None;
                     for child in children {
                         if let Ok(mut wh) = white_hole_query.get_mut(*child) {
-                            if wh.link_types == (0, 1) && (wh.open) {
-                                let net = &access.net_query.get(wh.bh_parent).unwrap().0;
-                                access.num_query.get_mut(*id).unwrap().0 = net.inputs() as f32;
-                                wh.open = false;
-                                continue 'entity;
+                            if wh.link_types == (0, 1) {
+                                n = Some(access.net_query.get(wh.bh_parent).unwrap().0.inputs());
+                                if wh.open {
+                                    wh.open = false;
+                                    changed = true;
+                                }
+                                break;
                             }
+                        }
+                    }
+                    if gained || lost || net_changed || changed {
+                        if let Some(n) = n {
+                            access.num_query.get_mut(*id).unwrap().0 = n as f32;
+                        } else {
+                            access.num_query.get_mut(*id).unwrap().0 = 0.;
                         }
                     }
                 },
