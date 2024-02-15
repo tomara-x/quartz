@@ -677,6 +677,8 @@ pub fn update_net(
             "moog" => { n.0 = Net32::wrap(Box::new(moog())); },
             "morph" => { n.0 = Net32::wrap(Box::new(morph())); },
             "notch" => { n.0 = Net32::wrap(Box::new(notch())); },
+            "peak" => { n.0 = Net32::wrap(Box::new(peak())); },
+            "pinkpass" => { n.0 = Net32::wrap(Box::new(pinkpass())); }
 
             "pan" => {
                 if let Some(p) = p.get(0) {
@@ -977,6 +979,21 @@ pub fn update_net(
             "notch_q" => {
                 if let Some(p) = p.get(0) {
                     n.0 = Net32::wrap(Box::new(notch_q(*p)));
+                }
+            },
+            "peak_hz" => {
+                if let Some(p) = p.get(0..2) {
+                    n.0 = Net32::wrap(Box::new(peak_hz(p[0], p[1])));
+                }
+            },
+            "peak_q" => {
+                if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(peak_q(*p)));
+                }
+            },
+            "pluck" => {
+                if let Some(p) = p.get(0..3) {
+                    n.0 = Net32::wrap(Box::new(pluck(p[0], p[1], p[2])));
                 }
             },
 
