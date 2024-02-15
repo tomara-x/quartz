@@ -682,6 +682,7 @@ pub fn update_net(
             "resonator" => { n.0 = Net32::wrap(Box::new(resonator())); }
             "rossler" => { n.0 = Net32::wrap(Box::new(rossler())); }
             "soft_saw" => { n.0 = Net32::wrap(Box::new(soft_saw())); }
+            "tick" => { n.0 = Net32::wrap(Box::new(tick())); }
 
             "pan" => {
                 if let Some(p) = p.get(0) {
@@ -1012,6 +1013,11 @@ pub fn update_net(
             "soft_saw_hz" => {
                 if let Some(p) = p.get(0) {
                     n.0 = Net32::wrap(Box::new(soft_saw_hz(*p)));
+                }
+            },
+            "tap" => {
+                if let Some(p) = p.get(0..2) {
+                    n.0 = Net32::wrap(Box::new(tap(p[0], p[1])));
                 }
             },
 
