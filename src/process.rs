@@ -683,6 +683,7 @@ pub fn update_net(
             "rossler" => { n.0 = Net32::wrap(Box::new(rossler())); }
             "soft_saw" => { n.0 = Net32::wrap(Box::new(soft_saw())); }
             "tick" => { n.0 = Net32::wrap(Box::new(tick())); }
+            "zero" => { n.0 = Net32::wrap(Box::new(zero())); }
 
             "pan" => {
                 if let Some(p) = p.get(0) {
