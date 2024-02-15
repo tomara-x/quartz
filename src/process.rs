@@ -651,7 +651,7 @@ pub fn update_net(
             "pulse" => { n.0 = Net32::wrap(Box::new(pulse())); },
             "brown" => { n.0 = Net32::wrap(Box::new(brown())); },
             "pink" => { n.0 = Net32::wrap(Box::new(pink())); },
-            "white" => { n.0 = Net32::wrap(Box::new(white())); },
+            "white" | "noise" => { n.0 = Net32::wrap(Box::new(white())); },
 
             "allpass" => { n.0 = Net32::wrap(Box::new(allpass())); },
             "allpole" => { n.0 = Net32::wrap(Box::new(allpole())); },
@@ -676,6 +676,7 @@ pub fn update_net(
             "mls" => { n.0 = Net32::wrap(Box::new(mls())); },
             "moog" => { n.0 = Net32::wrap(Box::new(moog())); },
             "morph" => { n.0 = Net32::wrap(Box::new(morph())); },
+            "notch" => { n.0 = Net32::wrap(Box::new(notch())); },
 
             "pan" => {
                 if let Some(p) = p.get(0) {
@@ -966,6 +967,16 @@ pub fn update_net(
                     [p0, p1, ..] => { n.0 = Net32::wrap(Box::new(mul((p0, p1)))); },
                     [p0, ..] => { n.0 = Net32::wrap(Box::new(mul(p0))); },
                     _ => { n.0 = Net32::wrap(Box::new(mul(1.))); },
+                }
+            },
+            "notch_hz" => {
+                if let Some(p) = p.get(0..2) {
+                    n.0 = Net32::wrap(Box::new(notch_hz(p[0], p[1])));
+                }
+            },
+            "notch_q" => {
+                if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(notch_q(*p)));
                 }
             },
 
