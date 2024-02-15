@@ -679,6 +679,8 @@ pub fn update_net(
             "notch" => { n.0 = Net32::wrap(Box::new(notch())); },
             "peak" => { n.0 = Net32::wrap(Box::new(peak())); },
             "pinkpass" => { n.0 = Net32::wrap(Box::new(pinkpass())); }
+            "resonator" => { n.0 = Net32::wrap(Box::new(resonator())); }
+            "rossler" => { n.0 = Net32::wrap(Box::new(rossler())); }
 
             "pan" => {
                 if let Some(p) = p.get(0) {
@@ -994,6 +996,16 @@ pub fn update_net(
             "pluck" => {
                 if let Some(p) = p.get(0..3) {
                     n.0 = Net32::wrap(Box::new(pluck(p[0], p[1], p[2])));
+                }
+            },
+            "resonator_hz" => {
+                if let Some(p) = p.get(0..2) {
+                    n.0 = Net32::wrap(Box::new(resonator_hz(p[0], p[1])));
+                }
+            },
+            "reverb_stereo" => {
+                if let Some(p) = p.get(0..2) {
+                    n.0 = Net32::wrap(Box::new(reverb_stereo(p[0].into(), p[1].into())));
                 }
             },
 
