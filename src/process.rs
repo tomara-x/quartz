@@ -645,6 +645,11 @@ pub fn update_net(
             "highpass" => { n.0 = Net32::wrap(Box::new(highpass())); },
             "highpole" => { n.0 = Net32::wrap(Box::new(highpole())); },
             "highshelf" => { n.0 = Net32::wrap(Box::new(highshelf())); },
+            "lorenz" => { n.0 = Net32::wrap(Box::new(lorenz())); },
+            "lowpass" => { n.0 = Net32::wrap(Box::new(lowpass())); },
+            "lowpole" => { n.0 = Net32::wrap(Box::new(lowpole())); },
+            "lowrez" => { n.0 = Net32::wrap(Box::new(lowrez())); },
+            "lowshelf" => { n.0 = Net32::wrap(Box::new(lowshelf())); },
 
             "pan" => {
                 if let Some(p) = p.get(0) {
@@ -847,6 +852,55 @@ pub fn update_net(
                         8 => { n.0 = Net32::wrap(Box::new(join::<U8>())); },
                         _ => {},
                     }
+                }
+            },
+            "limiter" => {
+                if let Some(p) = p.get(0..2) {
+                    n.0 = Net32::wrap(Box::new(limiter((p[0], p[1]))));
+                } else if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(limiter(*p)));
+                }
+            },
+            "limiter_stereo" => {
+                if let Some(p) = p.get(0..2) {
+                    n.0 = Net32::wrap(Box::new(limiter_stereo((p[0], p[1]))));
+                } else if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(limiter_stereo(*p)));
+                }
+            },
+            "lowpass_hz" => {
+                if let Some(p) = p.get(0..2) {
+                    n.0 = Net32::wrap(Box::new(lowpass_hz(p[0], p[1])));
+                }
+            },
+            "lowpass_q" => {
+                if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(lowpass_q(*p)));
+                }
+            },
+            "lowpole_hz" => {
+                if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(lowpole_hz(*p)));
+                }
+            },
+            "lowrez_hz" => {
+                if let Some(p) = p.get(0..2) {
+                    n.0 = Net32::wrap(Box::new(lowrez_hz(p[0], p[1])));
+                }
+            },
+            "lowrez_q" => {
+                if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(lowrez_q(*p)));
+                }
+            },
+            "lowshelf_hz" => {
+                if let Some(p) = p.get(0..3) {
+                    n.0 = Net32::wrap(Box::new(lowshelf_hz(p[0], p[1], p[2])));
+                }
+            },
+            "lowshelf_q" => {
+                if let Some(p) = p.get(0..2) {
+                    n.0 = Net32::wrap(Box::new(lowshelf_q(p[0], p[1])));
                 }
             },
 
