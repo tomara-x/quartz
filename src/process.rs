@@ -673,6 +673,9 @@ pub fn update_net(
             "lowpole" => { n.0 = Net32::wrap(Box::new(lowpole())); },
             "lowrez" => { n.0 = Net32::wrap(Box::new(lowrez())); },
             "lowshelf" => { n.0 = Net32::wrap(Box::new(lowshelf())); },
+            "mls" => { n.0 = Net32::wrap(Box::new(mls())); },
+            "moog" => { n.0 = Net32::wrap(Box::new(moog())); },
+            "morph" => { n.0 = Net32::wrap(Box::new(morph())); },
 
             "pan" => {
                 if let Some(p) = p.get(0) {
@@ -706,8 +709,15 @@ pub fn update_net(
             },
 
             "add" => {
-                if let Some(p) = p.get(0) {
-                    n.0 = Net32::wrap(Box::new(add(*p)));
+                //if let Some(p) = p.get(0) {
+                //    n.0 = Net32::wrap(Box::new(add(*p)));
+                //}
+                match p[..] {
+                    [p0, p1, p2, p3, ..] => { n.0 = Net32::wrap(Box::new(add((p0, p1, p2, p3)))); },
+                    [p0, p1, p2, ..] => { n.0 = Net32::wrap(Box::new(add((p0, p1, p2)))); },
+                    [p0, p1, ..] => { n.0 = Net32::wrap(Box::new(add((p0, p1)))); },
+                    [p0, ..] => { n.0 = Net32::wrap(Box::new(add(p0))); },
+                    _ => { n.0 = Net32::wrap(Box::new(add(0.))); },
                 }
             },
             "adsr" => {
@@ -924,6 +934,38 @@ pub fn update_net(
             "lowshelf_q" => {
                 if let Some(p) = p.get(0..2) {
                     n.0 = Net32::wrap(Box::new(lowshelf_q(p[0], p[1])));
+                }
+            },
+            "mls_bits" => {
+                if let Some(p) = p.get(0) {
+                    let p = *p as i64;
+                    if p >= 1 && p <= 31 {
+                        n.0 = Net32::wrap(Box::new(mls_bits(p)));
+                    }
+                }
+            },
+            "moog_hz" => {
+                if let Some(p) = p.get(0..2) {
+                    n.0 = Net32::wrap(Box::new(moog_hz(p[0], p[1])));
+                }
+            },
+            "moog_q" => {
+                if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(moog_q(*p)));
+                }
+            },
+            "morph_hz" => {
+                if let Some(p) = p.get(0..3) {
+                    n.0 = Net32::wrap(Box::new(morph_hz(p[0], p[1], p[2])));
+                }
+            },
+            "mul" => {
+                match p[..] {
+                    [p0, p1, p2, p3, ..] => { n.0 = Net32::wrap(Box::new(mul((p0, p1, p2, p3)))); },
+                    [p0, p1, p2, ..] => { n.0 = Net32::wrap(Box::new(mul((p0, p1, p2)))); },
+                    [p0, p1, ..] => { n.0 = Net32::wrap(Box::new(mul((p0, p1)))); },
+                    [p0, ..] => { n.0 = Net32::wrap(Box::new(mul(p0))); },
+                    _ => { n.0 = Net32::wrap(Box::new(mul(1.))); },
                 }
             },
 
