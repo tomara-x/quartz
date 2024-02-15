@@ -447,11 +447,11 @@ pub fn process(
                 "info()" => {
                     let net_changed = access.net_changed_query.get(*id).unwrap().0;
                     let mut changed = false;
-                    let mut n = None;
+                    let mut input_entity = None;
                     for child in children {
                         if let Ok(mut wh) = white_hole_query.get_mut(*child) {
                             if wh.link_types == (0, 1) {
-                                n = Some(&access.net_query.get(wh.bh_parent).unwrap().0);
+                                input_entity = Some(wh.bh_parent);
                                 if wh.open {
                                     wh.open = false;
                                     changed = true;
@@ -461,8 +461,9 @@ pub fn process(
                         }
                     }
                     if net_changed || changed {
-                        if let Some(n) = n {
-                            println!("{}", n.clone().display());
+                        if let Some(e) = input_entity {
+                            println!("> {}", access.op_query.get(e).unwrap().0);
+                            println!("{}", access.net_query.get(e).unwrap().0.clone().display());
                         }
                     }
                 },
