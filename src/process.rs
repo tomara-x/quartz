@@ -681,6 +681,7 @@ pub fn update_net(
             "pinkpass" => { n.0 = Net32::wrap(Box::new(pinkpass())); }
             "resonator" => { n.0 = Net32::wrap(Box::new(resonator())); }
             "rossler" => { n.0 = Net32::wrap(Box::new(rossler())); }
+            "soft_saw" => { n.0 = Net32::wrap(Box::new(soft_saw())); }
 
             "pan" => {
                 if let Some(p) = p.get(0) {
@@ -1006,6 +1007,11 @@ pub fn update_net(
             "reverb_stereo" => {
                 if let Some(p) = p.get(0..2) {
                     n.0 = Net32::wrap(Box::new(reverb_stereo(p[0].into(), p[1].into())));
+                }
+            },
+            "soft_saw_hz" => {
+                if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(soft_saw_hz(*p)));
                 }
             },
 
