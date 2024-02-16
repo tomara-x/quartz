@@ -81,6 +81,27 @@ pub fn process(
                         }
                     }
                 },
+                "lmb_pressed" => {
+                    if mouse_button_input.pressed(MouseButton::Left) {
+                        access.num_query.get_mut(*id).unwrap().0 = 1.;
+                    } else {
+                        access.num_query.get_mut(*id).unwrap().0 = 0.;
+                    }
+                },
+                "mmb_pressed" => {
+                    if mouse_button_input.pressed(MouseButton::Middle) {
+                        access.num_query.get_mut(*id).unwrap().0 = 1.;
+                    } else {
+                        access.num_query.get_mut(*id).unwrap().0 = 0.;
+                    }
+                },
+                "rmb_pressed" => {
+                    if mouse_button_input.pressed(MouseButton::Right) {
+                        access.num_query.get_mut(*id).unwrap().0 = 1.;
+                    } else {
+                        access.num_query.get_mut(*id).unwrap().0 = 0.;
+                    }
+                },
                 "lmb_just_pressed" | "lmb_just_released" |
                 "mmb_just_pressed" | "mmb_just_released" |
                 "rmb_just_pressed" | "rmb_just_released" => {
