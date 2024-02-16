@@ -59,10 +59,73 @@ pub fn process(
     cursor: Res<CursorInfo>,
     mouse_button_input: Res<Input<MouseButton>>,
     mut char_input_events: EventReader<ReceivedCharacter>,
+    camera_query: Query<(&Camera, &GlobalTransform)>,
+    windows: Query<&Window>,
 ) {
     'entity: for id in queue.0.iter().flatten() {
         if let Ok(children) = &children_query.get(*id) {
             match access.op_query.get(*id).unwrap().0.as_str() {
+                "mouse_x" => {
+                    let (cam, cam_transform) = camera_query.single();
+                    if let Some(cursor_pos) = windows.single().cursor_position() {
+                        if let Some(point) = cam.viewport_to_world_2d(cam_transform, cursor_pos) {
+                            access.num_query.get_mut(*id).unwrap().0 = point.x;
+                        }
+                    }
+                },
+                "mouse_y" => {
+                    let (cam, cam_transform) = camera_query.single();
+                    if let Some(cursor_pos) = windows.single().cursor_position() {
+                        if let Some(point) = cam.viewport_to_world_2d(cam_transform, cursor_pos) {
+                            access.num_query.get_mut(*id).unwrap().0 = point.y;
+                        }
+                    }
+                },
+                "lmb_just_pressed" | "lmb_just_released" |
+                "mmb_just_pressed" | "mmb_just_released" |
+                "rmb_just_pressed" | "rmb_just_released" => {
+                    let mut zero = false;
+                    let mut one = false;
+                    if access.num_query.get(*id).unwrap().0 != 0. {
+                        access.num_query.get_mut(*id).unwrap().bypass_change_detection().0 = 0.;
+                        zero = true;
+                    }
+                    match access.op_query.get(*id).unwrap().0.as_str() {
+                        "lmb_just_pressed" => {
+                            if mouse_button_input.just_pressed(MouseButton::Left) { one = true; }
+                        }
+                        "lmb_just_released" => {
+                            if mouse_button_input.just_released(MouseButton::Left) { one = true; }
+                        }
+                        "mmb_just_pressed" => {
+                            if mouse_button_input.just_pressed(MouseButton::Middle) { one = true; }
+                        }
+                        "mmb_just_released" => {
+                            if mouse_button_input.just_released(MouseButton::Middle) { one = true; }
+                        }
+                        "rmb_just_pressed" => {
+                            if mouse_button_input.just_pressed(MouseButton::Right) { one = true; }
+                        }
+                        "rmb_just_released" => {
+                            if mouse_button_input.just_released(MouseButton::Right) { one = true; }
+                        }
+                        _ => {}
+                    }
+                    if one {
+                        access.num_query.get_mut(*id).unwrap().bypass_change_detection().0 = 1.;
+                    }
+                    if zero || one {
+                        for child in children {
+                            if let Ok(bh) = black_hole_query.get(*child) {
+                                if let Ok(wh) = white_hole_query.get_mut(bh.wh) {
+                                    if wh.link_types.0 == -1 {
+                                        white_hole_query.get_mut(bh.wh).unwrap().open = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
                 "butt" => {
                     if mouse_button_input.just_pressed(MouseButton::Left) {
                         let t = access.trans_query.get(*id).unwrap().translation.xy();
