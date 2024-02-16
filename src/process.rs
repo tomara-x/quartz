@@ -895,6 +895,16 @@ pub fn update_net(
                     }
                 }
             },
+            "split" => {
+                if let Some(p) = p.get(0) {
+                    match *p as usize {
+                        2 => { n.0 = Net32::wrap(Box::new(split::<U2>())); },
+                        4 => { n.0 = Net32::wrap(Box::new(split::<U4>())); },
+                        8 => { n.0 = Net32::wrap(Box::new(split::<U8>())); },
+                        _ => {},
+                    }
+                }
+            },
             "limiter" => {
                 if let Some(p) = p.get(0..2) {
                     n.0 = Net32::wrap(Box::new(limiter((p[0], p[1]))));
