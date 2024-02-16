@@ -835,6 +835,21 @@ pub fn update_net(
                     n.0 = Net32::wrap(Box::new(dsf_square_r(*p)));
                 }
             },
+            "fir" => {
+                match p[..] {
+                    [p0,p1,p2,p3,p4,p5,p6,p7,p8,p9,..] => { n.0 = Net32::wrap(Box::new(fir((p0,p1,p2,p3,p4,p5,p6,p7,p8,p9)))); },
+                    [p0,p1,p2,p3,p4,p5,p6,p7,p8,..] => { n.0 = Net32::wrap(Box::new(fir((p0,p1,p2,p3,p4,p5,p6,p7,p8)))); },
+                    [p0,p1,p2,p3,p4,p5,p6,p7,..] => { n.0 = Net32::wrap(Box::new(fir((p0,p1,p2,p3,p4,p5,p6,p7)))); },
+                    [p0,p1,p2,p3,p4,p5,p6,..] => { n.0 = Net32::wrap(Box::new(fir((p0,p1,p2,p3,p4,p5,p6)))); },
+                    [p0,p1,p2,p3,p4,p5,..] => { n.0 = Net32::wrap(Box::new(fir((p0,p1,p2,p3,p4,p5)))); },
+                    [p0,p1,p2,p3,p4,..] => { n.0 = Net32::wrap(Box::new(fir((p0,p1,p2,p3,p4)))); },
+                    [p0,p1,p2,p3,..] => { n.0 = Net32::wrap(Box::new(fir((p0,p1,p2,p3)))); },
+                    [p0,p1,p2,..] => { n.0 = Net32::wrap(Box::new(fir((p0,p1,p2)))); },
+                    [p0,p1,..] => { n.0 = Net32::wrap(Box::new(fir((p0,p1)))); },
+                    [p0,..] => { n.0 = Net32::wrap(Box::new(fir(p0))); },
+                    _ => {},
+                }
+            },
             "fir3" => {
                 if let Some(p) = p.get(0) {
                     n.0 = Net32::wrap(Box::new(An(fir3(*p))));
