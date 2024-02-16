@@ -152,33 +152,11 @@ pub fn process(
                         let t = access.trans_query.get(*id).unwrap().translation.xy();
                         let r = access.radius_query.get(*id).unwrap().0;
                         if cursor.i.distance_squared(t) < r*r {
-                            access.num_query.get_mut(*id).unwrap().bypass_change_detection().0 = 1.;
-                            for child in children {
-                                if let Ok(bh) = black_hole_query.get(*child) {
-                                    if let Ok(wh) = white_hole_query.get_mut(bh.wh) {
-                                        if wh.link_types.0 == -1 {
-                                            white_hole_query.get_mut(bh.wh).unwrap().open = true;
-                                        }
-                                    }
-                                }
-                            }
+                            access.num_query.get_mut(*id).unwrap().0 = 1.;
                         }
                     }
                     if mouse_button_input.just_released(MouseButton::Left) {
-                        let t = access.trans_query.get(*id).unwrap().translation.xy();
-                        let r = access.radius_query.get(*id).unwrap().0;
-                        if cursor.f.distance_squared(t) < r*r {
-                            access.num_query.get_mut(*id).unwrap().bypass_change_detection().0 = 0.;
-                            for child in children {
-                                if let Ok(bh) = black_hole_query.get(*child) {
-                                    if let Ok(wh) = white_hole_query.get_mut(bh.wh) {
-                                        if wh.link_types.0 == -1 {
-                                            white_hole_query.get_mut(bh.wh).unwrap().open = true;
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        access.num_query.get_mut(*id).unwrap().0 = 0.;
                     }
                 },
                 "toggle" => {
@@ -187,37 +165,24 @@ pub fn process(
                         let r = access.radius_query.get(*id).unwrap().0;
                         if cursor.i.distance_squared(t) < r*r {
                             let n = access.num_query.get(*id).unwrap().0;
-                            access.num_query.get_mut(*id).unwrap().bypass_change_detection().0 = 1. - n;
-                            for child in children {
-                                if let Ok(bh) = black_hole_query.get(*child) {
-                                    if let Ok(wh) = white_hole_query.get_mut(bh.wh) {
-                                        if wh.link_types.0 == -1 {
-                                            white_hole_query.get_mut(bh.wh).unwrap().open = true;
-                                        }
-                                    }
-                                }
-                            }
+                            access.num_query.get_mut(*id).unwrap().0 = 1. - n;
                         }
                     }
                 },
                 "tbutt" => {
+                    let mut changed = false;
                     if mouse_button_input.just_pressed(MouseButton::Left) {
                         let t = access.trans_query.get(*id).unwrap().translation.xy();
                         let r = access.radius_query.get(*id).unwrap().0;
                         if cursor.i.distance_squared(t) < r*r {
                             access.num_query.get_mut(*id).unwrap().bypass_change_detection().0 = 1.;
-                            for child in children {
-                                if let Ok(bh) = black_hole_query.get(*child) {
-                                    if let Ok(wh) = white_hole_query.get_mut(bh.wh) {
-                                        if wh.link_types.0 == -1 {
-                                            white_hole_query.get_mut(bh.wh).unwrap().open = true;
-                                        }
-                                    }
-                                }
-                            }
+                            changed = true;
                         }
                     } else if access.num_query.get(*id).unwrap().0 != 0. {
                         access.num_query.get_mut(*id).unwrap().bypass_change_detection().0 = 0.;
+                        changed = true;
+                    }
+                    if changed {
                         for child in children {
                             if let Ok(bh) = black_hole_query.get(*child) {
                                 if let Ok(wh) = white_hole_query.get_mut(bh.wh) {
