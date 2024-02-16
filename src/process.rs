@@ -325,7 +325,7 @@ pub fn process(
                         var.set_value(num);
                     }
                 },
-                "monitor()" => {
+                "monitor()" | "timer()" => {
                     access.num_query.get_mut(*id).unwrap().0 = access.net_ins_query.get(*id).unwrap().0[0].value();
                 },
                 "sum()" | "product()" => {
@@ -691,6 +691,11 @@ pub fn update_net(
             "monitor" => {
                 let s = shared(0.);
                 n.0 = Net32::wrap(Box::new(monitor(&s, Meter::Sample)));
+                inputs.0.push(s);
+            },
+            "timer" => {
+                let s = shared(0.);
+                n.0 = Net32::wrap(Box::new(timer(&s)));
                 inputs.0.push(s);
             },
             "sink" => { n.0 = Net32::wrap(Box::new(sink())); },
