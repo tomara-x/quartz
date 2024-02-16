@@ -836,9 +836,9 @@ pub fn update_net(
                 }
             },
             "fir3" => {
-                //if let Some(p) = p.get(0) {
-                //    n.0 = Net32::wrap(Box::new(fir3(*p)));
-                //}
+                if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(An(fir3(*p))));
+                }
             },
             "follow" => {
                 if let Some(p) = p.get(0) {
