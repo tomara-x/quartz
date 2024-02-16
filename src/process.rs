@@ -496,6 +496,7 @@ pub fn process(
                         }
                     }
                 },
+                // TODO(amy): turn this into a command instead
                 "info()" => {
                     let net_changed = access.net_changed_query.get(*id).unwrap().0;
                     let mut changed = false;
@@ -519,38 +520,38 @@ pub fn process(
                         }
                     }
                 },
-                "probe()" => {
-                    let net_changed = access.net_changed_query.get(*id).unwrap().0;
-                    //let gained = access.gained_wh_query.get(*id).unwrap().0;
-                    let lost = access.lost_wh_query.get(*id).unwrap().0;
-                    let mut changed = false;
-                    let mut net = None;
-                    for child in children {
-                        if let Ok(mut wh) = white_hole_query.get_mut(*child) {
-                            if wh.link_types == (0, 1) {
-                                net = Some(access.net_query.get(wh.bh_parent).unwrap().0.clone());
-                            }
-                            if wh.open {
-                                wh.open = false;
-                                changed = true;
-                            }
-                        }
-                    }
-                    if /*gained ||*/ lost || net_changed || changed {
-                        if let Some(net) = net {
-                            if (net.outputs() == 1 || net.outputs() == 2) && net.inputs() == 0 {
-                                access.net_query.get_mut(*id).unwrap().0 = net;
-                            }
-                        } else {
-                            access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(dc(0.)));
-                        }
-                    }
-                    let net = &mut access.net_query.get_mut(*id).unwrap().0;
-                    // 44100/60 (samples in a visual frame) (we just use the last one)
-                    // this will never be accurate
-                    for _ in 0..734 { net.get_mono(); }
-                    access.num_query.get_mut(*id).unwrap().set_if_neq(Num(net.get_mono()));
-                },
+                //"probe()" => {
+                //    let net_changed = access.net_changed_query.get(*id).unwrap().0;
+                //    //let gained = access.gained_wh_query.get(*id).unwrap().0;
+                //    let lost = access.lost_wh_query.get(*id).unwrap().0;
+                //    let mut changed = false;
+                //    let mut net = None;
+                //    for child in children {
+                //        if let Ok(mut wh) = white_hole_query.get_mut(*child) {
+                //            if wh.link_types == (0, 1) {
+                //                net = Some(access.net_query.get(wh.bh_parent).unwrap().0.clone());
+                //            }
+                //            if wh.open {
+                //                wh.open = false;
+                //                changed = true;
+                //            }
+                //        }
+                //    }
+                //    if /*gained ||*/ lost || net_changed || changed {
+                //        if let Some(net) = net {
+                //            if (net.outputs() == 1 || net.outputs() == 2) && net.inputs() == 0 {
+                //                access.net_query.get_mut(*id).unwrap().0 = net;
+                //            }
+                //        } else {
+                //            access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(dc(0.)));
+                //        }
+                //    }
+                //    let net = &mut access.net_query.get_mut(*id).unwrap().0;
+                //    // 44100/60 (samples in a visual frame) (we just use the last one)
+                //    // this will never be accurate
+                //    for _ in 0..734 { net.get_mono(); }
+                //    access.num_query.get_mut(*id).unwrap().set_if_neq(Num(net.get_mono()));
+                //},
                 _ => {},
             }
             // open all white holes reading from this changed net
