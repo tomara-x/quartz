@@ -326,7 +326,9 @@ pub fn process(
                     }
                 },
                 "monitor()" | "timer()" => {
-                    access.num_query.get_mut(*id).unwrap().0 = access.net_ins_query.get(*id).unwrap().0[0].value();
+                    if let Some(var) = access.net_ins_query.get(*id).unwrap().0.get(0) {
+                        access.num_query.get_mut(*id).unwrap().0 = var.value();
+                    }
                 },
                 "sum()" | "product()" => {
                     let net_changed = access.net_changed_query.get(*id).unwrap().0;
