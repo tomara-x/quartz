@@ -919,7 +919,9 @@ pub fn update_net(
                 }
             },
             "follow" => {
-                if let Some(p) = p.get(0) {
+                if let Some(p) = p.get(0..2) {
+                    n.0 = Net32::wrap(Box::new(follow((p[0], p[1]))));
+                } else if let Some(p) = p.get(0) {
                     n.0 = Net32::wrap(Box::new(follow(*p)));
                 }
             },
