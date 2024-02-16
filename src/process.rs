@@ -543,11 +543,10 @@ pub fn process(
                         }
                     }
                     let net = &mut access.net_query.get_mut(*id).unwrap().0;
-                    let num = &mut access.num_query.get_mut(*id).unwrap().0;
                     // 44100/60 (samples in a visual frame) (we just use the last one)
                     // this will never be accurate
                     for _ in 0..734 { net.get_mono(); }
-                    *num = net.get_mono();
+                    access.num_query.get_mut(*id).unwrap().set_if_neq(Num(net.get_mono()));
                 },
                 _ => {},
             }

@@ -18,7 +18,7 @@ use fundsp::{
 #[reflect(Component)]
 pub struct Op(pub String);
 
-#[derive(Component, Reflect, Default)]
+#[derive(Component, Reflect, Default, PartialEq)]
 #[reflect(Component)]
 pub struct Num(pub f32);
 
