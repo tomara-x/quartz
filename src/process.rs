@@ -325,6 +325,9 @@ pub fn process(
                         var.set_value(num);
                     }
                 },
+                "monitor()" => {
+                    access.num_query.get_mut(*id).unwrap().0 = access.net_ins_query.get(*id).unwrap().0[0].value();
+                },
                 "sum()" | "product()" => {
                     let net_changed = access.net_changed_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
@@ -682,6 +685,12 @@ pub fn update_net(
                 let input = shared(0.);
                 n.0 = Net32::wrap(Box::new(var(&input)));
                 inputs.0.push(input);
+            },
+            // TODO(amy): add the other modes
+            "monitor" => {
+                let s = shared(0.);
+                n.0 = Net32::wrap(Box::new(monitor(&s, Meter::Sample)));
+                inputs.0.push(s);
             },
             "sink" => { n.0 = Net32::wrap(Box::new(sink())); },
             "pass" => { n.0 = Net32::wrap(Box::new(pass())); },
