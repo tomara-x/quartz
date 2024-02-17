@@ -169,6 +169,17 @@ pub fn process(
                         }
                     }
                 }
+                // this would be useful if we only ever read from open wh
+                "change" => {
+                    for child in children {
+                        if let Ok(wh) = white_hole_query.get(*child) {
+                            if wh.link_types == (-1, 1) {
+                                let input = access.num_query.get(wh.bh_parent).unwrap().0;
+                                access.num_query.get_mut(*id).unwrap().set_if_neq(Num(input));
+                            }
+                        }
+                    }
+                }
                 // uses the array to store prevous num value
                 "rise" => {
                     if access.net_changed_query.get(*id).unwrap().0 {
