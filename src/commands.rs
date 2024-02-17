@@ -7,6 +7,8 @@ use bevy::{
 
 use crate::components::*;
 
+use fundsp::audiounit::AudioUnit32;
+
 #[derive(SystemParam)]
 pub struct Access<'w, 's> {
     op_query: Query<'w, 's, &'static mut Op>,
@@ -26,6 +28,7 @@ pub struct Access<'w, 's> {
     gained_wh_query: Query<'w, 's, &'static mut GainedWH>,
     text_query: Query<'w, 's, &'static mut Text, Without<CommandText>>,
     render_layers: Query<'w, 's, &'static mut RenderLayers, With<Camera>>,
+    net_query: Query<'w, 's, &'static mut Network>,
 }
 
 pub fn command_parser(
@@ -115,6 +118,13 @@ pub fn command_parser(
                     Some(":w") => {
                         if let Some(s) = command.next() {
                             access.save_event.send(SaveCommand(s.to_string()));
+                        }
+                    }
+                    // audio node info
+                    Some(":info") => {
+                        for e in access.selected_query.iter() {
+                            if let Ok(e) = access.op_query.get(e) { println!("> {}", e.0); }
+                            if let Ok(e) = access.net_query.get(e) { println!("{}", e.0.clone().display()); }
                         }
                     }
                     // white hole / black hole link type
@@ -682,6 +692,25 @@ pub fn command_parser(
                 }
                 *ids_shown = !*ids_shown;
                 text.clear();
+            }
+            // audio node inputs / outputs number
+            Some("nin") => {
+                let mut t = String::new();
+                for e in access.selected_query.iter() {
+                    if let Ok(n) = access.net_query.get(e) {
+                        t = t + &format!("[{:?}]{}  ", e, n.0.inputs());
+                    }
+                }
+                *text = format!(">INPUTS: {}", t);
+            }
+            Some("nout") => {
+                let mut t = String::new();
+                for e in access.selected_query.iter() {
+                    if let Ok(n) = access.net_query.get(e) {
+                        t = t + &format!("[{:?}]{}  ", e, n.0.outputs());
+                    }
+                }
+                *text = format!(">OUTPUTS: {}", t);
             }
             // inspect commands
             Some("ii") => {

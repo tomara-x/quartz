@@ -500,60 +500,59 @@ pub fn process(
                         }
                     }
                 }
-                "outputs()" | "inputs()" => {
-                    let net_changed = access.net_changed_query.get(*id).unwrap().0;
-                    //let gained = access.gained_wh_query.get(*id).unwrap().0;
-                    let lost = access.lost_wh_query.get(*id).unwrap().0;
-                    let mut changed = false;
-                    let mut n: Option<usize> = None;
-                    for child in children {
-                        if let Ok(mut wh) = white_hole_query.get_mut(*child) {
-                            if wh.link_types == (0, 1) {
-                                if access.op_query.get(*id).unwrap().0 == "outputs()" {
-                                    n = Some(access.net_query.get(wh.bh_parent).unwrap().0.outputs());
-                                } else {
-                                    n = Some(access.net_query.get(wh.bh_parent).unwrap().0.inputs());
-                                }
-                                if wh.open {
-                                    wh.open = false;
-                                    changed = true;
-                                }
-                                break;
-                            }
-                        }
-                    }
-                    if /*gained ||*/ lost || net_changed || changed {
-                        if let Some(n) = n {
-                            access.num_query.get_mut(*id).unwrap().0 = n as f32;
-                        } else {
-                            access.num_query.get_mut(*id).unwrap().0 = 0.;
-                        }
-                    }
-                }
-                // TODO(amy): turn this into a command instead
-                "info()" => {
-                    let net_changed = access.net_changed_query.get(*id).unwrap().0;
-                    let mut changed = false;
-                    let mut input_entity = None;
-                    for child in children {
-                        if let Ok(mut wh) = white_hole_query.get_mut(*child) {
-                            if wh.link_types == (0, 1) {
-                                input_entity = Some(wh.bh_parent);
-                                if wh.open {
-                                    wh.open = false;
-                                    changed = true;
-                                }
-                                break;
-                            }
-                        }
-                    }
-                    if net_changed || changed {
-                        if let Some(e) = input_entity {
-                            println!("> {}", access.op_query.get(e).unwrap().0);
-                            println!("{}", access.net_query.get(e).unwrap().0.clone().display());
-                        }
-                    }
-                }
+                //"outputs()" | "inputs()" => {
+                //    let net_changed = access.net_changed_query.get(*id).unwrap().0;
+                //    //let gained = access.gained_wh_query.get(*id).unwrap().0;
+                //    let lost = access.lost_wh_query.get(*id).unwrap().0;
+                //    let mut changed = false;
+                //    let mut n: Option<usize> = None;
+                //    for child in children {
+                //        if let Ok(mut wh) = white_hole_query.get_mut(*child) {
+                //            if wh.link_types == (0, 1) {
+                //                if access.op_query.get(*id).unwrap().0 == "outputs()" {
+                //                    n = Some(access.net_query.get(wh.bh_parent).unwrap().0.outputs());
+                //                } else {
+                //                    n = Some(access.net_query.get(wh.bh_parent).unwrap().0.inputs());
+                //                }
+                //                if wh.open {
+                //                    wh.open = false;
+                //                    changed = true;
+                //                }
+                //                break;
+                //            }
+                //        }
+                //    }
+                //    if /*gained ||*/ lost || net_changed || changed {
+                //        if let Some(n) = n {
+                //            access.num_query.get_mut(*id).unwrap().0 = n as f32;
+                //        } else {
+                //            access.num_query.get_mut(*id).unwrap().0 = 0.;
+                //        }
+                //    }
+                //}
+                //"info()" => {
+                //    let net_changed = access.net_changed_query.get(*id).unwrap().0;
+                //    let mut changed = false;
+                //    let mut input_entity = None;
+                //    for child in children {
+                //        if let Ok(mut wh) = white_hole_query.get_mut(*child) {
+                //            if wh.link_types == (0, 1) {
+                //                input_entity = Some(wh.bh_parent);
+                //                if wh.open {
+                //                    wh.open = false;
+                //                    changed = true;
+                //                }
+                //                break;
+                //            }
+                //        }
+                //    }
+                //    if net_changed || changed {
+                //        if let Some(e) = input_entity {
+                //            println!("> {}", access.op_query.get(e).unwrap().0);
+                //            println!("{}", access.net_query.get(e).unwrap().0.clone().display());
+                //        }
+                //    }
+                //}
                 //"probe()" => {
                 //    let net_changed = access.net_changed_query.get(*id).unwrap().0;
                 //    //let gained = access.gained_wh_query.get(*id).unwrap().0;
