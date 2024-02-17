@@ -56,7 +56,7 @@ fn main() {
         .add_systems(Startup, ext_thread)
         
         .add_systems(Update, toggle_pan)
-        .add_state::<Mode>()
+        .init_state::<Mode>()
         .add_systems(Update, save_scene)
         .add_systems(Update, post_load)
         .init_resource::<DragModes>()
@@ -189,7 +189,7 @@ fn setup(
         // selection / drawing circle
         let id = commands.spawn((
             ColorMesh2dBundle {
-                mesh: meshes.add(shape::Circle {radius: 0., vertices: 12} .into()).into(),
+                mesh: meshes.add(RegularPolygon::new(0.1, 12)).into(),
                 material: materials.add(ColorMaterial::from(Color::hsla(0., 1., 0.5, 0.3))),
                 transform: Transform::from_translation(Vec3::Z),
                 ..default()
@@ -200,7 +200,7 @@ fn setup(
         // connecting line
         let id = commands.spawn((
             ColorMesh2dBundle {
-                mesh: meshes.add(shape::Circle {radius: 0., vertices: 3} .into()).into(),
+                mesh: meshes.add(Tri {i: Vec2::ZERO, f: Vec2::ZERO, ip:0.0, fp:0.0, b:2.}).into(),
                 material: materials.add(ColorMaterial::from(Color::hsla(0., 1., 0.5, 0.3))),
                 transform: Transform::from_translation(Vec3::Z),
                 ..default()
@@ -211,7 +211,7 @@ fn setup(
 
 fn toggle_pan(
     mut query: Query<&mut PanCam>,
-    keyboard_input: Res<Input<KeyCode>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
 ) {
     if keyboard_input.just_pressed(KeyCode::Space) {
         let mut pancam = query.single_mut();
@@ -266,8 +266,8 @@ fn post_load(
     mut materials: ResMut<Assets<ColorMaterial>>,
     main_query: Query<(&Radius, &Transform, &Col, &Vertices)>,
     mut order_change: EventWriter<OrderChange>,
-    white_hole_query: Query<With<WhiteHole>>,
-    black_hole_query: Query<With<BlackHole>>,
+    white_hole_query: Query<(), With<WhiteHole>>,
+    black_hole_query: Query<(), With<BlackHole>>,
     scene: Query<(Entity, &Children), With<SceneInstance>>,
     children_query: Query<&Children>,
     mut op_query: Query<&mut Op>,
@@ -277,7 +277,7 @@ fn post_load(
             if let Ok((r, t, c, v)) = main_query.get(*child) {
                 commands.entity(*child).insert((
                     ColorMesh2dBundle {
-                        mesh: meshes.add(shape::Circle { radius: r.0, vertices: v.0 }.into()).into(),
+                        mesh: meshes.add(RegularPolygon::new(r.0, v.0)).into(),
                         material: materials.add(ColorMaterial::from(c.0)),
                         transform: *t,
                         ..default()
@@ -295,7 +295,7 @@ fn post_load(
                             if let Ok((r, t, c, v)) = main_query.get(*hole) {
                                 commands.entity(*hole).insert(
                                     ColorMesh2dBundle {
-                                        mesh: meshes.add(shape::Circle { radius: r.0, vertices: v.0 }.into()).into(),
+                                        mesh: meshes.add(RegularPolygon::new(r.0, v.0)).into(),
                                         material: materials.add(ColorMaterial::from(c.0)),
                                         transform: *t,
                                         ..default()
@@ -308,7 +308,7 @@ fn post_load(
                         }
                         if white_hole_query.contains(*hole) {
                             let arrow = commands.spawn(( ColorMesh2dBundle {
-                                mesh: meshes.add(shape::Circle{radius:0., vertices:3}.into()).into(),
+                                mesh: meshes.add(RegularPolygon::new(0.1, 3)).into(),
                                 material: materials.add(ColorMaterial::from(Color::hsla(0., 1., 1., 0.7))),
                                 transform: Transform::from_translation(Vec3::Z),
                                 ..default()

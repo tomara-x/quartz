@@ -10,7 +10,7 @@ use bevy::{
 use crate::components::*;
 
 pub fn connect(
-    mouse_button_input: Res<Input<MouseButton>>,
+    mouse_button_input: Res<ButtonInput<MouseButton>>,
     mut commands: Commands,
     query: Query<(Entity, &Radius, &GlobalTransform), (With<Visible>, With<Order>)>,
     cursor: Res<CursorInfo>,
@@ -18,14 +18,14 @@ pub fn connect(
     mut materials: ResMut<Assets<ColorMaterial>>,
     rad_query: Query<&Radius>,
     trans_query: Query<&GlobalTransform>,
-    keyboard_input: Res<Input<KeyCode>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
     mut order_query: Query<&mut Order>,
     mut order_change: EventWriter<OrderChange>,
     children_query: Query<&Children>,
     mut gained_wh_query: Query<&mut GainedWH>,
 ) {
     if mouse_button_input.just_released(MouseButton::Left)
-    && !keyboard_input.pressed(KeyCode::T)
+    && !keyboard_input.pressed(KeyCode::KeyT)
     && !keyboard_input.pressed(KeyCode::Space) {
         let mut source_entity: (Option<Entity>, f32) = (None, f32::MIN);
         let mut sink_entity: (Option<Entity>, f32) = (None, f32::MIN);
@@ -67,7 +67,7 @@ pub fn connect(
                         ip: src_radius * 0.15,
                         fp: snk_radius * 0.15,
                         b: 2.
-                    }.into()).into(),
+                    }).into(),
                     material: materials.add(ColorMaterial::from(Color::hsla(0., 1., 1., 0.7))),
                     transform: Transform::from_translation(Vec3::new(0.,0.,100.)),
                     ..default()
@@ -78,7 +78,7 @@ pub fn connect(
             let mut bh_depth: f32 = 0.001;
             if let Ok(children) = children_query.get(src) { bh_depth *= (children.len() + 1) as f32; }
             let black_hole = commands.spawn(( ColorMesh2dBundle {
-                    mesh: meshes.add(shape::Circle { radius: src_radius * 0.15, vertices: 6 }.into()).into(),
+                    mesh: meshes.add(RegularPolygon::new(src_radius * 0.15, 6)).into(),
                     material: materials.add(ColorMaterial::from(Color::BLACK)),
                     transform: Transform::from_translation((cursor.i - src_trans.xy()).extend(bh_depth)),
                     ..default()
@@ -93,7 +93,7 @@ pub fn connect(
             let mut wh_depth: f32 = 0.001;
             if let Ok(children) = children_query.get(snk) { wh_depth *= (children.len() + 1) as f32; }
             let white_hole = commands.spawn(( ColorMesh2dBundle {
-                    mesh: meshes.add(shape::Circle { radius: snk_radius * 0.15, vertices: 6 }.into()).into(),
+                    mesh: meshes.add(RegularPolygon::new(snk_radius * 0.15, 6)).into(),
                     material: materials.add(ColorMaterial::from(Color::WHITE)),
                     transform: Transform::from_translation((cursor.f - snk_trans.xy()).extend(wh_depth)),
                     ..default()
@@ -127,14 +127,14 @@ pub fn connect(
 }
 
 pub fn target(
-    mouse_button_input: Res<Input<MouseButton>>,
+    mouse_button_input: Res<ButtonInput<MouseButton>>,
     query: Query<(Entity, &Radius, &GlobalTransform), With<Visible>>,
     cursor: Res<CursorInfo>,
-    keyboard_input: Res<Input<KeyCode>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
     mut targets_query: Query<&mut Targets>,
 ) {
     if mouse_button_input.just_released(MouseButton::Left)
-    && keyboard_input.pressed(KeyCode::T)
+    && keyboard_input.pressed(KeyCode::KeyT)
     && !keyboard_input.pressed(KeyCode::Space) {
         let mut source_entity: (Option<Entity>, f32) = (None, f32::MIN);
         let mut sink_entity: (Option<Entity>, f32) = (None, f32::MIN);
@@ -201,9 +201,9 @@ pub fn update_connection_arrows(
 }
 
 pub fn draw_connecting_arrow(
-    mouse_button_input: Res<Input<MouseButton>>,
+    mouse_button_input: Res<ButtonInput<MouseButton>>,
     cursor: Res<CursorInfo>,
-    keyboard_input: Res<Input<KeyCode>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
     id: Res<ConnectingLine>,
     mut meshes: ResMut<Assets<Mesh>>,
     mesh_ids: Query<&Mesh2dHandle>,
@@ -221,12 +221,12 @@ pub fn draw_connecting_arrow(
     if mouse_button_input.just_released(MouseButton::Left) {
         let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
         let mesh = meshes.get_mut(mesh_id).unwrap();
-        *mesh = shape::Circle { radius: 0., vertices: 3 }.into();
+        *mesh = RegularPolygon::new(0.1, 3).into();
     }
 }
 
 pub fn delete_selected_holes(
-    keyboard_input: Res<Input<KeyCode>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
     bh_query: Query<(Entity, &BlackHole), With<Selected>>,
     wh_query: Query<(Entity, &WhiteHole), With<Selected>>,
     unselected: Query<Entity, (Without<Selected>, Or<(With<BlackHole>, With<WhiteHole>)>)>,

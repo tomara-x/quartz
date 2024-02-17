@@ -32,7 +32,7 @@ pub struct Access<'w, 's> {
 }
 
 pub fn command_parser(
-    keyboard_input: Res<Input<KeyCode>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
     mut display: Query<&mut Text, With<CommandText>>,
     mut char_input_events: EventReader<ReceivedCharacter>,
     circles_query: Query<Entity, With<Radius>>,
@@ -49,20 +49,20 @@ pub fn command_parser(
     parent_query: Query<&Parent>,
 ) {
     if char_input_events.is_empty() && !*in_progress &&
-    !keyboard_input.just_released(KeyCode::T) { return; }
+    !keyboard_input.just_released(KeyCode::KeyT) { return; }
     let text = &mut display.single_mut().sections[0].value;
 
     // draw mode
     if *mode == 1 {
         // exit to edit
-        if keyboard_input.any_just_pressed([KeyCode::Escape, KeyCode::E]) {
+        if keyboard_input.any_just_pressed([KeyCode::Escape, KeyCode::KeyE]) {
             text.clear();
             *mode = 0;
             next_state.set(Mode::Edit);
             char_input_events.clear(); // we have an 'e' that we don't want
         }
         // switch to connect mode
-        if keyboard_input.just_pressed(KeyCode::C) {
+        if keyboard_input.just_pressed(KeyCode::KeyC) {
             *text = "-- CONNECT --".to_string();
             *mode = 2;
             next_state.set(Mode::Connect);
@@ -72,17 +72,17 @@ pub fn command_parser(
     // connect mode
     if *mode == 2 {
         // exit to edit
-        if keyboard_input.any_just_pressed([KeyCode::Escape, KeyCode::E]) {
+        if keyboard_input.any_just_pressed([KeyCode::Escape, KeyCode::KeyE]) {
             text.clear();
             *mode = 0;
             next_state.set(Mode::Edit);
             char_input_events.clear();
         }
         // target
-        if keyboard_input.just_pressed(KeyCode::T) { *text = "-- TARGET --".to_string(); }
-        if keyboard_input.just_released(KeyCode::T) { *text = "-- CONNECT --".to_string(); }
+        if keyboard_input.just_pressed(KeyCode::KeyT) { *text = "-- TARGET --".to_string(); }
+        if keyboard_input.just_released(KeyCode::KeyT) { *text = "-- CONNECT --".to_string(); }
         // switch to draw mode
-        if keyboard_input.just_pressed(KeyCode::D) {
+        if keyboard_input.just_pressed(KeyCode::KeyD) {
             *text = "-- DRAW --".to_string();
             *mode = 1;
             next_state.set(Mode::Draw);
@@ -93,13 +93,15 @@ pub fn command_parser(
     if *mode == 0 {
         for event in char_input_events.read() {
             if *text == "F" { continue; }
-            if let Some(">") = text.get(0..1) { text.clear(); }
-            if event.char == ' ' && text.ends_with(" ") { continue; }
-            if !event.char.is_control() { text.push(event.char); }
+            if let Some('>') = text.chars().nth(0) { text.clear(); }
+            if let Some(c) = event.char.chars().nth(0) {
+                if c == ' ' && text.ends_with(" ") { continue; }
+                if !c.is_control() { text.push(c); }
+            }
         }
-        if keyboard_input.just_pressed(KeyCode::Back) { text.pop(); }
+        if keyboard_input.just_pressed(KeyCode::Backspace) { text.pop(); }
         if keyboard_input.just_pressed(KeyCode::Escape) { text.clear(); }
-        if keyboard_input.just_pressed(KeyCode::Return) {
+        if keyboard_input.just_pressed(KeyCode::Enter) {
             // commands starting with :
             let lines = text.as_str().split("|");
             for line in lines {
@@ -660,7 +662,7 @@ pub fn command_parser(
                                     "",
                                     TextStyle { color: Color::BLACK, ..default() },
                                 ),
-                            ]).with_alignment(TextAlignment::Center),
+                            ]).with_justify(JustifyText::Center),
                             transform: Transform::from_translation(Vec3::ZERO),
                             ..default()
                         }

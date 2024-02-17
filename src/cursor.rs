@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use crate::components::*;
 
 pub fn update_cursor_info(
-    mouse_button_input: Res<Input<MouseButton>>,
+    mouse_button_input: Res<ButtonInput<MouseButton>>,
     camera_query: Query<(&Camera, &GlobalTransform)>,
     windows: Query<&Window>,
     mut cursor: ResMut<CursorInfo>,

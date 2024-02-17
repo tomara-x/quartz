@@ -57,7 +57,7 @@ pub fn process(
     mut access: Access,
     mut slot: ResMut<Slot>,
     cursor: Res<CursorInfo>,
-    mouse_button_input: Res<Input<MouseButton>>,
+    mouse_button_input: Res<ButtonInput<MouseButton>>,
     mut char_input_events: EventReader<ReceivedCharacter>,
     camera_query: Query<(&Camera, &GlobalTransform)>,
     windows: Query<&Window>,
@@ -228,7 +228,9 @@ pub fn process(
                 }
                 "key" => {
                     for event in char_input_events.read() {
-                        access.num_query.get_mut(*id).unwrap().0 = (event.char as i32) as f32;
+                        if let Some(c) = event.char.chars().nth(0) {
+                            access.num_query.get_mut(*id).unwrap().0 = (c as i32) as f32;
+                        }
                     }
                 }
                 "semi_ratio" => {

@@ -2,9 +2,10 @@ use bevy::{
     render::{
         render_resource::PrimitiveTopology,
         mesh::Indices,
+        render_asset::RenderAssetUsages,
     },
     ecs::{
-        entity::{EntityMapper, MapEntities},
+        entity::MapEntities,
         reflect::{ReflectComponent, ReflectMapEntities},
     },
     prelude::*};
@@ -84,9 +85,9 @@ impl FromWorld for Targets {
     }
 }
 impl MapEntities for Targets {
-    fn map_entities(&mut self, entity_mapper: &mut EntityMapper) {
+    fn map_entities<M: EntityMapper>(&mut self, entity_mapper: &mut M) {
         for entity in &mut self.0 {
-            *entity = entity_mapper.get_or_reserve(*entity);
+            *entity = entity_mapper.map_entity(*entity);
         }
     }
 }
@@ -110,9 +111,9 @@ impl FromWorld for WhiteHole {
     }
 }
 impl MapEntities for WhiteHole {
-    fn map_entities(&mut self, entity_mapper: &mut EntityMapper) {
-        self.bh = entity_mapper.get_or_reserve(self.bh);
-        self.bh_parent = entity_mapper.get_or_reserve(self.bh_parent);
+    fn map_entities<M: EntityMapper>(&mut self, entity_mapper: &mut M) {
+        self.bh = entity_mapper.map_entity(self.bh);
+        self.bh_parent = entity_mapper.map_entity(self.bh_parent);
     }
 }
 
@@ -132,8 +133,8 @@ impl FromWorld for BlackHole {
     }
 }
 impl MapEntities for BlackHole {
-    fn map_entities(&mut self, entity_mapper: &mut EntityMapper) {
-        self.wh = entity_mapper.get_or_reserve(self.wh);
+    fn map_entities<M: EntityMapper>(&mut self, entity_mapper: &mut M) {
+        self.wh = entity_mapper.map_entity(self.wh);
     }
 }
 
@@ -275,8 +276,11 @@ impl From<Tri> for Mesh {
             [tri.i.x + i.x - perp.x, tri.i.y + i.y - perp.y, 0.0]
         );
         let indices = Indices::U32(vec![0, 1, 2]);
-        Mesh::new(PrimitiveTopology::TriangleList)
-            .with_indices(Some(indices))
-            .with_inserted_attribute(Mesh::ATTRIBUTE_POSITION, vertices)
+        let mut mesh = Mesh::new(
+            PrimitiveTopology::TriangleList,
+            RenderAssetUsages::default());
+        mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, vertices);
+        mesh.insert_indices(indices);
+        mesh
     }
 }

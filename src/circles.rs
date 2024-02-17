@@ -14,12 +14,12 @@ use crate::components::*;
 
 pub fn spawn_circles(
     mut commands: Commands,
-    mouse_button_input: Res<Input<MouseButton>>,
+    mouse_button_input: Res<ButtonInput<MouseButton>>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     mut depth: Local<f32>,
     cursor: Res<CursorInfo>,
-    keyboard_input: Res<Input<KeyCode>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
 ) {
     if mouse_button_input.just_released(MouseButton::Left) &&
     !keyboard_input.pressed(KeyCode::Space) {
@@ -28,7 +28,7 @@ pub fn spawn_circles(
         let color = Color::hsla(1., 1., 0.84, 1.);
         commands.spawn((
             ColorMesh2dBundle {
-                mesh: meshes.add(shape::Circle { radius: r, vertices: v} .into()).into(),
+                mesh: meshes.add(RegularPolygon::new(r.max(0.1), v)).into(),
                 material: materials.add(ColorMaterial::from(color)),
                 transform: Transform::from_translation(cursor.i.extend(*depth)),
                 ..default()
@@ -67,7 +67,7 @@ pub fn highlight_selected(
     for e in selected.iter() {
         let highlight = commands.spawn(
             ColorMesh2dBundle {
-                mesh: meshes.add(shape::Circle{ radius: 0., vertices: 3} .into()).into(),
+                mesh: meshes.add(RegularPolygon::new(0.1, 3)).into(),
                 material: materials.add(ColorMaterial::from(Color::hsl(0.0,1.0,0.5))),
                 transform: Transform::from_translation(Vec3::Z),
                 ..default()
@@ -99,7 +99,7 @@ pub fn transform_highlights(
     for (v, r, h) in resized.iter() {
         if let Ok(Mesh2dHandle(mesh_id)) = mesh_ids.get(h.0) {
             let mesh = meshes.get_mut(mesh_id).unwrap();
-            *mesh = shape::Circle { radius: r.0 + 5., vertices: v.0 }.into();
+            *mesh = RegularPolygon::new(r.0 + 5., v.0).into();
             if let Ok(mut aabb) = aabb_query.get_mut(h.0) {
                 *aabb = mesh.compute_aabb().unwrap();
             }
@@ -108,10 +108,10 @@ pub fn transform_highlights(
 }
 
 pub fn mark_visible_circles(
-    mouse_button_input: Res<Input<MouseButton>>,
+    mouse_button_input: Res<ButtonInput<MouseButton>>,
     mut commands: Commands,
     marked_circles: Query<Entity, With<Visible>>,
-    circles_query: Query<With<Radius>>,
+    circles_query: Query<(), With<Radius>>,
     visible: Query<&VisibleEntities>,
 ) {
     if mouse_button_input.just_released(MouseButton::Left) {
@@ -131,7 +131,7 @@ pub fn draw_drawing_circle(
     mut trans_query: Query<&mut Transform>,
     mut meshes: ResMut<Assets<Mesh>>,
     mesh_ids: Query<&Mesh2dHandle>,
-    mouse_button_input: Res<Input<MouseButton>>,
+    mouse_button_input: Res<ButtonInput<MouseButton>>,
     cursor: Res<CursorInfo>,
 ) {
     if mouse_button_input.pressed(MouseButton::Left) 
@@ -139,31 +139,31 @@ pub fn draw_drawing_circle(
         trans_query.get_mut(id.0).unwrap().translation = cursor.i.extend(1.);
         let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
         let mesh = meshes.get_mut(mesh_id).unwrap();
-        *mesh = shape::Circle { radius: cursor.i.distance(cursor.f), vertices: 8 }.into();
+        *mesh = RegularPolygon::new(cursor.i.distance(cursor.f).max(0.1), 8).into();
     }
     if mouse_button_input.just_released(MouseButton::Left) {
         trans_query.get_mut(id.0).unwrap().translation = Vec3::Z;
         let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
         let mesh = meshes.get_mut(mesh_id).unwrap();
-        *mesh = shape::Circle { radius: 0., vertices: 3 }.into();
+        *mesh = RegularPolygon::new(0.1, 3).into();
     }
 }
 
 //optimize all those distance calls, use a distance squared instead
 pub fn update_selection(
     mut commands: Commands,
-    mouse_button_input: Res<Input<MouseButton>>,
+    mouse_button_input: Res<ButtonInput<MouseButton>>,
     query: Query<(Entity, &Radius, &GlobalTransform), Or<(With<Visible>, With<Selected>)>>,
     selected: Query<Entity, With<Selected>>,
     selected_query: Query<&Selected>,
     cursor: Res<CursorInfo>,
-    keyboard_input: Res<Input<KeyCode>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
     mut top_clicked_circle: Local<Option<(Entity, f32)>>,
     id: Res<SelectionCircle>,
     mut trans_query: Query<&mut Transform>,
     mut meshes: ResMut<Assets<Mesh>>,
     mesh_ids: Query<&Mesh2dHandle>,
-    order_query: Query<With<Order>>, // non-hole circle
+    order_query: Query<(), With<Order>>, // non-hole circle
 ) {
     if keyboard_input.pressed(KeyCode::Space) { return; }
     let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
@@ -197,13 +197,13 @@ pub fn update_selection(
         trans_query.get_mut(id.0).unwrap().translation = cursor.i.extend(1.);
         let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
         let mesh = meshes.get_mut(mesh_id).unwrap();
-        *mesh = shape::Circle { radius: cursor.i.distance(cursor.f), vertices: 8 }.into();
+        *mesh = RegularPolygon::new(cursor.i.distance(cursor.f).max(0.1), 8).into();
     }
     if mouse_button_input.just_released(MouseButton::Left) {
         trans_query.get_mut(id.0).unwrap().translation = Vec3::Z;
         let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
         let mesh = meshes.get_mut(mesh_id).unwrap();
-        *mesh = shape::Circle { radius: 0., vertices: 3 }.into();
+        *mesh = RegularPolygon::new(0.1, 3).into();
         if top_clicked_circle.is_none() {
             if !shift {
                 for entity in selected.iter() {
@@ -226,10 +226,10 @@ pub fn update_selection(
 }
 
 pub fn move_selected(
-    mouse_button_input: Res<Input<MouseButton>>,
+    mouse_button_input: Res<ButtonInput<MouseButton>>,
     cursor: Res<CursorInfo>,
     mut query: Query<&mut Transform, With<Selected>>,
-    keyboard_input: Res<Input<KeyCode>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
     drag_modes: Res<DragModes>,
 ) {
     if drag_modes.t {
@@ -241,22 +241,22 @@ pub fn move_selected(
                 t.translation.y += cursor.d.y;
             }
         }
-        if keyboard_input.pressed(KeyCode::Up) {
+        if keyboard_input.pressed(KeyCode::ArrowUp) {
             for mut t in query.iter_mut() {
                 t.translation.y += 1.;
             }
         }
-        if keyboard_input.pressed(KeyCode::Down) {
+        if keyboard_input.pressed(KeyCode::ArrowDown) {
             for mut t in query.iter_mut() {
                 t.translation.y -= 1.;
             }
         }
-        if keyboard_input.pressed(KeyCode::Right) {
+        if keyboard_input.pressed(KeyCode::ArrowRight) {
             for mut t in query.iter_mut() {
                 t.translation.x += 1.;
             }
         }
-        if keyboard_input.pressed(KeyCode::Left) {
+        if keyboard_input.pressed(KeyCode::ArrowLeft) {
             for mut t in query.iter_mut() {
                 t.translation.x -= 1.;
             }
@@ -265,10 +265,10 @@ pub fn move_selected(
 }
 
 pub fn rotate_selected(
-    mouse_button_input: Res<Input<MouseButton>>,
+    mouse_button_input: Res<ButtonInput<MouseButton>>,
     cursor: Res<CursorInfo>,
     mut query: Query<&mut Transform, With<Selected>>,
-    keyboard_input: Res<Input<KeyCode>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
     drag_modes: Res<DragModes>,
 ) {
     if drag_modes.o {
@@ -278,12 +278,12 @@ pub fn rotate_selected(
                 t.rotate_z(cursor.d.y / 100.);
             }
         }
-        if keyboard_input.any_pressed([KeyCode::Up, KeyCode::Right]) {
+        if keyboard_input.any_pressed([KeyCode::ArrowUp, KeyCode::ArrowRight]) {
             for mut t in query.iter_mut() {
                 t.rotate_z(0.01);
             }
         }
-        if keyboard_input.any_pressed([KeyCode::Down, KeyCode::Left]) {
+        if keyboard_input.any_pressed([KeyCode::ArrowDown, KeyCode::ArrowLeft]) {
             for mut t in query.iter_mut() {
                 t.rotate_z(-0.01);
             }
@@ -292,10 +292,10 @@ pub fn rotate_selected(
 }
 
 pub fn update_color(
-    mouse_button_input: Res<Input<MouseButton>>,
+    mouse_button_input: Res<ButtonInput<MouseButton>>,
     cursor: Res<CursorInfo>,
     mut query: Query<&mut Col, With<Selected>>,
-    keyboard_input: Res<Input<KeyCode>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
     drag_modes: Res<DragModes>,
 ) {
     if mouse_button_input.pressed(MouseButton::Left)
@@ -325,7 +325,7 @@ pub fn update_color(
             }
         }
     }
-    if keyboard_input.any_pressed([KeyCode::Left, KeyCode::Down]) {
+    if keyboard_input.any_pressed([KeyCode::ArrowLeft, KeyCode::ArrowDown]) {
         for mut c in query.iter_mut() {
             if drag_modes.h {
                 let h = (c.0.h() - 1.).clamp(0., 360.);
@@ -345,7 +345,7 @@ pub fn update_color(
             }
         }
     }
-    if keyboard_input.any_pressed([KeyCode::Right, KeyCode::Up]) {
+    if keyboard_input.any_pressed([KeyCode::ArrowRight, KeyCode::ArrowUp]) {
         for mut c in query.iter_mut() {
             if drag_modes.h {
                 let h = (c.0.h() + 1.).clamp(0., 360.);
@@ -382,9 +382,9 @@ pub fn update_mat(
 
 pub fn update_radius(
     mut query: Query<&mut Radius, With<Selected>>,
-    keyboard_input: Res<Input<KeyCode>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
     cursor: Res<CursorInfo>,
-    mouse_button_input: Res<Input<MouseButton>>,
+    mouse_button_input: Res<ButtonInput<MouseButton>>,
     drag_modes: Res<DragModes>,
 ) {
     if drag_modes.r {
@@ -395,12 +395,12 @@ pub fn update_radius(
                 r.0 = r.0.max(0.);
             }
         }
-        if keyboard_input.any_pressed([KeyCode::Up, KeyCode::Right]) {
+        if keyboard_input.any_pressed([KeyCode::ArrowUp, KeyCode::ArrowRight]) {
             for mut r in query.iter_mut() {
                 r.0 += 1.;
             }
         }
-        if keyboard_input.any_pressed([KeyCode::Down, KeyCode::Left]) {
+        if keyboard_input.any_pressed([KeyCode::ArrowDown, KeyCode::ArrowLeft]) {
             for mut r in query.iter_mut() {
                 r.0 = (r.0 - 1.).max(0.);
             }
@@ -410,16 +410,16 @@ pub fn update_radius(
 
 pub fn update_vertices(
     mut query: Query<&mut Vertices, With<Selected>>,
-    keyboard_input: Res<Input<KeyCode>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
     drag_modes: Res<DragModes>,
 ) {
     if drag_modes.v {
-        if keyboard_input.any_just_pressed([KeyCode::Up, KeyCode::Right]) {
+        if keyboard_input.any_just_pressed([KeyCode::ArrowUp, KeyCode::ArrowRight]) {
             for mut v in query.iter_mut() {
                 v.0 += 1;
             }
         }
-        if keyboard_input.any_just_pressed([KeyCode::Down, KeyCode::Left]) {
+        if keyboard_input.any_just_pressed([KeyCode::ArrowDown, KeyCode::ArrowLeft]) {
             for mut v in query.iter_mut() {
                 v.0 = Ord::max(v.0 - 1, 3);
             }
@@ -435,7 +435,7 @@ pub fn update_mesh(
     for (id, v, r, mut aabb) in query.iter_mut() {
         if let Ok(Mesh2dHandle(mesh_id)) = mesh_ids.get(id) {
             let mesh = meshes.get_mut(mesh_id).unwrap();
-            *mesh = shape::Circle { radius: r.0, vertices: v.0 }.into();
+            *mesh = RegularPolygon::new(r.0.max(0.1), v.0).into();
             *aabb = mesh.compute_aabb().unwrap();
         }
     }
@@ -443,9 +443,9 @@ pub fn update_mesh(
 
 pub fn update_num(
     mut query: Query<&mut Num, With<Selected>>,
-    keyboard_input: Res<Input<KeyCode>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
     cursor: Res<CursorInfo>,
-    mouse_button_input: Res<Input<MouseButton>>,
+    mouse_button_input: Res<ButtonInput<MouseButton>>,
     drag_modes: Res<DragModes>,
 ) {
     if drag_modes.n {
@@ -455,12 +455,12 @@ pub fn update_num(
                 n.0 += cursor.d.y / 10.;
             }
         }
-        if keyboard_input.pressed(KeyCode::Up) {
+        if keyboard_input.pressed(KeyCode::ArrowUp) {
             for mut n in query.iter_mut() {
                 n.0 += 0.01;
             }
         }
-        if keyboard_input.pressed(KeyCode::Down) {
+        if keyboard_input.pressed(KeyCode::ArrowDown) {
             for mut n in query.iter_mut() {
                 n.0 -= 0.01;
             }
@@ -469,7 +469,7 @@ pub fn update_num(
 }
 
 pub fn update_order (
-    keyboard_input: Res<Input<KeyCode>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
     mut query: Query<&mut Order, With<Selected>>,
     mut order_change: EventWriter<OrderChange>,
 ) {
@@ -490,13 +490,13 @@ pub fn update_order (
 }
 
 pub fn shake_order (
-    keyboard_input: Res<Input<KeyCode>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
     changed_order: Query<(Entity, &Children), With<Order>>,
     mut order_query: Query<&mut Order>,
     white_hole_query: Query<&WhiteHole>,
     mut order_change: EventWriter<OrderChange>,
 ) {
-    if keyboard_input.just_pressed(KeyCode::Key0) {
+    if keyboard_input.just_pressed(KeyCode::Digit0) {
         for (e, children) in changed_order.iter() {
             for child in children {
                 if let Ok(wh) = white_hole_query.get(*child) {
@@ -562,7 +562,7 @@ pub fn update_info_text(
 }
 
 pub fn delete_selected_circles(
-    keyboard_input: Res<Input<KeyCode>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
     query: Query<Entity, (With<Selected>, With<Order>)>,
     bh_query: Query<&BlackHole, Without<Selected>>,
     wh_query: Query<&WhiteHole, Without<Selected>>,
