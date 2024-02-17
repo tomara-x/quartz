@@ -110,13 +110,13 @@ pub fn command_parser(
                                 ..default()
                             });
                         }
-                    },
+                    }
                     // save scene file
                     Some(":w") => {
                         if let Some(s) = command.next() {
                             access.save_event.send(SaveCommand(s.to_string()));
                         }
-                    },
+                    }
                     // white hole / black hole link type
                     // TODO(amy): set-both-ends version
                     // can be moved to :set
@@ -156,7 +156,7 @@ pub fn command_parser(
                                 }
                             }
                         }
-                    },
+                    }
                     // toggle open a white hole (by id)
                     Some(":ht") | Some("ht") => {
                         if let Some(s) = command.next() {
@@ -166,7 +166,7 @@ pub fn command_parser(
                                 }
                             }
                         }
-                    },
+                    }
                     Some(":set") | Some("set") => {
                         match command.next() {
                             Some("n") => {
@@ -187,7 +187,7 @@ pub fn command_parser(
                                         }
                                     }
                                 }
-                            },
+                            }
                             Some("r") => {
                                 if let Some(s) = command.next() {
                                     if let Some(e) = str_to_id(s) {
@@ -206,7 +206,7 @@ pub fn command_parser(
                                         }
                                     }
                                 }
-                            },
+                            }
                             Some("x") => {
                                 if let Some(s) = command.next() {
                                     if let Some(e) = str_to_id(s) {
@@ -225,7 +225,7 @@ pub fn command_parser(
                                         }
                                     }
                                 }
-                            },
+                            }
                             Some("y") => {
                                 if let Some(s) = command.next() {
                                     if let Some(e) = str_to_id(s) {
@@ -244,7 +244,7 @@ pub fn command_parser(
                                         }
                                     }
                                 }
-                            },
+                            }
                             Some("z") => {
                                 if let Some(s) = command.next() {
                                     if let Some(e) = str_to_id(s) {
@@ -263,7 +263,7 @@ pub fn command_parser(
                                         }
                                     }
                                 }
-                            },
+                            }
                             Some("h") => {
                                 if let Some(s) = command.next() {
                                     if let Some(e) = str_to_id(s) {
@@ -282,7 +282,7 @@ pub fn command_parser(
                                         }
                                     }
                                 }
-                            },
+                            }
                             Some("s") => {
                                 if let Some(s) = command.next() {
                                     if let Some(e) = str_to_id(s) {
@@ -301,7 +301,7 @@ pub fn command_parser(
                                         }
                                     }
                                 }
-                            },
+                            }
                             Some("l") => {
                                 if let Some(s) = command.next() {
                                     if let Some(e) = str_to_id(s) {
@@ -320,7 +320,7 @@ pub fn command_parser(
                                         }
                                     }
                                 }
-                            },
+                            }
                             Some("a") => {
                                 if let Some(s) = command.next() {
                                     if let Some(e) = str_to_id(s) {
@@ -339,7 +339,7 @@ pub fn command_parser(
                                         }
                                     }
                                 }
-                            },
+                            }
                             Some("v") => {
                                 if let Some(s) = command.next() {
                                     if let Some(e) = str_to_id(s) {
@@ -358,7 +358,7 @@ pub fn command_parser(
                                         }
                                     }
                                 }
-                            },
+                            }
                             Some("o") | Some("rot") | Some("rotation") => {
                                 if let Some(s) = command.next() {
                                     if let Some(e) = str_to_id(s) {
@@ -377,7 +377,7 @@ pub fn command_parser(
                                         }
                                     }
                                 }
-                            },
+                            }
                             Some("op") => {
                                 if let Some(s) = command.next() {
                                     if let Some(e) = str_to_id(s) {
@@ -396,7 +396,7 @@ pub fn command_parser(
                                         }
                                     }
                                 }
-                            },
+                            }
                             Some("ord") | Some("order") => {
                                 if let Some(s) = command.next() {
                                     if let Some(e) = str_to_id(s) {
@@ -417,7 +417,7 @@ pub fn command_parser(
                                         }
                                     }
                                 }
-                            },
+                            }
                             Some("arr") | Some("array") => {
                                 if let Some(s) = command.next() {
                                     if let Some(e) = str_to_id(s) {
@@ -444,7 +444,7 @@ pub fn command_parser(
                                         }
                                     }
                                 }
-                            },
+                            }
                             Some("tar") | Some("targets") => {
                                 let mut tmp = Vec::new();
                                 for e in command {
@@ -468,10 +468,10 @@ pub fn command_parser(
                                         }
                                     }
                                 }
-                            },
-                            _ => {},
+                            }
+                            _ => {}
                         }
-                    },
+                    }
                     // target selected
                     Some(":tsel") => {
                         if let Some(s) = command.next() {
@@ -482,8 +482,8 @@ pub fn command_parser(
                                 }
                             }
                         }
-                    },
-                    _ => {},
+                    }
+                    _ => {}
                 }
             }
             text.clear();
@@ -495,99 +495,99 @@ pub fn command_parser(
                 *mode = 1;
                 next_state.set(Mode::Draw);
                 *text = "-- DRAW --".to_string();
-            },
+            }
             Some("c") => {
                 *mode = 2;
                 next_state.set(Mode::Connect);
                 *text = "-- CONNECT --".to_string();
-            },
+            }
             Some("et") => {
                 drag_modes.falsify();
                 drag_modes.t = true;
                 text.clear();
-            },
+            }
             Some("er") => {
                 drag_modes.falsify();
                 drag_modes.r = true;
                 text.clear();
-            },
+            }
             Some("en") => {
                 drag_modes.falsify();
                 drag_modes.n = true;
                 text.clear();
-            },
+            }
             Some("eh") => {
                 drag_modes.falsify();
                 drag_modes.h = true;
                 text.clear();
-            },
+            }
             Some("es") => {
                 drag_modes.falsify();
                 drag_modes.s = true;
                 text.clear();
-            },
+            }
             Some("el") => {
                 drag_modes.falsify();
                 drag_modes.l = true;
                 text.clear();
-            },
+            }
             Some("ea") => {
                 drag_modes.falsify();
                 drag_modes.a = true;
                 text.clear();
-            },
+            }
             Some("eo") => {
                 drag_modes.falsify();
                 drag_modes.o = true;
                 text.clear();
-            },
+            }
             Some("ev") => {
                 drag_modes.falsify();
                 drag_modes.v = true;
                 text.clear();
-            },
+            }
 
             Some("ee") => {
                 drag_modes.falsify();
                 text.clear();
-            },
+            }
 
             Some("Et") => {
                 drag_modes.t = true;
                 text.clear();
-            },
+            }
             Some("Er") => {
                 drag_modes.r = true;
                 text.clear();
-            },
+            }
             Some("En") => {
                 drag_modes.n = true;
                 text.clear();
-            },
+            }
             Some("Eh") => {
                 drag_modes.h = true;
                 text.clear();
-            },
+            }
             Some("Es") => {
                 drag_modes.s = true;
                 text.clear();
-            },
+            }
             Some("El") => {
                 drag_modes.l = true;
                 text.clear();
-            },
+            }
             Some("Ea") => {
                 drag_modes.a = true;
                 text.clear();
-            },
+            }
             Some("Eo") => {
                 drag_modes.o = true;
                 text.clear();
-            },
+            }
             Some("Ev") => {
                 drag_modes.v = true;
                 text.clear();
-            },
+            }
             // toggle open white holes (selected)
             Some("ht") => {
                 for id in access.selected_query.iter() {
@@ -596,7 +596,7 @@ pub fn command_parser(
                     }
                 }
                 text.clear();
-            },
+            }
             // open white hole for one frame
             Some("hf") => {
                 if *in_progress {
@@ -615,18 +615,18 @@ pub fn command_parser(
                     }
                     *in_progress = true;
                 }
-            },
+            }
             // shortcuts
             Some("o") => {
                 *text = ":set op ".to_string();
-            },
+            }
             Some("l") => {
                 *text = ":lt ".to_string();
             }
             // ignore
             Some("[") | Some("]") | Some("0") => {
                 text.clear();
-            },
+            }
             // insert info texts for selected entities
             Some("II") => {
                 for e in access.selected_query.iter() {
@@ -658,7 +658,7 @@ pub fn command_parser(
                     commands.entity(e).insert(InfoText(info_text));
                 }
                 text.clear();
-            },
+            }
             // despawn selected entities' info texts
             Some("IC") => {
                 for e in access.selected_query.iter() {
@@ -668,7 +668,7 @@ pub fn command_parser(
                     }
                 }
                 text.clear();
-            },
+            }
             // toggle ids in info texts
             Some("ID") => {
                 if *ids_shown {
@@ -682,7 +682,7 @@ pub fn command_parser(
                 }
                 *ids_shown = !*ids_shown;
                 text.clear();
-            },
+            }
             // inspect commands
             Some("ii") => {
                 let mut t = String::new();
@@ -690,7 +690,7 @@ pub fn command_parser(
                     t = t + &format!("{:?}  ", e);
                 }
                 *text = format!(">ID: {}", t);
-            },
+            }
             Some("in") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
@@ -699,7 +699,7 @@ pub fn command_parser(
                     }
                 }
                 *text = format!(">NUM: {}", t);
-            },
+            }
             Some("ira") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
@@ -707,7 +707,7 @@ pub fn command_parser(
                     t = t + &format!("[{:?}]{}  ", e, ra);
                 }
                 *text = format!(">RADIUS: {}", t);
-            },
+            }
             Some("ix") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
@@ -715,7 +715,7 @@ pub fn command_parser(
                     t = t + &format!("[{:?}]{}  ", e, x);
                 }
                 *text = format!(">X: {}", t);
-            },
+            }
             Some("iy") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
@@ -723,7 +723,7 @@ pub fn command_parser(
                     t = t + &format!("[{:?}]{}  ", e, y);
                 }
                 *text = format!(">Y: {}", t);
-            },
+            }
             Some("iz") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
@@ -731,7 +731,7 @@ pub fn command_parser(
                     t = t + &format!("[{:?}]{}  ", e, z);
                 }
                 *text = format!(">Z: {}", t);
-            },
+            }
             Some("ih") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
@@ -739,7 +739,7 @@ pub fn command_parser(
                     t = t + &format!("[{:?}]{}  ", e, h);
                 }
                 *text = format!(">HUE: {}", t);
-            },
+            }
             Some("is") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
@@ -747,7 +747,7 @@ pub fn command_parser(
                     t = t + &format!("[{:?}]{}  ", e, s);
                 }
                 *text = format!(">SATURATION: {}", t);
-            },
+            }
             Some("il") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
@@ -755,7 +755,7 @@ pub fn command_parser(
                     t = t + &format!("[{:?}]{}  ", e, l);
                 }
                 *text = format!(">LIGHTNESS: {}", t);
-            },
+            }
             Some("ial") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
@@ -763,7 +763,7 @@ pub fn command_parser(
                     t = t + &format!("[{:?}]{}  ", e, a);
                 }
                 *text = format!(">ALPHA: {}", t);
-            },
+            }
             Some("iv") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
@@ -771,7 +771,7 @@ pub fn command_parser(
                     t = t + &format!("[{:?}]{}  ", e, v);
                 }
                 *text = format!(">VERTICES: {}", t);
-            },
+            }
             Some("iro") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
@@ -779,7 +779,7 @@ pub fn command_parser(
                     t = t + &format!("[{:?}]{}  ", e, ro);
                 }
                 *text = format!(">ROTATION: {}", t);
-            },
+            }
             Some("ior") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
@@ -788,7 +788,7 @@ pub fn command_parser(
                     }
                 }
                 *text = format!(">ORDER: {}", t);
-            },
+            }
             Some("iop") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
@@ -797,7 +797,7 @@ pub fn command_parser(
                     }
                 }
                 *text = format!(">OP: {}", t);
-            },
+            }
             Some("iar") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
@@ -806,7 +806,7 @@ pub fn command_parser(
                     }
                 }
                 *text = format!(">ARRAY: {}", t);
-            },
+            }
             Some("it") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
@@ -815,7 +815,7 @@ pub fn command_parser(
                     }
                 }
                 *text = format!(">TARGETS: {}", t);
-            },
+            }
             Some("iL") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
@@ -828,7 +828,7 @@ pub fn command_parser(
                     }
                 }
                 *text = format!(">LINK TYPE: {}", t);
-            },
+            }
             Some("iO") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
@@ -837,13 +837,13 @@ pub fn command_parser(
                     }
                 }
                 *text = format!(">WH_OPEN: {}", t);
-            },
+            }
             Some("sa") => {
                 for e in circles_query.iter() {
                     commands.entity(e).insert(Selected);
                 }
                 text.clear();
-            },
+            }
             Some("sc") => {
                 for e in circles_query.iter() {
                     if access.order_query.contains(e) {
@@ -851,7 +851,7 @@ pub fn command_parser(
                     }
                 }
                 text.clear();
-            },
+            }
             Some("sh") => {
                 for e in circles_query.iter() {
                     if !access.order_query.contains(e) {
@@ -859,12 +859,12 @@ pub fn command_parser(
                     }
                 }
                 text.clear();
-            },
+            }
             // render layers
             Some("vv") => {
                 *access.render_layers.single_mut() = RenderLayers::all();
                 text.clear();
-            },
+            }
             Some("vc") => {
                 let mut rl = access.render_layers.single_mut();
                 if rl.intersects(&RenderLayers::layer(1)) {
@@ -873,7 +873,7 @@ pub fn command_parser(
                     *rl = rl.with(1);
                 }
                 text.clear();
-            },
+            }
             Some("vb") => {
                 let mut rl = access.render_layers.single_mut();
                 if rl.intersects(&RenderLayers::layer(2)) {
@@ -882,7 +882,7 @@ pub fn command_parser(
                     *rl = rl.with(2);
                 }
                 text.clear();
-            },
+            }
             Some("vw") => {
                 let mut rl = access.render_layers.single_mut();
                 if rl.intersects(&RenderLayers::layer(3)) {
@@ -891,7 +891,7 @@ pub fn command_parser(
                     *rl = rl.with(3);
                 }
                 text.clear();
-            },
+            }
             Some("va") => {
                 let mut rl = access.render_layers.single_mut();
                 if rl.intersects(&RenderLayers::layer(4)) {
@@ -900,12 +900,12 @@ pub fn command_parser(
                     *rl = rl.with(4);
                 }
                 text.clear();
-            },
+            }
             // TODO(amy): yyp
             Some("\u{71}\u{75}\u{61}\u{72}\u{74}\u{7a}") => {
                 *text = String::from(">drink some water!");
-            },
-            _ => {},
+            }
+            _ => {}
         }
     }
 }
