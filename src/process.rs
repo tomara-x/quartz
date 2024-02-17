@@ -169,7 +169,26 @@ pub fn process(
                         }
                     }
                 }
+                // uses the array to store prevous num value
                 "rise" => {
+                    if access.net_changed_query.get(*id).unwrap().0 {
+                        access.arr_query.get_mut(*id).unwrap().0 = vec!(0.);
+                        access.net_changed_query.get_mut(*id).unwrap().0 = false;
+                    }
+                    for child in children {
+                        if let Ok(wh) = white_hole_query.get(*child) {
+                            if wh.link_types == (-1, 1) {
+                                let input = access.num_query.get(wh.bh_parent).unwrap().0;
+                                let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
+                                if input > arr[0] {
+                                    access.num_query.get_mut(*id).unwrap().0 = 1.
+                                } else {
+                                    access.num_query.get_mut(*id).unwrap().0 = 0.
+                                }
+                                arr[0] = input;
+                            }
+                        }
+                    }
                 }
                 "tbutt" => {
                     let mut changed = false;
