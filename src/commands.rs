@@ -121,7 +121,7 @@ pub fn command_parser(
                         }
                     }
                     // audio node info
-                    Some(":info") => {
+                    Some(":info") | Some("info") => {
                         for e in access.selected_query.iter() {
                             if let Ok(e) = access.op_query.get(e) { println!("> {}", e.0); }
                             if let Ok(e) = access.net_query.get(e) { println!("{}", e.0.clone().display()); }
@@ -694,7 +694,7 @@ pub fn command_parser(
                 text.clear();
             }
             // audio node inputs / outputs number
-            Some("nin") => {
+            Some("ni") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
                     if let Ok(n) = access.net_query.get(e) {
@@ -703,7 +703,7 @@ pub fn command_parser(
                 }
                 *text = format!(">INPUTS: {}", t);
             }
-            Some("nout") => {
+            Some("no") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
                     if let Ok(n) = access.net_query.get(e) {
