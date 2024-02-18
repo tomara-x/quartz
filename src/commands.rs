@@ -3,6 +3,7 @@ use bevy::{
     ecs::system::SystemParam,
     window::ReceivedCharacter,
     render::view::RenderLayers,
+    app::AppExit
 };
 
 use crate::components::*;
@@ -29,6 +30,7 @@ pub struct Access<'w, 's> {
     text_query: Query<'w, 's, &'static mut Text, Without<CommandText>>,
     render_layers: Query<'w, 's, &'static mut RenderLayers, With<Camera>>,
     net_query: Query<'w, 's, &'static mut Network>,
+    exit_event: EventWriter<'w, AppExit>,
 }
 
 pub fn command_parser(
@@ -121,6 +123,9 @@ pub fn command_parser(
                         if let Some(s) = command.next() {
                             access.save_event.send(SaveCommand(s.to_string()));
                         }
+                    }
+                    Some(":q") => {
+                        access.exit_event.send_default();
                     }
                     // audio node info
                     Some(":info") | Some("info") => {
