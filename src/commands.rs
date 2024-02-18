@@ -3,7 +3,7 @@ use bevy::{
     ecs::system::SystemParam,
     render::view::RenderLayers,
     app::AppExit,
-    input::keyboard::{KeyboardInput, Key::Character},
+    input::keyboard::{KeyboardInput, Key},
 };
 
 use crate::components::*;
@@ -96,19 +96,23 @@ pub fn command_parser(
     // edit mode
     if *mode == 0 {
         for key in key_event.read() {
-            if *text == "F" { continue; }
-            info!("{:?}", key.logical_key);
-            if let Character(c) = &key.logical_key {
-                text.push_str(&c);
+            if !key.state.is_pressed() || *text == "F" { continue; }
+            if text.chars().nth(0) == Some('>') { text.clear(); }
+            match &key.logical_key {
+                Key::Character(c) => {
+                    if let Some(c) = c.chars().nth(0) {
+                        if !c.is_control() { text.push(c); }
+                    }
+                }
+                Key::Space => {
+                    if text.ends_with(' ') { continue; }
+                    text.push(' ');
+                }
+                Key::Backspace => { text.pop(); }
+                Key::Escape => { text.clear(); }
+                _ => {}
             }
-            //if let Some('>') = text.chars().nth(0) { text.clear(); }
-            //if let Some(c) = event.char.chars().nth(0) {
-            //    if c == ' ' && text.ends_with(" ") { continue; }
-            //    if !c.is_control() { text.push(c); }
-            //}
         }
-        if keyboard_input.just_pressed(KeyCode::Backspace) { text.pop(); }
-        if keyboard_input.just_pressed(KeyCode::Escape) { text.clear(); }
         if keyboard_input.just_pressed(KeyCode::Enter) {
             // commands starting with :
             let lines = text.as_str().split("|");
