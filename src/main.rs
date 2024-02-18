@@ -91,7 +91,7 @@ fn main() {
         // connections
         .add_systems(Update, connect.run_if(in_state(Mode::Connect)))
         .add_systems(Update, target.run_if(in_state(Mode::Connect)))
-        .add_systems(Update, update_connection_arrows)
+        .add_systems(PreUpdate, update_connection_arrows)
         .add_systems(Update, draw_connecting_arrow.run_if(in_state(Mode::Connect)))
         .add_systems(Update, mark_children_change)
         // order
