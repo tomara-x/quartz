@@ -158,6 +158,8 @@ pub fn target(
     }
 }
 
+// TODO(tomara): try different values for the bh/wh loops! lol
+// this needs cleaning
 pub fn update_connection_arrows(
     bh_query: Query<(Entity, &BlackHole), Or<(Changed<Transform>, Changed<Radius>)>>,
     wh_query: Query<(Entity, &WhiteHole), Or<(Changed<Transform>, Changed<Radius>)>>,
