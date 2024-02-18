@@ -1,9 +1,9 @@
 use bevy::{
     prelude::*,
     ecs::system::SystemParam,
-    window::ReceivedCharacter,
     render::view::RenderLayers,
-    app::AppExit
+    app::AppExit,
+    input::keyboard::{KeyboardInput, Key::Character},
 };
 
 use crate::components::*;
@@ -31,18 +31,18 @@ pub struct Access<'w, 's> {
     render_layers: Query<'w, 's, &'static mut RenderLayers, With<Camera>>,
     net_query: Query<'w, 's, &'static mut Network>,
     exit_event: EventWriter<'w, AppExit>,
+    drag_modes: ResMut<'w, DragModes>,
 }
 
 pub fn command_parser(
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut display: Query<&mut Text, With<CommandText>>,
-    mut char_input_events: EventReader<ReceivedCharacter>,
+    mut key_event: EventReader<KeyboardInput>,
+    mut command_line: Query<&mut Text, With<CommandText>>,
     circles_query: Query<Entity, With<Radius>>,
     mut access: Access,
     mut mode: Local<i32>,
     mut in_progress: Local<bool>,
     mut next_state: ResMut<NextState<Mode>>,
-    mut drag_modes: ResMut<DragModes>,
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     info_text_query: Query<(Entity, &InfoText)>,
@@ -50,9 +50,11 @@ pub fn command_parser(
     global_trans_rights: Query<&GlobalTransform>,
     parent_query: Query<&Parent>,
 ) {
-    if char_input_events.is_empty() && !*in_progress &&
-    !keyboard_input.just_released(KeyCode::KeyT) { return; }
-    let text = &mut display.single_mut().sections[0].value;
+    if key_event.is_empty()
+    && !keyboard_input.just_released(KeyCode::KeyT)
+    && !*in_progress { return; }
+
+    let text = &mut command_line.single_mut().sections[0].value;
 
     // draw mode
     if *mode == 1 {
@@ -61,7 +63,7 @@ pub fn command_parser(
             text.clear();
             *mode = 0;
             next_state.set(Mode::Edit);
-            char_input_events.clear(); // we have an 'e' that we don't want
+            //FIXME char_input_events.clear(); // we have an 'e' that we don't want
         }
         // switch to connect mode
         if keyboard_input.just_pressed(KeyCode::KeyC) {
@@ -78,7 +80,7 @@ pub fn command_parser(
             text.clear();
             *mode = 0;
             next_state.set(Mode::Edit);
-            char_input_events.clear();
+            //FIXME char_input_events.clear();
         }
         // target
         if keyboard_input.just_pressed(KeyCode::KeyT) { *text = "-- TARGET --".to_string(); }
@@ -93,13 +95,17 @@ pub fn command_parser(
 
     // edit mode
     if *mode == 0 {
-        for event in char_input_events.read() {
+        for key in key_event.read() {
             if *text == "F" { continue; }
-            if let Some('>') = text.chars().nth(0) { text.clear(); }
-            if let Some(c) = event.char.chars().nth(0) {
-                if c == ' ' && text.ends_with(" ") { continue; }
-                if !c.is_control() { text.push(c); }
+            info!("{:?}", key.logical_key);
+            if let Character(c) = &key.logical_key {
+                text.push_str(&c);
             }
+            //if let Some('>') = text.chars().nth(0) { text.clear(); }
+            //if let Some(c) = event.char.chars().nth(0) {
+            //    if c == ' ' && text.ends_with(" ") { continue; }
+            //    if !c.is_control() { text.push(c); }
+            //}
         }
         if keyboard_input.just_pressed(KeyCode::Backspace) { text.pop(); }
         if keyboard_input.just_pressed(KeyCode::Escape) { text.clear(); }
@@ -519,90 +525,90 @@ pub fn command_parser(
                 *text = "-- CONNECT --".to_string();
             }
             Some("et") => {
-                drag_modes.falsify();
-                drag_modes.t = true;
+                access.drag_modes.falsify();
+                access.drag_modes.t = true;
                 text.clear();
             }
             Some("er") => {
-                drag_modes.falsify();
-                drag_modes.r = true;
+                access.drag_modes.falsify();
+                access.drag_modes.r = true;
                 text.clear();
             }
             Some("en") => {
-                drag_modes.falsify();
-                drag_modes.n = true;
+                access.drag_modes.falsify();
+                access.drag_modes.n = true;
                 text.clear();
             }
             Some("eh") => {
-                drag_modes.falsify();
-                drag_modes.h = true;
+                access.drag_modes.falsify();
+                access.drag_modes.h = true;
                 text.clear();
             }
             Some("es") => {
-                drag_modes.falsify();
-                drag_modes.s = true;
+                access.drag_modes.falsify();
+                access.drag_modes.s = true;
                 text.clear();
             }
             Some("el") => {
-                drag_modes.falsify();
-                drag_modes.l = true;
+                access.drag_modes.falsify();
+                access.drag_modes.l = true;
                 text.clear();
             }
             Some("ea") => {
-                drag_modes.falsify();
-                drag_modes.a = true;
+                access.drag_modes.falsify();
+                access.drag_modes.a = true;
                 text.clear();
             }
             Some("eo") => {
-                drag_modes.falsify();
-                drag_modes.o = true;
+                access.drag_modes.falsify();
+                access.drag_modes.o = true;
                 text.clear();
             }
             Some("ev") => {
-                drag_modes.falsify();
-                drag_modes.v = true;
+                access.drag_modes.falsify();
+                access.drag_modes.v = true;
                 text.clear();
             }
 
             Some("ee") => {
-                drag_modes.falsify();
+                access.drag_modes.falsify();
                 text.clear();
             }
 
             Some("Et") => {
-                drag_modes.t = true;
+                access.drag_modes.t = true;
                 text.clear();
             }
             Some("Er") => {
-                drag_modes.r = true;
+                access.drag_modes.r = true;
                 text.clear();
             }
             Some("En") => {
-                drag_modes.n = true;
+                access.drag_modes.n = true;
                 text.clear();
             }
             Some("Eh") => {
-                drag_modes.h = true;
+                access.drag_modes.h = true;
                 text.clear();
             }
             Some("Es") => {
-                drag_modes.s = true;
+                access.drag_modes.s = true;
                 text.clear();
             }
             Some("El") => {
-                drag_modes.l = true;
+                access.drag_modes.l = true;
                 text.clear();
             }
             Some("Ea") => {
-                drag_modes.a = true;
+                access.drag_modes.a = true;
                 text.clear();
             }
             Some("Eo") => {
-                drag_modes.o = true;
+                access.drag_modes.o = true;
                 text.clear();
             }
             Some("Ev") => {
-                drag_modes.v = true;
+                access.drag_modes.v = true;
                 text.clear();
             }
             // toggle open white holes (selected)
