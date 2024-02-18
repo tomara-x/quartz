@@ -63,7 +63,7 @@ pub fn command_parser(
             text.clear();
             *mode = 0;
             next_state.set(Mode::Edit);
-            //FIXME char_input_events.clear(); // we have an 'e' that we don't want
+            key_event.clear(); // we have an 'e' that we don't want
         }
         // switch to connect mode
         if keyboard_input.just_pressed(KeyCode::KeyC) {
@@ -80,7 +80,7 @@ pub fn command_parser(
             text.clear();
             *mode = 0;
             next_state.set(Mode::Edit);
-            //FIXME char_input_events.clear();
+            key_event.clear(); // consume the 'e' when exiting to edit
         }
         // target
         if keyboard_input.just_pressed(KeyCode::KeyT) { *text = "-- TARGET --".to_string(); }
@@ -110,6 +110,7 @@ pub fn command_parser(
                 }
                 Key::Backspace => { text.pop(); }
                 Key::Escape => { text.clear(); }
+                // tab completion when?
                 _ => {}
             }
         }
