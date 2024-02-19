@@ -102,51 +102,6 @@ pub fn process(
                         access.num_query.get_mut(*id).unwrap().0 = 0.;
                     }
                 }
-                "lmb_just_pressed" | "lmb_just_released" |
-                "mmb_just_pressed" | "mmb_just_released" |
-                "rmb_just_pressed" | "rmb_just_released" => {
-                    let mut zero = false;
-                    let mut one = false;
-                    if access.num_query.get(*id).unwrap().0 != 0. {
-                        access.num_query.get_mut(*id).unwrap().bypass_change_detection().0 = 0.;
-                        zero = true;
-                    }
-                    match access.op_query.get(*id).unwrap().0.as_str() {
-                        "lmb_just_pressed" => {
-                            if mouse_button_input.just_pressed(MouseButton::Left) { one = true; }
-                        }
-                        "lmb_just_released" => {
-                            if mouse_button_input.just_released(MouseButton::Left) { one = true; }
-                        }
-                        "mmb_just_pressed" => {
-                            if mouse_button_input.just_pressed(MouseButton::Middle) { one = true; }
-                        }
-                        "mmb_just_released" => {
-                            if mouse_button_input.just_released(MouseButton::Middle) { one = true; }
-                        }
-                        "rmb_just_pressed" => {
-                            if mouse_button_input.just_pressed(MouseButton::Right) { one = true; }
-                        }
-                        "rmb_just_released" => {
-                            if mouse_button_input.just_released(MouseButton::Right) { one = true; }
-                        }
-                        _ => {}
-                    }
-                    if one {
-                        access.num_query.get_mut(*id).unwrap().bypass_change_detection().0 = 1.;
-                    }
-                    if zero || one {
-                        for child in children {
-                            if let Ok(bh) = black_hole_query.get(*child) {
-                                if let Ok(wh) = white_hole_query.get_mut(bh.wh) {
-                                    if wh.link_types.0 == -1 {
-                                        white_hole_query.get_mut(bh.wh).unwrap().open = true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
                 "butt" => {
                     if mouse_button_input.just_pressed(MouseButton::Left) {
                         let t = access.trans_query.get(*id).unwrap().translation.xy();
@@ -181,7 +136,7 @@ pub fn process(
                     }
                 }
                 // uses the array to store prevous num value
-                "rise" => {
+                "rise" | "fall" => {
                     if access.net_changed_query.get(*id).unwrap().0 {
                         access.arr_query.get_mut(*id).unwrap().0 = vec!(0.);
                         access.net_changed_query.get_mut(*id).unwrap().0 = false;
@@ -191,9 +146,12 @@ pub fn process(
                             if wh.link_types == (-1, 1) {
                                 let input = access.num_query.get(wh.bh_parent).unwrap().0;
                                 let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
-                                if input > arr[0] {
-                                    access.num_query.get_mut(*id).unwrap().0 = 1.
+                                if access.op_query.get(*id).unwrap().0 == "rise" {
+                                    if input > arr[0] { access.num_query.get_mut(*id).unwrap().0 = 1.; }
                                 } else {
+                                    if input < arr[0] { access.num_query.get_mut(*id).unwrap().0 = 1.; }
+                                }
+                                if input == arr[0] {
                                     access.num_query.get_mut(*id).unwrap().0 = 0.
                                 }
                                 arr[0] = input;
