@@ -62,7 +62,7 @@ pub fn process(
     camera_query: Query<(&Camera, &GlobalTransform)>,
     windows: Query<&Window>,
 ) {
-    'entity: for id in queue.0.iter().flatten() {
+    for id in queue.0.iter().flatten() {
         if let Ok(children) = &children_query.get(*id) {
             match access.op_query.get(*id).unwrap().0.as_str() {
                 "mouse_x" => {
