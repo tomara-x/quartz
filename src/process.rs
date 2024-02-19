@@ -239,26 +239,32 @@ pub fn process(
                     }
                 }
                 "set" => {
+                    let mut ndx = None;
+                    let mut val = None;
                     for child in children {
-                        if let Ok(white_hole) = white_hole_query.get(*child) {
-                            if white_hole.link_types.0 == -1 {
-                                let index = Ord::max(white_hole.link_types.1, 0) as usize;
-                                let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
-                                if arr.len() <= index { arr.resize(index + 1, 0.); }
-                                arr[index] = access.num_query.get(white_hole.bh_parent).unwrap().0;
-                            }
+                        if let Ok(wh) = white_hole_query.get(*child) {
+                            if wh.link_types == (-1, 1) { ndx = Some(wh.bh_parent); }
+                            if wh.link_types == (-1, 2) { val = Some(wh.bh_parent); }
+                        }
+                    }
+                    if let (Some(ndx), Some(val)) = (ndx, val) {
+                        if !access.num_query.get_mut(val).unwrap().is_changed() { continue; }
+                        let ndx = access.num_query.get(ndx).unwrap().0.max(0.) as usize;
+                        let val = access.num_query.get(val).unwrap().0;
+                        if let Some(i) = access.arr_query.get_mut(*id).unwrap().0.get_mut(ndx) {
+                            *i = val;
                         }
                     }
                 }
                 "get" => {
                     for child in children {
-                        if let Ok(white_hole) = white_hole_query.get(*child) {
-                            if white_hole.link_types.1 == -1 {
-                               let arr = &access.arr_query.get(white_hole.bh_parent).unwrap().0;
-                               // TODO(amy): with negative indexing get in reverse
-                               if let Some(input) = arr.get(Ord::max(white_hole.link_types.0, 0) as usize) {
-                                   access.num_query.get_mut(*id).unwrap().0 = *input;
-                               }
+                        if let Ok(wh) = white_hole_query.get(*child) {
+                            if wh.link_types == (-1, 1) {
+                                if !access.num_query.get_mut(wh.bh_parent).unwrap().is_changed() { continue; }
+                                let ndx = access.num_query.get(wh.bh_parent).unwrap().0.max(0.) as usize;
+                                if let Some(i) = access.arr_query.get(*id).unwrap().0.get(ndx) {
+                                   access.num_query.get_mut(*id).unwrap().0 = *i;
+                                }
                             }
                         }
                     }
