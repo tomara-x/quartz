@@ -159,31 +159,6 @@ pub fn process(
                         }
                     }
                 }
-                "tbutt" => {
-                    let mut changed = false;
-                    if mouse_button_input.just_pressed(MouseButton::Left) {
-                        let t = access.trans_query.get(*id).unwrap().translation.xy();
-                        let r = access.radius_query.get(*id).unwrap().0;
-                        if cursor.i.distance_squared(t) < r*r {
-                            access.num_query.get_mut(*id).unwrap().bypass_change_detection().0 = 1.;
-                            changed = true;
-                        }
-                    } else if access.num_query.get(*id).unwrap().0 != 0. {
-                        access.num_query.get_mut(*id).unwrap().bypass_change_detection().0 = 0.;
-                        changed = true;
-                    }
-                    if changed {
-                        for child in children {
-                            if let Ok(bh) = black_hole_query.get(*child) {
-                                if let Ok(wh) = white_hole_query.get_mut(bh.wh) {
-                                    if wh.link_types.0 == -1 {
-                                        white_hole_query.get_mut(bh.wh).unwrap().open = true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
                 "key" => {
                     for event in char_input_events.read() {
                         if let Some(c) = event.char.chars().nth(0) {
@@ -197,27 +172,6 @@ pub fn process(
                             if wh.open && wh.link_types == (-1, 1) {
                                 let input = access.num_query.get(wh.bh_parent).unwrap().0;
                                 access.num_query.get_mut(*id).unwrap().0 = semitone_ratio(input);
-                            }
-                        }
-                    }
-                }
-                "pass" => {
-                    for child in children {
-                        if let Ok(white_hole) = white_hole_query.get(*child) {
-                            if white_hole.link_types == (-1, 1) {
-                                if access.num_query.get(white_hole.bh_parent).unwrap().0 == 0. {
-                                    continue 'entity;
-                                }
-                            }
-                        }
-                    }
-                }
-                "cold" => {
-                    for child in children {
-                        if let Ok(wh) = white_hole_query.get(*child) {
-                            if wh.link_types == (-1, 1) {
-                                let n = access.num_query.get(wh.bh_parent).unwrap().0;
-                                access.num_query.get_mut(*id).unwrap().bypass_change_detection().0 = n;
                             }
                         }
                     }
