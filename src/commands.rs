@@ -97,10 +97,10 @@ pub fn command_parser(
     if *mode == 0 {
         for key in key_event.read() {
             if !key.state.is_pressed() || *text == "F" { continue; }
-            if text.chars().nth(0) == Some('>') { text.clear(); }
             match &key.logical_key {
                 Key::Character(c) => {
                     if let Some(c) = c.chars().nth(0) {
+                        if text.chars().nth(0) == Some('>') { text.clear(); }
                         if !c.is_control() { text.push(c); }
                     }
                 }
