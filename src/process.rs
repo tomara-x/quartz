@@ -269,6 +269,26 @@ pub fn process(
                         }
                     }
                 }
+                "apply" => {
+                    for child in children {
+                        if let Ok(wh) = white_hole_query.get(*child) {
+                            if wh.link_types == (0, 1) && wh.open {
+                                // TODO(amy): would be nice if we applied input on net change
+                                let input_net = &access.net_query.get(wh.bh_parent).unwrap().0;
+                                access.net_query.get_mut(*id).unwrap().0 = input_net.clone();
+                            }
+                            if wh.link_types == (-13, 2) && wh.open {
+                                let input = access.arr_query.get(wh.bh_parent).unwrap().0.clone();
+                                let output = &mut access.arr_query.get_mut(*id).unwrap().0;
+                                let net = &mut access.net_query.get_mut(*id).unwrap().0;
+                                if net.inputs() == input.len() {
+                                    output.resize(net.outputs(), 0.);
+                                    net.tick(input.as_slice(), output.as_mut_slice());
+                                }
+                            }
+                        }
+                    }
+                }
                 "empty" => {}
                 "var()" => {
                     // use is_changed
@@ -1021,6 +1041,7 @@ pub fn open_white_holes(
     col_query: Query<&Children, Changed<Col>>,
     order_query: Query<&Children, Changed<Order>>,
     vertices_query: Query<&Children, Changed<Vertices>>,
+    arr_query: Query<&Children, Changed<Arr>>,
     mut white_hole_query: Query<&mut WhiteHole>,
     black_hole_query: Query<&BlackHole>,
 ) {
@@ -1090,6 +1111,17 @@ pub fn open_white_holes(
             if let Ok(bh) = black_hole_query.get(*child) {
                 if let Ok(wh) = white_hole_query.get(bh.wh) {
                     if wh.link_types.0 == -11 {
+                        white_hole_query.get_mut(bh.wh).unwrap().open = true;
+                    }
+                }
+            }
+        }
+    }
+    for children in arr_query.iter() {
+        for child in children {
+            if let Ok(bh) = black_hole_query.get(*child) {
+                if let Ok(wh) = white_hole_query.get(bh.wh) {
+                    if wh.link_types.0 == -13 {
                         white_hole_query.get_mut(bh.wh).unwrap().open = true;
                     }
                 }
