@@ -60,9 +60,11 @@ pub fn command_parser(
 
     // toggle fullscreen mode
     if keyboard_input.just_pressed(KeyCode::F11) {
-        let mode = access.windows.single().mode;
-        if mode == WindowMode::Windowed {access.windows.single_mut().mode = WindowMode::Fullscreen; }
-        else if mode == WindowMode::Fullscreen {access.windows.single_mut().mode = WindowMode::Windowed; }
+        if access.windows.single().mode == WindowMode::Fullscreen {
+            access.windows.single_mut().mode = WindowMode::Windowed;
+        } else {
+            access.windows.single_mut().mode = WindowMode::Fullscreen;
+        }
     }
 
     // draw mode
