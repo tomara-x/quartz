@@ -4,6 +4,7 @@ use bevy::{
     render::view::RenderLayers,
     app::AppExit,
     input::keyboard::{KeyboardInput, Key},
+    window::WindowMode,
 };
 
 use crate::components::*;
@@ -32,6 +33,7 @@ pub struct Access<'w, 's> {
     net_query: Query<'w, 's, &'static mut Network>,
     exit_event: EventWriter<'w, AppExit>,
     drag_modes: ResMut<'w, DragModes>,
+    windows: Query<'w, 's, &'static mut Window>,
 }
 
 pub fn command_parser(
@@ -55,6 +57,13 @@ pub fn command_parser(
     && !*in_progress { return; }
 
     let text = &mut command_line.single_mut().sections[0].value;
+
+    // toggle fullscreen mode
+    if keyboard_input.just_pressed(KeyCode::F11) {
+        let mode = access.windows.single().mode;
+        if mode == WindowMode::Windowed {access.windows.single_mut().mode = WindowMode::Fullscreen; }
+        else if mode == WindowMode::Fullscreen {access.windows.single_mut().mode = WindowMode::Windowed; }
+    }
 
     // draw mode
     if *mode == 1 {

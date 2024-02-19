@@ -8,7 +8,6 @@ use bevy::{
     tasks::IoTaskPool,
     scene::SceneInstance,
     render::view::RenderLayers,
-    //window::WindowMode,
     prelude::*};
 
 use bevy_pancam::{PanCam, PanCamPlugin};
@@ -33,7 +32,6 @@ fn main() {
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
                 title: String::from("awawawa"),
-                //mode: WindowMode::Fullscreen,
                 ..default()
             }),
             ..default()
