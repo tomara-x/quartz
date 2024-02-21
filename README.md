@@ -14,6 +14,7 @@ when you open quartz, it will be an empty window. there's 3 modes:
 
 #### commands
 ##### return-terminated commands
+(you can use the vertical bar character `|` to run more than one command at once)
 ###### file io
 - `:e` edit (open) a scene file (in the assets path and without extension)
 - `:w` write(save) a scene file (same)
