@@ -1,4 +1,7 @@
 # Quartz
+
+![Screenshot_2024-02-21_19-39-17](https://github.com/tomara-x/quartz/assets/86204514/0102a8ff-5c56-41f9-be1a-446d4e1a34d4)
+
 ```
 "you africans, please listen to me as africans
 and you non-africans, listen to me with open mind"
