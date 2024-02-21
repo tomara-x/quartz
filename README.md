@@ -1,14 +1,167 @@
-## quartz
+# Quartz
+```
+"you africans, please listen to me as africans
+and you non-africans, listen to me with open mind"
+```
+## let's play
+when you open quartz, it will be an empty window. there's 3 modes:
+#### modes
+1. **edit**: interact with entities / execute commands (default) (press `e` or `esc` in any other mode) 
+2. **draw**: draw new circles (press `d` in any other mode)
+3. **connect**: connect entities (press `c` in any other mode)
+   
+    **target**: target an entity from another (hold `t` in connect mode)
 
-```
-todo!();
-```
+#### commands
+##### return-terminated commands
+###### file io
+- `:e` edit (open) a scene file (in the assets path and without extension)
+- `:w` write(save) a scene file (same)
 
-## usage
+###### set values
 
+these can take an optional entity id
 ```
-todo!();
+:set n 4v0 42  // will set the num of entity 4v0 to 42
+:set n 42      // will set the num values of selected entities to 42
 ```
+- `:set n` set the num value of selected entities
+- `:set r` set radius
+- `:set x` set x position
+- `:set y` set y position
+- `:set z` set z position (this controls depth. what's in front of what)
+- `:set h` set hue value [0...360]
+- `:set s` set saturation [0...1]
+- `:set l` set lightness [0...1]
+- `:set a` set alpha [0...1]
+- `:set v` set number of vertices (3 or higher)
+- `:set o` or `:set rot` or `:set rotation` set rotation [-pi...pi]
+- `:set op` set op (use shortcut `o`)
+- `:set ord` or `:set order` set order (use `[` and `]` to increment/decrement order)
+- `:set arr` or `:set array` set the array (space separated, no commas!)
+- `:set tar` or `:set targets` set targets (space separated id's) (if nothing is selected, the first entity gets the rest of the list as its targets)
+- `:tsel` target selected (`:tsel 4v2` sets selected entities as targets of entity 4v2)
+
+###### other
+- `:lt` set link type of hole (use shortcut `l`)
+- `:ht` toggle open a white hole (by id)
+- `:q` exit
+
+##### immediate commands
+###### run mode switching
+- `d` go to draw mode
+- `c` go to connect mode
+
+###### drag modes
+what happens when dragging selected entities, or when arrow keys are pressed
+
+**exclusive**
+- `ee` drag nothing (default)
+- `et` drag translation (move entity)
+- `er` drag radius
+- `en` drag number
+- `eh` drag hue
+- `es` drag saturation
+- `el` drag lightness
+- `ea` drag alpha
+- `eo` drag rotation
+- `ev` drag vertices (only changed with arrow keys)
+
+**add a drag mode** (drag multiple things at the same time)
+- `Et` add translation
+- `Er` add radius
+- `En` add num
+- `Eh` add hue
+- `Es` add saturation
+- `El` add lightness
+- `Ea` add alpha
+- `Eo` add rotation
+- `Ev` add vertices
+
+###### white hole
+- `ht` toggle open status
+- `hf` open for one frame
+
+###### shortcuts
+- `o` shortcut for `:set op `
+- `l` shortcut for `:lt `
+
+###### info texts
+- `II` spawn info texts for selected entities
+- `IC` clear info texts
+- `ID` view entity id in info texts
+
+###### audio node info
+- `ni` number of inputs the selected entity's audio node has 
+- `no` number of outputs the selected entity's audio node has
+- `np` print info about the audio net in the selected entity
+
+###### inspect commands
+- `ii` entity id's
+- `in` number values
+- `ira` radius values
+- `ix` x position
+- `iy` y position
+- `iz` z position
+- `ih` hue value
+- `is` saturation
+- `il` lightness
+- `ial` alpha
+- `iv` vertices
+- `iro` rotation
+- `ior` order
+- `iop` op
+- `iar` array
+- `it` targets
+- `iL` hole link type
+- `iO` white hole open status
+
+###### selection
+- `sa` select all
+- `sc` select all circles
+- `sh` select all holes
+
+###### visibility
+- `vc` toggle circle visibility
+- `vb` toggle black hole visibility
+- `vw` toggle white hole visibility
+- `va` toggle arrow visibility
+- `vv` show all
+
+###### other
+- `quartz` shhh!
+
+#### link types
+any connection links 2 circles together in some way. the black hole is taking some data from the source circle, and the white hole is getting that data and feeding it to the sink circle. the link type determines what that data is.
+- `n` or `-1` : num
+- `r` or `-2` : radius
+- `x` or `-3` : x position
+- `y` or `-4` : y position
+- `z` or `-5` : z position
+- `h` or `-6` : hue
+- `s` or `-7` : saturation
+- `l` or `-8` : lightness
+- `a` or `-9` : alpha
+- `ord` or `-10` : order (you can read/write the order of a circle, but once something hits order 0, it won't process anymore, so you have to increment manually (using `]`) it's kinda like locking your keys inside)
+- `v` or `-11` : vertices
+- `o` or `-12` : rotation
+- `A` or `-13` : array
+- `0` usually means audio network (or nothing)
+generally a 0 to 0 connection is gonna do nothing, but when connecting networks, the black hole is type 0, and the white hole is type (positive number)
+
+⚠️ under construction ⚠️
+#### order
+every circle has an order (0 or higher). things in order 0 do nothing.
+
+each frame, every circle with a positive order gets processed (does whatever its op defines)
+this processing happens.. you guessed it, in *order*
+
+we process things breadth-first. so when a circle is processed, all its inputs must have their data ready (they processed in this frame) to make sure that's the case, their order has to be lower than that of the circle reading their data...
+
+lower order processes first, and the higher the order, the later that circle processes (within the same frame)
+#### ops
+
+#### targets
 
 ## thanks
 - tools / dependencies:
