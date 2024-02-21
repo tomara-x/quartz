@@ -1,5 +1,7 @@
 # Quartz
 
+⚠️ under construction ⚠️
+
 ![Screenshot_2024-02-21_19-39-17](https://github.com/tomara-x/quartz/assets/86204514/0102a8ff-5c56-41f9-be1a-446d4e1a34d4)
 
 ```
@@ -158,7 +160,6 @@ any connection links 2 circles together in some way. the black hole is taking so
 - `0` usually means audio network (or nothing)
 generally a 0 to 0 connection is gonna do nothing, but when connecting networks, the black hole is type 0, and the white hole is type (positive number)
 
-⚠️ under construction ⚠️
 #### order
 every circle has an order (0 or higher). things in order 0 do nothing.
 
@@ -169,8 +170,13 @@ we process things breadth-first. so when a circle is processed, all its inputs m
 
 lower order processes first, and the higher the order, the later that circle processes (within the same frame)
 #### ops
-
+```
+todo!();
+```
 #### targets
+```
+todo!();
+```
 
 ## thanks
 - tools / dependencies:
