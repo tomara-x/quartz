@@ -302,6 +302,39 @@ pub fn process(
                         access.num_query.get_mut(*id).unwrap().0 = var.value();
                     }
                 }
+                "feedback()" => {
+                    let net_changed = access.net_changed_query.get(*id).unwrap().0;
+                    let lost = access.lost_wh_query.get(*id).unwrap().0;
+                    let mut changed = false;
+                    let mut net = None;
+                    let mut del = None;
+                    for child in children {
+                        if let Ok(mut wh) = white_hole_query.get_mut(*child) {
+                            if wh.link_types == (0, 1) {
+                                net = Some(Box::new(access.net_query.get(wh.bh_parent).unwrap().0.clone()));
+                            } else if wh.link_types == (-1, 2) {
+                                del = Some(access.num_query.get(wh.bh_parent).unwrap().0);
+                            }
+                            if wh.open {
+                                wh.open = false;
+                                changed = true;
+                            }
+                        }
+                    }
+                    if lost || net_changed || changed {
+                        if let Some(net) = net {
+                            if net.outputs() == net.inputs() {
+                                if let Some(del) = del {
+                                    let feedback = Net32::wrap(Box::new(Feedback32::new(del, net)));
+                                    access.net_query.get_mut(*id).unwrap().0 = feedback;
+                                } else {
+                                    let feedback = Net32::wrap(Box::new(Feedback32::new(0., net)));
+                                    access.net_query.get_mut(*id).unwrap().0 = feedback;
+                                }
+                            }
+                        }
+                    }
+                }
                 "sum()" | "product()" => {
                     let net_changed = access.net_changed_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
@@ -1038,14 +1071,6 @@ pub fn update_net(
                     n.0 = Net32::wrap(Box::new(tap(p[0], p[1])));
                 }
             }
-
-            "feedback_delay" => {
-                if let Some(p) = p.get(0) {
-                    n.0 = Net32::wrap(Box::new(feedback(delay(*p))));
-                }
-            }
-            "feedback" => { n.0 = Net32::wrap(Box::new(feedback(pass()))); }
-            "feedback_tick" => { n.0 = Net32::wrap(Box::new(feedback(tick()))); }
 
             "ramp" => {
                 n.0 = Net32::wrap(
