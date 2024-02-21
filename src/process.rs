@@ -331,6 +331,7 @@ pub fn process(
                                     let feedback = Net32::wrap(Box::new(Feedback32::new(0., net)));
                                     access.net_query.get_mut(*id).unwrap().0 = feedback;
                                 }
+                                access.net_changed_query.get_mut(*id).unwrap().0 = true;
                             }
                         }
                     }
