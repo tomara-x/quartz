@@ -8,7 +8,7 @@ when you open quartz, it will be an empty window. there's 3 modes:
 #### modes
 1. **edit**: interact with entities / execute commands (default) (press `e` or `esc` in any other mode) 
 2. **draw**: draw new circles (press `d` in any other mode)
-3. **connect**: connect entities (press `c` in any other mode)
+3. **connect**: connect circles (press `c` in any other mode)
    
     **target**: target an entity from another (hold `t` in connect mode)
 
@@ -18,6 +18,11 @@ when you open quartz, it will be an empty window. there's 3 modes:
 ###### file io
 - `:e` edit (open) a scene file (in the assets path and without extension)
 - `:w` write(save) a scene file (same)
+
+```
+:w moth     // will save the current scene as the file "assets/moth.scn.ron" (OVERWRITES)
+:e moth     // will try to open the file "assets/moth.scn.ron" if it's there
+```
 
 ###### set values
 
