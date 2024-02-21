@@ -551,6 +551,35 @@ pub fn process(
     }
 }
 
+pub fn update_constant_num(
+    mut query: Query<(&Op, &mut crate::components::Num), Changed<Op>>,
+) {
+    for (op, mut num) in query.iter_mut() {
+        match op.0.as_str() {
+            "E" => { num.0 = std::f32::consts::E; }
+            "FRAC_1_PI" => { num.0 = std::f32::consts::FRAC_1_PI; }
+            "FRAC_1_SQRT_2" => { num.0 = std::f32::consts::FRAC_1_SQRT_2; }
+            "FRAC_2_PI" => { num.0 = std::f32::consts::FRAC_2_PI; }
+            "FRAC_2_SQRT_PI" => { num.0 = std::f32::consts::FRAC_2_SQRT_PI; }
+            "FRAC_PI_2" => { num.0 = std::f32::consts::FRAC_PI_2; }
+            "FRAC_PI_3" => { num.0 = std::f32::consts::FRAC_PI_3; }
+            "FRAC_PI_4" => { num.0 = std::f32::consts::FRAC_PI_4; }
+            "FRAC_PI_6" => { num.0 = std::f32::consts::FRAC_PI_6; }
+            "FRAC_PI_8" => { num.0 = std::f32::consts::FRAC_PI_8; }
+            "LN_2" => { num.0 = std::f32::consts::LN_2; }
+            "LN_10" => { num.0 = std::f32::consts::LN_10; }
+            "LOG2_10" => { num.0 = std::f32::consts::LOG2_10; }
+            "LOG2_E" => { num.0 = std::f32::consts::LOG2_E; }
+            "LOG10_2" => { num.0 = std::f32::consts::LOG10_2; }
+            "LOG10_E" => { num.0 = std::f32::consts::LOG10_E; }
+            "PI" => { num.0 = std::f32::consts::PI; }
+            "SQRT_2" => { num.0 = std::f32::consts::SQRT_2; }
+            "TAU" => { num.0 = std::f32::consts::TAU; }
+            _ => {}
+        }
+    }
+}
+
 pub fn update_net(
     mut query: Query<(&Op, &mut NetChanged, &mut Network, &mut NetIns), Changed<Op>>,
 ) {
