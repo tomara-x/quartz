@@ -1015,6 +1015,7 @@ pub fn update_net(
                     n.0 = Net32::wrap(Box::new(feedback(delay(*p))));
                 }
             }
+            "feedback" => { n.0 = Net32::wrap(Box::new(feedback(pass()))); }
             "feedback_tick" => { n.0 = Net32::wrap(Box::new(feedback(tick()))); }
 
             "ramp" => {
