@@ -1010,6 +1010,12 @@ pub fn update_net(
                 }
             }
 
+            "feedback_delay" => {
+                if let Some(p) = p.get(0) {
+                    n.0 = Net32::wrap(Box::new(feedback(delay(*p))));
+                }
+            }
+            "feedback_tick" => { n.0 = Net32::wrap(Box::new(feedback(tick()))); }
 
             "ramp" => {
                 n.0 = Net32::wrap(
