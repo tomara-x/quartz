@@ -11,11 +11,10 @@ and you non-africans, listen to me with open mind"
 ## let's play
 when you open quartz, it will be an empty window. there's 3 modes:
 #### modes
-1. **edit**: interact with entities / execute commands (default) (press `e` or `esc` in any other mode) 
-2. **draw**: draw new circles (press `d` in any other mode)
-3. **connect**: connect circles (press `c` in any other mode)
-   
-    **target**: target an entity from another (hold `t` in connect mode)
+- **edit**: (default) interact with entities and execute commands (press `e` or `esc`) 
+- **draw**: draw new circles (press `d`)
+- **connect**: connect circles (press `c`)
+    - **target**: target an entity from another (hold `t` in connect mode)
 
 #### commands
 ##### return-terminated commands
