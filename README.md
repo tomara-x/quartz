@@ -63,9 +63,9 @@ these can take an optional entity id
 - `c` go to connect mode
 
 ###### drag modes
-what happens when dragging selected entities, or when arrow keys are pressed
+(what happens when dragging selected entities, or when arrow keys are pressed)
 
-**exclusive**
+exclusive:
 - `ee` drag nothing (default)
 - `et` drag translation (move entity)
 - `er` drag radius
@@ -75,9 +75,9 @@ what happens when dragging selected entities, or when arrow keys are pressed
 - `el` drag lightness
 - `ea` drag alpha
 - `eo` drag rotation
-- `ev` drag vertices (only changed with arrow keys)
+- `ev` drag vertices (only works with arrow keys)
 
-**add a drag mode** (drag multiple things at the same time)
+add a drag mode: (to drag multiple properties at the same time)
 - `Et` add translation
 - `Er` add radius
 - `En` add num
@@ -107,6 +107,7 @@ what happens when dragging selected entities, or when arrow keys are pressed
 - `np` print info about the audio net in the selected entity
 
 ###### inspect commands
+(information about the selected entities)
 - `ii` entity id's
 - `in` number values
 - `ira` radius values
