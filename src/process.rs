@@ -47,6 +47,7 @@ pub struct Access<'w, 's> {
     net_changed_query: Query<'w, 's, &'static mut NetChanged>,
     //gained_wh_query: Query<'w, 's, &'static mut GainedWH>,
     lost_wh_query: Query<'w, 's, &'static mut LostWH>,
+    targets_query: Query<'w, 's, &'static mut Targets>,
 }
 
 pub fn process(
@@ -294,6 +295,23 @@ pub fn process(
                         for i in inputs {
                             if let Some(i) = i {
                                 arr.push(i);
+                            }
+                        }
+                    }
+                }
+                // distribute input array among targets' num values
+                "distro" => {
+                    for child in children {
+                        if let Ok(wh) = white_hole_query.get(*child) {
+                            if wh.link_types == (-13, 1) {
+                                if access.arr_query.get_mut(wh.bh_parent).unwrap().is_changed() {
+                                    let arr = &access.arr_query.get(wh.bh_parent).unwrap().0;
+                                    let targets = &access.targets_query.get(*id).unwrap().0;
+                                    let len = Ord::min(arr.len(), targets.len());
+                                    for i in 0..len {
+                                        access.num_query.get_mut(targets[i]).unwrap().0 = arr[i];
+                                    }
+                                }
                             }
                         }
                     }
