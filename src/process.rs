@@ -1097,6 +1097,84 @@ pub fn update_net(
             "!=" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| if i[0]!=i[1] {1.} else {0.}))); }
             ">=" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| if i[0]>=i[1] {1.} else {0.}))); }
             "<=" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| if i[0]<=i[1] {1.} else {0.}))); }
+
+            "abs" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].abs()))); }
+            "signum" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].signum()))); }
+            "min" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| i[0].min(i[1])))); }
+            "max" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| i[0].max(i[1])))); }
+            "pow" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| i[0].pow(i[1])))); }
+            "floor" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].floor()))); }
+            "fract" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].fract()))); }
+            "ceil" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].ceil()))); }
+            "round" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].round()))); }
+            "sqrt" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].sqrt()))); }
+            "exp" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].exp()))); }
+            "exp2" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].exp2()))); }
+            "exp10" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| (exp10(i[0]))))); }
+            "exp_m1" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| (i[0].ln_1p())))); }
+            "ln_1p" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| (i[0].exp_m1())))); }
+            "ln" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].ln()))); }
+            "log" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| i[0].log(i[1])))); }
+            "log2" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].log2()))); }
+            "log10" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].log10()))); }
+            "sin" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].sin()))); }
+            "cos" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].cos()))); }
+            "tan" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].tan()))); }
+            "asin" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].asin()))); }
+            "acos" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].acos()))); }
+            "atan" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].atan()))); }
+            "sinh" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].sinh()))); }
+            "cosh" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].cosh()))); }
+            "tanh" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].tanh()))); }
+            "asinh" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].asinh()))); }
+            "acosh" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].acosh()))); }
+            "atanh" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].atanh()))); }
+            "squared" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0] * i[0]))); }
+            "cubed" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0] * i[0] * i[0]))); }
+            "lerp" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U3>| lerp(i[0], i[1], i[2])))); }
+            "lerp11" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U3>| lerp11(i[0], i[1], i[2])))); }
+            "delerp" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U3>| delerp(i[0], i[1], i[2])))); }
+            "delerp11" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U3>| delerp11(i[0], i[1], i[2])))); }
+            "xerp" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U3>| xerp(i[0], i[1], i[2])))); }
+            "xerp11" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U3>| xerp11(i[0], i[1], i[2])))); }
+            "dexerp" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U3>| dexerp(i[0], i[1], i[2])))); }
+            "dexerp11" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U3>| dexerp11(i[0], i[1], i[2])))); }
+            "dissonance" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| dissonance(i[0], i[1])))); }
+            "dissonance_max" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| dissonance_max(i[0])))); }
+            "db_amp" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| db_amp(i[0])))); }
+            "amp_db" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| amp_db(i[0])))); }
+            "a_weight" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| a_weight(i[0])))); }
+            "m_weight" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| m_weight(i[0])))); }
+            "spline" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U5>| spline(i[0], i[1], i[2], i[3], i[4])))); }
+            "spline_mone" => {n.0=Net32::wrap(Box::new(map(|i:&Frame<f32,U5>| spline_mono(i[0],i[1],i[2],i[3],i[4]))));}
+            "softsign" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| softsign(i[0])))); }
+            "softexp" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| softexp(i[0])))); }
+            "softmix" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U3>| softmix(i[0], i[1], i[2])))); }
+            "smooth3" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| smooth3(i[0])))); }
+            "smooth5" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| smooth5(i[0])))); }
+            "smooth7" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| smooth7(i[0])))); }
+            "smooth9" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| smooth9(i[0])))); }
+            "uparc" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| uparc(i[0])))); }
+            "downarc" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| downarc(i[0])))); }
+            "sine_ease" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| sine_ease(i[0])))); }
+            "sin_hz" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| sin_hz(i[0], i[1])))); }
+            "cos_hz" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| cos_hz(i[0], i[1])))); }
+            "sqr_hz" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| sqr_hz(i[0], i[1])))); }
+            "tri_hz" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| tri_hz(i[0], i[1])))); }
+            "semitone_ratio" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| semitone_ratio(i[0])))); }
+            "rnd" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| rnd(i[0] as i64) as f32))); }
+            "rnd2" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| rnd2(i[0] as i64) as f32))); }
+            "spline_noise" => {
+                n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32,U2>| {
+                    spline_noise(i[0] as i64, i[1]) as f32
+                })));
+            }
+            "fractal_noise" => {
+                n.0=Net32::wrap(Box::new(map(|i:&Frame<f32,U4>| {
+                    fractal_noise(i[0] as i64,i[1].min(1.) as i64,i[2],i[3]) as f32
+                })));
+            }
+
             _ => { n.0 = Net32::wrap(Box::new(dc(0.))); }
         }
     }
