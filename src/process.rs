@@ -269,6 +269,34 @@ pub fn process(
                         }
                     }
                 }
+                "nums_to_arr" => {
+                    let lost = access.lost_wh_query.get(*id).unwrap().0;
+                    let mut changed = false;
+                    let mut inputs = Vec::new();
+                    for child in children {
+                        if let Ok(mut wh) = white_hole_query.get_mut(*child) {
+                            if wh.link_types.0 == -1 {
+                                let index = Ord::max(wh.link_types.1, 0) as usize;
+                                if index >= inputs.len() {
+                                    inputs.resize(index+1, None);
+                                }
+                                inputs[index] = Some(access.num_query.get(wh.bh_parent).unwrap().0);
+                            }
+                            if wh.open {
+                                wh.open = false;
+                                changed = true;
+                            }
+                        }
+                    }
+                    if changed || lost {
+                        access.arr_query.get_mut(*id).unwrap().0.clear();
+                        for i in inputs {
+                            if let Some(i) = i {
+                                access.arr_query.get_mut(*id).unwrap().0.push(i);
+                            }
+                        }
+                    }
+                }
                 "apply" => {
                     for child in children {
                         if let Ok(wh) = white_hole_query.get(*child) {
@@ -379,7 +407,7 @@ pub fn process(
                     for child in children {
                         if let Ok(mut wh) = white_hole_query.get_mut(*child) {
                             if wh.link_types.0 == 0 {
-                                let index = wh.link_types.1 as usize;
+                                let index = Ord::max(wh.link_types.1, 0) as usize;
                                 if index >= inputs.len() {
                                     inputs.resize(index+1, None);
                                 }
@@ -415,7 +443,7 @@ pub fn process(
                     for child in children {
                         if let Ok(mut wh) = white_hole_query.get_mut(*child) {
                             if wh.link_types.0 == 0 {
-                                let index = wh.link_types.1 as usize;
+                                let index = Ord::max(wh.link_types.1, 0) as usize;
                                 if index >= inputs.len() {
                                     inputs.resize(index+1, None);
                                 }
