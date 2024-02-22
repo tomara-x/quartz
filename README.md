@@ -101,11 +101,6 @@ add a drag mode: (to drag multiple properties at the same time)
 - `IC` clear info texts
 - `ID` show/hide entity id in visible info texts
 
-###### audio node info
-- `ni` number of inputs the selected entity's audio node has 
-- `no` number of outputs the selected entity's audio node has
-- `np` print info about the audio net in the selected entity
-
 ###### inspect commands
 (information about the selected entities)
 - `ii` entity id's
@@ -126,6 +121,12 @@ add a drag mode: (to drag multiple properties at the same time)
 - `it` targets
 - `iL` hole link type
 - `iO` white hole open status
+
+audio unit info:
+- `ni` number of inputs
+- `no` number of outputs
+- `np` info about the unit
+
 
 ###### selection
 - `sa` select all
