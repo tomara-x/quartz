@@ -597,7 +597,7 @@ pub fn update_constant_num(
 
 fn parse_with_constants(s: &str) -> Result<f32, &str> {
     if let Ok(n) = s.parse::<f32>() {
-        return Ok(n)
+        Ok(n)
     } else {
         match s {
             "E" => Ok(std::f32::consts::E),
