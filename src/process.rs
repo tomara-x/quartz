@@ -637,7 +637,7 @@ pub fn update_net(
         if let Some(params) = args.get(1) {
             let params = params.split(',').collect::<Vec<&str>>();
             for s in params {
-                if let Ok(n) = s.parse::<f32>() {
+                if let Ok(n) = parse_with_constants(s) {
                     p.push(n);
                 }
             }
