@@ -289,10 +289,11 @@ pub fn process(
                         }
                     }
                     if changed || lost {
-                        access.arr_query.get_mut(*id).unwrap().0.clear();
+                        let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
+                        arr.clear();
                         for i in inputs {
                             if let Some(i) = i {
-                                access.arr_query.get_mut(*id).unwrap().0.push(i);
+                                arr.push(i);
                             }
                         }
                     }
