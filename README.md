@@ -99,7 +99,7 @@ add a drag mode: (to drag multiple properties at the same time)
 ###### info texts
 - `II` spawn info texts for selected entities
 - `IC` clear info texts
-- `ID` view entity id in info texts
+- `ID` show/hide entity id in visible info texts
 
 ###### audio node info
 - `ni` number of inputs the selected entity's audio node has 
