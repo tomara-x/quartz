@@ -37,7 +37,7 @@ pub fn spawn_circles(
             Vertices(v),
             Col(color),
             Num(0.),
-            Arr(vec!(0., 1., 2., 3., 4., 5., 6., 7., 8., 9.)),
+            Arr(Vec::new()),
             Op("empty".to_string()),
             Targets(Vec::new()),
             Order(0),
