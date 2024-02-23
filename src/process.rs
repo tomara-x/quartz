@@ -299,17 +299,40 @@ pub fn process(
                         }
                     }
                 }
-                // distribute input array among targets' num values
+                // distribute input array among targets' values
                 "distro" => {
                     for child in children {
                         if let Ok(wh) = white_hole_query.get(*child) {
-                            if wh.link_types == (-13, 1) {
+                            if wh.link_types.0 == -13 {
                                 if access.arr_query.get_mut(wh.bh_parent).unwrap().is_changed() {
                                     let arr = &access.arr_query.get(wh.bh_parent).unwrap().0;
                                     let targets = &access.targets_query.get(*id).unwrap().0;
                                     let len = Ord::min(arr.len(), targets.len());
                                     for i in 0..len {
-                                        access.num_query.get_mut(targets[i]).unwrap().0 = arr[i];
+                                        // input link type determines what property to write to in targets
+                                        match wh.link_types.1 {
+                                            -1 => { access.num_query.get_mut(targets[i]).unwrap().0 = arr[i]; }
+                                            -2 => { access.radius_query.get_mut(targets[i]).unwrap().0 = arr[i].max(0.1); }
+                                            -3 => { access.trans_query.get_mut(targets[i]).unwrap().translation.x = arr[i]; }
+                                            -4 => { access.trans_query.get_mut(targets[i]).unwrap().translation.y = arr[i]; }
+                                            -5 => { access.trans_query.get_mut(targets[i]).unwrap().translation.z = arr[i]; }
+                                            -6 => { access.col_query.get_mut(targets[i]).unwrap().0.set_h(arr[i]); }
+                                            -7 => { access.col_query.get_mut(targets[i]).unwrap().0.set_s(arr[i]); }
+                                            -8 => { access.col_query.get_mut(targets[i]).unwrap().0.set_l(arr[i]); }
+                                            -9 => { access.col_query.get_mut(targets[i]).unwrap().0.set_a(arr[i]); }
+                                            -10 => {
+                                                access.order_query.get_mut(targets[i]).unwrap().0 = arr[i] as usize;
+                                                access.order_change.send_default();
+                                            }
+                                            -11 => {
+                                                access.vertices_query.get_mut(targets[i]).unwrap().0 = arr[i].max(3.) as usize;
+                                            }
+                                            -12 => {
+                                                let q = Quat::from_euler(EulerRot::XYZ, 0., 0., arr[i]);
+                                                access.trans_query.get_mut(targets[i]).unwrap().rotation = q;
+                                            }
+                                            _ => {}
+                                        }
                                     }
                                 }
                             }
@@ -595,6 +618,7 @@ pub fn process(
                     }
                     match white_hole.link_types.1 {
                         -1 => { access.num_query.get_mut(*id).unwrap().0 = input; }
+                        // TODO(amy): why doesn't this panics on 0?
                         -2 => { access.radius_query.get_mut(*id).unwrap().0 = input.max(0.); }
                         -3 => { access.trans_query.get_mut(*id).unwrap().translation.x = input; }
                         -4 => { access.trans_query.get_mut(*id).unwrap().translation.y = input; }
