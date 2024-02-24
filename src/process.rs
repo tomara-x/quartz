@@ -239,6 +239,27 @@ pub fn process(
                         }
                     }
                 }
+                "count" => {
+                    let mut trig = None;
+                    let mut high = None;
+                    for child in children {
+                        if let Ok(wh) = white_hole_query.get(*child) {
+                            if wh.link_types == (-1, 1) {
+                                trig = Some(access.num_query.get(wh.bh_parent).unwrap().0);
+                            }
+                            if wh.link_types == (-1, 2) {
+                                high = Some(access.num_query.get(wh.bh_parent).unwrap().0);
+                            }
+                        }
+                    }
+                    if let Some(trig) = trig {
+                        let num = &mut access.num_query.get_mut(*id).unwrap().0;
+                        *num += trig;
+                        if let Some(high) = high {
+                            if *num >= high { *num = 0.; }
+                        }
+                    }
+                }
                 "set" => {
                     let mut ndx = None;
                     let mut val = None;
