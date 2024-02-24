@@ -258,13 +258,18 @@ pub fn process(
                     }
                 }
                 "get" => {
+                    let mut arr = None;
                     for child in children {
                         if let Ok(wh) = white_hole_query.get(*child) {
-                            if wh.link_types == (-1, 1) {
-                                if !access.num_query.get_mut(wh.bh_parent).unwrap().is_changed() { continue; }
-                                let ndx = access.num_query.get(wh.bh_parent).unwrap().0.max(0.) as usize;
-                                if let Some(i) = access.arr_query.get(*id).unwrap().0.get(ndx) {
-                                   access.num_query.get_mut(*id).unwrap().0 = *i;
+                            if wh.link_types == (-13, 1) { arr = Some(wh.bh_parent); }
+                            if wh.link_types == (-1, 2) {
+                                let n = access.num_query.get_mut(wh.bh_parent).unwrap();
+                                if n.is_changed() {
+                                    if let Some(arr) = arr {
+                                        if let Some(v) = access.arr_query.get(arr).unwrap().0.get(n.0 as usize) {
+                                            access.num_query.get_mut(*id).unwrap().0 = *v;
+                                        }
+                                    }
                                 }
                             }
                         }
