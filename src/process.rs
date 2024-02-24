@@ -309,6 +309,7 @@ pub fn process(
                                     let targets = &access.targets_query.get(*id).unwrap().0;
                                     let len = Ord::min(arr.len(), targets.len());
                                     for i in 0..len {
+                                        if access.radius_query.get(targets[i]).is_err() { continue; }
                                         // input link type determines what property to write to in targets
                                         match wh.link_types.1 {
                                             -1 => { access.num_query.get_mut(targets[i]).unwrap().0 = arr[i]; }
