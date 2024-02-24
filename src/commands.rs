@@ -487,7 +487,7 @@ pub fn command_parser(
                                 // set the rest (crd) as the targets of first (car)
                                 if access.selected_query.is_empty() {
                                     if tmp.len() != 0 {
-                                        let controller = tmp.swap_remove(0);
+                                        let controller = tmp.remove(0);
                                         if let Ok(mut c) = access.targets_query.get_mut(controller) {
                                             c.0 = tmp;
                                         }
