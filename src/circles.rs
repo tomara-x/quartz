@@ -24,7 +24,7 @@ pub fn spawn_circles(
     if mouse_button_input.just_released(MouseButton::Left) &&
     !keyboard_input.pressed(KeyCode::Space) {
         let r = cursor.f.distance(cursor.i);
-        let v = 8;
+        let v = 4;
         let color = Color::hsla(1., 1., 0.84, 1.);
         commands.spawn((
             ColorMesh2dBundle {
