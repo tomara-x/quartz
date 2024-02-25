@@ -138,9 +138,8 @@ pub fn process(
                 }
                 // uses the array to store prevous num value
                 "rise" | "fall" => {
-                    if access.net_changed_query.get(*id).unwrap().0 {
+                    if access.arr_query.get(*id).unwrap().0.len() != 1 {
                         access.arr_query.get_mut(*id).unwrap().0 = vec!(0.);
-                        access.net_changed_query.get_mut(*id).unwrap().0 = false;
                     }
                     for child in children {
                         if let Ok(wh) = white_hole_query.get(*child) {
@@ -450,6 +449,20 @@ pub fn process(
                                     let feedback = Net32::wrap(Box::new(Feedback32::new(0., net)));
                                     access.net_query.get_mut(*id).unwrap().0 = feedback;
                                 }
+                                access.net_changed_query.get_mut(*id).unwrap().0 = true;
+                            }
+                        }
+                    }
+                }
+                "wave()" => {
+                    for child in children {
+                        if let Ok(wh) = white_hole_query.get(*child) {
+                            if wh.link_types == (-13, 1) && wh.open {
+                                let arr = &access.arr_query.get(wh.bh_parent).unwrap().0;
+                                let net = &mut access.net_query.get_mut(*id).unwrap().0;
+                                *net = Net32::wrap(Box::new(
+                                    wave32(&std::sync::Arc::new(Wave32::from_samples(44100., arr)), 0, Some(0))
+                                ));
                                 access.net_changed_query.get_mut(*id).unwrap().0 = true;
                             }
                         }
