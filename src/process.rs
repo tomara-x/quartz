@@ -4,7 +4,9 @@ use bevy::{
         bloom::{BloomCompositeMode, BloomSettings},
         tonemapping::Tonemapping,
         },
-    prelude::*};
+    render::view::screenshot::ScreenshotManager,
+    prelude::*
+};
 
 use fundsp::hacker32::*;
 
@@ -48,6 +50,7 @@ pub struct Access<'w, 's> {
     //gained_wh_query: Query<'w, 's, &'static mut GainedWH>,
     lost_wh_query: Query<'w, 's, &'static mut LostWH>,
     targets_query: Query<'w, 's, &'static mut Targets>,
+    screensot_manager: ResMut<'w, ScreenshotManager>,
 }
 
 pub fn process(
@@ -61,14 +64,26 @@ pub fn process(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     mut char_input_events: EventReader<ReceivedCharacter>,
     camera_query: Query<(&Camera, &GlobalTransform)>,
-    windows: Query<&Window>,
+    windows: Query<(Entity, &Window)>,
 ) {
     for id in queue.0.iter().flatten() {
         if let Ok(children) = &children_query.get(*id) {
             match access.op_query.get(*id).unwrap().0.as_str() {
+                "screenshot" => {
+                    if access.num_query.get(*id).unwrap().0 == 1. {
+                        let win = windows.single().0;
+                        let epoch = std::time::UNIX_EPOCH;
+                        let now = std::time::SystemTime::now();
+                        if let Ok(dur) = now.duration_since(epoch) {
+                            let time = dur.as_millis();
+                            let path = format!("screenshots/{:?}.png", time);
+                            access.screensot_manager.save_screenshot_to_disk(win, path).unwrap();
+                        }
+                    }
+                }
                 "mouse_x" => {
                     let (cam, cam_transform) = camera_query.single();
-                    if let Some(cursor_pos) = windows.single().cursor_position() {
+                    if let Some(cursor_pos) = windows.single().1.cursor_position() {
                         if let Some(point) = cam.viewport_to_world_2d(cam_transform, cursor_pos) {
                             access.num_query.get_mut(*id).unwrap().0 = point.x;
                         }
@@ -76,7 +91,7 @@ pub fn process(
                 }
                 "mouse_y" => {
                     let (cam, cam_transform) = camera_query.single();
-                    if let Some(cursor_pos) = windows.single().cursor_position() {
+                    if let Some(cursor_pos) = windows.single().1.cursor_position() {
                         if let Some(point) = cam.viewport_to_world_2d(cam_transform, cursor_pos) {
                             access.num_query.get_mut(*id).unwrap().0 = point.y;
                         }

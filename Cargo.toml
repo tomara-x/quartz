@@ -27,7 +27,7 @@ features = [
   #"animation",          # Animation support
   "tonemapping_luts",   # Support different camera Tonemapping modes (enables KTX2+zstd)
   "default_font",       # Embed a minimal default font for text/UI
-  #"png",                # PNG image format for simple 2D images
+  "png",                # PNG image format for simple 2D images
   #"hdr",                # HDR images
   #"ktx2",               # Preferred format for GPU textures
   #"zstd",               # ZSTD compression support in KTX2 files
