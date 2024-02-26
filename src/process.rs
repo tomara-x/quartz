@@ -1253,7 +1253,11 @@ pub fn update_net(
             }
             "tap" => {
                 if let Some(p) = p.get(0..2) {
-                    n.0 = Net32::wrap(Box::new(tap(p[0], p[1])));
+                    if p[0] <= p[1] {
+                        n.0 = Net32::wrap(Box::new(tap(p[0], p[1])));
+                    } else {
+                        n.0 = Net32::wrap(Box::new(tap(p[1], p[0])));
+                    }
                 }
             }
 
