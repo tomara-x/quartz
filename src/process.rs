@@ -10,7 +10,10 @@ use bevy::{
 
 use fundsp::hacker32::*;
 
-use crate::components::*;
+use crate::{
+    components::*,
+    nodes::*,
+};
 
 pub fn sort_by_order(
     query: Query<(Entity, &Order)>,
@@ -433,6 +436,29 @@ pub fn process(
                 "monitor()" | "timer()" => {
                     if let Some(var) = access.net_ins_query.get(*id).unwrap().0.get(0) {
                         access.num_query.get_mut(*id).unwrap().0 = var.value();
+                    }
+                }
+                "select()" => {
+                    let net_changed = access.net_changed_query.get(*id).unwrap().0;
+                    let lost = access.lost_wh_query.get(*id).unwrap().0;
+                    let mut changed = false;
+                    let mut inputs = Vec::new();
+                    for child in children {
+                        if let Ok(mut wh) = white_hole_query.get_mut(*child) {
+                            if wh.link_types.0 == 0 { inputs.push(wh.bh_parent); }
+                            if wh.open {
+                                wh.open = false;
+                                changed = true;
+                            }
+                        }
+                    }
+                    if lost || net_changed || changed {
+                        let mut nets = Vec::new();
+                        for i in inputs {
+                            nets.push(access.net_query.get(i).unwrap().0.clone());
+                        }
+                        access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(An(Select::new(nets))));
+                        access.net_changed_query.get_mut(*id).unwrap().0 = true;
                     }
                 }
                 "feedback()" => {

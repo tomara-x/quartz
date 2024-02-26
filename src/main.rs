@@ -24,6 +24,7 @@ mod connections;
 mod circles;
 mod audio;
 mod commands;
+mod nodes;
 use {components::*, process::*, cursor::*, connections::*,
      circles::*, audio::*, commands::*};
 
