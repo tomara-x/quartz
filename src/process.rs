@@ -1,5 +1,7 @@
 use bevy::{
     ecs::system::SystemParam,
+    winit::{WinitSettings, UpdateMode},
+    utils::Duration,
     core_pipeline::{
         bloom::{BloomCompositeMode, BloomSettings},
         tonemapping::Tonemapping,
@@ -54,6 +56,7 @@ pub struct Access<'w, 's> {
     lost_wh_query: Query<'w, 's, &'static mut LostWH>,
     targets_query: Query<'w, 's, &'static mut Targets>,
     screensot_manager: ResMut<'w, ScreenshotManager>,
+    winit_settings: ResMut<'w, WinitSettings>,
 }
 
 pub fn process(
@@ -72,6 +75,14 @@ pub fn process(
     for id in queue.0.iter().flatten() {
         if let Ok(children) = &children_query.get(*id) {
             match access.op_query.get(*id).unwrap().0.as_str() {
+                "update_rate" => {
+                    if access.num_query.get_mut(*id).unwrap().is_changed() {
+                        let n = access.num_query.get(*id).unwrap().0;
+                        access.winit_settings.focused_mode = UpdateMode::ReactiveLowPower {
+                            wait: Duration::from_secs_f64((1.0 / n.max(0.01)).into()),
+                        }
+                    }
+                }
                 "screenshot" => {
                     if access.num_query.get(*id).unwrap().0 == 1. {
                         let win = windows.single().0;
