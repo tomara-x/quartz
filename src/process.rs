@@ -1299,6 +1299,7 @@ pub fn update_net(
             "<=" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| if i[0]<=i[1] {1.} else {0.}))); }
 
             "abs" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].abs()))); }
+            "mod" | "rem" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| i[0].rem_euclid(i[1])))); }
             "signum" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].signum()))); }
             "min" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| i[0].min(i[1])))); }
             "max" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| i[0].max(i[1])))); }
