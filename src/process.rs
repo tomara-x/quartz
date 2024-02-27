@@ -57,6 +57,7 @@ pub struct Access<'w, 's> {
     targets_query: Query<'w, 's, &'static mut Targets>,
     screensot_manager: ResMut<'w, ScreenshotManager>,
     winit_settings: ResMut<'w, WinitSettings>,
+    seq_query: Query<'w, 's, &'static mut Seq>,
 }
 
 pub fn process(
@@ -71,6 +72,7 @@ pub fn process(
     mut char_input_events: EventReader<ReceivedCharacter>,
     camera_query: Query<(&Camera, &GlobalTransform)>,
     windows: Query<(Entity, &Window)>,
+    mut commands: Commands,
 ) {
     for id in queue.0.iter().flatten() {
         if let Ok(children) = &children_query.get(*id) {
@@ -504,6 +506,29 @@ pub fn process(
                                 access.net_changed_query.get_mut(*id).unwrap().0 = true;
                             }
                         }
+                    }
+                }
+                "seq()" => {
+                    // need better design (fade times/curve)
+                    // interaction with targets
+                    // need to check net arity
+                    // multi-channel sequencers?
+                    if let Ok(mut seq) = access.seq_query.get_mut(*id) {
+                        for child in children {
+                            if let Ok(wh) = white_hole_query.get(*child) {
+                                if wh.link_types == (0, 1) && wh.open {
+                                    let net = Box::new(access.net_query.get(wh.bh_parent).unwrap().0.clone());
+                                    let dur = access.num_query.get(wh.bh_parent).unwrap().0;
+                                    seq.0.push_relative(0., dur, Fade::Power, 0.1, 0.1, net);
+                                }
+                            }
+                        }
+                    } else {
+                        let mut seq = Sequencer32::new(false, 1);
+                        let backend = seq.backend();
+                        commands.entity(*id).insert(Seq(seq));
+                        access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(backend));
+                        access.net_changed_query.get_mut(*id).unwrap().0 = true;
                     }
                 }
                 "wave()" => {
