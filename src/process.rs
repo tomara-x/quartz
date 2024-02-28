@@ -515,29 +515,29 @@ pub fn process(
                     // need to check net arity
                     // multi-channel sequencers?
                     // fade times <= duration
-                    if let Ok(mut seq) = access.seq_query.get_mut(*id) {
-                        for child in children {
-                            if let Ok(wh) = white_hole_query.get(*child) {
-                                if wh.link_types == (0, 1) && wh.open {
-                                    seq.0.push_relative(
-                                        0.,
-                                        access.num_query.get(wh.bh_parent).unwrap().0,
-                                        Fade::Power,
-                                        0.,
-                                        0.,
-                                        Box::new(access.net_query.get(wh.bh_parent).unwrap().0.clone())
-                                    );
-                                }
-                            }
-                        }
-                    } else {
-                        let mut seq = Sequencer32::new(false, 1);
-                        let backend = seq.backend();
-                        commands.entity(*id).insert(Seq(seq));
-                        // cloning Sequencer's backend doesn't work (mpsc)
-                        access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(backend));
-                        access.net_changed_query.get_mut(*id).unwrap().0 = true;
-                    }
+                    //if let Ok(mut seq) = access.seq_query.get_mut(*id) {
+                    //    for child in children {
+                    //        if let Ok(wh) = white_hole_query.get(*child) {
+                    //            if wh.link_types == (0, 1) && wh.open {
+                    //                seq.0.push_relative(
+                    //                    0.,
+                    //                    access.num_query.get(wh.bh_parent).unwrap().0,
+                    //                    Fade::Power,
+                    //                    0.,
+                    //                    0.,
+                    //                    Box::new(access.net_query.get(wh.bh_parent).unwrap().0.clone())
+                    //                );
+                    //            }
+                    //        }
+                    //    }
+                    //} else {
+                    //    let mut seq = Sequencer32::new(false, 1);
+                    //    let backend = seq.backend();
+                    //    commands.entity(*id).insert(Seq(seq));
+                    //    // cloning Sequencer's backend doesn't work (mpsc)
+                    //    access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(backend));
+                    //    access.net_changed_query.get_mut(*id).unwrap().0 = true;
+                    //}
                 }
                 "wave()" => {
                     for child in children {
