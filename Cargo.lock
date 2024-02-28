@@ -623,7 +623,7 @@ version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6f312b1b8aa6d3965b65040b08e33efac030db3071f20b44f9da9c4c3dfcaf76"
 dependencies = [
- "glam 0.25.0",
+ "glam",
  "serde",
 ]
 
@@ -633,7 +633,7 @@ version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3075c01f2b1799945892d5310fc1836e47c045dfe6af5878a304a475931a0c5f"
 dependencies = [
- "glam 0.25.0",
+ "glam",
 ]
 
 [[package]]
@@ -663,7 +663,7 @@ dependencies = [
  "bevy_utils",
  "downcast-rs",
  "erased-serde",
- "glam 0.25.0",
+ "glam",
  "serde",
  "smol_str",
  "thiserror",
@@ -1481,7 +1481,7 @@ checksum = "95ed933078d2e659745df651f4c180511cd582e5b9414ff896e7d50d207e3103"
 dependencies = [
  "const_panic",
  "encase_derive",
- "glam 0.25.0",
+ "glam",
  "thiserror",
 ]
 
@@ -1657,9 +1657,8 @@ checksum = "aa9a19cbb55df58761df49b23516a86d432839add4af60fc256da840f66ed35b"
 [[package]]
 name = "fundsp"
 version = "0.16.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b3141b9fedca9574471937068b7f8c38bb6da78e11db06aa72f0586e7cdb8de8"
 dependencies = [
+ "crossbeam-channel",
  "duplicate",
  "dyn-clone",
  "funutd",
@@ -1677,12 +1676,12 @@ dependencies = [
 
 [[package]]
 name = "funutd"
-version = "0.12.1"
+version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ae3abd023cc7d4c09be0925c855ba1d09a235c3e702c036a688086bf76960938"
+checksum = "1125766e8e2764dad6f7dee7d110aebb8e6cdaa35c7501b52a452ba959f356ff"
 dependencies = [
  "dyn-clone",
- "glam 0.24.2",
+ "glam",
 ]
 
 [[package]]
@@ -1753,12 +1752,6 @@ dependencies = [
  "log",
  "xml-rs",
 ]
-
-[[package]]
-name = "glam"
-version = "0.24.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b5418c17512bdf42730f9032c74e1ae39afc408745ebb2acf72fbc4691c17945"
 
 [[package]]
 name = "glam"
@@ -1915,7 +1908,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f33ddb7f7143d9e703c072e88b98cd8b9719f174137a671429351bd2ee43c02a"
 dependencies = [
  "constgebra",
- "glam 0.25.0",
+ "glam",
 ]
 
 [[package]]

@@ -513,13 +513,19 @@ pub fn process(
                     // interaction with targets
                     // need to check net arity
                     // multi-channel sequencers?
+                    // fade times <= duration
                     if let Ok(mut seq) = access.seq_query.get_mut(*id) {
                         for child in children {
                             if let Ok(wh) = white_hole_query.get(*child) {
                                 if wh.link_types == (0, 1) && wh.open {
-                                    let net = Box::new(access.net_query.get(wh.bh_parent).unwrap().0.clone());
-                                    let dur = access.num_query.get(wh.bh_parent).unwrap().0;
-                                    seq.0.push_relative(0., dur, Fade::Power, 0.1, 0.1, net);
+                                    seq.0.push_relative(
+                                        0.,
+                                        access.num_query.get(wh.bh_parent).unwrap().0,
+                                        Fade::Power,
+                                        0.,
+                                        0.,
+                                        Box::new(access.net_query.get(wh.bh_parent).unwrap().0.clone())
+                                    );
                                 }
                             }
                         }
@@ -527,6 +533,7 @@ pub fn process(
                         let mut seq = Sequencer32::new(false, 1);
                         let backend = seq.backend();
                         commands.entity(*id).insert(Seq(seq));
+                        // cloning Sequencer's backend doesn't work (mpsc)
                         access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(backend));
                         access.net_changed_query.get_mut(*id).unwrap().0 = true;
                     }
@@ -545,6 +552,7 @@ pub fn process(
                         }
                     }
                 }
+                // only store entity ids in the loop. get the nets only on change
                 "sum()" | "product()" => {
                     let net_changed = access.net_changed_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
@@ -663,7 +671,7 @@ pub fn process(
                     for child in children {
                         if let Ok(mut wh) = white_hole_query.get_mut(*child) {
                             if wh.link_types == (0, 1) {
-                                net = Some(access.net_query.get(wh.bh_parent).unwrap().0.clone());
+                                net = Some(wh.bh_parent);
                             }
                             if wh.open {
                                 wh.open = false;
@@ -673,10 +681,11 @@ pub fn process(
                     }
                     if /*gained ||*/ lost || net_changed || changed {
                         if let Some(net) = net {
+                            let net = access.net_query.get(net).unwrap().0.clone();
                             if net.outputs() == 1 && net.inputs() == 0 {
-                                slot.0.set(Fade::Smooth, 0.1, Box::new(net.clone() | dc(0.)));
+                                slot.0.set(Fade::Smooth, 0.1, Box::new(net | dc(0.)));
                             } else if net.outputs() == 2 && net.inputs() == 0 {
-                                slot.0.set(Fade::Smooth, 0.1, Box::new(net.clone()));
+                                slot.0.set(Fade::Smooth, 0.1, Box::new(net));
                             }
                         } else {
                             slot.0.set(Fade::Smooth, 0.1, Box::new(dc(0.) | dc(0.)));
