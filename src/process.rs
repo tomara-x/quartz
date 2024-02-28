@@ -458,6 +458,7 @@ pub fn process(
                     let mut inputs = Vec::new();
                     for child in children {
                         if let Ok(mut wh) = white_hole_query.get_mut(*child) {
+                            // FIXME(amy): order!
                             if wh.link_types.0 == 0 { inputs.push(wh.bh_parent); }
                             if wh.open {
                                 wh.open = false;
