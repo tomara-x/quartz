@@ -13,7 +13,6 @@ use fundsp::{
     net::Net32,
     shared::Shared,
     slot::Slot32,
-    sequencer::Sequencer32,
 };
 // -------------------- components --------------------
 #[derive(Component, Reflect, Default)]
@@ -61,9 +60,6 @@ pub struct Network(pub Net32);
 
 #[derive(Component)]
 pub struct NetIns(pub Vec<Shared<f32>>);
-
-#[derive(Component)]
-pub struct Seq(pub Sequencer32);
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
