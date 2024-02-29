@@ -574,7 +574,7 @@ pub fn process(
                     for child in children {
                         if let Ok(mut wh) = white_hole_query.get_mut(*child) {
                             if wh.link_types.0 == 0 {
-                                inputs.push(&access.net_query.get(wh.bh_parent).unwrap().0);
+                                inputs.push(wh.bh_parent);
                             }
                             if wh.open {
                                 wh.open = false;
@@ -586,14 +586,15 @@ pub fn process(
                         let mut graph = Net32::new(0,0);
                         let mut empty = true;
                         for i in inputs {
+                            let net = access.net_query.get(i).unwrap().0.clone();
                             if empty {
-                                graph = i.clone();
+                                graph = net;
                                 empty = false;
-                            } else if graph.outputs() == i.outputs() {
+                            } else if graph.outputs() == net.outputs() {
                                 if access.op_query.get(*id).unwrap().0 == "sum()" {
-                                    graph = graph + i.clone();
+                                    graph = graph + net;
                                 } else {
-                                    graph = graph * i.clone();
+                                    graph = graph * net;
                                 }
                             }
                         }
