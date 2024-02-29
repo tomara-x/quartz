@@ -989,7 +989,20 @@ pub fn update_net(
                     [p0,p1,p2,..] => { n.0 = Net32::wrap(Box::new(add((p0,p1,p2)))); }
                     [p0,p1,..] => { n.0 = Net32::wrap(Box::new(add((p0,p1)))); }
                     [p0,..] => { n.0 = Net32::wrap(Box::new(add(p0))); }
-                    _ => { n.0 = Net32::wrap(Box::new(add(0.))); }
+                    _ => { n.0 = Net32::wrap(Box::new(add(1.))); }
+                }
+            }
+            "sub" => {
+                match p[..] {
+                    [p0,p1,p2,p3,p4,p5,p6,p7,..] => { n.0 = Net32::wrap(Box::new(sub((p0,p1,p2,p3,p4,p5,p6,p7)))); }
+                    [p0,p1,p2,p3,p4,p5,p6,..] => { n.0 = Net32::wrap(Box::new(sub((p0,p1,p2,p3,p4,p5,p6)))); }
+                    [p0,p1,p2,p3,p4,p5,..] => { n.0 = Net32::wrap(Box::new(sub((p0,p1,p2,p3,p4,p5)))); }
+                    [p0,p1,p2,p3,p4,..] => { n.0 = Net32::wrap(Box::new(sub((p0,p1,p2,p3,p4)))); }
+                    [p0,p1,p2,p3,..] => { n.0 = Net32::wrap(Box::new(sub((p0,p1,p2,p3)))); }
+                    [p0,p1,p2,..] => { n.0 = Net32::wrap(Box::new(sub((p0,p1,p2)))); }
+                    [p0,p1,..] => { n.0 = Net32::wrap(Box::new(sub((p0,p1)))); }
+                    [p0,..] => { n.0 = Net32::wrap(Box::new(sub(p0))); }
+                    _ => { n.0 = Net32::wrap(Box::new(sub(1.))); }
                 }
             }
             "adsr" => {
@@ -1072,7 +1085,7 @@ pub fn update_net(
                     [p0,p1,p2,..] => { n.0 = Net32::wrap(Box::new(constant((p0,p1,p2)))); }
                     [p0,p1,..] => { n.0 = Net32::wrap(Box::new(constant((p0,p1)))); }
                     [p0,..] => { n.0 = Net32::wrap(Box::new(constant(p0))); }
-                    _ => { n.0 = Net32::wrap(Box::new(constant(0.))); }
+                    _ => { n.0 = Net32::wrap(Box::new(constant(1.))); }
                 }
             }
             "dcblock_hz" => {
