@@ -980,14 +980,15 @@ pub fn update_net(
             }
 
             "add" => {
-                //if let Some(p) = p.get(0) {
-                //    n.0 = Net32::wrap(Box::new(add(*p)));
-                //}
                 match p[..] {
-                    [p0, p1, p2, p3, ..] => { n.0 = Net32::wrap(Box::new(add((p0, p1, p2, p3)))); }
-                    [p0, p1, p2, ..] => { n.0 = Net32::wrap(Box::new(add((p0, p1, p2)))); }
-                    [p0, p1, ..] => { n.0 = Net32::wrap(Box::new(add((p0, p1)))); }
-                    [p0, ..] => { n.0 = Net32::wrap(Box::new(add(p0))); }
+                    [p0,p1,p2,p3,p4,p5,p6,p7,..] => { n.0 = Net32::wrap(Box::new(add((p0,p1,p2,p3,p4,p5,p6,p7)))); }
+                    [p0,p1,p2,p3,p4,p5,p6,..] => { n.0 = Net32::wrap(Box::new(add((p0,p1,p2,p3,p4,p5,p6)))); }
+                    [p0,p1,p2,p3,p4,p5,..] => { n.0 = Net32::wrap(Box::new(add((p0,p1,p2,p3,p4,p5)))); }
+                    [p0,p1,p2,p3,p4,..] => { n.0 = Net32::wrap(Box::new(add((p0,p1,p2,p3,p4)))); }
+                    [p0,p1,p2,p3,..] => { n.0 = Net32::wrap(Box::new(add((p0,p1,p2,p3)))); }
+                    [p0,p1,p2,..] => { n.0 = Net32::wrap(Box::new(add((p0,p1,p2)))); }
+                    [p0,p1,..] => { n.0 = Net32::wrap(Box::new(add((p0,p1)))); }
+                    [p0,..] => { n.0 = Net32::wrap(Box::new(add(p0))); }
                     _ => { n.0 = Net32::wrap(Box::new(add(0.))); }
                 }
             }
@@ -1063,15 +1064,16 @@ pub fn update_net(
             }
             "constant" | "dc" => {
                 match p[..] {
-                    [p0, p1, p2, p3, ..] => { n.0 = Net32::wrap(Box::new(constant((p0, p1, p2, p3)))); }
-                    [p0, p1, p2, ..] => { n.0 = Net32::wrap(Box::new(constant((p0, p1, p2)))); }
-                    [p0, p1, ..] => { n.0 = Net32::wrap(Box::new(constant((p0, p1)))); }
-                    [p0, ..] => { n.0 = Net32::wrap(Box::new(constant(p0))); }
+                    [p0,p1,p2,p3,p4,p5,p6,p7,..] => { n.0 = Net32::wrap(Box::new(constant((p0,p1,p2,p3,p4,p5,p6,p7)))); }
+                    [p0,p1,p2,p3,p4,p5,p6,..] => { n.0 = Net32::wrap(Box::new(constant((p0,p1,p2,p3,p4,p5,p6)))); }
+                    [p0,p1,p2,p3,p4,p5,..] => { n.0 = Net32::wrap(Box::new(constant((p0,p1,p2,p3,p4,p5)))); }
+                    [p0,p1,p2,p3,p4,..] => { n.0 = Net32::wrap(Box::new(constant((p0,p1,p2,p3,p4)))); }
+                    [p0,p1,p2,p3,..] => { n.0 = Net32::wrap(Box::new(constant((p0,p1,p2,p3)))); }
+                    [p0,p1,p2,..] => { n.0 = Net32::wrap(Box::new(constant((p0,p1,p2)))); }
+                    [p0,p1,..] => { n.0 = Net32::wrap(Box::new(constant((p0,p1)))); }
+                    [p0,..] => { n.0 = Net32::wrap(Box::new(constant(p0))); }
                     _ => { n.0 = Net32::wrap(Box::new(constant(0.))); }
                 }
-                // try to figure out this size type stuff
-                // let x: &Frame<f32,U4> = Frame::from_slice(p.as_slice());
-                // n.0 = Net32::wrap(Box::new(constant(*x)));
             }
             "dcblock_hz" => {
                 if let Some(p) = p.get(0) {
@@ -1169,7 +1171,11 @@ pub fn update_net(
                 if let Some(p) = p.get(0) {
                     match *p as usize {
                         2 => { n.0 = Net32::wrap(Box::new(join::<U2>())); }
+                        3 => { n.0 = Net32::wrap(Box::new(join::<U3>())); }
                         4 => { n.0 = Net32::wrap(Box::new(join::<U4>())); }
+                        5 => { n.0 = Net32::wrap(Box::new(join::<U5>())); }
+                        6 => { n.0 = Net32::wrap(Box::new(join::<U6>())); }
+                        7 => { n.0 = Net32::wrap(Box::new(join::<U7>())); }
                         8 => { n.0 = Net32::wrap(Box::new(join::<U8>())); }
                         _ => {}
                     }
@@ -1179,7 +1185,11 @@ pub fn update_net(
                 if let Some(p) = p.get(0) {
                     match *p as usize {
                         2 => { n.0 = Net32::wrap(Box::new(split::<U2>())); }
+                        3 => { n.0 = Net32::wrap(Box::new(split::<U3>())); }
                         4 => { n.0 = Net32::wrap(Box::new(split::<U4>())); }
+                        5 => { n.0 = Net32::wrap(Box::new(split::<U5>())); }
+                        6 => { n.0 = Net32::wrap(Box::new(split::<U6>())); }
+                        7 => { n.0 = Net32::wrap(Box::new(split::<U7>())); }
                         8 => { n.0 = Net32::wrap(Box::new(split::<U8>())); }
                         _ => {}
                     }
@@ -1191,6 +1201,10 @@ pub fn update_net(
                         2 => { n.0 = Net32::wrap(Box::new(reverse::<U2>())); }
                         3 => { n.0 = Net32::wrap(Box::new(reverse::<U3>())); }
                         4 => { n.0 = Net32::wrap(Box::new(reverse::<U4>())); }
+                        5 => { n.0 = Net32::wrap(Box::new(reverse::<U5>())); }
+                        6 => { n.0 = Net32::wrap(Box::new(reverse::<U6>())); }
+                        7 => { n.0 = Net32::wrap(Box::new(reverse::<U7>())); }
+                        8 => { n.0 = Net32::wrap(Box::new(reverse::<U8>())); }
                         _ => {}
                     }
                 }
@@ -1269,10 +1283,14 @@ pub fn update_net(
             }
             "mul" => {
                 match p[..] {
-                    [p0, p1, p2, p3, ..] => { n.0 = Net32::wrap(Box::new(mul((p0, p1, p2, p3)))); }
-                    [p0, p1, p2, ..] => { n.0 = Net32::wrap(Box::new(mul((p0, p1, p2)))); }
-                    [p0, p1, ..] => { n.0 = Net32::wrap(Box::new(mul((p0, p1)))); }
-                    [p0, ..] => { n.0 = Net32::wrap(Box::new(mul(p0))); }
+                    [p0,p1,p2,p3,p4,p5,p6,p7,..] => { n.0 = Net32::wrap(Box::new(mul((p0,p1,p2,p3,p4,p5,p6,p7)))); }
+                    [p0,p1,p2,p3,p4,p5,p6,..] => { n.0 = Net32::wrap(Box::new(mul((p0,p1,p2,p3,p4,p5,p6)))); }
+                    [p0,p1,p2,p3,p4,p5,..] => { n.0 = Net32::wrap(Box::new(mul((p0,p1,p2,p3,p4,p5)))); }
+                    [p0,p1,p2,p3,p4,..] => { n.0 = Net32::wrap(Box::new(mul((p0,p1,p2,p3,p4)))); }
+                    [p0,p1,p2,p3,..] => { n.0 = Net32::wrap(Box::new(mul((p0,p1,p2,p3)))); }
+                    [p0,p1,p2,..] => { n.0 = Net32::wrap(Box::new(mul((p0,p1,p2)))); }
+                    [p0,p1,..] => { n.0 = Net32::wrap(Box::new(mul((p0,p1)))); }
+                    [p0,..] => { n.0 = Net32::wrap(Box::new(mul(p0))); }
                     _ => { n.0 = Net32::wrap(Box::new(mul(1.))); }
                 }
             }
