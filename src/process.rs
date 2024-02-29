@@ -565,7 +565,7 @@ pub fn process(
                         }
                     }
                 }
-                "sum()" | "product()" => {
+                "SUM" | "+" | "PRO" | "*" => {
                     let net_changed = access.net_changed_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
                     let mut changed = false;
@@ -590,7 +590,8 @@ pub fn process(
                                 graph = net;
                                 empty = false;
                             } else if graph.outputs() == net.outputs() {
-                                if access.op_query.get(*id).unwrap().0 == "sum()" {
+                                let op = &access.op_query.get(*id).unwrap().0;
+                                if op == "+" || op == "SUM" {
                                     graph = graph + net;
                                 } else {
                                     graph = graph * net;
@@ -602,7 +603,7 @@ pub fn process(
                         *output = Net32::wrap(Box::new(graph));
                     }
                 }
-                "stack()" => {
+                "STA" | "|" => {
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
                     let mut changed = false;
                     let mut inputs = Vec::new();
@@ -639,7 +640,7 @@ pub fn process(
                         access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(graph));
                     }
                 }
-                "pipe()" => {
+                "PIP" | ">>" => {
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
                     let mut changed = false;
                     let mut inputs = Vec::new();
