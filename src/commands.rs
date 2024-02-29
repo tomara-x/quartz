@@ -127,7 +127,7 @@ pub fn command_parser(
         }
         if keyboard_input.just_pressed(KeyCode::Enter) {
             // commands starting with :
-            let lines = text.as_str().split("|");
+            let lines = text.as_str().split(";");
             for line in lines {
                 let mut command = line.split_ascii_whitespace();
                 match command.next() {
