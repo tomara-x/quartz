@@ -116,7 +116,7 @@ pub fn command_parser(
                     }
                 }
                 Key::Space => {
-                    if text.ends_with(' ') { continue; }
+                    if text.ends_with(' ') || text.is_empty() { continue; }
                     text.push(' ');
                 }
                 Key::Backspace => { text.pop(); }
