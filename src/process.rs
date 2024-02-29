@@ -1307,6 +1307,35 @@ pub fn update_net(
                     _ => { n.0 = Net32::wrap(Box::new(mul(1.))); }
                 }
             }
+            "div" => {
+                match p[..] {
+                    [p0,p1,p2,p3,p4,p5,p6,p7,..] => {
+                        n.0 = Net32::wrap(Box::new(mul((1./p0,1./p1,1./p2,1./p3,1./p4,1./p5,1./p6,1./p7))));
+                    }
+                    [p0,p1,p2,p3,p4,p5,p6,..] => {
+                        n.0 = Net32::wrap(Box::new(mul((1./p0,1./p1,1./p2,1./p3,1./p4,1./p5,1./p6))));
+                    }
+                    [p0,p1,p2,p3,p4,p5,..] => {
+                        n.0 = Net32::wrap(Box::new(mul((1./p0,1./p1,1./p2,1./p3,1./p4,1./p5))));
+                    }
+                    [p0,p1,p2,p3,p4,..] => {
+                        n.0 = Net32::wrap(Box::new(mul((1./p0,1./p1,1./p2,1./p3,1./p4))));
+                    }
+                    [p0,p1,p2,p3,..] => {
+                        n.0 = Net32::wrap(Box::new(mul((1./p0,1./p1,1./p2,1./p3))));
+                    }
+                    [p0,p1,p2,..] => {
+                        n.0 = Net32::wrap(Box::new(mul((1./p0,1./p1,1./p2))));
+                    }
+                    [p0,p1,..] => {
+                        n.0 = Net32::wrap(Box::new(mul((1./p0,1./p1))));
+                    }
+                    [p0,..] => {
+                        n.0 = Net32::wrap(Box::new(mul(1./p0)));
+                    }
+                    _ => { n.0 = Net32::wrap(Box::new(mul(1.))); }
+                }
+            }
             "notch_hz" => {
                 if let Some(p) = p.get(0..2) {
                     n.0 = Net32::wrap(Box::new(notch_hz(p[0], p[1])));
