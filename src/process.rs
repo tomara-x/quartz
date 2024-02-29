@@ -565,7 +565,6 @@ pub fn process(
                         }
                     }
                 }
-                // only store entity ids in the loop. get the nets only on change
                 "sum()" | "product()" => {
                     let net_changed = access.net_changed_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
@@ -614,7 +613,7 @@ pub fn process(
                                 if index >= inputs.len() {
                                     inputs.resize(index+1, None);
                                 }
-                                inputs[index] = Some(&access.net_query.get(wh.bh_parent).unwrap().0);
+                                inputs[index] = Some(wh.bh_parent);
                             }
                             if wh.open {
                                 wh.open = false;
@@ -627,11 +626,12 @@ pub fn process(
                         let mut empty = true;
                         for i in inputs {
                             if let Some(i) = i {
+                                let net = access.net_query.get(i).unwrap().0.clone();
                                 if empty {
-                                    graph = i.clone();
+                                    graph = net;
                                     empty = false;
                                 } else {
-                                    graph = graph | i.clone();
+                                    graph = graph | net;
                                 }
                             }
                         }
@@ -650,7 +650,7 @@ pub fn process(
                                 if index >= inputs.len() {
                                     inputs.resize(index+1, None);
                                 }
-                                inputs[index] = Some(&access.net_query.get(wh.bh_parent).unwrap().0);
+                                inputs[index] = Some(wh.bh_parent);
                             }
                             if wh.open {
                                 wh.open = false;
@@ -663,12 +663,13 @@ pub fn process(
                         let mut empty = true;
                         for i in inputs {
                             if let Some(i) = i {
+                                let net = access.net_query.get(i).unwrap().0.clone();
                                 if empty {
-                                    graph = i.clone();
+                                    graph = net;
                                     empty = false;
                                 }
-                                else if graph.outputs() == i.inputs() {
-                                    graph = graph >> i.clone();
+                                else if graph.outputs() == net.inputs() {
+                                    graph = graph >> net;
                                 }
                             }
                         }
