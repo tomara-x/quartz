@@ -456,8 +456,13 @@ pub fn process(
                     let mut inputs = Vec::new();
                     for child in children {
                         if let Ok(mut wh) = white_hole_query.get_mut(*child) {
-                            // FIXME(amy): order!
-                            if wh.link_types.0 == 0 { inputs.push(wh.bh_parent); }
+                            if wh.link_types.0 == 0 {
+                                let index = Ord::max(wh.link_types.1, 0) as usize;
+                                if index >= inputs.len() {
+                                    inputs.resize(index+1, None);
+                                }
+                                inputs[index] = Some(wh.bh_parent);
+                            }
                             if wh.open {
                                 wh.open = false;
                                 changed = true;
@@ -467,7 +472,12 @@ pub fn process(
                     if lost || net_changed || changed {
                         let mut nets = Vec::new();
                         for i in inputs {
-                            nets.push(access.net_query.get(i).unwrap().0.clone());
+                            if let Some(i) = i {
+                                let net = &access.net_query.get(i).unwrap().0;
+                                if net.inputs() == 0 && net.outputs() == 1 {
+                                    nets.push(net.clone());
+                                }
+                            }
                         }
                         access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(An(Select::new(nets))));
                         access.net_changed_query.get_mut(*id).unwrap().0 = true;
