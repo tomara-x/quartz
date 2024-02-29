@@ -801,14 +801,8 @@ pub fn process(
                 "out()" => {
                     slot.0.set(Fade::Smooth, 0.1, Box::new(dc(0.) | dc(0.)));
                 }
-                "probe()" => {
-                    access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(dc(0.)));
-                }
                 "sum()" | "product()" | "pipe()" | "stack()" => {
                     access.net_query.get_mut(*id).unwrap().0 = Net32::new(0,0);
-                }
-                "inputs()" | "outputs()" => {
-                    access.num_query.get_mut(*id).unwrap().0 = 0.;
                 }
                 _ => {}
             }
