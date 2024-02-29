@@ -518,6 +518,7 @@ pub fn process(
                     }
                 }
                 "seq()" => {
+                    let net_changed = access.net_changed_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
                     let mut changed = false;
                     let mut inputs = Vec::new();
@@ -536,7 +537,7 @@ pub fn process(
                             }
                         }
                     }
-                    if changed || lost {
+                    if changed || lost || net_changed {
                         let mut nets = Vec::new();
                         for i in inputs {
                             if let Some(i) = i {
