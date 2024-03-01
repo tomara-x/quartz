@@ -7,6 +7,7 @@ use bevy::{
         tonemapping::Tonemapping,
         },
     render::view::screenshot::ScreenshotManager,
+    input::keyboard::{KeyboardInput, Key},
     prelude::*
 };
 
@@ -68,13 +69,14 @@ pub fn process(
     mut slot: ResMut<Slot>,
     cursor: Res<CursorInfo>,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
-    mut char_input_events: EventReader<ReceivedCharacter>,
+    mut key_event: EventReader<KeyboardInput>,
     camera_query: Query<(&Camera, &GlobalTransform)>,
     windows: Query<(Entity, &Window)>,
 ) {
     for id in queue.0.iter().flatten() {
         if let Ok(children) = &children_query.get(*id) {
             match access.op_query.get(*id).unwrap().0.as_str() {
+                // make it take input num
                 "update_rate" => {
                     if access.num_query.get_mut(*id).unwrap().is_changed() {
                         let n = access.num_query.get(*id).unwrap().0;
@@ -189,9 +191,28 @@ pub fn process(
                     }
                 }
                 "key" => {
-                    for event in char_input_events.read() {
-                        if let Some(c) = event.char.chars().nth(0) {
-                            access.num_query.get_mut(*id).unwrap().0 = (c as i32) as f32;
+                    for key in key_event.read() {
+                        if key.state.is_pressed() {
+                            match &key.logical_key {
+                                Key::Character(c) => {
+                                    if let Some(c) = c.chars().nth(0) {
+                                        let c = (c as i32) as f32;
+                                        access.arr_query.get_mut(*id).unwrap().0.push(c);
+                                    }
+                                }
+                                // TODO(amy): add the other variants
+                                _ => {}
+                            }
+                        } else {
+                            match &key.logical_key {
+                                Key::Character(c) => {
+                                    if let Some(c) = c.chars().nth(0) {
+                                        let c = (c as i32) as f32;
+                                        access.arr_query.get_mut(*id).unwrap().0.retain(|&x| x != c);
+                                    }
+                                }
+                                _ => {}
+                            }
                         }
                     }
                 }
