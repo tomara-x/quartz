@@ -616,6 +616,7 @@ pub fn process(
                     }
                 }
                 "STA" | "|" => {
+                    let net_changed = access.net_changed_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
                     let mut changed = false;
                     let mut inputs = Vec::new();
@@ -634,7 +635,7 @@ pub fn process(
                             }
                         }
                     }
-                    if changed || lost {
+                    if changed || lost || net_changed {
                         let mut graph = Net32::new(0,0);
                         let mut empty = true;
                         for i in inputs {
@@ -653,6 +654,7 @@ pub fn process(
                     }
                 }
                 "PIP" | ">>" => {
+                    let net_changed = access.net_changed_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
                     let mut changed = false;
                     let mut inputs = Vec::new();
@@ -671,7 +673,7 @@ pub fn process(
                             }
                         }
                     }
-                    if changed || lost {
+                    if changed || lost || net_changed {
                         let mut graph = Net32::new(0,0);
                         let mut empty = true;
                         for i in inputs {
