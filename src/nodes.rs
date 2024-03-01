@@ -83,6 +83,7 @@ impl AudioNode for Seq {
                 if let Some(network) = self.nets.get_mut(i.0) {
                     network.tick(&[], &mut buffer);
                     out[0] += buffer[0];
+                    if i.2 == 1 { network.reset(); }
                 }
                 i.2 -= 1;
             } else {
