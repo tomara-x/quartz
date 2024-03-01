@@ -53,3 +53,9 @@ opt-level = 1
 opt-level = 3
 debug = false
 
+[profile.release]
+panic = 'abort'
+strip = true
+codegen-units = 1
+lto = "thin" # try fat :3
+
