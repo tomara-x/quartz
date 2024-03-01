@@ -107,22 +107,24 @@ pub fn command_parser(
     // edit mode
     if *mode == 0 {
         for key in key_event.read() {
-            if !key.state.is_pressed() || *text == "F" { continue; }
-            match &key.logical_key {
-                Key::Character(c) => {
-                    if let Some(c) = c.chars().nth(0) {
-                        if text.chars().nth(0) == Some('>') { text.clear(); }
-                        if !c.is_control() { text.push(c); }
+            if key.state.is_pressed() {
+                match &key.logical_key {
+                    Key::Character(c) => {
+                        if let Some(c) = c.chars().nth(0) {
+                            if text.chars().nth(0) == Some('>') { text.clear(); }
+                            if !c.is_control() && *text != "F" { text.push(c); }
+                        }
                     }
+                    Key::Space => {
+                        if !text.ends_with(' ') && !text.is_empty() && *text != "F" {
+                            text.push(' ');
+                        }
+                    }
+                    Key::Backspace => { text.pop(); }
+                    Key::Escape => { text.clear(); }
+                    // tab completion when?
+                    _ => {}
                 }
-                Key::Space => {
-                    if text.ends_with(' ') || text.is_empty() { continue; }
-                    text.push(' ');
-                }
-                Key::Backspace => { text.pop(); }
-                Key::Escape => { text.clear(); }
-                // tab completion when?
-                _ => {}
             }
         }
         if keyboard_input.just_pressed(KeyCode::Enter) {
