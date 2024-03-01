@@ -92,3 +92,36 @@ impl AudioNode for Seq {
         out.into()
     }
 }
+
+
+/// index an array of floats
+/// - input 0: index
+/// - output 0: value at index
+#[derive(Clone)]
+pub struct ArrGet {
+    arr: Vec<f32>,
+}
+
+impl ArrGet {
+    pub fn new(arr: Vec<f32>) -> Self { ArrGet {arr} }
+}
+
+impl AudioNode for ArrGet {
+    const ID: u64 = 1312;
+    type Sample = f32;
+    type Inputs = U1;
+    type Outputs = U1;
+    type Setting = ();
+
+    #[inline]
+    fn tick(
+        &mut self,
+        input: &Frame<Self::Sample, Self::Inputs>,
+    ) -> Frame<Self::Sample, Self::Outputs> {
+        let mut buffer = [0.];
+        if let Some(n) = self.arr.get(input[0] as usize) {
+            buffer[0] = *n;
+        }
+        buffer.into()
+    }
+}

@@ -483,6 +483,18 @@ pub fn process(
                         access.net_changed_query.get_mut(*id).unwrap().0 = true;
                     }
                 }
+                "get()" => {
+                    for child in children {
+                        if let Ok(wh) = white_hole_query.get(*child) {
+                            if wh.link_types == (-13, 1) && wh.open {
+                                let arr = access.arr_query.get(wh.bh_parent).unwrap().0.clone();
+                                let net = &mut access.net_query.get_mut(*id).unwrap().0;
+                                *net = Net32::wrap(Box::new(An(ArrGet::new(arr))));
+                                access.net_changed_query.get_mut(*id).unwrap().0 = true;
+                            }
+                        }
+                    }
+                }
                 "feedback()" => {
                     let net_changed = access.net_changed_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
