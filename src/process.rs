@@ -762,38 +762,38 @@ pub fn process(
             access.lost_wh_query.get_mut(*id).unwrap().0 = false;
             for child in children {
                 let mut lt_to_open = 0;
-                if let Ok(mut white_hole) = white_hole_query.get_mut(*child) {
-                    if !white_hole.open { continue; }
+                if let Ok(mut wh) = white_hole_query.get_mut(*child) {
+                    if !wh.open { continue; }
                     let mut input = 0.;
-                    match white_hole.link_types.0 {
+                    match wh.link_types.0 {
                         // num
-                        -1 => { input = access.num_query.get(white_hole.bh_parent).unwrap().0; }
+                        -1 => { input = access.num_query.get(wh.bh_parent).unwrap().0; }
                         // radius
-                        -2 => { input = access.radius_query.get(white_hole.bh_parent).unwrap().0; }
+                        -2 => { input = access.radius_query.get(wh.bh_parent).unwrap().0; }
                         // x
-                        -3 => { input = access.trans_query.get(white_hole.bh_parent).unwrap().translation.x; }
+                        -3 => { input = access.trans_query.get(wh.bh_parent).unwrap().translation.x; }
                         // y
-                        -4 => { input = access.trans_query.get(white_hole.bh_parent).unwrap().translation.y; }
+                        -4 => { input = access.trans_query.get(wh.bh_parent).unwrap().translation.y; }
                         // z
-                        -5 => { input = access.trans_query.get(white_hole.bh_parent).unwrap().translation.z; }
+                        -5 => { input = access.trans_query.get(wh.bh_parent).unwrap().translation.z; }
                         // hue
-                        -6 => { input = access.col_query.get(white_hole.bh_parent).unwrap().0.h(); }
+                        -6 => { input = access.col_query.get(wh.bh_parent).unwrap().0.h(); }
                         // saturation
-                        -7 => { input = access.col_query.get(white_hole.bh_parent).unwrap().0.s(); }
+                        -7 => { input = access.col_query.get(wh.bh_parent).unwrap().0.s(); }
                         // lightness
-                        -8 => { input = access.col_query.get(white_hole.bh_parent).unwrap().0.l(); }
+                        -8 => { input = access.col_query.get(wh.bh_parent).unwrap().0.l(); }
                         // alpha
-                        -9 => { input = access.col_query.get(white_hole.bh_parent).unwrap().0.a(); }
+                        -9 => { input = access.col_query.get(wh.bh_parent).unwrap().0.a(); }
                         // order
-                        -10 => { input = access.order_query.get(white_hole.bh_parent).unwrap().0 as f32; }
+                        -10 => { input = access.order_query.get(wh.bh_parent).unwrap().0 as f32; }
                         // vertices
-                        -11 => { input = access.vertices_query.get(white_hole.bh_parent).unwrap().0 as f32; }
+                        -11 => { input = access.vertices_query.get(wh.bh_parent).unwrap().0 as f32; }
                         // rotation
-                        -12 => { input = access.trans_query.get(white_hole.bh_parent)
+                        -12 => { input = access.trans_query.get(wh.bh_parent)
                                                .unwrap().rotation.to_euler(EulerRot::XYZ).2; }
                         _ => {}
                     }
-                    match white_hole.link_types.1 {
+                    match wh.link_types.1 {
                         -1 => { access.num_query.get_mut(*id).unwrap().0 = input; }
                         // TODO(amy): why doesn't this panics on 0?
                         -2 => { access.radius_query.get_mut(*id).unwrap().0 = input.max(0.); }
@@ -815,8 +815,12 @@ pub fn process(
                         }
                         _ => {}
                     }
-                    lt_to_open = white_hole.link_types.1;
-                    white_hole.open = false;
+                    if wh.link_types == (-13, -13) {
+                        let arr = &access.arr_query.get(wh.bh_parent).unwrap().0;
+                        access.arr_query.get_mut(*id).unwrap().0 = arr.clone();
+                    }
+                    lt_to_open = wh.link_types.1;
+                    wh.open = false;
                 }
                 // open all white holes reading whatever just changed
                 if lt_to_open != 0 {
