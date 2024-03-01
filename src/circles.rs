@@ -531,7 +531,7 @@ pub fn update_info_text(
         text_trans.get_mut(text.0).unwrap().translation = t.xy().extend(t.z + 0.00001);
     }
     for (order, text) in order_query.iter() {
-        text_query.get_mut(text.0).unwrap().sections[1].value = format!("order: {}\n", order.0);
+        text_query.get_mut(text.0).unwrap().sections[1].value = format!("{}\n", order.0);
     }
     // this is messy as it changes every time the wh changes (open / lt change)
     for (wh, text) in white_hole_query.iter() {
