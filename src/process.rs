@@ -1400,19 +1400,75 @@ pub fn update_net(
                 n.0 = Net32::wrap(Box::new((pass() ^ tick()) >> map(|i: &Frame<f32,U2>| if i[0]<i[1] {1.} else {0.})));
             }
 
-            ">" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| if i[0]>i[1] {1.} else {0.}))); }
-            "<" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| if i[0]<i[1] {1.} else {0.}))); }
-            "==" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| if i[0]==i[1] {1.} else {0.}))); }
-            "!=" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| if i[0]!=i[1] {1.} else {0.}))); }
-            ">=" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| if i[0]>=i[1] {1.} else {0.}))); }
-            "<=" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| if i[0]<=i[1] {1.} else {0.}))); }
+            ">" => {
+                if let Some(p) = p.get(0) {
+                    let p = *p;
+                    n.0 = Net32::wrap(Box::new(map(move |i: &Frame<f32,U1>| if i[0]>p {1.} else {0.})));
+                } else {n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32,U2>| if i[0]>i[1] {1.} else {0.})));}
+            }
+            "<" => {
+                if let Some(p) = p.get(0) {
+                    let p = *p;
+                    n.0 = Net32::wrap(Box::new(map(move |i: &Frame<f32,U1>| if i[0]<p {1.} else {0.})));
+                } else {n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32,U2>| if i[0]<i[1] {1.} else {0.})));}
+            }
+            "==" => {
+                if let Some(p) = p.get(0) {
+                    let p = *p;
+                    n.0 = Net32::wrap(Box::new(map(move |i: &Frame<f32,U1>| if i[0]==p {1.} else {0.})));
+                } else {n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32,U2>| if i[0]==i[1] {1.} else {0.})));}
+            }
+            "!=" => {
+                if let Some(p) = p.get(0) {
+                    let p = *p;
+                    n.0 = Net32::wrap(Box::new(map(move |i: &Frame<f32,U1>| if i[0]!=p {1.} else {0.})));
+                } else {n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32,U2>| if i[0]!=i[1] {1.} else {0.})));}
+            }
+            ">=" => {
+                if let Some(p) = p.get(0) {
+                    let p = *p;
+                    n.0 = Net32::wrap(Box::new(map(move |i: &Frame<f32,U1>| if i[0]>=p {1.} else {0.})));
+                } else {n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32,U2>| if i[0]>=i[1] {1.} else {0.})));}
+            }
+            "<=" => {
+                if let Some(p) = p.get(0) {
+                    let p = *p;
+                    n.0 = Net32::wrap(Box::new(map(move |i: &Frame<f32,U1>| if i[0]<=p {1.} else {0.})));
+                } else {n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32,U2>| if i[0]<=i[1] {1.} else {0.})));}
+            }
+            "min" => {
+                if let Some(p) = p.get(0) {
+                    let p = *p;
+                    n.0 = Net32::wrap(Box::new(map(move |i: &Frame<f32,U1>| i[0].min(p))));
+                } else {n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32,U2>| i[0].min(i[1]))));}
+            }
+            "max" => {
+                if let Some(p) = p.get(0) {
+                    let p = *p;
+                    n.0 = Net32::wrap(Box::new(map(move |i: &Frame<f32,U1>| i[0].max(p))));
+                } else {n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32,U2>| i[0].max(i[1]))));}
+            }
+            "pow" => {
+                if let Some(p) = p.get(0) {
+                    let p = *p;
+                    n.0 = Net32::wrap(Box::new(map(move |i: &Frame<f32,U1>| i[0].pow(p))));
+                } else {n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32,U2>| i[0].pow(i[1]))));}
+            }
+            "mod" | "rem" => {
+                if let Some(p) = p.get(0) {
+                    let p = *p;
+                    n.0 = Net32::wrap(Box::new(map(move |i: &Frame<f32,U1>| i[0].rem_euclid(p))));
+                } else {n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32,U2>| i[0].rem_euclid(i[1]))));}
+            }
+            "log" => {
+                if let Some(p) = p.get(0) {
+                    let p = *p;
+                    n.0 = Net32::wrap(Box::new(map(move |i: &Frame<f32,U1>| i[0].log(p))));
+                } else {n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32,U2>| i[0].log(i[1]))));}
+            }
 
             "abs" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].abs()))); }
-            "mod" | "rem" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| i[0].rem_euclid(i[1])))); }
             "signum" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].signum()))); }
-            "min" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| i[0].min(i[1])))); }
-            "max" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| i[0].max(i[1])))); }
-            "pow" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| i[0].pow(i[1])))); }
             "floor" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].floor()))); }
             "fract" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].fract()))); }
             "ceil" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].ceil()))); }
@@ -1424,7 +1480,6 @@ pub fn update_net(
             "exp_m1" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| (i[0].ln_1p())))); }
             "ln_1p" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| (i[0].exp_m1())))); }
             "ln" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].ln()))); }
-            "log" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| i[0].log(i[1])))); }
             "log2" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].log2()))); }
             "log10" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].log10()))); }
             "sin" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].sin()))); }
