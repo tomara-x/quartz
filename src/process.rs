@@ -636,45 +636,7 @@ pub fn process(
                         *output = Net32::wrap(Box::new(graph));
                     }
                 }
-                "STA" | "|" => {
-                    let net_changed = access.net_changed_query.get(*id).unwrap().0;
-                    let lost = access.lost_wh_query.get(*id).unwrap().0;
-                    let mut changed = false;
-                    let mut inputs = Vec::new();
-                    for child in children {
-                        if let Ok(mut wh) = white_hole_query.get_mut(*child) {
-                            if wh.link_types.0 == 0 {
-                                let index = Ord::max(wh.link_types.1, 0) as usize;
-                                if index >= inputs.len() {
-                                    inputs.resize(index+1, None);
-                                }
-                                inputs[index] = Some(wh.bh_parent);
-                            }
-                            if wh.open {
-                                wh.open = false;
-                                changed = true;
-                            }
-                        }
-                    }
-                    if changed || lost || net_changed {
-                        let mut graph = Net32::new(0,0);
-                        let mut empty = true;
-                        for i in inputs {
-                            if let Some(i) = i {
-                                let net = access.net_query.get(i).unwrap().0.clone();
-                                if empty {
-                                    graph = net;
-                                    empty = false;
-                                } else {
-                                    graph = graph | net;
-                                }
-                            }
-                        }
-                        access.net_changed_query.get_mut(*id).unwrap().0 = true;
-                        access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(graph));
-                    }
-                }
-                "PIP" | ">>" => {
+                ">>" | "|" | "&" | "^" | "PIP" | "STA" | "BUS" | "BRA" => {
                     let net_changed = access.net_changed_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
                     let mut changed = false;
@@ -704,8 +666,24 @@ pub fn process(
                                     graph = net;
                                     empty = false;
                                 }
-                                else if graph.outputs() == net.inputs() {
-                                    graph = graph >> net;
+                                else {
+                                    let (gi, go) = (graph.inputs(), graph.outputs());
+                                    let (ni, no) = (net.inputs(), net.outputs());
+                                    match access.op_query.get(*id).unwrap().0.as_str() {
+                                        ">>" | "PIP" => {
+                                            if go == ni { graph = graph >> net; }
+                                        }
+                                        "|" | "STA" => {
+                                            graph = graph | net;
+                                        }
+                                        "&" | "BUS" => {
+                                            if gi == ni && go == no { graph = graph & net; }
+                                        }
+                                        "^" | "BRA" => {
+                                            if gi == ni { graph = graph ^ net; }
+                                        }
+                                        _ => {}
+                                    }
                                 }
                             }
                         }
