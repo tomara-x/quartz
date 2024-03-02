@@ -18,7 +18,7 @@ when you open quartz, it will be an empty window. there's 3 modes:
 
 #### commands
 ##### return-terminated commands
-(you can use the vertical bar character `|` to run more than one command at once)
+(you can separate commands with `;` to run more than one command at once)
 ###### file io
 - `:e` edit (open) a scene file (in the assets path and without extension)
 - `:w` write(save) a scene file (same)
@@ -154,7 +154,7 @@ any connection links 2 circles together in some way. the black hole is taking so
 - `s` or `-7` : saturation
 - `l` or `-8` : lightness
 - `a` or `-9` : alpha
-- `ord` or `-10` : order (you can read/write the order of a circle, but once something hits order 0, it won't process anymore, so you have to increment manually (using `]`) it's kinda like locking your keys inside)
+- `q` or `-10` : order (you can read/write the order of a circle, but once something hits order 0, it won't process anymore, so you have to increment manually (using `]`) it's kinda like locking your keys inside)
 - `v` or `-11` : vertices
 - `o` or `-12` : rotation
 - `A` or `-13` : array
