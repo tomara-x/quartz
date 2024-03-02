@@ -1447,6 +1447,36 @@ pub fn update_net(
                     n.0 = Net32::wrap(Box::new(map(move |i: &Frame<f32,U1>| i[0].log(p))));
                 } else {n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32,U2>| i[0].log(i[1]))));}
             }
+            "bitand" => {
+                if let Some(p) = p.get(0) {
+                    let p = *p as i32;
+                    n.0 = Net32::wrap(Box::new(map(move |i: &Frame<f32,U1>| (i[0] as i32 & p) as f32)));
+                } else {n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32,U2>| (i[0] as i32 & i[1] as i32) as f32)));}
+            }
+            "bitor" => {
+                if let Some(p) = p.get(0) {
+                    let p = *p as i32;
+                    n.0 = Net32::wrap(Box::new(map(move |i: &Frame<f32,U1>| (i[0] as i32 | p) as f32)));
+                } else {n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32,U2>| (i[0] as i32 | i[1] as i32) as f32)));}
+            }
+            "bitxor" => {
+                if let Some(p) = p.get(0) {
+                    let p = *p as i32;
+                    n.0 = Net32::wrap(Box::new(map(move |i: &Frame<f32,U1>| (i[0] as i32 ^ p) as f32)));
+                } else {n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32,U2>| (i[0] as i32 ^ i[1] as i32) as f32)));}
+            }
+            "shl" => {
+                if let Some(p) = p.get(0) {
+                    let p = *p as i32;
+                    n.0 = Net32::wrap(Box::new(map(move |i: &Frame<f32,U1>| ((i[0] as i32) << p) as f32)));
+                } else {n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32,U2>| ((i[0] as i32) << (i[1] as i32)) as f32)));}
+            }
+            "shr" => {
+                if let Some(p) = p.get(0) {
+                    let p = *p as i32;
+                    n.0 = Net32::wrap(Box::new(map(move |i: &Frame<f32,U1>| ((i[0] as i32) >> p) as f32)));
+                } else {n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32,U2>| ((i[0] as i32) >> (i[1] as i32)) as f32)));}
+            }
 
             "abs" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].abs()))); }
             "signum" => { n.0 = Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].signum()))); }
