@@ -70,12 +70,37 @@ pub fn process(
     cursor: Res<CursorInfo>,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     mut key_event: EventReader<KeyboardInput>,
-    camera_query: Query<(&Camera, &GlobalTransform)>,
+    camera_query: Query<(Entity, &Camera, &GlobalTransform)>,
     windows: Query<(Entity, &Window)>,
+    mut ortho: Query<&mut OrthographicProjection>,
 ) {
     for id in queue.0.iter().flatten() {
         if let Ok(children) = &children_query.get(*id) {
             match access.op_query.get(*id).unwrap().0.as_str() {
+                "zoom" => {
+                    for child in children {
+                        if let Ok(wh) = white_hole_query.get(*child) {
+                            if wh.link_types == (-1, 1) && wh.open {
+                                let n = access.num_query.get(wh.bh_parent).unwrap().0;
+                                ortho.single_mut().scale = n.clamp(0.1, 4.);
+                            }
+                        }
+                    }
+                }
+                "cam" => {
+                    for child in children {
+                        if let Ok(wh) = white_hole_query.get(*child) {
+                            if wh.link_types.0 == -1 && wh.open {
+                                let n = access.num_query.get(wh.bh_parent).unwrap().0;
+                                let cam_id = camera_query.single().0;
+                                let cam_trans = &mut access.trans_query.get_mut(cam_id).unwrap().translation;
+                                if wh.link_types.1 == 1 { cam_trans.x = n; }
+                                else if wh.link_types.1 == 2 { cam_trans.y = n; }
+                                else if wh.link_types.1 == 3 { cam_trans.z = n; }
+                            }
+                        }
+                    }
+                }
                 // make it take input num
                 "update_rate" => {
                     if access.num_query.get_mut(*id).unwrap().is_changed() {
@@ -98,7 +123,7 @@ pub fn process(
                     }
                 }
                 "mouse_x" => {
-                    let (cam, cam_transform) = camera_query.single();
+                    let (_, cam, cam_transform) = camera_query.single();
                     if let Some(cursor_pos) = windows.single().1.cursor_position() {
                         if let Some(point) = cam.viewport_to_world_2d(cam_transform, cursor_pos) {
                             access.num_query.get_mut(*id).unwrap().0 = point.x;
@@ -106,7 +131,7 @@ pub fn process(
                     }
                 }
                 "mouse_y" => {
-                    let (cam, cam_transform) = camera_query.single();
+                    let (_, cam, cam_transform) = camera_query.single();
                     if let Some(cursor_pos) = windows.single().1.cursor_position() {
                         if let Some(point) = cam.viewport_to_world_2d(cam_transform, cursor_pos) {
                             access.num_query.get_mut(*id).unwrap().0 = point.y;
