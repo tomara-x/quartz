@@ -971,7 +971,6 @@ pub fn update_net(
             "white" | "noise" => { n.0 = Net32::wrap(Box::new(white())); }
 
             "allpole" => { n.0 = Net32::wrap(Box::new(allpole())); }
-            "clip" => { n.0 = Net32::wrap(Box::new(clip())); }
             "dsf_saw" => { n.0 = Net32::wrap(Box::new(dsf_saw())); }
             "dsf_square" => { n.0 = Net32::wrap(Box::new(dsf_square())); }
             "lorenz" => { n.0 = Net32::wrap(Box::new(lorenz())); }
@@ -1094,10 +1093,14 @@ pub fn update_net(
                     n.0 = Net32::wrap(Box::new(chorus(p[0] as i64, p[1], p[2], p[3])));
                 }
             }
-            "clip_to" => {
+            "clip" => {
                 if let Some(p) = p.get(0..2) {
-                    n.0 = Net32::wrap(Box::new(clip_to(p[0], p[1])));
-                }
+                    if p[0] < p[1] {
+                        n.0 = Net32::wrap(Box::new(clip_to(p[0], p[1])));
+                    } else {
+                        n.0 = Net32::wrap(Box::new(clip_to(p[1], p[0])));
+                    }
+                } else { n.0 = Net32::wrap(Box::new(clip())); }
             }
             "constant" | "dc" => {
                 match p[..] {
