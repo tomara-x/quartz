@@ -12,6 +12,7 @@ and you non-africans, listen to me with open mind"
 
 #### building
 - install rust: https://www.rust-lang.org/tools/install
+- install bevy dependencies: https://bevyengine.org/learn/quick-start/getting-started/setup/#installing-os-dependencies
 - clone quartz
 ```
 git clone https://github.com/tomara-x/quartz.git
