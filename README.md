@@ -9,8 +9,21 @@
 and you non-africans, listen to me with open mind"
 ```
 ## let's play
-when you open quartz, it will be an empty window. there's 3 modes:
+
+#### building
+- install rust: https://www.rust-lang.org/tools/install
+- clone quartz
+```
+git clone https://github.com/tomara-x/quartz.git
+```
+- build it
+```
+cd quartz
+cargo run --release
+```
+
 #### modes
+when you open quartz, it will be an empty window. there's 3 modes:
 - **edit**: (default) interact with entities and execute commands (press `e` or `esc`) 
 - **draw**: draw new circles (press `d`)
 - **connect**: connect circles (press `c`)
