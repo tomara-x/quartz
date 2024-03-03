@@ -210,6 +210,7 @@ todo!();
     - csound https://csound.com
     - faust https://faust.grame.fr
     - plugdata https://github.com/plugdata-team/plugdata
+    - bevy-cheatbook book: https://github.com/bevy-cheatbook/bevy-cheatbook
     - knyst https://github.com/ErikNatanael/knyst
     - rust-ants-colony-simulation https://github.com/bones-ai/rust-ants-colony-simulation
     - bevy_fundsp https://github.com/harudagondi/bevy_fundsp
