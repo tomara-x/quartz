@@ -206,17 +206,17 @@ todo!();
     - vim https://github.com/vim/vim
     - void linux https://voidlinux.org/
 - learning / inspiration / used for a while:
+    - csound https://csound.com
+    - faust https://faust.grame.fr
+    - plugdata https://github.com/plugdata-team/plugdata
+    - knyst https://github.com/ErikNatanael/knyst
+    - rust-ants-colony-simulation https://github.com/bones-ai/rust-ants-colony-simulation
     - bevy_fundsp https://github.com/harudagondi/bevy_fundsp
     - bevy_kira_audio https://github.com/NiklasEi/bevy_kira_audio
     - crossbeam https://github.com/crossbeam-rs/crossbeam
     - bevy_mod_picking https://github.com/aevyrie/bevy_mod_picking/
     - bevy_vector_shapes https://github.com/james-j-obrien/bevy_vector_shapes
-    - knyst https://github.com/ErikNatanael/knyst
-    - rust-ants-colony-simulation https://github.com/bones-ai/rust-ants-colony-simulation
     - anyhow https://github.com/dtolnay/anyhow
-    - plugdata https://github.com/plugdata-team/plugdata
-    - faust https://faust.grame.fr/
-    - csound https://csound.com/
 
 ## license
 
