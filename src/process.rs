@@ -402,7 +402,7 @@ pub fn process(
                     let mut changed = false;
                     let mut inputs = Vec::new();
                     for child in children {
-                        if let Ok(mut wh) = white_hole_query.get_mut(*child) {
+                        if let Ok(wh) = white_hole_query.get(*child) {
                             if wh.link_types.0 == -1 {
                                 let index = Ord::max(wh.link_types.1, 0) as usize;
                                 if index >= inputs.len() {
@@ -411,7 +411,6 @@ pub fn process(
                                 inputs[index] = Some(access.num_query.get(wh.bh_parent).unwrap().0);
                             }
                             if wh.open {
-                                wh.open = false;
                                 changed = true;
                             }
                         }
@@ -528,7 +527,7 @@ pub fn process(
                     let mut changed = false;
                     let mut inputs = Vec::new();
                     for child in children {
-                        if let Ok(mut wh) = white_hole_query.get_mut(*child) {
+                        if let Ok(wh) = white_hole_query.get(*child) {
                             if wh.link_types.0 == 0 {
                                 let index = Ord::max(wh.link_types.1, 0) as usize;
                                 if index >= inputs.len() {
@@ -537,7 +536,6 @@ pub fn process(
                                 inputs[index] = Some(wh.bh_parent);
                             }
                             if wh.open {
-                                wh.open = false;
                                 changed = true;
                             }
                         }
@@ -575,14 +573,13 @@ pub fn process(
                     let mut net = None;
                     let mut del = None;
                     for child in children {
-                        if let Ok(mut wh) = white_hole_query.get_mut(*child) {
+                        if let Ok(wh) = white_hole_query.get(*child) {
                             if wh.link_types == (0, 1) {
                                 net = Some(Box::new(access.net_query.get(wh.bh_parent).unwrap().0.clone()));
                             } else if wh.link_types == (-1, 2) {
                                 del = Some(access.num_query.get(wh.bh_parent).unwrap().0);
                             }
                             if wh.open {
-                                wh.open = false;
                                 changed = true;
                             }
                         }
@@ -608,7 +605,7 @@ pub fn process(
                     let mut changed = false;
                     let mut inputs = Vec::new();
                     for child in children {
-                        if let Ok(mut wh) = white_hole_query.get_mut(*child) {
+                        if let Ok(wh) = white_hole_query.get(*child) {
                             if wh.link_types.0 == 0 {
                                 let index = Ord::max(wh.link_types.1, 0) as usize;
                                 if index >= inputs.len() {
@@ -617,7 +614,6 @@ pub fn process(
                                 inputs[index] = Some(wh.bh_parent);
                             }
                             if wh.open {
-                                wh.open = false;
                                 changed = true;
                             }
                         }
@@ -656,12 +652,11 @@ pub fn process(
                     let mut changed = false;
                     let mut inputs = Vec::new();
                     for child in children {
-                        if let Ok(mut wh) = white_hole_query.get_mut(*child) {
+                        if let Ok(wh) = white_hole_query.get(*child) {
                             if wh.link_types.0 == 0 {
                                 inputs.push(wh.bh_parent);
                             }
                             if wh.open {
-                                wh.open = false;
                                 changed = true;
                             }
                         }
@@ -694,7 +689,7 @@ pub fn process(
                     let mut changed = false;
                     let mut inputs = Vec::new();
                     for child in children {
-                        if let Ok(mut wh) = white_hole_query.get_mut(*child) {
+                        if let Ok(wh) = white_hole_query.get(*child) {
                             if wh.link_types.0 == 0 {
                                 let index = Ord::max(wh.link_types.1, 0) as usize;
                                 if index >= inputs.len() {
@@ -703,7 +698,6 @@ pub fn process(
                                 inputs[index] = Some(wh.bh_parent);
                             }
                             if wh.open {
-                                wh.open = false;
                                 changed = true;
                             }
                         }
@@ -750,12 +744,11 @@ pub fn process(
                     let mut changed = false;
                     let mut net = None;
                     for child in children {
-                        if let Ok(mut wh) = white_hole_query.get_mut(*child) {
+                        if let Ok(wh) = white_hole_query.get(*child) {
                             if wh.link_types == (0, 1) {
                                 net = Some(wh.bh_parent);
                             }
                             if wh.open {
-                                wh.open = false;
                                 changed = true;
                             }
                         }
