@@ -98,6 +98,23 @@ pub fn process(
     for id in queue.0.iter().flatten().chain(loopq.0.iter()) {
         if let Ok(children) = &children_query.get(*id) {
             match access.op_query.get(*id).unwrap().0.as_str() {
+                // keep this up top
+                "open_target" => {
+                    for child in children {
+                        if let Ok(wh) = white_hole_query.get(*child) {
+                            if wh.link_types == (-1, 1) {
+                                if access.num_query.get(wh.bh_parent).unwrap().0 == 1. {
+                                    let targets = &access.targets_query.get(*id).unwrap().0;
+                                    for t in targets {
+                                        if let Ok(mut wh) = white_hole_query.get_mut(*t) {
+                                            wh.open = true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
                 "ping" => {
                     info!("hi");
                 }
