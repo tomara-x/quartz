@@ -158,6 +158,10 @@ pub enum Mode {
 #[reflect(Resource)]
 pub struct Queue(pub Vec<Vec<Entity>>);
 
+#[derive(Resource, Reflect, Default)]
+#[reflect(Resource)]
+pub struct LoopQueue(pub Vec<Entity>);
+
 // initial, final, delta
 #[derive(Resource, Default)]
 pub struct CursorInfo {

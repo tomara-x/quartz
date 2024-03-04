@@ -96,8 +96,10 @@ fn main() {
         .add_systems(Update, mark_children_change)
         // order
         .init_resource::<Queue>()
+        .init_resource::<LoopQueue>()
         .add_event::<OrderChange>()
         .add_systems(PostUpdate, sort_by_order.before(process).run_if(on_event::<OrderChange>()))
+        .add_systems(PostUpdate, prepare_loop_queue.after(sort_by_order))
         // process
         .add_systems(PostUpdate, process)
         .add_systems(Update, open_white_holes)

@@ -36,6 +36,39 @@ pub fn sort_by_order(
     }
 }
 
+pub fn prepare_loop_queue(
+    mut loopq: ResMut<LoopQueue>,
+    queue: Res<Queue>,
+    op_query: Query<&Op>,
+    mut targets_query: Query<&mut Targets>,
+    mut num_query: Query<&mut crate::components::Num>,
+) {
+    loopq.0.clear();
+    let mut loops = Vec::new();
+    let mut changed = false;
+    for id in queue.0.iter().flatten() {
+        if op_query.get(*id).unwrap().0 == "loop" {
+            loops.push(*id);
+            let n = num_query.get_mut(*id).unwrap().is_changed();
+            let t = targets_query.get_mut(*id).unwrap().is_changed();
+            if n || t { changed = true; }
+        }
+    }
+    if changed {
+        loopq.0.clear();
+        for id in loops {
+            let n = num_query.get(id).unwrap().0;
+            let targets = &targets_query.get(id).unwrap().0;
+            for _ in 0..n as i32 {
+                for t in targets {
+                    loopq.0.push(*t);
+                }
+            }
+        }
+        info!("{:?}", loopq.0);
+    }
+}
+
 #[derive(SystemParam)]
 pub struct Access<'w, 's> {
     order_query: Query<'w, 's, &'static mut Order>,
@@ -61,6 +94,7 @@ pub struct Access<'w, 's> {
 
 pub fn process(
     queue: Res<Queue>,
+    loopq: Res<LoopQueue>,
     children_query: Query<Ref<Children>>,
     mut white_hole_query: Query<&mut WhiteHole>,
     black_hole_query: Query<&BlackHole>,
@@ -73,9 +107,12 @@ pub fn process(
     windows: Query<(Entity, &Window)>,
     mut ortho: Query<&mut OrthographicProjection>,
 ) {
-    for id in queue.0.iter().flatten() {
+    for id in queue.0.iter().flatten().chain(loopq.0.iter()) {
         if let Ok(children) = &children_query.get(*id) {
             match access.op_query.get(*id).unwrap().0.as_str() {
+                "ping" => {
+                    info!("hi");
+                }
                 "zoom" => {
                     for child in children {
                         if let Ok(wh) = white_hole_query.get(*child) {
