@@ -20,17 +20,16 @@ use crate::{
 
 pub fn sort_by_order(
     query: Query<(Entity, &Order)>,
-    mut max_order: Local<usize>,
     mut queue: ResMut<Queue>,
 ) {
-    *max_order = 1;
+    let mut max_order: usize = 1;
     queue.0.clear();
     queue.0.push(Vec::new());
     for (entity, order) in query.iter() {
         if order.0 > 0 {
-            if order.0 > *max_order {
+            if order.0 > max_order {
                 queue.0.resize(order.0, Vec::new());
-                *max_order = order.0;
+                max_order = order.0;
             }
             queue.0[order.0 - 1].push(entity); //order 1 at index 0
         }
