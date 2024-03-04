@@ -41,7 +41,7 @@ pub fn prepare_loop_queue(
     queue: Res<Queue>,
     op_query: Query<&Op>,
     mut targets_query: Query<&mut Targets>,
-    mut num_query: Query<&mut crate::components::Num>,
+    mut num_query: Query<&mut Number>,
 ) {
     loopq.0.clear();
     let mut loops = Vec::new();
@@ -74,7 +74,7 @@ pub struct Access<'w, 's> {
     order_query: Query<'w, 's, &'static mut Order>,
     op_query: Query<'w, 's, &'static mut Op>,
     bloom: Query<'w, 's, & 'static mut BloomSettings, With<Camera>>,
-    num_query: Query<'w, 's, &'static mut crate::components::Num>,
+    num_query: Query<'w, 's, &'static mut Number>,
     radius_query: Query<'w, 's, &'static mut Radius>,
     trans_query: Query<'w, 's, &'static mut Transform>,
     arr_query: Query<'w, 's, &'static mut Arr>,
@@ -223,7 +223,7 @@ pub fn process(
                         if let Ok(wh) = white_hole_query.get(*child) {
                             if wh.link_types == (-1, 1) {
                                 let input = access.num_query.get(wh.bh_parent).unwrap().0;
-                                access.num_query.get_mut(*id).unwrap().set_if_neq(Num(input));
+                                access.num_query.get_mut(*id).unwrap().set_if_neq(Number(input));
                             }
                         }
                     }
@@ -893,7 +893,7 @@ pub fn process(
 }
 
 pub fn update_constant_num(
-    mut query: Query<(&Op, &mut crate::components::Num), Changed<Op>>,
+    mut query: Query<(&Op, &mut Number), Changed<Op>>,
 ) {
     for (op, mut num) in query.iter_mut() {
         if let Ok(n) = parse_with_constants(op.0.as_str()) {
@@ -1622,7 +1622,7 @@ pub fn update_net(
 // process needs to do things in order, but this is to catch any external change
 // TODO(amy): bypass_change_detection in `process`
 pub fn open_white_holes(
-    num_query: Query<&Children, Changed<crate::components::Num>>,
+    num_query: Query<&Children, Changed<Number>>,
     radius_query: Query<&Children, Changed<Radius>>,
     trans_query: Query<&Children, Changed<Transform>>,
     col_query: Query<&Children, Changed<Col>>,

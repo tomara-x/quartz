@@ -14,7 +14,7 @@ use fundsp::audiounit::AudioUnit32;
 #[derive(SystemParam)]
 pub struct Access<'w, 's> {
     op_query: Query<'w, 's, &'static mut Op>,
-    num_query: Query<'w, 's, &'static mut Num>,
+    num_query: Query<'w, 's, &'static mut Number>,
     radius_query: Query<'w, 's, &'static mut Radius>,
     col_query: Query<'w, 's, &'static mut Col>,
     trans_query: Query<'w, 's, &'static mut Transform>,

@@ -36,7 +36,7 @@ pub fn spawn_circles(
             Radius(r),
             Vertices(v),
             Col(color),
-            Num(0.),
+            Number(0.),
             Arr(Vec::new()),
             Op("empty".to_string()),
             Targets(Vec::new()),
@@ -442,7 +442,7 @@ pub fn update_mesh(
 }
 
 pub fn update_num(
-    mut query: Query<&mut Num, With<Selected>>,
+    mut query: Query<&mut Number, With<Selected>>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     cursor: Res<CursorInfo>,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
@@ -517,7 +517,7 @@ pub fn update_info_text(
     mut text_trans: Query<&mut Transform, Without<Radius>>,
     trans_query: Query<(&GlobalTransform, &InfoText), (Or<(Changed<Transform>, Added<InfoText>)>, With<Radius>)>,
     order_query: Query<(&Order, &InfoText), Or<(Changed<Order>, Added<InfoText>)>>,
-    num_query: Query<(&Num, &InfoText), Or<(Changed<Num>, Added<InfoText>)>>,
+    num_query: Query<(&Number, &InfoText), Or<(Changed<Number>, Added<InfoText>)>>,
     op_query: Query<(&Op, &InfoText), Or<(Changed<Op>, Added<InfoText>)>>,
     white_hole_query: Query<(&WhiteHole, &InfoText), Or<(Changed<WhiteHole>, Added<InfoText>)>>,
     black_hole_query: Query<&InfoText, With<BlackHole>>,

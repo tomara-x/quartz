@@ -21,7 +21,7 @@ pub struct Op(pub String);
 
 #[derive(Component, Reflect, Default, PartialEq)]
 #[reflect(Component)]
-pub struct Num(pub f32);
+pub struct Number(pub f32);
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
