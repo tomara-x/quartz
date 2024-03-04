@@ -40,32 +40,20 @@ pub fn prepare_loop_queue(
     mut loopq: ResMut<LoopQueue>,
     queue: Res<Queue>,
     op_query: Query<&Op>,
-    mut targets_query: Query<&mut Targets>,
-    mut num_query: Query<&mut Number>,
+    num_query: Query<&Number>,
+    targets_query: Query<&Targets>,
 ) {
     loopq.0.clear();
-    let mut loops = Vec::new();
-    let mut changed = false;
     for id in queue.0.iter().flatten() {
         if op_query.get(*id).unwrap().0 == "loop" {
-            loops.push(*id);
-            let n = num_query.get_mut(*id).unwrap().is_changed();
-            let t = targets_query.get_mut(*id).unwrap().is_changed();
-            if n || t { changed = true; }
-        }
-    }
-    if changed {
-        loopq.0.clear();
-        for id in loops {
-            let n = num_query.get(id).unwrap().0;
-            let targets = &targets_query.get(id).unwrap().0;
-            for _ in 0..n as i32 {
+            let n = num_query.get(*id).unwrap().0 as i32;
+            let targets = &targets_query.get(*id).unwrap().0;
+            for _ in 0..n {
                 for t in targets {
                     loopq.0.push(*t);
                 }
             }
         }
-        info!("{:?}", loopq.0);
     }
 }
 
@@ -112,6 +100,9 @@ pub fn process(
             match access.op_query.get(*id).unwrap().0.as_str() {
                 "ping" => {
                     info!("hi");
+                }
+                "break" => {
+                    info!(" ");
                 }
                 "zoom" => {
                     for child in children {
