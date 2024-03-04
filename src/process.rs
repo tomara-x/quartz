@@ -40,18 +40,15 @@ pub fn prepare_loop_queue(
     mut loopq: ResMut<LoopQueue>,
     queue: Res<Queue>,
     op_query: Query<&Op>,
-    num_query: Query<&Number>,
     targets_query: Query<&Targets>,
 ) {
     loopq.0.clear();
     for id in queue.0.iter().flatten() {
-        if op_query.get(*id).unwrap().0 == "loop" {
-            let n = num_query.get(*id).unwrap().0 as i32;
+        if op_query.get(*id).unwrap().0 == "process" {
             let targets = &targets_query.get(*id).unwrap().0;
-            for _ in 0..n {
-                for t in targets {
-                    loopq.0.push(*t);
-                }
+            for t in targets {
+                // only add existing circles (that aren't holes)
+                if op_query.contains(*t) { loopq.0.push(*t); }
             }
         }
     }
