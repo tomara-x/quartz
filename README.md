@@ -172,6 +172,7 @@ any connection links 2 circles together in some way. the black hole is taking so
 - `v` or `-11` : vertices
 - `o` or `-12` : rotation
 - `A` or `-13` : array
+- `T` or `-14` : targets
 - `0` usually means audio network (or nothing)
 generally a 0 to 0 connection is gonna do nothing, but when connecting networks, the black hole is type 0, and the white hole is type (positive number)
 

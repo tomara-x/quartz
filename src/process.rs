@@ -115,6 +115,33 @@ pub fn process(
                         }
                     }
                 }
+                "repeat" => {
+                    let mut arr = None;
+                    let mut targets = None;
+                    let mut n = None;
+                    let mut changed = false;
+                    for child in children {
+                        if let Ok(wh) = white_hole_query.get(*child) {
+                            if wh.link_types == (-1, 1) {
+                                n = Some(access.num_query.get(wh.bh_parent).unwrap().0 as usize);
+                            } else if wh.link_types == (-13, 2) { arr = Some(wh.bh_parent); }
+                            else if wh.link_types == (-14, 2) { targets = Some(wh.bh_parent); }
+                            if wh.open { changed = true; }
+                        }
+                    }
+                    if changed {
+                        if let Some(n) = n {
+                            if let Some(arr) = arr {
+                                let repeated = access.arr_query.get(arr).unwrap().0.repeat(n);
+                                access.arr_query.get_mut(*id).unwrap().0 = repeated;
+                            }
+                            if let Some(tar) = targets {
+                                let repeated = access.targets_query.get(tar).unwrap().0.repeat(n);
+                                access.targets_query.get_mut(*id).unwrap().0 = repeated;
+                            }
+                        }
+                    }
+                }
                 "ping" => {
                     info!("hi");
                 }
@@ -858,6 +885,10 @@ pub fn process(
                     if wh.link_types == (-13, -13) {
                         let arr = &access.arr_query.get(wh.bh_parent).unwrap().0;
                         access.arr_query.get_mut(*id).unwrap().0 = arr.clone();
+                    }
+                    if wh.link_types == (-14, -14) {
+                        let arr = &access.targets_query.get(wh.bh_parent).unwrap().0;
+                        access.targets_query.get_mut(*id).unwrap().0 = arr.clone();
                     }
                     lt_to_open = wh.link_types.1;
                     wh.open = false;
@@ -1622,6 +1653,8 @@ pub fn update_net(
 // it's gonna overlap with whatever `process` changed, but that's okay
 // process needs to do things in order, but this is to catch any external change
 // TODO(amy): bypass_change_detection in `process`
+// TODO(amy): Changed is actually expensive (== looping and checking is_changed)
+// can we do better?
 pub fn open_white_holes(
     num_query: Query<&Children, Changed<Number>>,
     radius_query: Query<&Children, Changed<Radius>>,
@@ -1630,6 +1663,7 @@ pub fn open_white_holes(
     order_query: Query<&Children, Changed<Order>>,
     vertices_query: Query<&Children, Changed<Vertices>>,
     arr_query: Query<&Children, Changed<Arr>>,
+    targets_query: Query<&Children, Changed<Targets>>,
     mut white_hole_query: Query<&mut WhiteHole>,
     black_hole_query: Query<&BlackHole>,
 ) {
@@ -1710,6 +1744,17 @@ pub fn open_white_holes(
             if let Ok(bh) = black_hole_query.get(*child) {
                 if let Ok(wh) = white_hole_query.get(bh.wh) {
                     if wh.link_types.0 == -13 {
+                        white_hole_query.get_mut(bh.wh).unwrap().open = true;
+                    }
+                }
+            }
+        }
+    }
+    for children in targets_query.iter() {
+        for child in children {
+            if let Ok(bh) = black_hole_query.get(*child) {
+                if let Ok(wh) = white_hole_query.get(bh.wh) {
+                    if wh.link_types.0 == -14 {
                         white_hole_query.get_mut(bh.wh).unwrap().open = true;
                     }
                 }
