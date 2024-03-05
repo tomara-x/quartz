@@ -1049,8 +1049,6 @@ pub fn update_net(
             "white" | "noise" => { n.0 = Net32::wrap(Box::new(white())); }
 
             "allpole" => { n.0 = Net32::wrap(Box::new(allpole())); }
-            "dsf_saw" => { n.0 = Net32::wrap(Box::new(dsf_saw())); }
-            "dsf_square" => { n.0 = Net32::wrap(Box::new(dsf_square())); }
             "lorenz" => { n.0 = Net32::wrap(Box::new(lorenz())); }
             "mls" => { n.0 = Net32::wrap(Box::new(mls())); }
             "pinkpass" => { n.0 = Net32::wrap(Box::new(pinkpass())); }
@@ -1208,15 +1206,15 @@ pub fn update_net(
                     n.0 = Net32::wrap(Box::new(delay(*p)));
                 }
             }
-            "dsf_saw_r" => {
+            "dsf_saw" => {
                 if let Some(p) = p.get(0) {
                     n.0 = Net32::wrap(Box::new(dsf_saw_r(*p)));
-                }
+                } else { n.0 = Net32::wrap(Box::new(dsf_saw())); }
             }
-            "dsf_square_r" => {
+            "dsf_square" => {
                 if let Some(p) = p.get(0) {
                     n.0 = Net32::wrap(Box::new(dsf_square_r(*p)));
-                }
+                } else { n.0 = Net32::wrap(Box::new(dsf_square())); }
             }
             "fir" => {
                 match p[..] {
