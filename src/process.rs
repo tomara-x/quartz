@@ -690,6 +690,7 @@ pub fn process(
                 "SUM" | "+" | "PRO" | "*" => {
                     let net_changed = access.net_changed_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
+                    let num_changed = access.num_query.get_mut(*id).unwrap().is_changed();
                     let mut changed = false;
                     let mut inputs = Vec::new();
                     for child in children {
@@ -702,20 +703,23 @@ pub fn process(
                             }
                         }
                     }
-                    if changed || lost || net_changed {
+                    if changed || lost || net_changed || num_changed {
                         let mut graph = Net32::new(0,0);
                         let mut empty = true;
-                        for i in inputs {
-                            let net = access.net_query.get(i).unwrap().0.clone();
-                            if empty {
-                                graph = net;
-                                empty = false;
-                            } else if graph.outputs() == net.outputs() {
-                                let op = &access.op_query.get(*id).unwrap().0;
-                                if op == "+" || op == "SUM" {
-                                    graph = graph + net;
-                                } else {
-                                    graph = graph * net;
+                        let n = access.num_query.get(*id).unwrap().0.max(1.) as i32;
+                        for _ in 0..n {
+                            for i in &inputs {
+                                let net = access.net_query.get(*i).unwrap().0.clone();
+                                if empty {
+                                    graph = net;
+                                    empty = false;
+                                } else if graph.outputs() == net.outputs() {
+                                    let op = &access.op_query.get(*id).unwrap().0;
+                                    if op == "+" || op == "SUM" {
+                                        graph = graph + net;
+                                    } else {
+                                        graph = graph * net;
+                                    }
                                 }
                             }
                         }
@@ -727,6 +731,7 @@ pub fn process(
                 ">>" | "|" | "&" | "^" | "PIP" | "STA" | "BUS" | "BRA" => {
                     let net_changed = access.net_changed_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
+                    let num_changed = access.num_query.get_mut(*id).unwrap().is_changed();
                     let mut changed = false;
                     let mut inputs = Vec::new();
                     for child in children {
@@ -743,33 +748,36 @@ pub fn process(
                             }
                         }
                     }
-                    if changed || lost || net_changed {
+                    if changed || lost || net_changed || num_changed {
                         let mut graph = Net32::new(0,0);
                         let mut empty = true;
-                        for i in inputs {
-                            if let Some(i) = i {
-                                let net = access.net_query.get(i).unwrap().0.clone();
-                                if empty {
-                                    graph = net;
-                                    empty = false;
-                                }
-                                else {
-                                    let (gi, go) = (graph.inputs(), graph.outputs());
-                                    let (ni, no) = (net.inputs(), net.outputs());
-                                    match access.op_query.get(*id).unwrap().0.as_str() {
-                                        ">>" | "PIP" => {
-                                            if go == ni { graph = graph >> net; }
+                        let n = access.num_query.get(*id).unwrap().0.max(1.) as i32;
+                        for _ in 0..n {
+                            for i in &inputs {
+                                if let Some(i) = i {
+                                    let net = access.net_query.get(*i).unwrap().0.clone();
+                                    if empty {
+                                        graph = net;
+                                        empty = false;
+                                    }
+                                    else {
+                                        let (gi, go) = (graph.inputs(), graph.outputs());
+                                        let (ni, no) = (net.inputs(), net.outputs());
+                                        match access.op_query.get(*id).unwrap().0.as_str() {
+                                            ">>" | "PIP" => {
+                                                if go == ni { graph = graph >> net; }
+                                            }
+                                            "|" | "STA" => {
+                                                graph = graph | net;
+                                            }
+                                            "&" | "BUS" => {
+                                                if gi == ni && go == no { graph = graph & net; }
+                                            }
+                                            "^" | "BRA" => {
+                                                if gi == ni { graph = graph ^ net; }
+                                            }
+                                            _ => {}
                                         }
-                                        "|" | "STA" => {
-                                            graph = graph | net;
-                                        }
-                                        "&" | "BUS" => {
-                                            if gi == ni && go == no { graph = graph & net; }
-                                        }
-                                        "^" | "BRA" => {
-                                            if gi == ni { graph = graph ^ net; }
-                                        }
-                                        _ => {}
                                     }
                                 }
                             }
