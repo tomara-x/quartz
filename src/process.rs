@@ -1028,8 +1028,6 @@ pub fn update_net(
             }
             "sink" => { n.0 = Net32::wrap(Box::new(sink())); }
             "pass" => { n.0 = Net32::wrap(Box::new(pass())); }
-            "stack" => { n.0 = Net32::new(0,0); }
-            "pipe" => { n.0 = Net32::new(0,0); }
 
             "panner" => { n.0 = Net32::wrap(Box::new(panner())); }
 
