@@ -160,13 +160,14 @@ pub fn process(
                         if let Ok(wh) = white_hole_query.get(*child) {
                             if wh.link_types.0 == -1 && wh.open {
                                 let n = access.num_query.get(wh.bh_parent).unwrap().0;
-                                let cam_id = camera_query.single().0;
-                                let cam_trans = &mut access.trans_query.get_mut(cam_id).unwrap();
-                                if wh.link_types.1 == 1 { cam_trans.translation.x = n; }
-                                else if wh.link_types.1 == 2 { cam_trans.translation.y = n; }
-                                else if wh.link_types.1 == 3 { cam_trans.translation.z = n; }
-                                else if wh.link_types.1 == 4 {
-                                    cam_trans.rotation = Quat::from_euler(EulerRot::XYZ,0.,0.,n);
+                                let id = camera_query.single().0;
+                                let t = &mut access.trans_query.get_mut(id).unwrap();
+                                match wh.link_types.1 {
+                                    1 => { t.translation.x = n; }
+                                    2 => { t.translation.y = n; }
+                                    3 => { t.translation.z = n; }
+                                    4 => { t.rotation = Quat::from_euler(EulerRot::XYZ,0.,0.,n); }
+                                    _ => {}
                                 }
                             }
                         }
