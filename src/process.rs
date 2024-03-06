@@ -189,8 +189,7 @@ pub fn process(
                     for child in children {
                         if let Ok(wh) = white_hole_query.get(*child) {
                             if wh.link_types == (-13, 1) {
-                                // changing the input is not a good idea as its wh will get
-                                // reopened, causing it to be reread. use change detection instead
+                                // use bypass_change_detection like in slice
                                 if access.arr_query.get_mut(wh.bh_parent).unwrap().is_changed() {
                                     let input = &access.arr_query.get(wh.bh_parent).unwrap().0;
                                     let mut l = Vec::new();
@@ -236,6 +235,30 @@ pub fn process(
                             } else if wh.link_types == (-14, 1) && wh.open {
                                 let len = access.targets_query.get(wh.bh_parent).unwrap().0.len() as f32;
                                 access.num_query.get_mut(*id).unwrap().0 = len;
+                            }
+                        }
+                    }
+                }
+                "append" => {
+                    for child in children {
+                        if let Ok(wh) = white_hole_query.get(*child) {
+                            if wh.link_types == (-13, 1) && wh.open {
+                                let arr = &mut access.arr_query.get(wh.bh_parent).unwrap().0.clone();
+                                access.arr_query.get_mut(*id).unwrap().0.append(arr);
+                            }
+                        }
+                    }
+                }
+                "slice" => {
+                    for child in children {
+                        if let Ok(wh) = white_hole_query.get(*child) {
+                            if wh.link_types == (-13, 1) && wh.open {
+                                let arr = &mut access.arr_query.get_mut(wh.bh_parent).unwrap();
+                                let n = access.num_query.get(*id).unwrap().0 as usize;
+                                if n <= arr.0.len() {
+                                    let slice = arr.bypass_change_detection().0.split_off(n);
+                                    access.arr_query.get_mut(*id).unwrap().0 = slice;
+                                }
                             }
                         }
                     }
