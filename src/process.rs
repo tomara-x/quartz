@@ -139,6 +139,67 @@ pub fn process(
                         }
                     }
                 }
+                "zip" => {
+                    let mut arr1 = None;
+                    let mut arr2 = None;
+                    let mut changed = false;
+                    for child in children {
+                        if let Ok(wh) = white_hole_query.get(*child) {
+                            if wh.link_types == (-13, 1) { arr1 = Some(wh.bh_parent); }
+                            else if wh.link_types == (-13, 2) { arr2 = Some(wh.bh_parent); }
+                            if wh.open { changed = true; }
+                        }
+                    }
+                    if changed {
+                        if let (Some(arr1), Some(arr2)) = (arr1, arr2) {
+                            let a1 = access.arr_query.get(arr1).unwrap().0.clone();
+                            let a2 = access.arr_query.get(arr2).unwrap().0.clone();
+                            let n = Ord::max(a1.len(), a2.len());
+                            let out = &mut access.arr_query.get_mut(*id).unwrap().0;
+                            out.clear();
+                            for i in 0..n {
+                                if let Some(x) = a1.get(i) { out.push(*x); }
+                                if let Some(y) = a2.get(i) { out.push(*y); }
+                            }
+                        }
+                        // TODO(mara): zip for targets?
+                    }
+                }
+                "push" => {
+                    for child in children {
+                        if let Ok(wh) = white_hole_query.get(*child) {
+                            if wh.link_types == (-1, 1) && wh.open {
+                                let n = access.num_query.get(wh.bh_parent).unwrap().0;
+                                access.arr_query.get_mut(*id).unwrap().0.push(n);
+                            }
+                        }
+                    }
+                }
+                "pop" => {
+                    for child in children {
+                        if let Ok(wh) = white_hole_query.get(*child) {
+                            if wh.link_types == (-1, 1)
+                            && access.num_query.get(wh.bh_parent).unwrap().0 == 1. {
+                                if let Some(n) = access.arr_query.get_mut(*id).unwrap().0.pop() {
+                                    access.num_query.get_mut(*id).unwrap().0 = n;
+                                }
+                            }
+                        }
+                    }
+                }
+                "len" => {
+                    for child in children {
+                        if let Ok(wh) = white_hole_query.get(*child) {
+                            if wh.link_types == (-13, 1) && wh.open {
+                                let len = access.arr_query.get(wh.bh_parent).unwrap().0.len() as f32;
+                                access.num_query.get_mut(*id).unwrap().0 = len;
+                            } else if wh.link_types == (-14, 1) && wh.open {
+                                let len = access.targets_query.get(wh.bh_parent).unwrap().0.len() as f32;
+                                access.num_query.get_mut(*id).unwrap().0 = len;
+                            }
+                        }
+                    }
+                }
                 "ping" => {
                     info!("hi");
                 }
