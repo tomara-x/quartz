@@ -261,6 +261,16 @@ pub fn process(
                         }
                     }
                 }
+                "resize" => {
+                    for child in children {
+                        if let Ok(wh) = white_hole_query.get(*child) {
+                            if wh.link_types == (-1, 1) && wh.open {
+                                let n = access.num_query.get(wh.bh_parent).unwrap().0 as usize;
+                                access.arr_query.get_mut(*id).unwrap().0.resize(n,0.);
+                            }
+                        }
+                    }
+                }
                 "ping" => {
                     info!("hi");
                 }
