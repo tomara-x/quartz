@@ -819,6 +819,22 @@ pub fn process(
                         }
                     }
                 }
+                "arrdc()" | "arrdelay()" => {
+                    let net_changed = access.net_changed_query.get(*id).unwrap().0;
+                    let arr = &access.arr_query.get_mut(*id).unwrap();
+                    if arr.is_changed() || net_changed {
+                        let mut graph = Net32::new(0,0);
+                        for i in &arr.0 {
+                            if access.op_query.get(*id).unwrap().0 == "arrdc()" {
+                                graph = graph | dc(*i);
+                            } else {
+                                graph = graph | delay(*i);
+                            }
+                        }
+                        access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(graph));
+                        access.net_changed_query.get_mut(*id).unwrap().0 = true;
+                    }
+                }
                 "SUM" | "+" | "PRO" | "*" => {
                     let net_changed = access.net_changed_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
