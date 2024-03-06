@@ -145,6 +145,7 @@ audio unit info:
 - `sa` select all
 - `sc` select all circles
 - `sh` select all holes
+note: when drag-selecting holding alt will only select circles (ignores holes) and holding ctrl will only select holes (ignores circles) and holding shift will add to the selection
 
 ###### visibility
 - `vc` toggle circle visibility
@@ -155,6 +156,8 @@ audio unit info:
 
 ###### other
 - `quartz` shhh!
+- `delete` delete selection
+- `shift+delete` will only delete selected connections
 
 #### link types
 any connection links 2 circles together in some way. the black hole is taking some data from the source circle, and the white hole is getting that data and feeding it to the sink circle. the link type determines what that data is.
@@ -173,6 +176,7 @@ any connection links 2 circles together in some way. the black hole is taking so
 - `T` or `-14` : targets
 - `0` usually means audio network (or nothing)
 generally a 0 to 0 connection is gonna do nothing, but when connecting networks, the black hole is type 0, and the white hole is type (positive number)
+
 
 #### order
 every circle has an order (0 or higher). things in order 0 do nothing.
