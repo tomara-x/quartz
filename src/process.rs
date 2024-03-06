@@ -188,18 +188,16 @@ pub fn process(
                 "unzip" => {
                     for child in children {
                         if let Ok(wh) = white_hole_query.get(*child) {
-                            if wh.link_types == (-13, 1) {
-                                // use bypass_change_detection like in slice
-                                if access.arr_query.get_mut(wh.bh_parent).unwrap().is_changed() {
-                                    let input = &access.arr_query.get(wh.bh_parent).unwrap().0;
-                                    let mut l = Vec::new();
-                                    let mut r = Vec::new();
-                                    for i in 0..input.len() {
-                                        if i & 1 == 0 { l.push(input[i]); } else { r.push(input[i]); }
-                                    }
-                                    access.arr_query.get_mut(wh.bh_parent).unwrap().0 = l;
-                                    access.arr_query.get_mut(*id).unwrap().0 = r;
+                            if wh.link_types == (-13, 1) && wh.open {
+                                let input = &access.arr_query.get(wh.bh_parent).unwrap().0;
+                                let mut l = Vec::new();
+                                let mut r = Vec::new();
+                                for i in 0..input.len() {
+                                    if i & 1 == 0 { l.push(input[i]); } else { r.push(input[i]); }
                                 }
+                                access.arr_query.get_mut(wh.bh_parent).unwrap()
+                                    .bypass_change_detection().0 = l;
+                                access.arr_query.get_mut(*id).unwrap().0 = r;
                             }
                         }
                     }
