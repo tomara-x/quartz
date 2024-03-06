@@ -167,7 +167,6 @@ any connection links 2 circles together in some way. the black hole is taking so
 - `s` or `-7` : saturation
 - `l` or `-8` : lightness
 - `a` or `-9` : alpha
-- `q` or `-10` : order (you can read/write the order of a circle, but once something hits order 0, it won't process anymore, so you have to increment manually (using `]`) it's kinda like locking your keys inside)
 - `v` or `-11` : vertices
 - `o` or `-12` : rotation
 - `A` or `-13` : array

@@ -573,10 +573,6 @@ pub fn process(
                                             -7 => { access.col_query.get_mut(targets[i]).unwrap().0.set_s(arr[i]); }
                                             -8 => { access.col_query.get_mut(targets[i]).unwrap().0.set_l(arr[i]); }
                                             -9 => { access.col_query.get_mut(targets[i]).unwrap().0.set_a(arr[i]); }
-                                            -10 => {
-                                                access.order_query.get_mut(targets[i]).unwrap().0 = arr[i] as usize;
-                                                access.order_change.send_default();
-                                            }
                                             -11 => {
                                                 access.vertices_query.get_mut(targets[i]).unwrap().0 = arr[i].max(3.) as usize;
                                             }
@@ -951,8 +947,6 @@ pub fn process(
                         -8 => { input = access.col_query.get(wh.bh_parent).unwrap().0.l(); }
                         // alpha
                         -9 => { input = access.col_query.get(wh.bh_parent).unwrap().0.a(); }
-                        // order
-                        -10 => { input = access.order_query.get(wh.bh_parent).unwrap().0 as f32; }
                         // vertices
                         -11 => { input = access.vertices_query.get(wh.bh_parent).unwrap().0 as f32; }
                         // rotation
@@ -971,10 +965,6 @@ pub fn process(
                         -7 => { access.col_query.get_mut(*id).unwrap().0.set_s(input); }
                         -8 => { access.col_query.get_mut(*id).unwrap().0.set_l(input); }
                         -9 => { access.col_query.get_mut(*id).unwrap().0.set_a(input); }
-                        -10 => {
-                            access.order_query.get_mut(*id).unwrap().0 = input as usize;
-                            access.order_change.send_default();
-                        }
                         -11 => { access.vertices_query.get_mut(*id).unwrap().0 = input.max(3.) as usize; }
                         -12 => {
                             let q = Quat::from_euler(EulerRot::XYZ, 0., 0., input);
