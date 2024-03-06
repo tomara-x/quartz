@@ -146,7 +146,7 @@ audio unit info:
 - `sc` select all circles
 - `sh` select all holes
 
-note: when drag-selecting holding alt will only select circles (ignores holes) and holding ctrl will only select holes (ignores circles) and holding shift will add to the selection
+note: when drag-selecting, holding `alt` will only select circles (ignores holes), holding `ctrl` will only select holes (ignores circles), and holding `shift` will add to the selection
 
 ###### visibility
 - `vc` toggle circle visibility
