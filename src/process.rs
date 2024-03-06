@@ -790,6 +790,16 @@ pub fn process(
                         access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(graph));
                     }
                 }
+                "!" | "THR" => {
+                    for child in children {
+                        if let Ok(wh) = white_hole_query.get(*child) {
+                            if wh.link_types == (0, 1) && wh.open {
+                                let input = access.net_query.get(wh.bh_parent).unwrap().0.clone();
+                                access.net_query.get_mut(*id).unwrap().0 = !input;
+                            }
+                        }
+                    }
+                }
                 "out()" | "dac()" => {
                     let net_changed = access.net_changed_query.get(*id).unwrap().0;
                     //let gained = access.gained_wh_query.get(*id).unwrap().0;
