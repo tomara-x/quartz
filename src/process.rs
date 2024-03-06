@@ -112,6 +112,22 @@ pub fn process(
                         }
                     }
                 }
+                "reorder" => {
+                    for child in children {
+                        if let Ok(wh) = white_hole_query.get(*child) {
+                            if wh.link_types == (-1, 1) && wh.open {
+                                let n = access.num_query.get(wh.bh_parent).unwrap().0;
+                                let targets = &access.targets_query.get(*id).unwrap().0;
+                                for t in targets {
+                                    if let Ok(mut order) = access.order_query.get_mut(*t) {
+                                        order.0 = n as usize;
+                                        access.order_change.send_default();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
                 "repeat" => {
                     let mut arr = None;
                     let mut targets = None;
