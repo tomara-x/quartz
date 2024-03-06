@@ -104,7 +104,6 @@ add a drag mode: (to drag multiple properties at the same time)
 
 ###### white hole
 - `ht` toggle open status
-- `hf` open for one frame
 
 ###### shortcuts
 - `o` shortcut for `:set op `

@@ -43,7 +43,6 @@ pub fn command_parser(
     circles_query: Query<Entity, With<Radius>>,
     mut access: Access,
     mut mode: Local<i32>,
-    mut in_progress: Local<bool>,
     mut next_state: ResMut<NextState<Mode>>,
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -53,8 +52,7 @@ pub fn command_parser(
     parent_query: Query<&Parent>,
 ) {
     if key_event.is_empty()
-    && !keyboard_input.just_released(KeyCode::KeyT)
-    && !*in_progress { return; }
+    && !keyboard_input.just_released(KeyCode::KeyT) { return; }
 
     let text = &mut command_line.single_mut().sections[0].value;
 
@@ -630,25 +628,6 @@ pub fn command_parser(
                     }
                 }
                 text.clear();
-            }
-            // open white hole for one frame
-            Some("hf") => {
-                if *in_progress {
-                    for id in access.selected_query.iter() {
-                        if let Ok(mut wh) = access.white_hole_query.get_mut(id) {
-                            wh.open = false;
-                        }
-                    }
-                    text.clear();
-                    *in_progress = false;
-                } else {
-                    for id in access.selected_query.iter() {
-                        if let Ok(mut wh) = access.white_hole_query.get_mut(id) {
-                            wh.open = true;
-                        }
-                    }
-                    *in_progress = true;
-                }
             }
             // shortcuts
             Some("o") => {
