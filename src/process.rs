@@ -96,7 +96,7 @@ pub fn process(
         if let Ok(children) = &children_query.get(*id) {
             match access.op_query.get(*id).unwrap().0.as_str() {
                 // keep this up top
-                "open_target" => {
+                "open_target" | "close_targets" => {
                     for child in children {
                         if let Ok(wh) = white_hole_query.get(*child) {
                             if wh.link_types == (-1, 1) {
@@ -104,7 +104,11 @@ pub fn process(
                                     let targets = &access.targets_query.get(*id).unwrap().0;
                                     for t in targets {
                                         if let Ok(mut wh) = white_hole_query.get_mut(*t) {
-                                            wh.open = true;
+                                            if access.op_query.get(*id).unwrap().0 == "open_target" {
+                                                wh.open = true;
+                                            } else {
+                                                wh.open = false;
+                                            }
                                         }
                                     }
                                 }
@@ -204,11 +208,9 @@ pub fn process(
                 "push" => {
                     for child in children {
                         if let Ok(wh) = white_hole_query.get(*child) {
-                            if wh.link_types == (-1, 1) {
-                                let n = access.num_query.get_mut(wh.bh_parent).unwrap();
-                                if n.is_changed() {
-                                    access.arr_query.get_mut(*id).unwrap().0.push(n.0);
-                                }
+                            if wh.link_types == (-1, 1) && wh.open {
+                                let n = access.num_query.get_mut(wh.bh_parent).unwrap().0;
+                                access.arr_query.get_mut(*id).unwrap().0.push(n);
                             }
                         }
                     }
