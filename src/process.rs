@@ -1125,9 +1125,6 @@ pub fn process(
                 }
                 _ => {}
             }
-            // go back to oder 0 (doesn't get processed)
-            access.order_query.get_mut(*id).unwrap().0 = 0;
-            access.order_change.send_default();
         }
     }
 }
