@@ -24,6 +24,7 @@ pub fn connect(
     children_query: Query<&Children>,
     mut gained_wh_query: Query<&mut GainedWH>,
     default_verts: Res<DefaultDrawVerts>,
+    connection_color: Res<ConnectionColor>,
 ) {
     if mouse_button_input.just_released(MouseButton::Left)
     && !keyboard_input.pressed(KeyCode::KeyT)
@@ -69,7 +70,7 @@ pub fn connect(
                         fp: snk_radius * 0.15,
                         b: 2.
                     }).into(),
-                    material: materials.add(ColorMaterial::from(Color::hsla(0., 1., 1., 0.7))),
+                    material: materials.add(ColorMaterial::from(connection_color.0)),
                     transform: Transform::from_translation(Vec3::new(0.,0.,100.)),
                     ..default()
                 },

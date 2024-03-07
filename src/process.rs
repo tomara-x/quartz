@@ -79,6 +79,7 @@ pub struct Access<'w, 's> {
     default_color: ResMut<'w, DefaultDrawColor>,
     default_verts: ResMut<'w, DefaultDrawVerts>,
     highlight_color: ResMut<'w, HighlightColor>,
+    connection_color: ResMut<'w, ConnectionColor>,
     selection_circle: Res<'w, SelectionCircle>,
     connecting_line: Res<'w, ConnectingLine>,
 }
@@ -312,6 +313,12 @@ pub fn process(
                     if color.is_changed() {
                         let id = access.selection_circle.0;
                         access.col_query.get_mut(id).unwrap().0 = color.0;
+                    }
+                }
+                "connection_color" => {
+                    let color = access.col_query.get_mut(*id).unwrap();
+                    if color.is_changed() {
+                        access.connection_color.0 = color.0;
                     }
                 }
                 "connecting_line_color" => {

@@ -54,6 +54,7 @@ fn main() {
         .insert_resource(DefaultDrawColor(Color::hsl(1.,1.,0.84)))
         .insert_resource(DefaultDrawVerts(4))
         .insert_resource(HighlightColor(Color::hsl(0.0,1.0,0.5)))
+        .insert_resource(ConnectionColor(Color::hsla(0., 1., 1., 0.7)))
         .insert_resource(Msaa::Sample4)
 
         .add_systems(Startup, setup)
@@ -280,6 +281,7 @@ fn post_load(
     scene: Query<(Entity, &Children), With<SceneInstance>>,
     children_query: Query<&Children>,
     mut op_query: Query<&mut Op>,
+    connection_color: Res<ConnectionColor>,
 ) {
     if let Ok((scene_entity, children)) = scene.get_single() {
         for child in children {
@@ -318,7 +320,7 @@ fn post_load(
                         if white_hole_query.contains(*hole) {
                             let arrow = commands.spawn(( ColorMesh2dBundle {
                                 mesh: meshes.add(RegularPolygon::new(0.1, 3)).into(),
-                                material: materials.add(ColorMaterial::from(Color::hsla(0., 1., 1., 0.7))),
+                                material: materials.add(ColorMaterial::from(connection_color.0)),
                                 transform: Transform::from_translation(Vec3::Z),
                                 ..default()
                             },
