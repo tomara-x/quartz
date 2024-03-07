@@ -76,6 +76,8 @@ pub struct Access<'w, 's> {
     screensot_manager: ResMut<'w, ScreenshotManager>,
     winit_settings: ResMut<'w, WinitSettings>,
     clear_color: ResMut<'w, ClearColor>,
+    default_color: ResMut<'w, DefaultDrawColor>,
+    default_verts: ResMut<'w, DefaultDrawVerts>,
 }
 
 pub fn process(
@@ -282,6 +284,18 @@ pub fn process(
                     let color = access.col_query.get_mut(*id).unwrap();
                     if color.is_changed() {
                         access.clear_color.0 = color.0;
+                    }
+                }
+                "draw_verts" => {
+                    let verts = access.vertices_query.get_mut(*id).unwrap();
+                    if verts.is_changed() {
+                        access.default_verts.0 = verts.0;
+                    }
+                }
+                "draw_color" => {
+                    let color = access.col_query.get_mut(*id).unwrap();
+                    if color.is_changed() {
+                        access.default_color.0 = color.0;
                     }
                 }
                 "zoom" => {

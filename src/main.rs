@@ -51,6 +51,8 @@ fn main() {
         //.add_plugins(WorldInspectorPlugin::new())
 
         .insert_resource(ClearColor(Color::BLACK))
+        .insert_resource(DefaultDrawColor(Color::hsl(1.,1.,0.84)))
+        .insert_resource(DefaultDrawVerts(4))
         .insert_resource(Msaa::Sample4)
 
         .add_systems(Startup, setup)

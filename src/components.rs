@@ -206,6 +206,11 @@ pub struct SelectionCircle(pub Entity);
 #[derive(Resource)]
 pub struct ConnectingLine(pub Entity);
 
+#[derive(Resource)]
+pub struct DefaultDrawColor(pub Color);
+#[derive(Resource)]
+pub struct DefaultDrawVerts(pub usize);
+
 // -------------------- events --------------------
 #[derive(Event, Default)]
 pub struct OrderChange;

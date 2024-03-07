@@ -23,6 +23,7 @@ pub fn connect(
     mut order_change: EventWriter<OrderChange>,
     children_query: Query<&Children>,
     mut gained_wh_query: Query<&mut GainedWH>,
+    default_verts: Res<DefaultDrawVerts>,
 ) {
     if mouse_button_input.just_released(MouseButton::Left)
     && !keyboard_input.pressed(KeyCode::KeyT)
@@ -76,9 +77,10 @@ pub fn connect(
             )).id();
             // spawn circles
             let mut bh_depth: f32 = 0.001;
+            let v = default_verts.0;
             if let Ok(children) = children_query.get(src) { bh_depth *= (children.len() + 1) as f32; }
             let black_hole = commands.spawn(( ColorMesh2dBundle {
-                    mesh: meshes.add(RegularPolygon::new(src_radius * 0.15, 4)).into(),
+                    mesh: meshes.add(RegularPolygon::new(src_radius * 0.15, v)).into(),
                     material: materials.add(ColorMaterial::from(Color::BLACK)),
                     transform: Transform::from_translation((cursor.i - src_trans.xy()).extend(bh_depth)),
                     ..default()
@@ -86,14 +88,14 @@ pub fn connect(
                 Visible,
                 Radius(src_radius * 0.15),
                 Col(Color::BLACK),
-                Vertices(4),
+                Vertices(v),
                 RenderLayers::layer(2),
                 Save,
             )).id();
             let mut wh_depth: f32 = 0.001;
             if let Ok(children) = children_query.get(snk) { wh_depth *= (children.len() + 1) as f32; }
             let white_hole = commands.spawn(( ColorMesh2dBundle {
-                    mesh: meshes.add(RegularPolygon::new(snk_radius * 0.15, 4)).into(),
+                    mesh: meshes.add(RegularPolygon::new(snk_radius * 0.15, v)).into(),
                     material: materials.add(ColorMaterial::from(Color::WHITE)),
                     transform: Transform::from_translation((cursor.f - snk_trans.xy()).extend(wh_depth)),
                     ..default()
@@ -101,7 +103,7 @@ pub fn connect(
                 Visible,
                 Radius(snk_radius * 0.15),
                 Col(Color::WHITE),
-                Vertices(4),
+                Vertices(v),
                 WhiteHole {
                     bh_parent: src,
                     bh: black_hole,

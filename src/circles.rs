@@ -20,12 +20,14 @@ pub fn spawn_circles(
     mut depth: Local<f32>,
     cursor: Res<CursorInfo>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
+    default_color: Res<DefaultDrawColor>,
+    default_verts: Res<DefaultDrawVerts>,
 ) {
     if mouse_button_input.just_released(MouseButton::Left) &&
     !keyboard_input.pressed(KeyCode::Space) {
         let r = cursor.f.distance(cursor.i);
-        let v = 4;
-        let color = Color::hsla(1., 1., 0.84, 1.);
+        let v = default_verts.0;
+        let color = default_color.0;
         commands.spawn((
             ColorMesh2dBundle {
                 mesh: meshes.add(RegularPolygon::new(r.max(0.1), v)).into(),
@@ -133,13 +135,15 @@ pub fn draw_drawing_circle(
     mesh_ids: Query<&Mesh2dHandle>,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     cursor: Res<CursorInfo>,
+    default_verts: Res<DefaultDrawVerts>,
 ) {
     if mouse_button_input.pressed(MouseButton::Left) 
     && !mouse_button_input.just_pressed(MouseButton::Left) {
+        let v = default_verts.0;
         trans_query.get_mut(id.0).unwrap().translation = cursor.i.extend(1.);
         let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
         let mesh = meshes.get_mut(mesh_id).unwrap();
-        *mesh = RegularPolygon::new(cursor.i.distance(cursor.f).max(0.1), 8).into();
+        *mesh = RegularPolygon::new(cursor.i.distance(cursor.f).max(0.1), v).into();
     }
     if mouse_button_input.just_released(MouseButton::Left) {
         trans_query.get_mut(id.0).unwrap().translation = Vec3::Z;
