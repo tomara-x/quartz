@@ -102,7 +102,7 @@ pub fn process(
     for id in queue.0.iter().flatten().chain(loopq.0.iter()) {
         if let Ok(children) = &children_query.get(*id) {
             match access.op_query.get(*id).unwrap().0.as_str() {
-                // keep this up top
+                "empty" => {}
                 "open_target" | "close_targets" => {
                     for child in children {
                         if let Ok(wh) = white_hole_query.get(*child) {
@@ -413,17 +413,6 @@ pub fn process(
                         }
                     }
                 }
-                // this would be useful if we only ever read from open wh
-                "change" => {
-                    for child in children {
-                        if let Ok(wh) = white_hole_query.get(*child) {
-                            if wh.link_types == (-1, 1) {
-                                let input = access.num_query.get(wh.bh_parent).unwrap().0;
-                                access.num_query.get_mut(*id).unwrap().set_if_neq(Number(input));
-                            }
-                        }
-                    }
-                }
                 // uses the array to store prevous num value
                 "rise" | "fall" => {
                     if access.arr_query.get(*id).unwrap().0.len() != 1 {
@@ -709,7 +698,6 @@ pub fn process(
                         }
                     }
                 }
-                "empty" => {}
                 "var()" => {
                     // use is_changed
                     let num = access.num_query.get(*id).unwrap().0;
