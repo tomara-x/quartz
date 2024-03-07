@@ -701,39 +701,6 @@ pub fn process(
                         access.num_query.get_mut(*id).unwrap().0 = var.value();
                     }
                 }
-                "select()" => {
-                    let net_changed = access.net_changed_query.get(*id).unwrap().0;
-                    let lost = access.lost_wh_query.get(*id).unwrap().0;
-                    let mut changed = false;
-                    let mut inputs = Vec::new();
-                    for child in children {
-                        if let Ok(wh) = white_hole_query.get(*child) {
-                            if wh.link_types.0 == 0 {
-                                let index = Ord::max(wh.link_types.1, 0) as usize;
-                                if index >= inputs.len() {
-                                    inputs.resize(index+1, None);
-                                }
-                                inputs[index] = Some(wh.bh_parent);
-                            }
-                            if wh.open {
-                                changed = true;
-                            }
-                        }
-                    }
-                    if lost || net_changed || changed {
-                        let mut nets = Vec::new();
-                        for i in inputs {
-                            if let Some(i) = i {
-                                let net = &access.net_query.get(i).unwrap().0;
-                                if net.inputs() == 0 && net.outputs() == 1 {
-                                    nets.push(net.clone());
-                                }
-                            }
-                        }
-                        access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(An(Select::new(nets))));
-                        access.net_changed_query.get_mut(*id).unwrap().0 = true;
-                    }
-                }
                 "get()" => {
                     for child in children {
                         if let Ok(wh) = white_hole_query.get(*child) {
@@ -779,7 +746,7 @@ pub fn process(
                         }
                     }
                 }
-                "seq()" => {
+                "seq()" | "select()" => {
                     let net_changed = access.net_changed_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
                     let mut changed = false;
@@ -808,7 +775,12 @@ pub fn process(
                                 }
                             }
                         }
-                        access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(An(Seq::new(nets))));
+                        let n = &mut access.net_query.get_mut(*id).unwrap().0;
+                        if access.op_query.get(*id).unwrap().0 == "select()" {
+                            *n = Net32::wrap(Box::new(An(Select::new(nets))));
+                        } else {
+                            *n = Net32::wrap(Box::new(An(Seq::new(nets))));
+                        }
                         access.net_changed_query.get_mut(*id).unwrap().0 = true;
                     }
                 }
