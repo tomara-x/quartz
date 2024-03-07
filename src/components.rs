@@ -211,6 +211,9 @@ pub struct DefaultDrawColor(pub Color);
 #[derive(Resource)]
 pub struct DefaultDrawVerts(pub usize);
 
+#[derive(Resource)]
+pub struct HighlightColor(pub Color);
+
 // -------------------- events --------------------
 #[derive(Event, Default)]
 pub struct OrderChange;

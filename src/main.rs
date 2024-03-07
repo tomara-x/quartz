@@ -53,6 +53,7 @@ fn main() {
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(DefaultDrawColor(Color::hsl(1.,1.,0.84)))
         .insert_resource(DefaultDrawVerts(4))
+        .insert_resource(HighlightColor(Color::hsl(0.0,1.0,0.5)))
         .insert_resource(Msaa::Sample4)
 
         .add_systems(Startup, setup)

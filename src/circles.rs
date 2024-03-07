@@ -65,12 +65,13 @@ pub fn highlight_selected(
     selected: Query<Entity, (With<Selected>, Without<Highlight>)>,
     deselected: Query<Entity, (With<Highlight>, Without<Selected>)>,
     highlight_query: Query<&Highlight>,
+    highlight_color: Res<HighlightColor>,
 ) {
     for e in selected.iter() {
         let highlight = commands.spawn(
             ColorMesh2dBundle {
                 mesh: meshes.add(RegularPolygon::new(0.1, 3)).into(),
-                material: materials.add(ColorMaterial::from(Color::hsl(0.0,1.0,0.5))),
+                material: materials.add(ColorMaterial::from(highlight_color.0)),
                 transform: Transform::from_translation(Vec3::Z),
                 ..default()
             }

@@ -78,6 +78,7 @@ pub struct Access<'w, 's> {
     clear_color: ResMut<'w, ClearColor>,
     default_color: ResMut<'w, DefaultDrawColor>,
     default_verts: ResMut<'w, DefaultDrawVerts>,
+    highlight_color: ResMut<'w, HighlightColor>,
 }
 
 pub fn process(
@@ -296,6 +297,12 @@ pub fn process(
                     let color = access.col_query.get_mut(*id).unwrap();
                     if color.is_changed() {
                         access.default_color.0 = color.0;
+                    }
+                }
+                "highlight_color" => {
+                    let color = access.col_query.get_mut(*id).unwrap();
+                    if color.is_changed() {
+                        access.highlight_color.0 = color.0;
                     }
                 }
                 "zoom" => {
