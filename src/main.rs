@@ -15,8 +15,6 @@ use bevy_pancam::{PanCam, PanCamPlugin};
 
 use std::{fs::File, io::Write};
 
-use fundsp::net::Net32;
-
 mod components;
 mod process;
 mod cursor;
@@ -27,7 +25,7 @@ mod commands;
 mod nodes;
 mod functions;
 use {components::*, process::*, cursor::*, connections::*,
-     circles::*, audio::*, commands::*};
+     circles::*, audio::*, commands::*, functions::*};
 
 fn main() {
     App::new()
@@ -294,6 +292,7 @@ fn post_load(
     if let Ok((scene_entity, children)) = scene.get_single() {
         for child in children {
             if let Ok((r, t, c, v)) = main_query.get(*child) {
+                let op = &op_query.get_mut(*child).unwrap().0;
                 commands.entity(*child).insert((
                     ColorMesh2dBundle {
                         mesh: meshes.add(RegularPolygon::new(r.0, v.0)).into(),
@@ -301,7 +300,7 @@ fn post_load(
                         transform: *t,
                         ..default()
                     },
-                    Network(Net32::new(0,1)),
+                    Network(str_to_net(op)),
                     NetIns(Vec::new()),
                     NetChanged(true),
                     GainedWH(false),
@@ -343,7 +342,6 @@ fn post_load(
                 }
             }
             commands.entity(*child).remove_parent();
-            op_query.get_mut(*child).unwrap().set_changed();
         }
         order_change.send_default();
         commands.entity(scene_entity).despawn();
