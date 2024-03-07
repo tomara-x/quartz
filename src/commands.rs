@@ -34,6 +34,8 @@ pub struct Access<'w, 's> {
     exit_event: EventWriter<'w, AppExit>,
     drag_modes: ResMut<'w, DragModes>,
     windows: Query<'w, 's, &'static mut Window>,
+    default_color: ResMut<'w, DefaultDrawColor>,
+    default_verts: ResMut<'w, DefaultDrawVerts>,
 }
 
 pub fn command_parser(
@@ -188,6 +190,32 @@ pub fn command_parser(
                                 }
                             }
                         }
+                    }
+                    Some(":dv") | Some("dv") => {
+                        if let Some(s) = command.next() {
+                            if let Ok(n) = s.parse::<usize>() {
+                                if n >= 3 { access.default_verts.0 = n; }
+                            }
+                        }
+                    }
+                    Some(":dc") | Some("dc") => {
+                        let mut h = 1.;
+                        let mut s = 1.;
+                        let mut l = 0.84;
+                        let mut a = 1.;
+                        if let Some(n) = command.next() {
+                            if let Ok(n) = n.parse::<f32>() { h = n; }
+                        }
+                        if let Some(n) = command.next() {
+                            if let Ok(n) = n.parse::<f32>() { s = n; }
+                        }
+                        if let Some(n) = command.next() {
+                            if let Ok(n) = n.parse::<f32>() { l = n; }
+                        }
+                        if let Some(n) = command.next() {
+                            if let Ok(n) = n.parse::<f32>() { a = n; }
+                        }
+                        access.default_color.0 = Color::hsla(h,s,l,a);
                     }
                     // toggle open a white hole (by id)
                     Some(":ht") | Some("ht") => {
