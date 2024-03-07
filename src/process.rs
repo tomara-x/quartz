@@ -689,10 +689,11 @@ pub fn process(
                     }
                 }
                 "var()" => {
-                    // use is_changed
-                    let num = access.num_query.get(*id).unwrap().0;
-                    if let Some(var) = &access.net_ins_query.get(*id).unwrap().0.get(0) {
-                        var.set_value(num);
+                    let num = access.num_query.get_mut(*id).unwrap();
+                    if num.is_changed() {
+                        if let Some(var) = &access.net_ins_query.get(*id).unwrap().0.get(0) {
+                            var.set_value(num.0);
+                        }
                     }
                 }
                 "monitor()" | "timer()" => {
