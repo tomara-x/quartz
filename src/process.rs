@@ -1002,7 +1002,6 @@ pub fn process(
                     }
                     match wh.link_types.1 {
                         -1 => { access.num_query.get_mut(*id).unwrap().0 = input; }
-                        // TODO(amy): why doesn't this panics on 0?
                         -2 => { access.radius_query.get_mut(*id).unwrap().0 = input.max(0.); }
                         -3 => { access.trans_query.get_mut(*id).unwrap().translation.x = input; }
                         -4 => { access.trans_query.get_mut(*id).unwrap().translation.y = input; }
