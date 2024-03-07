@@ -201,6 +201,7 @@ fn setup(
                 transform: Transform::from_translation(Vec3::Z),
                 ..default()
             },
+            Col(Color::hsla(0., 1., 0.5, 0.3)),
         )).id();
         commands.insert_resource(SelectionCircle(id));
 
@@ -212,6 +213,7 @@ fn setup(
                 transform: Transform::from_translation(Vec3::Z),
                 ..default()
             },
+            Col(Color::hsla(0., 1., 0.5, 0.3)),
         )).id();
         commands.insert_resource(ConnectingLine(id));
 }
