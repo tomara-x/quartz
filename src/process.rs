@@ -362,19 +362,11 @@ pub fn process(
                         }
                     }
                 }
-                "mouse_x" => {
+                "mouse" => {
                     let (_, cam, cam_transform) = camera_query.single();
                     if let Some(cursor_pos) = windows.single().1.cursor_position() {
                         if let Some(point) = cam.viewport_to_world_2d(cam_transform, cursor_pos) {
-                            access.num_query.get_mut(*id).unwrap().0 = point.x;
-                        }
-                    }
-                }
-                "mouse_y" => {
-                    let (_, cam, cam_transform) = camera_query.single();
-                    if let Some(cursor_pos) = windows.single().1.cursor_position() {
-                        if let Some(point) = cam.viewport_to_world_2d(cam_transform, cursor_pos) {
-                            access.num_query.get_mut(*id).unwrap().0 = point.y;
+                            access.arr_query.get_mut(*id).unwrap().0 = point.to_array().into();
                         }
                     }
                 }
