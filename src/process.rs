@@ -75,6 +75,7 @@ pub struct Access<'w, 's> {
     targets_query: Query<'w, 's, &'static mut Targets>,
     screensot_manager: ResMut<'w, ScreenshotManager>,
     winit_settings: ResMut<'w, WinitSettings>,
+    clear_color: ResMut<'w, ClearColor>,
 }
 
 pub fn process(
@@ -276,6 +277,12 @@ pub fn process(
                 }
                 "break" => {
                     info!(" ");
+                }
+                "clear_color" => {
+                    let color = access.col_query.get_mut(*id).unwrap();
+                    if color.is_changed() {
+                        access.clear_color.0 = color.0;
+                    }
                 }
                 "zoom" => {
                     for child in children {
