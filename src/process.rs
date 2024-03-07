@@ -16,6 +16,7 @@ use fundsp::hacker32::*;
 use crate::{
     components::*,
     nodes::*,
+    functions::*,
 };
 
 pub fn sort_by_order(

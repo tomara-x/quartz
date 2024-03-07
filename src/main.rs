@@ -25,6 +25,7 @@ mod circles;
 mod audio;
 mod commands;
 mod nodes;
+mod functions;
 use {components::*, process::*, cursor::*, connections::*,
      circles::*, audio::*, commands::*};
 

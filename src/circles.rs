@@ -10,7 +10,10 @@ use bevy::{
 
 use fundsp::net::Net32;
 
-use crate::components::*;
+use crate::{
+    components::*,
+    functions::*,
+};
 
 pub fn spawn_circles(
     mut commands: Commands,

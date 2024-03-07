@@ -7,7 +7,10 @@ use bevy::{
     window::WindowMode,
 };
 
-use crate::components::*;
+use crate::{
+    components::*,
+    functions::*,
+};
 
 use fundsp::audiounit::AudioUnit32;
 
