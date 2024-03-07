@@ -1096,10 +1096,8 @@ pub fn update_net(
             "meter" => {
                 if let (Some(arg), Some(p)) = (args.get(1), p.get(0)) {
                     if arg.starts_with("peak") {
-                        info!("{} {}", arg, *p);
                         n.0 = Net32::wrap(Box::new(meter(Meter::Peak(*p as f64))));
                     } else if arg.starts_with("rms") {
-                        info!("{} {}", arg, *p);
                         n.0 = Net32::wrap(Box::new(meter(Meter::Rms(*p as f64))));
                     }
                 }
