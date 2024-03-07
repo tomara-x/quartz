@@ -278,12 +278,6 @@ pub fn process(
                         }
                     }
                 }
-                "ping" => {
-                    info!("hi");
-                }
-                "break" => {
-                    info!(" ");
-                }
                 "clear_color" => {
                     let color = access.col_query.get_mut(*id).unwrap();
                     if color.is_changed() {
@@ -328,16 +322,6 @@ pub fn process(
                         access.col_query.get_mut(id).unwrap().0 = color.0;
                     }
                 }
-                "zoom" => {
-                    for child in children {
-                        if let Ok(wh) = white_hole_query.get(*child) {
-                            if wh.link_types == (-1, 1) && wh.open {
-                                let n = access.num_query.get(wh.bh_parent).unwrap().0;
-                                ortho.single_mut().scale = n.clamp(0.1, 4.);
-                            }
-                        }
-                    }
-                }
                 "cam" => {
                     for child in children {
                         if let Ok(wh) = white_hole_query.get(*child) {
@@ -350,6 +334,7 @@ pub fn process(
                                     2 => { t.translation.y = n; }
                                     3 => { t.translation.z = n; }
                                     4 => { t.rotation = Quat::from_euler(EulerRot::XYZ,0.,0.,n); }
+                                    5 => { ortho.single_mut().scale = n.clamp(0.1, 4.); }
                                     _ => {}
                                 }
                             }
@@ -1606,16 +1591,8 @@ pub fn update_net(
                 }
             }
 
-            "ramp" => {
-                n.0 = Net32::wrap(
-                    Box::new(
-                        lfo_in(|t, i: &Frame<f32, U1>| (t*i[0]).rem_euclid(1.))
-                    )
-                );
-            }
-            "clock" => {
-                n.0 = Net32::wrap(Box::new(sine() >> map(|i: &Frame<f32,U1>| if i[0] > 0. {1.} else {0.})));
-            }
+            "ramp" => { n.0 = Net32::wrap(Box::new(lfo_in(|t, i: &Frame<f32, U1>| (t*i[0]).rem_euclid(1.)))); }
+            "clock" => { n.0 = Net32::wrap(Box::new(sine() >> map(|i: &Frame<f32,U1>| if i[0] > 0. {1.} else {0.}))); }
             "rise" => {
                 n.0 = Net32::wrap(Box::new((pass() ^ tick()) >> map(|i: &Frame<f32,U2>| if i[0]>i[1] {1.} else {0.})));
             }
