@@ -206,12 +206,12 @@ pub fn command_parser(
                                     if let Some(e) = str_to_id(s) {
                                         if let Ok(mut num) = access.num_query.get_mut(e) {
                                             if let Some(n) = command.next() {
-                                                if let Ok(n) = n.parse::<f32>() {
+                                                if let Ok(n) = parse_with_constants(n) {
                                                     num.0 = n;
                                                 }
                                             }
                                         }
-                                    } else if let Ok(n) = s.parse::<f32>() {
+                                    } else if let Ok(n) = parse_with_constants(s) {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut num) = access.num_query.get_mut(id) {
                                                 num.0 = n;
@@ -225,12 +225,12 @@ pub fn command_parser(
                                     if let Some(e) = str_to_id(s) {
                                         if let Ok(mut radius) = access.radius_query.get_mut(e) {
                                             if let Some(n) = command.next() {
-                                                if let Ok(n) = n.parse::<f32>() {
+                                                if let Ok(n) = parse_with_constants(n) {
                                                     radius.0 = n.max(0.);
                                                 }
                                             }
                                         }
-                                    } else if let Ok(n) = s.parse::<f32>() {
+                                    } else if let Ok(n) = parse_with_constants(s) {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut radius) = access.radius_query.get_mut(id) {
                                                 radius.0 = n.max(0.);
@@ -244,12 +244,12 @@ pub fn command_parser(
                                     if let Some(e) = str_to_id(s) {
                                         if let Ok(mut t) = access.trans_query.get_mut(e) {
                                             if let Some(n) = command.next() {
-                                                if let Ok(n) = n.parse::<f32>() {
+                                                if let Ok(n) = parse_with_constants(n) {
                                                     t.translation.x = n;
                                                 }
                                             }
                                         }
-                                    } else if let Ok(n) = s.parse::<f32>() {
+                                    } else if let Ok(n) = parse_with_constants(s) {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut t) = access.trans_query.get_mut(id) {
                                                 t.translation.x = n;
@@ -263,12 +263,12 @@ pub fn command_parser(
                                     if let Some(e) = str_to_id(s) {
                                         if let Ok(mut t) = access.trans_query.get_mut(e) {
                                             if let Some(n) = command.next() {
-                                                if let Ok(n) = n.parse::<f32>() {
+                                                if let Ok(n) = parse_with_constants(n) {
                                                     t.translation.y = n;
                                                 }
                                             }
                                         }
-                                    } else if let Ok(n) = s.parse::<f32>() {
+                                    } else if let Ok(n) = parse_with_constants(s) {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut t) = access.trans_query.get_mut(id) {
                                                 t.translation.y = n;
@@ -282,12 +282,12 @@ pub fn command_parser(
                                     if let Some(e) = str_to_id(s) {
                                         if let Ok(mut t) = access.trans_query.get_mut(e) {
                                             if let Some(n) = command.next() {
-                                                if let Ok(n) = n.parse::<f32>() {
+                                                if let Ok(n) = parse_with_constants(n) {
                                                     t.translation.z = n;
                                                 }
                                             }
                                         }
-                                    } else if let Ok(n) = s.parse::<f32>() {
+                                    } else if let Ok(n) = parse_with_constants(s) {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut t) = access.trans_query.get_mut(id) {
                                                 t.translation.z = n;
@@ -301,12 +301,12 @@ pub fn command_parser(
                                     if let Some(e) = str_to_id(s) {
                                         if let Ok(mut color) = access.col_query.get_mut(e) {
                                             if let Some(n) = command.next() {
-                                                if let Ok(n) = n.parse::<f32>() {
+                                                if let Ok(n) = parse_with_constants(n) {
                                                     color.0.set_h(n);
                                                 }
                                             }
                                         }
-                                    } else if let Ok(n) = s.parse::<f32>() {
+                                    } else if let Ok(n) = parse_with_constants(s) {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut color) = access.col_query.get_mut(id) {
                                                 color.0.set_h(n);
@@ -320,12 +320,12 @@ pub fn command_parser(
                                     if let Some(e) = str_to_id(s) {
                                         if let Ok(mut color) = access.col_query.get_mut(e) {
                                             if let Some(n) = command.next() {
-                                                if let Ok(n) = n.parse::<f32>() {
+                                                if let Ok(n) = parse_with_constants(n) {
                                                     color.0.set_s(n);
                                                 }
                                             }
                                         }
-                                    } else if let Ok(n) = s.parse::<f32>() {
+                                    } else if let Ok(n) = parse_with_constants(s) {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut color) = access.col_query.get_mut(id) {
                                                 color.0.set_s(n);
@@ -339,12 +339,12 @@ pub fn command_parser(
                                     if let Some(e) = str_to_id(s) {
                                         if let Ok(mut color) = access.col_query.get_mut(e) {
                                             if let Some(n) = command.next() {
-                                                if let Ok(n) = n.parse::<f32>() {
+                                                if let Ok(n) = parse_with_constants(n) {
                                                     color.0.set_l(n);
                                                 }
                                             }
                                         }
-                                    } else if let Ok(n) = s.parse::<f32>() {
+                                    } else if let Ok(n) = parse_with_constants(s) {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut color) = access.col_query.get_mut(id) {
                                                 color.0.set_l(n);
@@ -358,12 +358,12 @@ pub fn command_parser(
                                     if let Some(e) = str_to_id(s) {
                                         if let Ok(mut color) = access.col_query.get_mut(e) {
                                             if let Some(n) = command.next() {
-                                                if let Ok(n) = n.parse::<f32>() {
+                                                if let Ok(n) = parse_with_constants(n) {
                                                     color.0.set_a(n);
                                                 }
                                             }
                                         }
-                                    } else if let Ok(n) = s.parse::<f32>() {
+                                    } else if let Ok(n) = parse_with_constants(s) {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut color) = access.col_query.get_mut(id) {
                                                 color.0.set_a(n);
@@ -396,12 +396,12 @@ pub fn command_parser(
                                     if let Some(e) = str_to_id(s) {
                                         if let Ok(mut t) = access.trans_query.get_mut(e) {
                                             if let Some(n) = command.next() {
-                                                if let Ok(n) = n.parse::<f32>() {
+                                                if let Ok(n) = parse_with_constants(n) {
                                                     t.rotation = Quat::from_rotation_z(n);
                                                 }
                                             }
                                         }
-                                    } else if let Ok(n) = s.parse::<f32>() {
+                                    } else if let Ok(n) = parse_with_constants(s) {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut t) = access.trans_query.get_mut(id) {
                                                 t.rotation = Quat::from_rotation_z(n);
@@ -456,16 +456,16 @@ pub fn command_parser(
                                         if let Ok(mut arr) = access.arr_query.get_mut(e) {
                                             arr.0.clear();
                                             for n in command {
-                                                if let Ok(n) = n.parse::<f32>() {
+                                                if let Ok(n) = parse_with_constants(n) {
                                                     arr.0.push(n);
                                                 }
                                             }
                                         }
                                     } else {
                                         let mut tmp = Vec::new();
-                                        if let Ok(n) = s.parse::<f32>() { tmp.push(n); }
+                                        if let Ok(n) = parse_with_constants(s) { tmp.push(n); }
                                         for n in command {
-                                            if let Ok(n) = n.parse::<f32>() {
+                                            if let Ok(n) = parse_with_constants(n) {
                                                 tmp.push(n);
                                             }
                                         }
