@@ -199,6 +199,35 @@ pub fn command_parser(
                             }
                         }
                     }
+                    Some(":push") | Some("push") => {
+                        if let Some(a1) = command.next() {
+                            if let Some(a2) = command.next() {
+                                if let Some(e) = str_to_id(a1) {
+                                    if let Some(t) = str_to_id(a2) {
+                                        if let Ok(mut targets) = access.targets_query.get_mut(e) {
+                                            targets.0.push(t);
+                                        }
+                                    } else if let Ok(n) = parse_with_constants(a2) {
+                                        if let Ok(mut arr) = access.arr_query.get_mut(e) {
+                                            arr.0.push(n);
+                                        }
+                                    }
+                                }
+                            } else {
+                                for id in access.selected_query.iter() {
+                                    if let Some(t) = str_to_id(a1) {
+                                        if let Ok(mut targets) = access.targets_query.get_mut(id) {
+                                            targets.0.push(t);
+                                        }
+                                    } else if let Ok(n) = parse_with_constants(a1) {
+                                        if let Ok(mut arr) = access.arr_query.get_mut(id) {
+                                            arr.0.push(n);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                     Some(":set") | Some("set") => {
                         match command.next() {
                             Some("n") => {

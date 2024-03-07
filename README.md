@@ -65,6 +65,7 @@ these can take an optional entity id
 - `:set arr` or `:set array` set the array (space separated, no commas!)
 - `:set tar` or `:set targets` set targets (space separated id's) (if nothing is selected, the first entity gets the rest of the list as its targets)
 - `:tsel` target selected (`:tsel 4v2` sets selected entities as targets of entity 4v2)
+- `:push` push a number to the array, or an id to the targets array 
 
 ###### other
 - `:lt` set link type of hole (use shortcut `l`)
