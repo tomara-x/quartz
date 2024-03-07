@@ -497,29 +497,6 @@ pub fn update_order (
     }
 }
 
-//pub fn shake_order (
-//    keyboard_input: Res<ButtonInput<KeyCode>>,
-//    changed_order: Query<(Entity, &Children), With<Order>>,
-//    mut order_query: Query<&mut Order>,
-//    white_hole_query: Query<&WhiteHole>,
-//    mut order_change: EventWriter<OrderChange>,
-//) {
-//    if keyboard_input.just_pressed(KeyCode::Digit0) {
-//        for (e, children) in changed_order.iter() {
-//            for child in children {
-//                if let Ok(wh) = white_hole_query.get(*child) {
-//                    let this = order_query.get(e).unwrap().0;
-//                    let previous = order_query.get(wh.bh_parent).unwrap().0;
-//                    if this <= previous {
-//                        order_query.get_mut(e).unwrap().0 = previous + 1;
-//                    }
-//                }
-//            }
-//        }
-//        order_change.send_default();
-//    }
-//}
-
 pub fn update_info_text(
     mut text_query: Query<&mut Text>,
     mut text_trans: Query<&mut Transform, Without<Radius>>,
