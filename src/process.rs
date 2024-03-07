@@ -944,7 +944,6 @@ pub fn process(
                 }
                 "out()" | "dac()" => {
                     let net_changed = access.net_changed_query.get(*id).unwrap().0;
-                    //let gained = access.gained_wh_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
                     let mut changed = false;
                     let mut net = None;
@@ -958,7 +957,7 @@ pub fn process(
                             }
                         }
                     }
-                    if /*gained ||*/ lost || net_changed || changed {
+                    if lost || net_changed || changed {
                         if let Some(net) = net {
                             let net = access.net_query.get(net).unwrap().0.clone();
                             if net.outputs() == 1 && net.inputs() == 0 {
@@ -1075,7 +1074,6 @@ pub fn process(
 // open the white holes reading any changed value
 // it's gonna overlap with whatever `process` changed, but that's okay
 // process needs to do things in order, but this is to catch any external change
-// TODO(amy): bypass_change_detection in `process`
 // TODO(amy): Changed is actually expensive (== looping and checking is_changed)
 // can we do better?
 pub fn open_white_holes(
