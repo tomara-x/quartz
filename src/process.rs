@@ -16,7 +16,6 @@ use fundsp::hacker32::*;
 use crate::{
     components::*,
     nodes::*,
-    functions::*,
 };
 
 pub fn sort_by_order(
@@ -1070,25 +1069,6 @@ pub fn process(
                 _ => {}
             }
         }
-    }
-}
-
-pub fn update_constant_num(
-    mut query: Query<(&Op, &mut Number), Changed<Op>>,
-) {
-    for (op, mut num) in query.iter_mut() {
-        if let Ok(n) = parse_with_constants(op.0.as_str()) {
-            num.0 = n;
-        }
-    }
-}
-
-pub fn update_net(
-    mut query: Query<(&Op, &mut NetChanged, &mut Network), Changed<Op>>,
-) {
-    for (op, mut net_changed, mut n) in query.iter_mut() {
-        net_changed.0 = true;
-        n.0 = str_to_net(&op.0);
     }
 }
 
