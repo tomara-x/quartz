@@ -1117,11 +1117,8 @@ pub fn process(
         // no children (connections)
         } else {
             match access.op_query.get(*id).unwrap().0.as_str() {
-                "out()" => {
+                "out()" | "dac()" => {
                     slot.0.set(Fade::Smooth, 0.1, Box::new(dc(0.) | dc(0.)));
-                }
-                "sum()" | "product()" | "pipe()" | "stack()" => {
-                    access.net_query.get_mut(*id).unwrap().0 = Net32::new(0,0);
                 }
                 _ => {}
             }
