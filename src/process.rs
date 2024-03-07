@@ -689,24 +689,14 @@ pub fn process(
                         }
                     }
                 }
-                // FIXME(amy): get those working in process
-                //"var" => {
-                //    let input = shared(0.);
-                //    n.0 = Net32::wrap(Box::new(var(&input)));
-                //    inputs.0.push(input);
-                //}
-                //// TODO(amy): add the other modes
-                //"monitor" => {
-                //    let s = shared(0.);
-                //    n.0 = Net32::wrap(Box::new(monitor(&s, Meter::Sample)));
-                //    inputs.0.push(s);
-                //}
-                //"timer" => {
-                //    let s = shared(0.);
-                //    n.0 = Net32::wrap(Box::new(timer(&s)));
-                //    inputs.0.push(s);
-                //}
                 "var()" => {
+                    if access.net_changed_query.get(*id).unwrap().0 {
+                        let net = &mut access.net_query.get_mut(*id).unwrap().0;
+                        let inputs = &mut access.net_ins_query.get_mut(*id).unwrap().0;
+                        let input = shared(0.);
+                        *net = Net32::wrap(Box::new(var(&input)));
+                        inputs.push(input);
+                    }
                     let num = access.num_query.get_mut(*id).unwrap();
                     if num.is_changed() {
                         if let Some(var) = &access.net_ins_query.get(*id).unwrap().0.get(0) {
@@ -714,7 +704,19 @@ pub fn process(
                         }
                     }
                 }
+                // TODO(amy): add the other monitor modes
                 "monitor()" | "timer()" => {
+                    if access.net_changed_query.get(*id).unwrap().0 {
+                        let net = &mut access.net_query.get_mut(*id).unwrap().0;
+                        let inputs = &mut access.net_ins_query.get_mut(*id).unwrap().0;
+                        let s = shared(0.);
+                        if access.op_query.get(*id).unwrap().0 == "monitor()" {
+                            *net = Net32::wrap(Box::new(monitor(&s, Meter::Sample)));
+                        } else {
+                            *net = Net32::wrap(Box::new(timer(&s)));
+                        }
+                        inputs.push(s);
+                    }
                     if let Some(var) = access.net_ins_query.get(*id).unwrap().0.get(0) {
                         access.num_query.get_mut(*id).unwrap().0 = var.value();
                     }
