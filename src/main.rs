@@ -131,6 +131,10 @@ fn main() {
         .register_type::<NetChanged>()
         .register_type::<GainedWH>()
         .register_type::<LostWH>()
+        .register_type::<DefaultDrawColor>()
+        .register_type::<DefaultDrawVerts>()
+        .register_type::<HighlightColor>()
+        .register_type::<ConnectionColor>()
         .run();
 }
 
@@ -254,7 +258,13 @@ fn save_scene(world: &mut World) {
             .allow::<Children>()
             .allow::<Vertices>()
             .allow::<Targets>()
+            .allow_resource::<DefaultDrawColor>()
+            .allow_resource::<DefaultDrawVerts>()
+            .allow_resource::<HighlightColor>()
+            .allow_resource::<ConnectionColor>()
+            .allow_resource::<ClearColor>()
             .extract_entities(query.iter(&world))
+            .extract_resources()
             .build();
         let type_registry = world.resource::<AppTypeRegistry>();
         let serialized_scene = scene.serialize_ron(type_registry).unwrap();

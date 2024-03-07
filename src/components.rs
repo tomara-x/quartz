@@ -206,15 +206,20 @@ pub struct SelectionCircle(pub Entity);
 #[derive(Resource)]
 pub struct ConnectingLine(pub Entity);
 
-#[derive(Resource)]
+#[derive(Resource, Reflect, Default)]
+#[reflect(Resource)]
 pub struct DefaultDrawColor(pub Color);
-#[derive(Resource)]
+
+#[derive(Resource, Reflect, Default)]
+#[reflect(Resource)]
 pub struct DefaultDrawVerts(pub usize);
 
-#[derive(Resource)]
+#[derive(Resource, Reflect, Default)]
+#[reflect(Resource)]
 pub struct HighlightColor(pub Color);
 
-#[derive(Resource)]
+#[derive(Resource, Reflect, Default)]
+#[reflect(Resource)]
 pub struct ConnectionColor(pub Color);
 
 // -------------------- events --------------------
