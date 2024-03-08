@@ -620,7 +620,7 @@ pub fn process(
                         }
                     }
                 }
-                "nums_to_arr" => {
+                "collect" => {
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
                     let mut changed = false;
                     let mut inputs = Vec::new();
