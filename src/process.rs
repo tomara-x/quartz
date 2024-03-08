@@ -640,6 +640,7 @@ pub fn process(
                 }
                 // distribute input array among targets' values
                 "distro" => {
+                    let mut target_lt_to_open = None;
                     for child in children {
                         if let Ok(wh) = white_hole_query.get(*child) {
                             if wh.link_types.0 == -13 {
@@ -669,7 +670,22 @@ pub fn process(
                                             }
                                             _ => {}
                                         }
-                                        // TODO(tomara): handle opening wh here
+                                        target_lt_to_open = Some(wh.link_types.1);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if let Some(lt) = target_lt_to_open {
+                        for t in &access.targets_query.get(*id).unwrap().0 {
+                            if let Ok(children) = &children_query.get(*t) {
+                                for child in children {
+                                    if let Ok(bh) = black_hole_query.get(*child) {
+                                        if let Ok(wh) = white_hole_query.get_mut(bh.wh) {
+                                            if wh.link_types.0 == lt {
+                                                white_hole_query.get_mut(bh.wh).unwrap().open = true;
+                                            }
+                                        }
                                     }
                                 }
                             }
