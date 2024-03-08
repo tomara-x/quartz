@@ -49,7 +49,7 @@ pub fn spawn_circles(
             (
                 Network(Net32::new(0,1)),
                 NetIns(Vec::new()),
-                NetChanged(true),
+                OpChanged(false),
                 GainedWH(false),
                 LostWH(false),
             ),

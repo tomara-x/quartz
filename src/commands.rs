@@ -34,7 +34,7 @@ pub struct Access<'w, 's> {
     text_query: Query<'w, 's, &'static mut Text, Without<CommandText>>,
     render_layers: Query<'w, 's, &'static mut RenderLayers, With<Camera>>,
     net_query: Query<'w, 's, &'static mut Network>,
-    net_changed_query: Query<'w, 's, &'static mut NetChanged>,
+    op_changed_query: Query<'w, 's, &'static mut OpChanged>,
     exit_event: EventWriter<'w, AppExit>,
     drag_modes: ResMut<'w, DragModes>,
     windows: Query<'w, 's, &'static mut Window>,
@@ -477,7 +477,7 @@ pub fn command_parser(
                                         if let Ok(mut op) = access.op_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 op.0 = n.to_string();
-                                                access.net_changed_query.get_mut(e).unwrap().0 = true;
+                                                access.op_changed_query.get_mut(e).unwrap().0 = true;
                                                 access.net_query.get_mut(e).unwrap().0 = str_to_net(n);
                                             }
                                         }
@@ -487,7 +487,7 @@ pub fn command_parser(
                                                 op.0.clear();
                                                 op.0.push_str(s);
                                                 for a in command.clone() { op.0.push_str(a); }
-                                                access.net_changed_query.get_mut(id).unwrap().0 = true;
+                                                access.op_changed_query.get_mut(id).unwrap().0 = true;
                                                 access.net_query.get_mut(id).unwrap().0 = str_to_net(&op.0);
                                             }
                                         }

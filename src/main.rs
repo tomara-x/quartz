@@ -123,7 +123,6 @@ fn main() {
         .register_type::<(i32, i32)>()
         .register_type::<Vertices>()
         .register_type::<Targets>()
-        .register_type::<NetChanged>()
         .register_type::<GainedWH>()
         .register_type::<LostWH>()
         .register_type::<DefaultDrawColor>()
@@ -301,7 +300,7 @@ fn post_load(
                     },
                     Network(str_to_net(op)),
                     NetIns(Vec::new()),
-                    NetChanged(true),
+                    OpChanged(true),
                     GainedWH(false),
                     LostWH(false),
                     RenderLayers::layer(1),

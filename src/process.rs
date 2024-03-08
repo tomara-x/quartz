@@ -69,7 +69,7 @@ pub struct Access<'w, 's> {
     col_query: Query<'w, 's, &'static mut Col>,
     order_change: EventWriter<'w, OrderChange>,
     vertices_query: Query<'w, 's, &'static mut Vertices>,
-    net_changed_query: Query<'w, 's, &'static mut NetChanged>,
+    op_changed_query: Query<'w, 's, &'static mut OpChanged>,
     //gained_wh_query: Query<'w, 's, &'static mut GainedWH>,
     lost_wh_query: Query<'w, 's, &'static mut LostWH>,
     targets_query: Query<'w, 's, &'static mut Targets>,
@@ -746,7 +746,7 @@ pub fn process(
                     }
                 }
                 "var()" => {
-                    if access.net_changed_query.get(*id).unwrap().0 {
+                    if access.op_changed_query.get(*id).unwrap().0 {
                         let net = &mut access.net_query.get_mut(*id).unwrap().0;
                         let inputs = &mut access.net_ins_query.get_mut(*id).unwrap().0;
                         let input = shared(0.);
@@ -763,7 +763,7 @@ pub fn process(
                 }
                 "monitor()" | "timer()" => {
                     // TODO(amy): net changed should be renamed to op changed
-                    if access.net_changed_query.get(*id).unwrap().0 {
+                    if access.op_changed_query.get(*id).unwrap().0 {
                         let net = &mut access.net_query.get_mut(*id).unwrap().0;
                         let inputs = &mut access.net_ins_query.get_mut(*id).unwrap().0;
                         let s = shared(0.);
@@ -792,7 +792,7 @@ pub fn process(
                     }
                 }
                 "feedback()" => {
-                    let net_changed = access.net_changed_query.get(*id).unwrap().0;
+                    let net_changed = access.op_changed_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
                     let mut changed = false;
                     let mut net = None;
@@ -825,7 +825,7 @@ pub fn process(
                     }
                 }
                 "seq()" | "select()" => {
-                    let net_changed = access.net_changed_query.get(*id).unwrap().0;
+                    let net_changed = access.op_changed_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
                     let mut changed = false;
                     let mut inputs = Vec::new();
@@ -877,7 +877,7 @@ pub fn process(
                     }
                 }
                 "arrdc()" | "arrdelay()" => {
-                    let net_changed = access.net_changed_query.get(*id).unwrap().0;
+                    let net_changed = access.op_changed_query.get(*id).unwrap().0;
                     let arr = &access.arr_query.get_mut(*id).unwrap();
                     if arr.is_changed() || net_changed {
                         let mut graph = Net32::new(0,0);
@@ -893,7 +893,7 @@ pub fn process(
                     }
                 }
                 "SUM" | "+" | "PRO" | "*" => {
-                    let net_changed = access.net_changed_query.get(*id).unwrap().0;
+                    let net_changed = access.op_changed_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
                     let num_changed = access.num_query.get_mut(*id).unwrap().is_changed();
                     let mut changed = false;
@@ -934,7 +934,7 @@ pub fn process(
                     }
                 }
                 ">>" | "|" | "&" | "^" | "PIP" | "STA" | "BUS" | "BRA" => {
-                    let net_changed = access.net_changed_query.get(*id).unwrap().0;
+                    let net_changed = access.op_changed_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
                     let num_changed = access.num_query.get_mut(*id).unwrap().is_changed();
                     let mut changed = false;
@@ -1003,7 +1003,7 @@ pub fn process(
                     }
                 }
                 "out()" | "dac()" => {
-                    let net_changed = access.net_changed_query.get(*id).unwrap().0;
+                    let net_changed = access.op_changed_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
                     let mut changed = false;
                     let mut net = None;
@@ -1044,7 +1044,7 @@ pub fn process(
                     }
                 }
             }
-            access.net_changed_query.get_mut(*id).unwrap().0 = false;
+            access.op_changed_query.get_mut(*id).unwrap().0 = false;
             access.lost_wh_query.get_mut(*id).unwrap().0 = false;
             for child in children {
                 let mut lt_to_open = 0;
