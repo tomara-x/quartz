@@ -281,7 +281,7 @@ fn post_load(
     mut materials: ResMut<Assets<ColorMaterial>>,
     main_query: Query<(&Radius, &Transform, &Col, &Vertices)>,
     mut order_change: EventWriter<OrderChange>,
-    white_hole_query: Query<(), With<WhiteHole>>,
+    mut white_hole_query: Query<&mut WhiteHole>,
     black_hole_query: Query<(), With<BlackHole>>,
     scene: Query<(Entity, &Children), With<SceneInstance>>,
     children_query: Query<&Children>,
@@ -323,7 +323,8 @@ fn post_load(
                         if black_hole_query.contains(*hole) {
                             commands.entity(*hole).insert(RenderLayers::layer(2));
                         }
-                        if white_hole_query.contains(*hole) {
+                        if let Ok(mut wh) = white_hole_query.get_mut(*hole) {
+                            wh.open = true;
                             let arrow = commands.spawn(( ColorMesh2dBundle {
                                 mesh: meshes.add(RegularPolygon::new(0.1, 3)).into(),
                                 material: materials.add(ColorMaterial::from(connection_color.0)),
