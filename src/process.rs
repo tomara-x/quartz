@@ -1023,6 +1023,8 @@ pub fn process(
                                 slot.0.set(Fade::Smooth, 0.1, Box::new(net | dc(0.)));
                             } else if net.outputs() == 2 && net.inputs() == 0 {
                                 slot.0.set(Fade::Smooth, 0.1, Box::new(net));
+                            } else {
+                                slot.0.set(Fade::Smooth, 0.1, Box::new(dc(0.) | dc(0.)));
                             }
                         } else {
                             slot.0.set(Fade::Smooth, 0.1, Box::new(dc(0.) | dc(0.)));
