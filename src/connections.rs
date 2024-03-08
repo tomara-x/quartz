@@ -7,7 +7,10 @@ use bevy::{
     },
 };
 
-use crate::components::*;
+use crate::{
+    components::*,
+    meshes::*,
+};
 
 pub fn connect(
     mouse_button_input: Res<ButtonInput<MouseButton>>,

@@ -24,6 +24,7 @@ mod audio;
 mod commands;
 mod nodes;
 mod functions;
+mod meshes;
 use {components::*, process::*, cursor::*, connections::*,
      circles::*, audio::*, commands::*, functions::*};
 
