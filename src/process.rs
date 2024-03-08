@@ -761,7 +761,6 @@ pub fn process(
                         }
                     }
                 }
-                // TODO(amy): add the other monitor modes
                 "monitor()" | "timer()" => {
                     // TODO(amy): net changed should be renamed to op changed
                     if access.net_changed_query.get(*id).unwrap().0 {
