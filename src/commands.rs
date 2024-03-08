@@ -56,6 +56,7 @@ pub fn command_parser(
     mut ids_shown: Local<bool>,
     global_trans_rights: Query<&GlobalTransform>,
     parent_query: Query<&Parent>,
+    children_query: Query<Ref<Children>>,
 ) {
     if key_event.is_empty()
     && !keyboard_input.just_released(KeyCode::KeyT) { return; }
@@ -135,6 +136,8 @@ pub fn command_parser(
             // commands starting with :
             let lines = text.as_str().split(";");
             for line in lines {
+                // (entity, lt) if there's a given entity
+                let mut lt_to_open = (None, None);
                 let mut command = line.split_ascii_whitespace();
                 match command.next() {
                     // open scene file
@@ -269,6 +272,7 @@ pub fn command_parser(
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = parse_with_constants(n) {
                                                     num.0 = n;
+                                                    lt_to_open = (Some(e), Some(-1));
                                                 }
                                             }
                                         }
@@ -278,6 +282,7 @@ pub fn command_parser(
                                                 num.0 = n;
                                             }
                                         }
+                                        lt_to_open = (None, Some(-1));
                                     }
                                 }
                             }
@@ -288,6 +293,7 @@ pub fn command_parser(
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = parse_with_constants(n) {
                                                     radius.0 = n.max(0.);
+                                                    lt_to_open = (Some(e), Some(-2));
                                                 }
                                             }
                                         }
@@ -297,6 +303,7 @@ pub fn command_parser(
                                                 radius.0 = n.max(0.);
                                             }
                                         }
+                                        lt_to_open = (None, Some(-2));
                                     }
                                 }
                             }
@@ -307,6 +314,7 @@ pub fn command_parser(
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = parse_with_constants(n) {
                                                     t.translation.x = n;
+                                                    lt_to_open = (Some(e), Some(-3));
                                                 }
                                             }
                                         }
@@ -316,6 +324,7 @@ pub fn command_parser(
                                                 t.translation.x = n;
                                             }
                                         }
+                                        lt_to_open = (None, Some(-3));
                                     }
                                 }
                             }
@@ -326,6 +335,7 @@ pub fn command_parser(
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = parse_with_constants(n) {
                                                     t.translation.y = n;
+                                                    lt_to_open = (Some(e), Some(-4));
                                                 }
                                             }
                                         }
@@ -335,6 +345,7 @@ pub fn command_parser(
                                                 t.translation.y = n;
                                             }
                                         }
+                                        lt_to_open = (None, Some(-4));
                                     }
                                 }
                             }
@@ -345,6 +356,7 @@ pub fn command_parser(
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = parse_with_constants(n) {
                                                     t.translation.z = n;
+                                                    lt_to_open = (Some(e), Some(-5));
                                                 }
                                             }
                                         }
@@ -354,6 +366,7 @@ pub fn command_parser(
                                                 t.translation.z = n;
                                             }
                                         }
+                                        lt_to_open = (None, Some(-5));
                                     }
                                 }
                             }
@@ -364,6 +377,7 @@ pub fn command_parser(
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = parse_with_constants(n) {
                                                     color.0.set_h(n);
+                                                    lt_to_open = (Some(e), Some(-6));
                                                 }
                                             }
                                         }
@@ -373,6 +387,7 @@ pub fn command_parser(
                                                 color.0.set_h(n);
                                             }
                                         }
+                                        lt_to_open = (None, Some(-6));
                                     }
                                 }
                             }
@@ -383,6 +398,7 @@ pub fn command_parser(
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = parse_with_constants(n) {
                                                     color.0.set_s(n);
+                                                    lt_to_open = (Some(e), Some(-7));
                                                 }
                                             }
                                         }
@@ -392,6 +408,7 @@ pub fn command_parser(
                                                 color.0.set_s(n);
                                             }
                                         }
+                                        lt_to_open = (None, Some(-7));
                                     }
                                 }
                             }
@@ -402,6 +419,7 @@ pub fn command_parser(
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = parse_with_constants(n) {
                                                     color.0.set_l(n);
+                                                    lt_to_open = (Some(e), Some(-8));
                                                 }
                                             }
                                         }
@@ -411,6 +429,7 @@ pub fn command_parser(
                                                 color.0.set_l(n);
                                             }
                                         }
+                                        lt_to_open = (None, Some(-8));
                                     }
                                 }
                             }
@@ -421,6 +440,7 @@ pub fn command_parser(
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = parse_with_constants(n) {
                                                     color.0.set_a(n);
+                                                    lt_to_open = (Some(e), Some(-9));
                                                 }
                                             }
                                         }
@@ -430,6 +450,7 @@ pub fn command_parser(
                                                 color.0.set_a(n);
                                             }
                                         }
+                                        lt_to_open = (None, Some(-9));
                                     }
                                 }
                             }
@@ -440,6 +461,7 @@ pub fn command_parser(
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = n.parse::<usize>() {
                                                     vertices.0 = n.max(3);
+                                                    lt_to_open = (Some(e), Some(-11));
                                                 }
                                             }
                                         }
@@ -449,6 +471,7 @@ pub fn command_parser(
                                                 vertices.0 = n.max(3);
                                             }
                                         }
+                                        lt_to_open = (None, Some(-11));
                                     }
                                 }
                             }
@@ -459,6 +482,7 @@ pub fn command_parser(
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = parse_with_constants(n) {
                                                     t.rotation = Quat::from_rotation_z(n);
+                                                    lt_to_open = (Some(e), Some(-12));
                                                 }
                                             }
                                         }
@@ -468,6 +492,7 @@ pub fn command_parser(
                                                 t.rotation = Quat::from_rotation_z(n);
                                             }
                                         }
+                                        lt_to_open = (None, Some(-12));
                                     }
                                 }
                             }
@@ -479,6 +504,7 @@ pub fn command_parser(
                                                 op.0 = n.to_string();
                                                 access.op_changed_query.get_mut(e).unwrap().0 = true;
                                                 access.net_query.get_mut(e).unwrap().0 = str_to_net(n);
+                                                lt_to_open = (Some(e), Some(0));
                                             }
                                         }
                                     } else {
@@ -491,6 +517,7 @@ pub fn command_parser(
                                                 access.net_query.get_mut(id).unwrap().0 = str_to_net(&op.0);
                                             }
                                         }
+                                        lt_to_open = (None, Some(0));
                                     }
                                 }
                             }
@@ -525,6 +552,7 @@ pub fn command_parser(
                                                     arr.0.push(n);
                                                 }
                                             }
+                                            lt_to_open = (Some(e), Some(-13));
                                         }
                                     } else {
                                         let mut tmp = Vec::new();
@@ -539,6 +567,7 @@ pub fn command_parser(
                                                 arr.0 = tmp.clone();
                                             }
                                         }
+                                        lt_to_open = (None, Some(-13));
                                     }
                                 }
                             }
@@ -555,6 +584,7 @@ pub fn command_parser(
                                         let controller = tmp.remove(0);
                                         if let Ok(mut c) = access.targets_query.get_mut(controller) {
                                             c.0 = tmp;
+                                            lt_to_open = (Some(controller), Some(-14));
                                         }
                                     }
                                 } else {
@@ -564,6 +594,7 @@ pub fn command_parser(
                                             c.0 = tmp.clone();
                                         }
                                     }
+                                    lt_to_open = (None, Some(-14));
                                 }
                             }
                             _ => {}
@@ -581,6 +612,32 @@ pub fn command_parser(
                         }
                     }
                     _ => {}
+                }
+                // open all white holes reading whatever changed
+                if let (None, Some(lt)) = lt_to_open {
+                    for id in access.selected_query.iter() {
+                        let children = children_query.get(id).unwrap();
+                        for child in &children {
+                            if let Ok(bh) = access.black_hole_query.get(*child) {
+                                if let Ok(wh) = access.white_hole_query.get_mut(bh.wh) {
+                                    if wh.link_types.0 == lt {
+                                        access.white_hole_query.get_mut(bh.wh).unwrap().open = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else if let (Some(id), Some(lt)) = lt_to_open {
+                    let children = children_query.get(id).unwrap();
+                    for child in &children {
+                        if let Ok(bh) = access.black_hole_query.get(*child) {
+                            if let Ok(wh) = access.white_hole_query.get_mut(bh.wh) {
+                                if wh.link_types.0 == lt {
+                                    access.white_hole_query.get_mut(bh.wh).unwrap().open = true;
+                                }
+                            }
+                        }
+                    }
                 }
             }
             text.clear();
