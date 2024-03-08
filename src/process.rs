@@ -650,7 +650,6 @@ pub fn process(
                     for child in children {
                         if let Ok(wh) = white_hole_query.get(*child) {
                             if wh.link_types == (0, 1) && wh.open {
-                                // TODO(amy): would be nice if we applied input on net change
                                 let input_net = &access.net_query.get(wh.bh_parent).unwrap().0;
                                 access.net_query.get_mut(*id).unwrap().0 = input_net.clone();
                             }
@@ -985,7 +984,6 @@ pub fn process(
                 }
             }
             access.net_changed_query.get_mut(*id).unwrap().0 = false;
-            //access.gained_wh_query.get_mut(*id).unwrap().0 = false;
             access.lost_wh_query.get_mut(*id).unwrap().0 = false;
             for child in children {
                 let mut lt_to_open = 0;
@@ -993,29 +991,19 @@ pub fn process(
                     if !wh.open { continue; }
                     let mut input = 0.;
                     match wh.link_types.0 {
-                        // num
                         -1 => { input = access.num_query.get(wh.bh_parent).unwrap().0; }
-                        // radius
                         -2 => { input = access.radius_query.get(wh.bh_parent).unwrap().0; }
-                        // x
                         -3 => { input = access.trans_query.get(wh.bh_parent).unwrap().translation.x; }
-                        // y
                         -4 => { input = access.trans_query.get(wh.bh_parent).unwrap().translation.y; }
-                        // z
                         -5 => { input = access.trans_query.get(wh.bh_parent).unwrap().translation.z; }
-                        // hue
                         -6 => { input = access.col_query.get(wh.bh_parent).unwrap().0.h(); }
-                        // saturation
                         -7 => { input = access.col_query.get(wh.bh_parent).unwrap().0.s(); }
-                        // lightness
                         -8 => { input = access.col_query.get(wh.bh_parent).unwrap().0.l(); }
-                        // alpha
                         -9 => { input = access.col_query.get(wh.bh_parent).unwrap().0.a(); }
-                        // vertices
                         -11 => { input = access.vertices_query.get(wh.bh_parent).unwrap().0 as f32; }
-                        // rotation
-                        -12 => { input = access.trans_query.get(wh.bh_parent)
-                                               .unwrap().rotation.to_euler(EulerRot::XYZ).2; }
+                        -12 => {
+                            input = access.trans_query.get(wh.bh_parent).unwrap().rotation.to_euler(EulerRot::XYZ).2;
+                        }
                         _ => {}
                     }
                     match wh.link_types.1 {
