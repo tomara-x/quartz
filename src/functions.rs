@@ -716,7 +716,7 @@ pub fn str_to_net(op: &str) -> Net32 {
                 fractal_noise(i[0] as i64,i[1].min(1.) as i64,i[2],i[3]) as f32
             })));
         }
-        _ => { return Net32::wrap(Box::new(dc(0.))); }
+        _ => {}
     }
     return Net32::wrap(Box::new(dc(0.)));
 }
