@@ -207,7 +207,7 @@ fn setup(
         // connecting line
         let id = commands.spawn((
             ColorMesh2dBundle {
-                mesh: meshes.add(Tri {i: Vec2::ZERO, f: Vec2::ZERO, ip:0.0, fp:0.0, b:2.}).into(),
+                mesh: meshes.add(RegularPolygon::new(0.1, 3)).into(),
                 material: materials.add(ColorMaterial::from(Color::hsla(0., 1., 0.5, 0.3))),
                 transform: Transform::from_translation(Vec3::Z),
                 ..default()
