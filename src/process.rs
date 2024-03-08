@@ -101,6 +101,7 @@ pub fn process(
 ) {
     for id in queue.0.iter().flatten().chain(loopq.0.iter()) {
         if let Ok(children) = &children_query.get(*id) {
+            let mut lt_to_open = None;
             match access.op_query.get(*id).unwrap().0.as_str() {
                 "empty" => {}
                 "open_target" | "close_targets" => {
@@ -158,10 +159,12 @@ pub fn process(
                             if let Some(arr) = arr {
                                 let repeated = access.arr_query.get(arr).unwrap().0.repeat(n);
                                 access.arr_query.get_mut(*id).unwrap().0 = repeated;
+                                lt_to_open = Some(-13);
                             }
                             if let Some(tar) = targets {
                                 let repeated = access.targets_query.get(tar).unwrap().0.repeat(n);
                                 access.targets_query.get_mut(*id).unwrap().0 = repeated;
+                                lt_to_open = Some(-14);
                             }
                         }
                     }
@@ -188,6 +191,7 @@ pub fn process(
                                 if let Some(x) = a1.get(i) { out.push(*x); }
                                 if let Some(y) = a2.get(i) { out.push(*y); }
                             }
+                            lt_to_open = Some(-13);
                         }
                         // TODO(mara): zip for targets?
                     }
@@ -202,9 +206,9 @@ pub fn process(
                                 for i in 0..input.len() {
                                     if i & 1 == 0 { l.push(input[i]); } else { r.push(input[i]); }
                                 }
-                                access.arr_query.get_mut(wh.bh_parent).unwrap()
-                                    .bypass_change_detection().0 = l;
+                                access.arr_query.get_mut(wh.bh_parent).unwrap().0 = l;
                                 access.arr_query.get_mut(*id).unwrap().0 = r;
+                                lt_to_open = Some(-13);
                             }
                         }
                     }
@@ -215,6 +219,7 @@ pub fn process(
                             if wh.link_types == (-1, 1) && wh.open {
                                 let n = access.num_query.get_mut(wh.bh_parent).unwrap().0;
                                 access.arr_query.get_mut(*id).unwrap().0.push(n);
+                                lt_to_open = Some(-13);
                             }
                         }
                     }
@@ -226,6 +231,7 @@ pub fn process(
                             && access.num_query.get(wh.bh_parent).unwrap().0 == 1. {
                                 if let Some(n) = access.arr_query.get_mut(*id).unwrap().0.pop() {
                                     access.num_query.get_mut(*id).unwrap().0 = n;
+                                    lt_to_open = Some(-1);
                                 }
                             }
                         }
@@ -237,9 +243,11 @@ pub fn process(
                             if wh.link_types == (-13, 1) && wh.open {
                                 let len = access.arr_query.get(wh.bh_parent).unwrap().0.len() as f32;
                                 access.num_query.get_mut(*id).unwrap().0 = len;
+                                lt_to_open = Some(-1);
                             } else if wh.link_types == (-14, 1) && wh.open {
                                 let len = access.targets_query.get(wh.bh_parent).unwrap().0.len() as f32;
                                 access.num_query.get_mut(*id).unwrap().0 = len;
+                                lt_to_open = Some(-1);
                             }
                         }
                     }
@@ -250,6 +258,7 @@ pub fn process(
                             if wh.link_types == (-13, 1) && wh.open {
                                 let arr = &mut access.arr_query.get(wh.bh_parent).unwrap().0.clone();
                                 access.arr_query.get_mut(*id).unwrap().0.append(arr);
+                                lt_to_open = Some(-13);
                             }
                         }
                     }
@@ -261,8 +270,9 @@ pub fn process(
                                 let arr = &mut access.arr_query.get_mut(wh.bh_parent).unwrap();
                                 let n = access.num_query.get(*id).unwrap().0 as usize;
                                 if n <= arr.0.len() {
-                                    let slice = arr.bypass_change_detection().0.split_off(n);
+                                    let slice = arr.0.split_off(n);
                                     access.arr_query.get_mut(*id).unwrap().0 = slice;
+                                    lt_to_open = Some(-13);
                                 }
                             }
                         }
@@ -274,6 +284,7 @@ pub fn process(
                             if wh.link_types == (-1, 1) && wh.open {
                                 let n = access.num_query.get(wh.bh_parent).unwrap().0 as usize;
                                 access.arr_query.get_mut(*id).unwrap().0.resize(n,0.);
+                                lt_to_open = Some(-13);
                             }
                         }
                     }
@@ -367,28 +378,35 @@ pub fn process(
                     if let Some(cursor_pos) = windows.single().1.cursor_position() {
                         if let Some(point) = cam.viewport_to_world_2d(cam_transform, cursor_pos) {
                             access.arr_query.get_mut(*id).unwrap().0 = point.to_array().into();
+                            lt_to_open = Some(-13);
                         }
                     }
                 }
                 "lmb_pressed" => {
                     if mouse_button_input.pressed(MouseButton::Left) {
                         access.num_query.get_mut(*id).unwrap().0 = 1.;
+                        lt_to_open = Some(-1);
                     } else {
                         access.num_query.get_mut(*id).unwrap().0 = 0.;
+                        lt_to_open = Some(-1);
                     }
                 }
                 "mmb_pressed" => {
                     if mouse_button_input.pressed(MouseButton::Middle) {
                         access.num_query.get_mut(*id).unwrap().0 = 1.;
+                        lt_to_open = Some(-1);
                     } else {
                         access.num_query.get_mut(*id).unwrap().0 = 0.;
+                        lt_to_open = Some(-1);
                     }
                 }
                 "rmb_pressed" => {
                     if mouse_button_input.pressed(MouseButton::Right) {
                         access.num_query.get_mut(*id).unwrap().0 = 1.;
+                        lt_to_open = Some(-1);
                     } else {
                         access.num_query.get_mut(*id).unwrap().0 = 0.;
+                        lt_to_open = Some(-1);
                     }
                 }
                 "butt" => {
@@ -397,10 +415,12 @@ pub fn process(
                         let r = access.radius_query.get(*id).unwrap().0;
                         if cursor.i.distance_squared(t) < r*r {
                             access.num_query.get_mut(*id).unwrap().0 = 1.;
+                            lt_to_open = Some(-1);
                         }
                     }
                     if mouse_button_input.just_released(MouseButton::Left) {
                         access.num_query.get_mut(*id).unwrap().0 = 0.;
+                        lt_to_open = Some(-1);
                     }
                 }
                 "toggle" => {
@@ -410,6 +430,7 @@ pub fn process(
                         if cursor.i.distance_squared(t) < r*r {
                             let n = access.num_query.get(*id).unwrap().0;
                             access.num_query.get_mut(*id).unwrap().0 = 1. - n;
+                            lt_to_open = Some(-1);
                         }
                     }
                 }
@@ -432,6 +453,7 @@ pub fn process(
                                     access.num_query.get_mut(*id).unwrap().0 = 0.
                                 }
                                 arr[0] = input;
+                                lt_to_open = Some(-1);
                             }
                         }
                     }
@@ -455,6 +477,7 @@ pub fn process(
                                     if let Some(c) = c.chars().nth(0) {
                                         let c = (c as i32) as f32;
                                         access.arr_query.get_mut(*id).unwrap().0.retain(|&x| x != c);
+                                        lt_to_open = Some(-13);
                                     }
                                 }
                                 _ => {}
@@ -472,6 +495,7 @@ pub fn process(
                         }
                     }
                     access.num_query.get_mut(*id).unwrap().0 = out;
+                    lt_to_open = Some(-1);
                 }
                 "product" => {
                     let mut out = 1.;
@@ -483,6 +507,7 @@ pub fn process(
                         }
                     }
                     access.num_query.get_mut(*id).unwrap().0 = out;
+                    lt_to_open = Some(-1);
                 }
                 "tonemapping" => {
                     let mut tm = access.tonemapping.single_mut();
@@ -543,6 +568,7 @@ pub fn process(
                         if let Some(high) = high {
                             if *num >= high { *num = 0.; }
                         }
+                        lt_to_open = Some(-1);
                     }
                 }
                 "set" => {
@@ -560,6 +586,7 @@ pub fn process(
                         let val = access.num_query.get(val).unwrap().0;
                         if let Some(i) = access.arr_query.get_mut(*id).unwrap().0.get_mut(ndx) {
                             *i = val;
+                            lt_to_open = Some(-13);
                         }
                     }
                 }
@@ -574,6 +601,7 @@ pub fn process(
                                     if let Some(arr) = arr {
                                         if let Some(v) = access.arr_query.get(arr).unwrap().0.get(n.0 as usize) {
                                             access.num_query.get_mut(*id).unwrap().0 = *v;
+                                            lt_to_open = Some(-1);
                                         }
                                     }
                                 }
@@ -607,6 +635,7 @@ pub fn process(
                                 arr.push(i);
                             }
                         }
+                        lt_to_open = Some(-13);
                     }
                 }
                 // distribute input array among targets' values
@@ -640,6 +669,7 @@ pub fn process(
                                             }
                                             _ => {}
                                         }
+                                        // TODO(tomara): handle opening wh here
                                     }
                                 }
                             }
@@ -661,6 +691,7 @@ pub fn process(
                                     output.resize(net.outputs(), 0.);
                                     net.tick(input.as_slice(), output.as_mut_slice());
                                 }
+                                lt_to_open = Some(-13);
                             }
                         }
                     }
@@ -682,6 +713,7 @@ pub fn process(
                                         let wave = Wave32::render(44100., len.into(), net);
                                         *output = wave.channel(0).clone();
                                     }
+                                    lt_to_open = Some(-13);
                                 }
                             }
                         }
@@ -694,6 +726,7 @@ pub fn process(
                         let input = shared(0.);
                         *net = Net32::wrap(Box::new(var(&input)));
                         inputs.push(input);
+                        lt_to_open = Some(0);
                     }
                     let num = access.num_query.get_mut(*id).unwrap();
                     if num.is_changed() {
@@ -704,6 +737,7 @@ pub fn process(
                 }
                 // TODO(amy): add the other monitor modes
                 "monitor()" | "timer()" => {
+                    // TODO(amy): net changed should be renamed to op changed
                     if access.net_changed_query.get(*id).unwrap().0 {
                         let net = &mut access.net_query.get_mut(*id).unwrap().0;
                         let inputs = &mut access.net_ins_query.get_mut(*id).unwrap().0;
@@ -714,6 +748,7 @@ pub fn process(
                             *net = Net32::wrap(Box::new(timer(&s)));
                         }
                         inputs.push(s);
+                        lt_to_open = Some(0);
                     }
                     if let Some(var) = access.net_ins_query.get(*id).unwrap().0.get(0) {
                         access.num_query.get_mut(*id).unwrap().0 = var.value();
@@ -726,7 +761,7 @@ pub fn process(
                                 let arr = access.arr_query.get(wh.bh_parent).unwrap().0.clone();
                                 let net = &mut access.net_query.get_mut(*id).unwrap().0;
                                 *net = Net32::wrap(Box::new(An(ArrGet::new(arr))));
-                                access.net_changed_query.get_mut(*id).unwrap().0 = true;
+                                lt_to_open = Some(0);
                             }
                         }
                     }
@@ -759,7 +794,7 @@ pub fn process(
                                     let feedback = Net32::wrap(Box::new(Feedback32::new(0., net)));
                                     access.net_query.get_mut(*id).unwrap().0 = feedback;
                                 }
-                                access.net_changed_query.get_mut(*id).unwrap().0 = true;
+                                lt_to_open = Some(0);
                             }
                         }
                     }
@@ -799,7 +834,7 @@ pub fn process(
                         } else {
                             *n = Net32::wrap(Box::new(An(Seq::new(nets))));
                         }
-                        access.net_changed_query.get_mut(*id).unwrap().0 = true;
+                        lt_to_open = Some(0);
                     }
                 }
                 "wave()" => {
@@ -811,7 +846,7 @@ pub fn process(
                                 *net = Net32::wrap(Box::new(
                                     wave32(&std::sync::Arc::new(Wave32::from_samples(44100., arr)), 0, Some(0))
                                 ));
-                                access.net_changed_query.get_mut(*id).unwrap().0 = true;
+                                lt_to_open = Some(0);
                             }
                         }
                     }
@@ -829,7 +864,7 @@ pub fn process(
                             }
                         }
                         access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(graph));
-                        access.net_changed_query.get_mut(*id).unwrap().0 = true;
+                        lt_to_open = Some(0);
                     }
                 }
                 "SUM" | "+" | "PRO" | "*" => {
@@ -868,9 +903,9 @@ pub fn process(
                                 }
                             }
                         }
-                        access.net_changed_query.get_mut(*id).unwrap().0 = true;
                         let output = &mut access.net_query.get_mut(*id).unwrap().0;
                         *output = Net32::wrap(Box::new(graph));
+                        lt_to_open = Some(0);
                     }
                 }
                 ">>" | "|" | "&" | "^" | "PIP" | "STA" | "BUS" | "BRA" => {
@@ -927,8 +962,8 @@ pub fn process(
                                 }
                             }
                         }
-                        access.net_changed_query.get_mut(*id).unwrap().0 = true;
                         access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(graph));
+                        lt_to_open = Some(0);
                     }
                 }
                 "!" | "THR" => {
@@ -937,6 +972,7 @@ pub fn process(
                             if wh.link_types == (0, 1) && wh.open {
                                 let input = access.net_query.get(wh.bh_parent).unwrap().0.clone();
                                 access.net_query.get_mut(*id).unwrap().0 = !input;
+                                lt_to_open = Some(0);
                             }
                         }
                     }
@@ -971,12 +1007,12 @@ pub fn process(
                 }
                 _ => {},
             }
-            // open all white holes reading from this changed net
-            if access.net_changed_query.get(*id).unwrap().0 {
+            // open all white holes reading whatever changed
+            if let Some(lt) = lt_to_open {
                 for child in children {
                     if let Ok(bh) = black_hole_query.get(*child) {
                         if let Ok(wh) = white_hole_query.get_mut(bh.wh) {
-                            if wh.link_types.0 == 0 {
+                            if wh.link_types.0 == lt {
                                 white_hole_query.get_mut(bh.wh).unwrap().open = true;
                             }
                         }
@@ -1054,119 +1090,6 @@ pub fn process(
                     slot.0.set(Fade::Smooth, 0.1, Box::new(dc(0.) | dc(0.)));
                 }
                 _ => {}
-            }
-        }
-    }
-}
-
-// open the white holes reading any changed value
-// it's gonna overlap with whatever `process` changed, but that's okay
-// process needs to do things in order, but this is to catch any external change
-// TODO(amy): Changed is actually expensive (== looping and checking is_changed)
-// can we do better?
-pub fn open_white_holes(
-    num_query: Query<&Children, Changed<Number>>,
-    radius_query: Query<&Children, Changed<Radius>>,
-    trans_query: Query<&Children, Changed<Transform>>,
-    col_query: Query<&Children, Changed<Col>>,
-    order_query: Query<&Children, Changed<Order>>,
-    vertices_query: Query<&Children, Changed<Vertices>>,
-    arr_query: Query<&Children, Changed<Arr>>,
-    targets_query: Query<&Children, Changed<Targets>>,
-    mut white_hole_query: Query<&mut WhiteHole>,
-    black_hole_query: Query<&BlackHole>,
-) {
-    for children in num_query.iter() {
-        for child in children {
-            if let Ok(bh) = black_hole_query.get(*child) {
-                if let Ok(wh) = white_hole_query.get(bh.wh) {
-                    if wh.link_types.0 == -1 {
-                        white_hole_query.get_mut(bh.wh).unwrap().open = true;
-                    }
-                }
-            }
-        }
-    }
-    for children in radius_query.iter() {
-        for child in children {
-            if let Ok(bh) = black_hole_query.get(*child) {
-                if let Ok(wh) = white_hole_query.get(bh.wh) {
-                    if wh.link_types.0 == -2 {
-                        white_hole_query.get_mut(bh.wh).unwrap().open = true;
-                    }
-                }
-            }
-        }
-    }
-    for children in trans_query.iter() {
-        for child in children {
-            if let Ok(bh) = black_hole_query.get(*child) {
-                if let Ok(wh) = white_hole_query.get(bh.wh) {
-                    if wh.link_types.0 == -3
-                    || wh.link_types.0 == -4
-                    || wh.link_types.0 == -5
-                    || wh.link_types.0 == -12 {
-                        white_hole_query.get_mut(bh.wh).unwrap().open = true;
-                    }
-                }
-            }
-        }
-    }
-    for children in col_query.iter() {
-        for child in children {
-            if let Ok(bh) = black_hole_query.get(*child) {
-                if let Ok(wh) = white_hole_query.get(bh.wh) {
-                    if wh.link_types.0 == -6
-                    || wh.link_types.0 == -7
-                    || wh.link_types.0 == -8
-                    || wh.link_types.0 == -9 {
-                        white_hole_query.get_mut(bh.wh).unwrap().open = true;
-                    }
-                }
-            }
-        }
-    }
-    for children in order_query.iter() {
-        for child in children {
-            if let Ok(bh) = black_hole_query.get(*child) {
-                if let Ok(wh) = white_hole_query.get(bh.wh) {
-                    if wh.link_types.0 == -10 {
-                        white_hole_query.get_mut(bh.wh).unwrap().open = true;
-                    }
-                }
-            }
-        }
-    }
-    for children in vertices_query.iter() {
-        for child in children {
-            if let Ok(bh) = black_hole_query.get(*child) {
-                if let Ok(wh) = white_hole_query.get(bh.wh) {
-                    if wh.link_types.0 == -11 {
-                        white_hole_query.get_mut(bh.wh).unwrap().open = true;
-                    }
-                }
-            }
-        }
-    }
-    for children in arr_query.iter() {
-        for child in children {
-            if let Ok(bh) = black_hole_query.get(*child) {
-                if let Ok(wh) = white_hole_query.get(bh.wh) {
-                    if wh.link_types.0 == -13 {
-                        white_hole_query.get_mut(bh.wh).unwrap().open = true;
-                    }
-                }
-            }
-        }
-    }
-    for children in targets_query.iter() {
-        for child in children {
-            if let Ok(bh) = black_hole_query.get(*child) {
-                if let Ok(wh) = white_hole_query.get(bh.wh) {
-                    if wh.link_types.0 == -14 {
-                        white_hole_query.get_mut(bh.wh).unwrap().open = true;
-                    }
-                }
             }
         }
     }

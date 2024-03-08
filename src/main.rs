@@ -102,7 +102,6 @@ fn main() {
         .add_systems(PostUpdate, prepare_loop_queue.after(sort_by_order))
         // process
         .add_systems(PostUpdate, process)
-        .add_systems(Update, open_white_holes)
         // commands
         .add_systems(Update, command_parser)
 
