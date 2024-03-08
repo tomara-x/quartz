@@ -762,7 +762,6 @@ pub fn process(
                     }
                 }
                 "monitor()" | "timer()" => {
-                    // TODO(amy): net changed should be renamed to op changed
                     if access.op_changed_query.get(*id).unwrap().0 {
                         let net = &mut access.net_query.get_mut(*id).unwrap().0;
                         let inputs = &mut access.net_ins_query.get_mut(*id).unwrap().0;
