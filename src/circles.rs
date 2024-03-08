@@ -617,3 +617,39 @@ pub fn mark_children_change(
     }
 }
 
+pub fn open_after_drag(
+    mouse_button_input: Res<ButtonInput<MouseButton>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
+    drag_modes: Res<DragModes>,
+    query: Query<&Children, With<Selected>>,
+    mut white_hole_query: Query<&mut WhiteHole>,
+    black_hole_query: Query<&BlackHole>,
+) {
+    let arrows = [KeyCode::ArrowDown, KeyCode::ArrowUp, KeyCode::ArrowLeft, KeyCode::ArrowRight];
+    if keyboard_input.any_pressed(arrows)
+    || mouse_button_input.pressed(MouseButton::Left) {
+        let mut lts_to_open = Vec::new();
+        if drag_modes.t { lts_to_open.push(-3); lts_to_open.push(-4); }
+        if drag_modes.r { lts_to_open.push(-2); }
+        if drag_modes.n { lts_to_open.push(-1); }
+        if drag_modes.h { lts_to_open.push(-6); }
+        if drag_modes.s { lts_to_open.push(-7); }
+        if drag_modes.l { lts_to_open.push(-8); }
+        if drag_modes.a { lts_to_open.push(-9); }
+        if drag_modes.o { lts_to_open.push(-12); }
+        if drag_modes.v { lts_to_open.push(-11); }
+        for lt in lts_to_open {
+            for children in query.iter() {
+                for child in children {
+                    if let Ok(bh) = black_hole_query.get(*child) {
+                        if let Ok(wh) = white_hole_query.get(bh.wh) {
+                            if wh.link_types.0 == lt {
+                                white_hole_query.get_mut(bh.wh).unwrap().open = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
