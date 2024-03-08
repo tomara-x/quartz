@@ -242,7 +242,6 @@ pub fn move_selected(
 ) {
     if drag_modes.t {
         if mouse_button_input.pressed(MouseButton::Left) &&
-        //lol because the update to entities isn't read until the next frame
         !mouse_button_input.just_pressed(MouseButton::Left) {
             for mut t in query.iter_mut() {
                 t.translation.x += cursor.d.x;
