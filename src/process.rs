@@ -643,35 +643,34 @@ pub fn process(
                     let mut target_lt_to_open = None;
                     for child in children {
                         if let Ok(wh) = white_hole_query.get(*child) {
-                            if wh.link_types.0 == -13 {
-                                if access.arr_query.get_mut(wh.bh_parent).unwrap().is_changed() {
-                                    let arr = &access.arr_query.get(wh.bh_parent).unwrap().0;
-                                    let targets = &access.targets_query.get(*id).unwrap().0;
-                                    let len = Ord::min(arr.len(), targets.len());
-                                    for i in 0..len {
-                                        if access.radius_query.get(targets[i]).is_err() { continue; }
-                                        // input link type determines what property to write to in targets
-                                        match wh.link_types.1 {
-                                            -1 => { access.num_query.get_mut(targets[i]).unwrap().0 = arr[i]; }
-                                            -2 => { access.radius_query.get_mut(targets[i]).unwrap().0 = arr[i].max(0.1); }
-                                            -3 => { access.trans_query.get_mut(targets[i]).unwrap().translation.x = arr[i]; }
-                                            -4 => { access.trans_query.get_mut(targets[i]).unwrap().translation.y = arr[i]; }
-                                            -5 => { access.trans_query.get_mut(targets[i]).unwrap().translation.z = arr[i]; }
-                                            -6 => { access.col_query.get_mut(targets[i]).unwrap().0.set_h(arr[i]); }
-                                            -7 => { access.col_query.get_mut(targets[i]).unwrap().0.set_s(arr[i]); }
-                                            -8 => { access.col_query.get_mut(targets[i]).unwrap().0.set_l(arr[i]); }
-                                            -9 => { access.col_query.get_mut(targets[i]).unwrap().0.set_a(arr[i]); }
-                                            -11 => {
-                                                access.vertices_query.get_mut(targets[i]).unwrap().0 = arr[i].max(3.) as usize;
-                                            }
-                                            -12 => {
-                                                let q = Quat::from_euler(EulerRot::XYZ, 0., 0., arr[i]);
-                                                access.trans_query.get_mut(targets[i]).unwrap().rotation = q;
-                                            }
-                                            _ => {}
+                            if wh.link_types.0 == -13 && wh.open {
+                                let arr = &access.arr_query.get(wh.bh_parent).unwrap().0;
+                                let targets = &access.targets_query.get(*id).unwrap().0;
+                                let len = Ord::min(arr.len(), targets.len());
+                                for i in 0..len {
+                                    if access.radius_query.get(targets[i]).is_err() { continue; }
+                                    // input link type determines what property to write to in targets
+                                    match wh.link_types.1 {
+                                        -1 => { access.num_query.get_mut(targets[i]).unwrap().0 = arr[i]; }
+                                        -2 => { access.radius_query.get_mut(targets[i]).unwrap().0 = arr[i].max(0.1); }
+                                        -3 => { access.trans_query.get_mut(targets[i]).unwrap().translation.x = arr[i]; }
+                                        -4 => { access.trans_query.get_mut(targets[i]).unwrap().translation.y = arr[i]; }
+                                        -5 => { access.trans_query.get_mut(targets[i]).unwrap().translation.z = arr[i]; }
+                                        -6 => { access.col_query.get_mut(targets[i]).unwrap().0.set_h(arr[i]); }
+                                        -7 => { access.col_query.get_mut(targets[i]).unwrap().0.set_s(arr[i]); }
+                                        -8 => { access.col_query.get_mut(targets[i]).unwrap().0.set_l(arr[i]); }
+                                        -9 => { access.col_query.get_mut(targets[i]).unwrap().0.set_a(arr[i]); }
+                                        -11 => {
+                                            let v = arr[i].max(3.) as usize;
+                                            access.vertices_query.get_mut(targets[i]).unwrap().0 = v;
                                         }
-                                        target_lt_to_open = Some(wh.link_types.1);
+                                        -12 => {
+                                            let q = Quat::from_euler(EulerRot::XYZ, 0., 0., arr[i]);
+                                            access.trans_query.get_mut(targets[i]).unwrap().rotation = q;
+                                        }
+                                        _ => {}
                                     }
+                                    target_lt_to_open = Some(wh.link_types.1);
                                 }
                             }
                         }
