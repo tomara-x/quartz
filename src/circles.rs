@@ -476,27 +476,6 @@ pub fn update_num(
     }
 }
 
-pub fn update_order (
-    keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut query: Query<&mut Order, With<Selected>>,
-    mut order_change: EventWriter<OrderChange>,
-) {
-    if keyboard_input.just_pressed(KeyCode::BracketRight) {
-        for mut order in query.iter_mut() {
-            order.0 += 1;
-            order_change.send_default();
-        }
-    }
-    if keyboard_input.just_pressed(KeyCode::BracketLeft) {
-        for mut order in query.iter_mut() {
-            if order.0 > 0 {
-                order.0 -= 1;
-                order_change.send_default();
-            }
-        }
-    }
-}
-
 pub fn update_info_text(
     mut text_query: Query<&mut Text>,
     mut text_trans: Query<&mut Transform, Without<Radius>>,

@@ -82,7 +82,6 @@ fn main() {
         .add_systems(Update, update_num.after(update_selection).run_if(in_state(Mode::Edit)))
         .add_systems(Update, highlight_selected)
         .add_systems(PreUpdate, transform_highlights)
-        .add_systems(Update, update_order.run_if(in_state(Mode::Edit)))
         .add_systems(Update, rotate_selected.after(update_selection).run_if(in_state(Mode::Edit)))
         .add_systems(Update, (delete_selected_holes, delete_selected_circles).chain().run_if(in_state(Mode::Edit)))
         // text

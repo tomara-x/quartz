@@ -760,8 +760,25 @@ pub fn command_parser(
             Some("l") => {
                 *text = ":lt ".to_string();
             }
-            // ignore
-            Some("[") | Some("]") | Some("0") => {
+            // increment/decrement order
+            Some("]") => {
+                for id in access.selected_query.iter() {
+                    if let Ok(mut order) = access.order_query.get_mut(id) {
+                        order.0 += 1;
+                        access.order_change.send_default();
+                    }
+                }
+                text.clear();
+            }
+            Some("[") => {
+                for id in access.selected_query.iter() {
+                    if let Ok(mut order) = access.order_query.get_mut(id) {
+                        if order.0 > 0 {
+                            order.0 -= 1;
+                            access.order_change.send_default();
+                        }
+                    }
+                }
                 text.clear();
             }
             // insert info texts for selected entities
