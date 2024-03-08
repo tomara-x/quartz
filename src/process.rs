@@ -509,6 +509,17 @@ pub fn process(
                     access.num_query.get_mut(*id).unwrap().0 = out;
                     lt_to_open = Some(-1);
                 }
+                "store" => {
+                    for child in children {
+                        if let Ok(wh) = white_hole_query.get(*child) {
+                            if wh.link_types == (-1, 1) && wh.open {
+                                let n = access.num_query.get(wh.bh_parent).unwrap().0;
+                                access.num_query.get_mut(*id).unwrap().0 = n;
+                                // this op only stores the value, don't open wh
+                            }
+                        }
+                    }
+                }
                 "tonemapping" => {
                     let mut tm = access.tonemapping.single_mut();
                     for child in children {
