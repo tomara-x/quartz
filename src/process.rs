@@ -791,7 +791,7 @@ pub fn process(
                     }
                 }
                 "feedback()" => {
-                    let net_changed = access.op_changed_query.get(*id).unwrap().0;
+                    let op_changed = access.op_changed_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
                     let mut changed = false;
                     let mut net = None;
@@ -808,7 +808,7 @@ pub fn process(
                             }
                         }
                     }
-                    if lost || net_changed || changed {
+                    if lost || op_changed || changed {
                         if let Some(net) = net {
                             if net.outputs() == net.inputs() {
                                 if let Some(del) = del {
@@ -824,7 +824,7 @@ pub fn process(
                     }
                 }
                 "seq()" | "select()" => {
-                    let net_changed = access.op_changed_query.get(*id).unwrap().0;
+                    let op_changed = access.op_changed_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
                     let mut changed = false;
                     let mut inputs = Vec::new();
@@ -842,7 +842,7 @@ pub fn process(
                             }
                         }
                     }
-                    if changed || lost || net_changed {
+                    if changed || lost || op_changed {
                         let mut nets = Vec::new();
                         for i in inputs {
                             if let Some(i) = i {
@@ -876,9 +876,9 @@ pub fn process(
                     }
                 }
                 "arrdc()" | "arrdelay()" => {
-                    let net_changed = access.op_changed_query.get(*id).unwrap().0;
+                    let op_changed = access.op_changed_query.get(*id).unwrap().0;
                     let arr = &access.arr_query.get_mut(*id).unwrap();
-                    if arr.is_changed() || net_changed {
+                    if arr.is_changed() || op_changed {
                         let mut graph = Net32::new(0,0);
                         for i in &arr.0 {
                             if access.op_query.get(*id).unwrap().0 == "arrdc()" {
@@ -892,7 +892,7 @@ pub fn process(
                     }
                 }
                 "SUM" | "+" | "PRO" | "*" => {
-                    let net_changed = access.op_changed_query.get(*id).unwrap().0;
+                    let op_changed = access.op_changed_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
                     let num_changed = access.num_query.get_mut(*id).unwrap().is_changed();
                     let mut changed = false;
@@ -907,7 +907,7 @@ pub fn process(
                             }
                         }
                     }
-                    if changed || lost || net_changed || num_changed {
+                    if changed || lost || op_changed || num_changed {
                         let mut graph = Net32::new(0,0);
                         let mut empty = true;
                         let n = access.num_query.get(*id).unwrap().0.max(1.) as i32;
@@ -933,7 +933,7 @@ pub fn process(
                     }
                 }
                 ">>" | "|" | "&" | "^" | "PIP" | "STA" | "BUS" | "BRA" => {
-                    let net_changed = access.op_changed_query.get(*id).unwrap().0;
+                    let op_changed = access.op_changed_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
                     let num_changed = access.num_query.get_mut(*id).unwrap().is_changed();
                     let mut changed = false;
@@ -952,7 +952,7 @@ pub fn process(
                             }
                         }
                     }
-                    if changed || lost || net_changed || num_changed {
+                    if changed || lost || op_changed || num_changed {
                         let mut graph = Net32::new(0,0);
                         let mut empty = true;
                         let n = access.num_query.get(*id).unwrap().0.max(1.) as i32;
@@ -1002,7 +1002,7 @@ pub fn process(
                     }
                 }
                 "out()" | "dac()" => {
-                    let net_changed = access.op_changed_query.get(*id).unwrap().0;
+                    let op_changed = access.op_changed_query.get(*id).unwrap().0;
                     let lost = access.lost_wh_query.get(*id).unwrap().0;
                     let mut changed = false;
                     let mut net = None;
@@ -1016,7 +1016,7 @@ pub fn process(
                             }
                         }
                     }
-                    if lost || net_changed || changed {
+                    if lost || op_changed || changed {
                         if let Some(net) = net {
                             let net = access.net_query.get(net).unwrap().0.clone();
                             if net.outputs() == 1 && net.inputs() == 0 {
