@@ -638,14 +638,12 @@ pub fn open_after_drag(
         if drag_modes.a { lts_to_open.push(-9); }
         if drag_modes.o { lts_to_open.push(-12); }
         if drag_modes.v { lts_to_open.push(-11); }
-        for lt in lts_to_open {
-            for children in query.iter() {
-                for child in children {
-                    if let Ok(bh) = black_hole_query.get(*child) {
-                        if let Ok(wh) = white_hole_query.get(bh.wh) {
-                            if wh.link_types.0 == lt {
-                                white_hole_query.get_mut(bh.wh).unwrap().open = true;
-                            }
+        for children in query.iter() {
+            for child in children {
+                if let Ok(bh) = black_hole_query.get(*child) {
+                    if let Ok(wh) = white_hole_query.get(bh.wh) {
+                        if lts_to_open.contains(&wh.link_types.0) {
+                            white_hole_query.get_mut(bh.wh).unwrap().open = true;
                         }
                     }
                 }
