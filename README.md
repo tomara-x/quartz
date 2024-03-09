@@ -214,6 +214,7 @@ todo!();
     - vim https://github.com/vim/vim
     - void linux https://voidlinux.org/
 - learning / inspiration / used for a while:
+    - network https://github.com/JustMog/Mog-VCV
     - csound https://csound.com
     - faust https://faust.grame.fr
     - plugdata https://github.com/plugdata-team/plugdata
