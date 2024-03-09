@@ -193,29 +193,29 @@ fn setup(
             ));
         });
 
-        // selection / drawing circle
-        let id = commands.spawn((
-            ColorMesh2dBundle {
-                mesh: meshes.add(RegularPolygon::new(0.1, 12)).into(),
-                material: materials.add(ColorMaterial::from(Color::hsla(0., 1., 0.5, 0.3))),
-                transform: Transform::from_translation(Vec3::Z),
-                ..default()
-            },
-            Col(Color::hsla(0., 1., 0.5, 0.3)),
-        )).id();
-        commands.insert_resource(SelectionCircle(id));
+    // selection / drawing circle
+    let id = commands.spawn((
+        ColorMesh2dBundle {
+            mesh: meshes.add(RegularPolygon::new(0.1, 12)).into(),
+            material: materials.add(ColorMaterial::from(Color::hsla(0., 1., 0.5, 0.3))),
+            transform: Transform::from_translation(Vec3::Z),
+            ..default()
+        },
+        Col(Color::hsla(0., 1., 0.5, 0.3)),
+    )).id();
+    commands.insert_resource(SelectionCircle(id));
 
-        // connecting line
-        let id = commands.spawn((
-            ColorMesh2dBundle {
-                mesh: meshes.add(RegularPolygon::new(0.1, 3)).into(),
-                material: materials.add(ColorMaterial::from(Color::hsla(0., 1., 0.5, 0.3))),
-                transform: Transform::from_translation(Vec3::Z),
-                ..default()
-            },
-            Col(Color::hsla(0., 1., 0.5, 0.3)),
-        )).id();
-        commands.insert_resource(ConnectingLine(id));
+    // connecting line
+    let id = commands.spawn((
+        ColorMesh2dBundle {
+            mesh: meshes.add(RegularPolygon::new(0.1, 3)).into(),
+            material: materials.add(ColorMaterial::from(Color::hsla(0., 1., 0.5, 0.3))),
+            transform: Transform::from_translation(Vec3::Z),
+            ..default()
+        },
+        Col(Color::hsla(0., 1., 0.5, 0.3)),
+    )).id();
+    commands.insert_resource(ConnectingLine(id));
 }
 
 fn toggle_pan(
