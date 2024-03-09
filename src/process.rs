@@ -649,6 +649,7 @@ pub fn process(
                     let mut val = None;
                     for child in children {
                         if let Ok(wh) = white_hole_query.get(*child) {
+                            // with "store" these act as "cold inlets"
                             if wh.link_types == (-1, 1) {
                                 ndx = Some(wh.bh_parent);
                                 if wh.open { changed = true; }
