@@ -101,6 +101,67 @@ pub fn process(
 ) {
     for id in queue.0.iter().flatten().chain(loopq.0.iter()) {
         if let Ok(children) = &children_query.get(*id) {
+            for child in children {
+                let mut lt_to_open = 0;
+                if let Ok(wh) = white_hole_query.get(*child) {
+                    if !wh.open { continue; }
+                    let mut input = 0.;
+                    match wh.link_types.0 {
+                        -1 => { input = access.num_query.get(wh.bh_parent).unwrap().0; }
+                        -2 => { input = access.radius_query.get(wh.bh_parent).unwrap().0; }
+                        -3 => { input = access.trans_query.get(wh.bh_parent).unwrap().translation.x; }
+                        -4 => { input = access.trans_query.get(wh.bh_parent).unwrap().translation.y; }
+                        -5 => { input = access.trans_query.get(wh.bh_parent).unwrap().translation.z; }
+                        -6 => { input = access.col_query.get(wh.bh_parent).unwrap().0.h(); }
+                        -7 => { input = access.col_query.get(wh.bh_parent).unwrap().0.s(); }
+                        -8 => { input = access.col_query.get(wh.bh_parent).unwrap().0.l(); }
+                        -9 => { input = access.col_query.get(wh.bh_parent).unwrap().0.a(); }
+                        -11 => { input = access.vertices_query.get(wh.bh_parent).unwrap().0 as f32; }
+                        -12 => {
+                            input = access.trans_query.get(wh.bh_parent).unwrap().rotation.to_euler(EulerRot::XYZ).2;
+                        }
+                        _ => {}
+                    }
+                    match wh.link_types.1 {
+                        -1 => { access.num_query.get_mut(*id).unwrap().0 = input; }
+                        -2 => { access.radius_query.get_mut(*id).unwrap().0 = input.max(0.); }
+                        -3 => { access.trans_query.get_mut(*id).unwrap().translation.x = input; }
+                        -4 => { access.trans_query.get_mut(*id).unwrap().translation.y = input; }
+                        -5 => { access.trans_query.get_mut(*id).unwrap().translation.z = input; }
+                        -6 => { access.col_query.get_mut(*id).unwrap().0.set_h(input); }
+                        -7 => { access.col_query.get_mut(*id).unwrap().0.set_s(input); }
+                        -8 => { access.col_query.get_mut(*id).unwrap().0.set_l(input); }
+                        -9 => { access.col_query.get_mut(*id).unwrap().0.set_a(input); }
+                        -11 => { access.vertices_query.get_mut(*id).unwrap().0 = input.max(3.) as usize; }
+                        -12 => {
+                            let q = Quat::from_euler(EulerRot::XYZ, 0., 0., input);
+                            access.trans_query.get_mut(*id).unwrap().rotation = q;
+                        }
+                        _ => {}
+                    }
+                    if wh.link_types == (-13, -13) {
+                        let arr = &access.arr_query.get(wh.bh_parent).unwrap().0;
+                        access.arr_query.get_mut(*id).unwrap().0 = arr.clone();
+                    }
+                    if wh.link_types == (-14, -14) {
+                        let arr = &access.targets_query.get(wh.bh_parent).unwrap().0;
+                        access.targets_query.get_mut(*id).unwrap().0 = arr.clone();
+                    }
+                    lt_to_open = wh.link_types.1;
+                }
+                // open all white holes reading whatever just changed
+                if lt_to_open != 0 {
+                    for child in children {
+                        if let Ok(bh) = black_hole_query.get(*child) {
+                            if let Ok(wh) = white_hole_query.get(bh.wh) {
+                                if wh.link_types.0 == lt_to_open {
+                                    white_hole_query.get_mut(bh.wh).unwrap().open = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             let mut lt_to_open = None;
             match access.op_query.get(*id).unwrap().0.as_str() {
                 "empty" => {}
@@ -1047,66 +1108,10 @@ pub fn process(
             }
             access.op_changed_query.get_mut(*id).unwrap().0 = false;
             access.lost_wh_query.get_mut(*id).unwrap().0 = false;
+            // close the white holes we just read
             for child in children {
-                let mut lt_to_open = 0;
                 if let Ok(mut wh) = white_hole_query.get_mut(*child) {
-                    if !wh.open { continue; }
-                    let mut input = 0.;
-                    match wh.link_types.0 {
-                        -1 => { input = access.num_query.get(wh.bh_parent).unwrap().0; }
-                        -2 => { input = access.radius_query.get(wh.bh_parent).unwrap().0; }
-                        -3 => { input = access.trans_query.get(wh.bh_parent).unwrap().translation.x; }
-                        -4 => { input = access.trans_query.get(wh.bh_parent).unwrap().translation.y; }
-                        -5 => { input = access.trans_query.get(wh.bh_parent).unwrap().translation.z; }
-                        -6 => { input = access.col_query.get(wh.bh_parent).unwrap().0.h(); }
-                        -7 => { input = access.col_query.get(wh.bh_parent).unwrap().0.s(); }
-                        -8 => { input = access.col_query.get(wh.bh_parent).unwrap().0.l(); }
-                        -9 => { input = access.col_query.get(wh.bh_parent).unwrap().0.a(); }
-                        -11 => { input = access.vertices_query.get(wh.bh_parent).unwrap().0 as f32; }
-                        -12 => {
-                            input = access.trans_query.get(wh.bh_parent).unwrap().rotation.to_euler(EulerRot::XYZ).2;
-                        }
-                        _ => {}
-                    }
-                    match wh.link_types.1 {
-                        -1 => { access.num_query.get_mut(*id).unwrap().0 = input; }
-                        -2 => { access.radius_query.get_mut(*id).unwrap().0 = input.max(0.); }
-                        -3 => { access.trans_query.get_mut(*id).unwrap().translation.x = input; }
-                        -4 => { access.trans_query.get_mut(*id).unwrap().translation.y = input; }
-                        -5 => { access.trans_query.get_mut(*id).unwrap().translation.z = input; }
-                        -6 => { access.col_query.get_mut(*id).unwrap().0.set_h(input); }
-                        -7 => { access.col_query.get_mut(*id).unwrap().0.set_s(input); }
-                        -8 => { access.col_query.get_mut(*id).unwrap().0.set_l(input); }
-                        -9 => { access.col_query.get_mut(*id).unwrap().0.set_a(input); }
-                        -11 => { access.vertices_query.get_mut(*id).unwrap().0 = input.max(3.) as usize; }
-                        -12 => {
-                            let q = Quat::from_euler(EulerRot::XYZ, 0., 0., input);
-                            access.trans_query.get_mut(*id).unwrap().rotation = q;
-                        }
-                        _ => {}
-                    }
-                    if wh.link_types == (-13, -13) {
-                        let arr = &access.arr_query.get(wh.bh_parent).unwrap().0;
-                        access.arr_query.get_mut(*id).unwrap().0 = arr.clone();
-                    }
-                    if wh.link_types == (-14, -14) {
-                        let arr = &access.targets_query.get(wh.bh_parent).unwrap().0;
-                        access.targets_query.get_mut(*id).unwrap().0 = arr.clone();
-                    }
-                    lt_to_open = wh.link_types.1;
                     wh.open = false;
-                }
-                // open all white holes reading whatever just changed
-                if lt_to_open != 0 {
-                    for child in children {
-                        if let Ok(bh) = black_hole_query.get(*child) {
-                            if let Ok(wh) = white_hole_query.get(bh.wh) {
-                                if wh.link_types.0 == lt_to_open {
-                                    white_hole_query.get_mut(bh.wh).unwrap().open = true;
-                                }
-                            }
-                        }
-                    }
                 }
             }
         // no children (connections)
