@@ -644,21 +644,28 @@ pub fn process(
                     }
                 }
                 "set" => {
+                    let mut changed = false;
                     let mut ndx = None;
                     let mut val = None;
                     for child in children {
                         if let Ok(wh) = white_hole_query.get(*child) {
-                            if wh.link_types == (-1, 1) { ndx = Some(wh.bh_parent); }
-                            if wh.link_types == (-1, 2) { val = Some(wh.bh_parent); }
+                            if wh.link_types == (-1, 1) {
+                                ndx = Some(wh.bh_parent);
+                                if wh.open { changed = true; }
+                            } else if wh.link_types == (-1, 2) {
+                                val = Some(wh.bh_parent);
+                                if wh.open { changed = true; }
+                            }
                         }
                     }
-                    if let (Some(ndx), Some(val)) = (ndx, val) {
-                        if !access.num_query.get_mut(val).unwrap().is_changed() { continue; }
-                        let ndx = access.num_query.get(ndx).unwrap().0.max(0.) as usize;
-                        let val = access.num_query.get(val).unwrap().0;
-                        if let Some(i) = access.arr_query.get_mut(*id).unwrap().0.get_mut(ndx) {
-                            *i = val;
-                            lt_to_open = Some(-13);
+                    if changed {
+                        if let (Some(ndx), Some(val)) = (ndx, val) {
+                            let ndx = access.num_query.get(ndx).unwrap().0.max(0.) as usize;
+                            let val = access.num_query.get(val).unwrap().0;
+                            if let Some(i) = access.arr_query.get_mut(*id).unwrap().0.get_mut(ndx) {
+                                *i = val;
+                                lt_to_open = Some(-13);
+                            }
                         }
                     }
                 }
@@ -667,14 +674,12 @@ pub fn process(
                     for child in children {
                         if let Ok(wh) = white_hole_query.get(*child) {
                             if wh.link_types == (-13, 1) { arr = Some(wh.bh_parent); }
-                            if wh.link_types == (-1, 2) {
+                            if wh.link_types == (-1, 2) && wh.open {
                                 let n = access.num_query.get_mut(wh.bh_parent).unwrap();
-                                if n.is_changed() {
-                                    if let Some(arr) = arr {
-                                        if let Some(v) = access.arr_query.get(arr).unwrap().0.get(n.0 as usize) {
-                                            access.num_query.get_mut(*id).unwrap().0 = *v;
-                                            lt_to_open = Some(-1);
-                                        }
+                                if let Some(arr) = arr {
+                                    if let Some(v) = access.arr_query.get(arr).unwrap().0.get(n.0 as usize) {
+                                        access.num_query.get_mut(*id).unwrap().0 = *v;
+                                        lt_to_open = Some(-1);
                                     }
                                 }
                             }
