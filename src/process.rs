@@ -600,9 +600,9 @@ pub fn process(
                 "tonemapping" => {
                     let mut tm = access.tonemapping.single_mut();
                     for child in children {
-                        if let Ok(white_hole) = white_hole_query.get(*child) {
-                            if white_hole.link_types == (-1, 1) {
-                                let input = access.num_query.get(white_hole.bh_parent).unwrap().0;
+                        if let Ok(wh) = white_hole_query.get(*child) {
+                            if wh.link_types == (-1, 1) && wh.open {
+                                let input = access.num_query.get(wh.bh_parent).unwrap().0;
                                 match input as usize {
                                     0 => *tm = Tonemapping::None,
                                     1 => *tm = Tonemapping::Reinhard,
@@ -621,9 +621,10 @@ pub fn process(
                 "bloom" => {
                     let mut bloom_settings = access.bloom.single_mut();
                     for child in children {
-                        if let Ok(white_hole) = white_hole_query.get(*child) {
-                            let input = access.num_query.get(white_hole.bh_parent).unwrap().0 / 100.;
-                            match white_hole.link_types {
+                        if let Ok(wh) = white_hole_query.get(*child) {
+                            if !wh.open { continue; }
+                            let input = access.num_query.get(wh.bh_parent).unwrap().0 / 100.;
+                            match wh.link_types {
                                 (-1, 1) => bloom_settings.intensity = input,
                                 (-1, 2) => bloom_settings.low_frequency_boost = input,
                                 (-1, 3) => bloom_settings.low_frequency_boost_curvature = input,
