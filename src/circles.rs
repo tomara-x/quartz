@@ -446,8 +446,30 @@ pub fn update_vertices(
     mut query: Query<&mut Vertices, With<Selected>>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     drag_modes: Res<DragModes>,
+    mouse_button_input: Res<ButtonInput<MouseButton>>,
+    cursor: Res<CursorInfo>,
+    mut delta: Local<f32>,
 ) {
     if drag_modes.v {
+        if mouse_button_input.pressed(MouseButton::Left) &&
+        !mouse_button_input.just_pressed(MouseButton::Left) {
+            *delta += cursor.d.y / 10.;
+            let d = *delta as i32;
+            if d >= 1 {
+                for mut v in query.iter_mut() {
+                    v.0 += d as usize;
+                }
+                *delta = 0.;
+            } else if d <= -1 {
+                for mut v in query.iter_mut() {
+                    let x = v.0 as i32 + d;
+                    if x >= 3 {
+                        v.0 = x as usize;
+                    }
+                }
+                *delta = 0.;
+            }
+        }
         if keyboard_input.any_just_pressed([KeyCode::ArrowUp, KeyCode::ArrowRight]) {
             for mut v in query.iter_mut() {
                 v.0 += 1;
