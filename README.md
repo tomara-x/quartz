@@ -92,7 +92,7 @@ exclusive:
 - `el` drag lightness
 - `ea` drag alpha
 - `eo` drag rotation
-- `ev` drag vertices (only works with arrow keys)
+- `ev` drag vertices
 
 add a drag mode: (to drag multiple properties at the same time)
 - `Et` add translation
