@@ -166,7 +166,7 @@ pub fn process(
             let mut lt_to_open = None;
             match op {
                 "empty" => {}
-                "open_target" | "close_targets" => {
+                "open_target" | "close_target" => {
                     for child in children {
                         if let Ok(wh) = white_hole_query.get(*child) {
                             if wh.link_types == (-1, 1) {
