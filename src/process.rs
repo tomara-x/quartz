@@ -414,12 +414,20 @@ pub fn process(
                         }
                     }
                 }
-                // make it take input num
                 "update_rate" => {
-                    if access.num_query.get_mut(*id).unwrap().is_changed() {
-                        let n = access.num_query.get(*id).unwrap().0;
-                        access.winit_settings.focused_mode = UpdateMode::ReactiveLowPower {
-                            wait: Duration::from_secs_f64((1.0 / n.max(0.01)).into()),
+                    for child in children {
+                        if let Ok(wh) = white_hole_query.get(*child) {
+                            if wh.link_types == (-1, 1) && wh.open {
+                                let n = access.num_query.get(wh.bh_parent).unwrap().0;
+                                access.winit_settings.focused_mode = UpdateMode::ReactiveLowPower {
+                                    wait: Duration::from_secs_f64((1.0 / n.max(0.01)).into()),
+                                }
+                            } else if wh.link_types == (-1, 2) && wh.open {
+                                let n = access.num_query.get(wh.bh_parent).unwrap().0;
+                                access.winit_settings.unfocused_mode = UpdateMode::ReactiveLowPower {
+                                    wait: Duration::from_secs_f64((1.0 / n.max(0.01)).into()),
+                                }
+                            }
                         }
                     }
                 }
