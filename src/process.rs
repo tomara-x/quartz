@@ -432,14 +432,20 @@ pub fn process(
                     }
                 }
                 "screenshot" => {
-                    if access.num_query.get(*id).unwrap().0 == 1. {
-                        let win = windows.single().0;
-                        let epoch = std::time::UNIX_EPOCH;
-                        let now = std::time::SystemTime::now();
-                        if let Ok(dur) = now.duration_since(epoch) {
-                            let time = dur.as_millis();
-                            let path = format!("screenshots/{:?}.png", time);
-                            access.screensot_manager.save_screenshot_to_disk(win, path).unwrap();
+                    for child in children {
+                        if let Ok(wh) = white_hole_query.get(*child) {
+                            if wh.link_types == (-1, 1) {
+                                if access.num_query.get(wh.bh_parent).unwrap().0 == 1. {
+                                    let win = windows.single().0;
+                                    let epoch = std::time::UNIX_EPOCH;
+                                    let now = std::time::SystemTime::now();
+                                    if let Ok(dur) = now.duration_since(epoch) {
+                                        let time = dur.as_millis();
+                                        let path = format!("screenshots/{:?}.png", time);
+                                        access.screensot_manager.save_screenshot_to_disk(win, path).unwrap();
+                                    }
+                                }
+                            }
                         }
                     }
                 }
