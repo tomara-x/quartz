@@ -455,7 +455,7 @@ pub fn update_vertices(
         }
         if keyboard_input.any_just_pressed([KeyCode::ArrowDown, KeyCode::ArrowLeft]) {
             for mut v in query.iter_mut() {
-                v.0 = Ord::max(v.0 - 1, 3);
+                v.0 = (v.0 - 1).max(3);
             }
         }
     }
