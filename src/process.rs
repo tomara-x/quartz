@@ -542,6 +542,7 @@ pub fn process(
                                     if let Some(c) = c.chars().nth(0) {
                                         let c = (c as i32) as f32;
                                         access.arr_query.get_mut(*id).unwrap().0.push(c);
+                                        lt_to_open = Some(-13);
                                     }
                                 }
                                 // TODO(amy): add the other variants
