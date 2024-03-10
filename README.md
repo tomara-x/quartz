@@ -160,8 +160,8 @@ note: when drag-selecting, holding `alt` will only select circles (ignores holes
 
 ###### other
 - `quartz` shhh!
-- `delete` delete selection
-- `shift+delete` will only delete selected connections
+- `<delete>` delete selection
+- `<shift>+<delete>` will only delete selected connections
 
 #### link types
 any connection links 2 circles together in some way. the black hole is taking some data from the source circle, and the white hole is getting that data and feeding it to the sink circle. the link type determines what that data is.
@@ -191,6 +191,13 @@ this processing happens.. you guessed it, in *order*
 we process things breadth-first. so when a circle is processed, all its inputs must have their data ready (they processed in this frame) to make sure that's the case, their order has to be lower than that of the circle reading their data...
 
 lower order processes first, and the higher the order, the later that circle processes (within the same frame)
+
+unless...
+
+#### process
+```
+todo!();
+```
 #### ops
 ```
 todo!();
