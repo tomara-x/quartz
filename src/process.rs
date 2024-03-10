@@ -101,6 +101,7 @@ pub fn process(
 ) {
     for id in queue.0.iter().flatten().chain(loopq.0.iter()) {
         if let Ok(children) = &children_query.get(*id) {
+            let op = access.op_query.get(*id).unwrap().0.as_str();
             for child in children {
                 let mut lt_to_open = 0;
                 if let Ok(wh) = white_hole_query.get(*child) {
@@ -163,7 +164,7 @@ pub fn process(
                 }
             }
             let mut lt_to_open = None;
-            match access.op_query.get(*id).unwrap().0.as_str() {
+            match op {
                 "empty" => {}
                 "open_target" | "close_targets" => {
                     for child in children {
@@ -173,7 +174,7 @@ pub fn process(
                                     let targets = &access.targets_query.get(*id).unwrap().0;
                                     for t in targets {
                                         if let Ok(mut wh) = white_hole_query.get_mut(*t) {
-                                            if access.op_query.get(*id).unwrap().0 == "open_target" {
+                                            if op == "open_target" {
                                                 wh.open = true;
                                             } else {
                                                 wh.open = false;
@@ -505,7 +506,7 @@ pub fn process(
                             if wh.link_types == (-1, 1) {
                                 let input = access.num_query.get(wh.bh_parent).unwrap().0;
                                 let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
-                                if access.op_query.get(*id).unwrap().0 == "rise" {
+                                if op == "rise" {
                                     if input > arr[0] { access.num_query.get_mut(*id).unwrap().0 = 1.; }
                                 } else {
                                     if input < arr[0] { access.num_query.get_mut(*id).unwrap().0 = 1.; }
@@ -833,7 +834,7 @@ pub fn process(
                         let net = &mut access.net_query.get_mut(*id).unwrap().0;
                         let inputs = &mut access.net_ins_query.get_mut(*id).unwrap().0;
                         let s = shared(0.);
-                        if access.op_query.get(*id).unwrap().0 == "monitor()" {
+                        if op == "monitor()" {
                             *net = Net32::wrap(Box::new(monitor(&s, Meter::Sample)));
                         } else {
                             *net = Net32::wrap(Box::new(timer(&s)));
@@ -920,7 +921,7 @@ pub fn process(
                             }
                         }
                         let n = &mut access.net_query.get_mut(*id).unwrap().0;
-                        if access.op_query.get(*id).unwrap().0 == "select()" {
+                        if op == "select()" {
                             *n = Net32::wrap(Box::new(An(Select::new(nets))));
                         } else {
                             *n = Net32::wrap(Box::new(An(Seq::new(nets))));
@@ -948,7 +949,7 @@ pub fn process(
                     if arr.is_changed() || op_changed {
                         let mut graph = Net32::new(0,0);
                         for i in &arr.0 {
-                            if access.op_query.get(*id).unwrap().0 == "arrdc()" {
+                            if op == "arrdc()" {
                                 graph = graph | dc(*i);
                             } else {
                                 graph = graph | delay(*i);
@@ -985,7 +986,6 @@ pub fn process(
                                     graph = net;
                                     empty = false;
                                 } else if graph.outputs() == net.outputs() {
-                                    let op = &access.op_query.get(*id).unwrap().0;
                                     if op == "+" || op == "SUM" {
                                         graph = graph + net;
                                     } else {
@@ -1034,7 +1034,7 @@ pub fn process(
                                     else {
                                         let (gi, go) = (graph.inputs(), graph.outputs());
                                         let (ni, no) = (net.inputs(), net.outputs());
-                                        match access.op_query.get(*id).unwrap().0.as_str() {
+                                        match op {
                                             ">>" | "PIP" => {
                                                 if go == ni { graph = graph >> net; }
                                             }
