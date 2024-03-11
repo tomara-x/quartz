@@ -102,13 +102,15 @@ pub fn command_parser(
             for key in key_event.read() {
                 if key.state.is_pressed() {
                     if let Key::Character(c) = &key.logical_key {
-                        text.push_str(c);
+                        if text.len() == 10 {
+                            access.default_lt.0.0 = str_to_lt(c);
+                            text.push_str(c);
+                        } else if text.len() == 11 {
+                            access.default_lt.0.1 = str_to_lt(c);
+                            *text = "-- CONNECT --".to_string();
+                        }
                     }
                 }
-            }
-            if let (Some(b), Some(w)) = (text.get(10..11), text.get(11..12)) {
-                access.default_lt.0 = (str_to_lt(b), str_to_lt(w));
-                *text = "-- CONNECT --".to_string();
             }
             return;
         }
