@@ -65,6 +65,8 @@ fn main() {
         .add_systems(Update, toggle_pan)
         .init_state::<Mode>()
         .add_systems(Update, save_scene)
+        .add_systems(Update, copy_scene)
+        .insert_resource(CopiedScene(None))
         .add_systems(Update, post_load)
         .init_resource::<DragModes>()
         // cursor
@@ -91,6 +93,7 @@ fn main() {
         .add_systems(PreUpdate, update_info_text)
         // events
         .add_event::<SaveCommand>()
+        .add_event::<CopyCommand>()
         // connections
         .add_systems(Update, connect.run_if(in_state(Mode::Connect)))
         .add_systems(Update, target.run_if(in_state(Mode::Connect)))
@@ -274,6 +277,33 @@ fn save_scene(world: &mut World) {
                     .expect("Error while writing scene to file");
             })
             .detach();
+    }
+}
+
+fn copy_scene(world: &mut World) {
+    let mut copy_events = world.resource_mut::<Events<CopyCommand>>();
+    let events: Vec<CopyCommand> = copy_events.drain().collect();
+    for _ in events {
+        let mut query = world.query_filtered::<Entity, With<Selected>>();
+        let scene = DynamicSceneBuilder::from_world(&world)
+            .allow::<Radius>()
+            .allow::<Col>()
+            .allow::<Transform>()
+            .allow::<Op>()
+            .allow::<Number>()
+            .allow::<Arr>()
+            .allow::<Save>()
+            .allow::<Order>()
+            .allow::<BlackHole>()
+            .allow::<WhiteHole>()
+            .allow::<Parent>()
+            .allow::<Children>()
+            .allow::<Vertices>()
+            .allow::<Targets>()
+            .extract_entities(query.iter(&world))
+            .build();
+        let handle = world.resource::<AssetServer>().add(scene);
+        world.resource_mut::<CopiedScene>().0 = Some(handle);
     }
 }
 

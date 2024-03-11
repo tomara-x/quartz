@@ -29,6 +29,7 @@ pub struct Access<'w, 's> {
     order_change: EventWriter<'w, OrderChange>,
     vertices_query: Query<'w, 's, &'static mut Vertices>,
     save_event: EventWriter<'w, SaveCommand>,
+    copy_event: EventWriter<'w, CopyCommand>,
     targets_query: Query<'w, 's, &'static mut Targets>,
     gained_wh_query: Query<'w, 's, &'static mut GainedWH>,
     text_query: Query<'w, 's, &'static mut Text, Without<CommandText>>,
@@ -41,6 +42,7 @@ pub struct Access<'w, 's> {
     default_color: ResMut<'w, DefaultDrawColor>,
     default_verts: ResMut<'w, DefaultDrawVerts>,
     default_lt: ResMut<'w, DefaultLT>,
+    copied_scene: Res<'w, CopiedScene>,
 }
 
 pub fn command_parser(
@@ -1106,7 +1108,16 @@ pub fn command_parser(
                 }
                 text.clear();
             }
-            // TODO(amy): yyp
+            Some("yy") => {
+                access.copy_event.send_default();
+                text.clear();
+            }
+            Some("p") => {
+                if let Some(scene) = &access.copied_scene.0 {
+                    commands.spawn(DynamicSceneBundle { scene: scene.clone(), ..default() });
+                }
+                text.clear();
+            }
             Some("\u{71}\u{75}\u{61}\u{72}\u{74}\u{7a}") => {
                 *text = String::from(">drink some water!");
             }

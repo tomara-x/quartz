@@ -221,9 +221,15 @@ pub struct ConnectionColor(pub Color);
 #[derive(Resource)]
 pub struct DefaultLT(pub (i32, i32));
 
+#[derive(Resource)]
+pub struct CopiedScene(pub Option<Handle<DynamicScene>>);
+
 // -------------------- events --------------------
 #[derive(Event, Default)]
 pub struct OrderChange;
 
 #[derive(Event)]
 pub struct SaveCommand(pub String);
+
+#[derive(Event, Default)]
+pub struct CopyCommand;
