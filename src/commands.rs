@@ -106,10 +106,8 @@ pub fn command_parser(
                     }
                 }
             }
-            if text.len() == 12 {
-                access.default_lt.0 = (
-                    str_to_lt(text.get(10..11).unwrap()),
-                    str_to_lt(text.get(11..12).unwrap()));
+            if let (Some(b), Some(w)) = (text.get(10..11), text.get(11..12)) {
+                access.default_lt.0 = (str_to_lt(b), str_to_lt(w));
                 *text = "-- CONNECT --".to_string();
             }
             return;
