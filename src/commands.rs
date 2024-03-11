@@ -40,6 +40,7 @@ pub struct Access<'w, 's> {
     windows: Query<'w, 's, &'static mut Window>,
     default_color: ResMut<'w, DefaultDrawColor>,
     default_verts: ResMut<'w, DefaultDrawVerts>,
+    default_lt: ResMut<'w, DefaultLT>,
 }
 
 pub fn command_parser(
@@ -90,7 +91,29 @@ pub fn command_parser(
     }
 
     // connect mode
-    if *mode == 2 {
+    else if *mode == 2 {
+        // edit the link type
+        if *text == "-- CONNECT --"
+        && keyboard_input.just_pressed(KeyCode::KeyC) {
+            *text = "-- LT --> ".to_string();
+            return;
+        }
+        if text.starts_with("-- LT --> ") {
+            for key in key_event.read() {
+                if key.state.is_pressed() {
+                    if let Key::Character(c) = &key.logical_key {
+                        text.push_str(c);
+                    }
+                }
+            }
+            if text.len() == 12 {
+                access.default_lt.0 = (
+                    str_to_lt(text.get(10..11).unwrap()),
+                    str_to_lt(text.get(11..12).unwrap()));
+                *text = "-- CONNECT --".to_string();
+            }
+            return;
+        }
         // exit to edit
         if keyboard_input.any_just_pressed([KeyCode::Escape, KeyCode::KeyE]) {
             text.clear();
@@ -110,7 +133,7 @@ pub fn command_parser(
     }
 
     // edit mode
-    if *mode == 0 {
+    else if *mode == 0 {
         for key in key_event.read() {
             if key.state.is_pressed() {
                 match &key.logical_key {

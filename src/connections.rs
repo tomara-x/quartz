@@ -28,6 +28,7 @@ pub fn connect(
     mut gained_wh_query: Query<&mut GainedWH>,
     default_verts: Res<DefaultDrawVerts>,
     connection_color: Res<ConnectionColor>,
+    default_lt: Res<DefaultLT>,
 ) {
     if mouse_button_input.just_released(MouseButton::Left)
     && !keyboard_input.pressed(KeyCode::KeyT)
@@ -111,7 +112,7 @@ pub fn connect(
                 WhiteHole {
                     bh_parent: src,
                     bh: black_hole,
-                    link_types: (0, 0),
+                    link_types: default_lt.0,
                     open: true,
                 },
                 RenderLayers::layer(3),

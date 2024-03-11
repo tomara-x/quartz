@@ -56,6 +56,7 @@ fn main() {
         .insert_resource(DefaultDrawVerts(4))
         .insert_resource(HighlightColor(Color::hsl(0.0,1.0,0.5)))
         .insert_resource(ConnectionColor(Color::hsla(0., 1., 1., 0.7)))
+        .insert_resource(DefaultLT((0, 0)))
         .insert_resource(Msaa::Sample4)
 
         .add_systems(Startup, setup)

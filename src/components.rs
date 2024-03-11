@@ -218,6 +218,9 @@ pub struct HighlightColor(pub Color);
 #[reflect(Resource)]
 pub struct ConnectionColor(pub Color);
 
+#[derive(Resource)]
+pub struct DefaultLT(pub (i32, i32));
+
 // -------------------- events --------------------
 #[derive(Event, Default)]
 pub struct OrderChange;
