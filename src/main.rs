@@ -340,20 +340,15 @@ fn post_load(
                 ));
                 if let Ok(holes) = children_query.get(*child) {
                     for hole in holes {
-                        if white_hole_query.contains(*hole) || black_hole_query.contains(*hole) {
-                            if let Ok((r, t, c, v)) = main_query.get(*hole) {
-                                commands.entity(*hole).insert(
-                                    ColorMesh2dBundle {
-                                        mesh: meshes.add(RegularPolygon::new(r.0, v.0)).into(),
-                                        material: materials.add(ColorMaterial::from(c.0)),
-                                        transform: *t,
-                                        ..default()
-                                    },
-                                );
-                            }
-                        }
-                        if black_hole_query.contains(*hole) {
-                            commands.entity(*hole).insert(RenderLayers::layer(2));
+                        if let Ok((r, t, c, v)) = main_query.get(*hole) {
+                            commands.entity(*hole).insert(
+                                ColorMesh2dBundle {
+                                    mesh: meshes.add(RegularPolygon::new(r.0, v.0)).into(),
+                                    material: materials.add(ColorMaterial::from(c.0)),
+                                    transform: *t,
+                                    ..default()
+                                },
+                            );
                         }
                         if let Ok(mut wh) = white_hole_query.get_mut(*hole) {
                             wh.open = true;
@@ -369,6 +364,8 @@ fn post_load(
                                 ConnectionArrow(arrow),
                                 RenderLayers::layer(3),
                             ));
+                        } else if black_hole_query.contains(*hole) {
+                            commands.entity(*hole).insert(RenderLayers::layer(2));
                         }
                     }
                 }
