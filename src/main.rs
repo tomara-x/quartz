@@ -99,7 +99,7 @@ fn main() {
         .add_systems(Update, target.run_if(in_state(Mode::Connect)))
         .add_systems(PreUpdate, update_connection_arrows)
         .add_systems(Update, draw_connecting_arrow.run_if(in_state(Mode::Connect)))
-        .add_systems(PreUpdate, mark_children_change)
+        .add_systems(Update, mark_children_change)
         // order
         .init_resource::<Queue>()
         .init_resource::<LoopQueue>()
