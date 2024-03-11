@@ -601,7 +601,7 @@ pub fn command_parser(
                                         tmp.push(e);
                                     }
                                 }
-                                // set the rest (crd) as the targets of first (car)
+                                // set the rest (cdr) as the targets of first (car)
                                 if access.selected_query.is_empty() {
                                     if tmp.len() != 0 {
                                         let controller = tmp.remove(0);
