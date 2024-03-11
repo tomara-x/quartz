@@ -93,7 +93,7 @@ pub fn command_parser(
     // connect mode
     else if *mode == 2 {
         // edit the link type
-        if *text == "-- CONNECT --"
+        if text.starts_with("-- CONNECT")
         && keyboard_input.just_pressed(KeyCode::KeyC) {
             *text = "-- LT --> ".to_string();
             return;
@@ -114,6 +114,9 @@ pub fn command_parser(
             }
             return;
         }
+        *text = format!("-- CONNECT -- ({} {})",
+            lt_to_string(access.default_lt.0.0),
+            lt_to_string(access.default_lt.0.1));
         // exit to edit
         if keyboard_input.any_just_pressed([KeyCode::Escape, KeyCode::KeyE]) {
             text.clear();
