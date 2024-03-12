@@ -67,7 +67,7 @@ fn main() {
         .add_systems(Update, save_scene)
         .add_systems(Update, copy_scene)
         .insert_resource(CopiedScene(None))
-        .add_systems(Update, post_load)
+        .add_systems(Update, (post_load, apply_deferred, mark_children_change).chain())
         .init_resource::<DragModes>()
         // cursor
         .insert_resource(CursorInfo::default())
@@ -99,7 +99,6 @@ fn main() {
         .add_systems(Update, target.run_if(in_state(Mode::Connect)))
         .add_systems(PreUpdate, update_connection_arrows)
         .add_systems(Update, draw_connecting_arrow.run_if(in_state(Mode::Connect)))
-        .add_systems(Update, mark_children_change)
         // order
         .init_resource::<Queue>()
         .init_resource::<LoopQueue>()
@@ -338,6 +337,8 @@ fn post_load(
                     LostWH(false),
                     RenderLayers::layer(1),
                 ));
+                // thanks to multirious for this idea
+                commands.entity(*child).remove::<Children>();
                 if let Ok(holes) = children_query.get(*child) {
                     for hole in holes {
                         if let Ok((r, t, c, v)) = main_query.get(*hole) {
@@ -364,8 +365,10 @@ fn post_load(
                                 ConnectionArrow(arrow),
                                 RenderLayers::layer(3),
                             ));
+                            commands.entity(*child).add_child(*hole);
                         } else if black_hole_query.contains(*hole) {
                             commands.entity(*hole).insert(RenderLayers::layer(2));
+                            commands.entity(*child).add_child(*hole);
                         }
                     }
                 }
