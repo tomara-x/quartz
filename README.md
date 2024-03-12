@@ -148,6 +148,10 @@ audio unit info:
 - `sa` select all
 - `sc` select all circles
 - `sh` select all holes
+- `<delete>` delete selected entities
+- `<shift>+<delete>` will only delete selected connections
+- `yy` copy selected (not to clipboard)
+- `p` paste copied
 
 note: when drag-selecting, holding `alt` will only select circles (ignores holes), holding `ctrl` will only select holes (ignores circles), and holding `shift` will add to the selection
 
@@ -160,8 +164,6 @@ note: when drag-selecting, holding `alt` will only select circles (ignores holes
 
 ###### other
 - `quartz` shhh!
-- `<delete>` delete selection
-- `<shift>+<delete>` will only delete selected connections
 
 #### link types
 any connection links 2 circles together in some way. the black hole is taking some data from the source circle, and the white hole is getting that data and feeding it to the sink circle. the link type determines what that data is.
