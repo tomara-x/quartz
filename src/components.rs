@@ -120,17 +120,20 @@ pub struct ConnectionArrow(pub Entity);
 #[reflect(Component, MapEntities)]
 pub struct BlackHole {
     pub wh: Entity,
+    pub wh_parent: Entity,
 }
 impl FromWorld for BlackHole {
     fn from_world(_world: &mut World) -> Self {
         BlackHole {
             wh: Entity::PLACEHOLDER,
+            wh_parent: Entity::PLACEHOLDER,
         }
     }
 }
 impl MapEntities for BlackHole {
     fn map_entities<M: EntityMapper>(&mut self, entity_mapper: &mut M) {
         self.wh = entity_mapper.map_entity(self.wh);
+        self.wh_parent = entity_mapper.map_entity(self.wh_parent);
     }
 }
 

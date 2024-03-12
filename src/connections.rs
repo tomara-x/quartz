@@ -124,6 +124,7 @@ pub fn connect(
             commands.entity(black_hole).insert(
                 BlackHole {
                     wh: white_hole,
+                    wh_parent: snk,
                 });
                 
             // add to parents
