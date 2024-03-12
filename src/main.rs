@@ -357,12 +357,22 @@ fn post_load(
                                     RenderLayers::layer(3),
                                 ));
                                 commands.entity(*child).add_child(*hole);
-                            } else { continue; }
+                            } else {
+                                if let Some(mut e) = commands.get_entity(*hole) {
+                                    e.despawn();
+                                }
+                                continue;
+                            }
                         } else if let Ok(bh) = black_hole_query.get(*hole) {
                             if white_hole_query.contains(bh.wh) && main_query.contains(bh.wh_parent) {
                                 commands.entity(*hole).insert(RenderLayers::layer(2));
                                 commands.entity(*child).add_child(*hole);
-                            } else { continue; }
+                            } else {
+                                if let Some(mut e) = commands.get_entity(*hole) {
+                                    e.despawn();
+                                }
+                                continue;
+                            }
                         }
                         if let Ok((r, t, c, v)) = main_query.get(*hole) {
                             commands.entity(*hole).insert(
