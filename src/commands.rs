@@ -14,6 +14,8 @@ use crate::{
 
 use fundsp::audiounit::AudioUnit32;
 
+use copypasta::ClipboardProvider;
+
 #[derive(SystemParam)]
 pub struct Access<'w, 's> {
     op_query: Query<'w, 's, &'static mut Op>,
@@ -42,7 +44,7 @@ pub struct Access<'w, 's> {
     default_color: ResMut<'w, DefaultDrawColor>,
     default_verts: ResMut<'w, DefaultDrawVerts>,
     default_lt: ResMut<'w, DefaultLT>,
-    copied_scene: Res<'w, CopiedScene>,
+    clipboard: Res<'w, SystemClipboard>,
 }
 
 pub fn command_parser(
@@ -1113,9 +1115,8 @@ pub fn command_parser(
                 text.clear();
             }
             Some("p") => {
-                if let Some(scene) = &access.copied_scene.0 {
-                    commands.spawn(DynamicSceneBundle { scene: scene.clone(), ..default() });
-                }
+                //let clipboard = &access.clipboard.0.get_contents().unwrap();
+                // commands.spawn(DynamicSceneBundle { scene: scene.clone(), ..default() });
                 text.clear();
             }
             Some("\u{71}\u{75}\u{61}\u{72}\u{74}\u{7a}") => {

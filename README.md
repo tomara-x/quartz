@@ -150,7 +150,7 @@ audio unit info:
 - `sh` select all holes
 - `<delete>` delete selected entities
 - `<shift>+<delete>` will only delete selected connections
-- `yy` copy selected (not to clipboard)
+- `yy` copy selection to clipboard
 - `p` paste copied
 
 note: when drag-selecting, holding `alt` will only select circles (ignores holes), holding `ctrl` will only select holes (ignores circles), and holding `shift` will add to the selection
@@ -218,6 +218,7 @@ todo!();
     - fundsp https://github.com/SamiPerttu/fundsp
     - cpal https://github.com/rustaudio/cpal
     - assert_no_alloc https://github.com/Windfisch/rust-assert-no-alloc
+    - copypasta https://github.com/alacritty/copypasta
     - bevy_github_ci_template https://github.com/bevyengine/bevy_github_ci_template
     - tracy https://github.com/wolfpld/tracy
     - vim https://github.com/vim/vim
@@ -229,6 +230,7 @@ todo!();
     - plugdata https://github.com/plugdata-team/plugdata
     - bevy-cheatbook: https://github.com/bevy-cheatbook/bevy-cheatbook
     - knyst https://github.com/ErikNatanael/knyst
+    - shadplay https://github.com/alphastrata/shadplay
     - rust-ants-colony-simulation https://github.com/bones-ai/rust-ants-colony-simulation
     - bevy_fundsp https://github.com/harudagondi/bevy_fundsp
     - bevy_kira_audio https://github.com/NiklasEi/bevy_kira_audio

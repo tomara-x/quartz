@@ -11,9 +11,9 @@ use bevy::{
     prelude::*};
 
 use bevy_pancam::{PanCam, PanCamPlugin};
-//use bevy_inspector_egui::quick::WorldInspectorPlugin;
-
 use std::{fs::File, io::Write};
+use copypasta::{ClipboardContext, ClipboardProvider};
+//use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 mod components;
 mod process;
@@ -57,6 +57,7 @@ fn main() {
         .insert_resource(HighlightColor(Color::hsl(0.0,1.0,0.5)))
         .insert_resource(ConnectionColor(Color::hsla(0., 1., 1., 0.7)))
         .insert_resource(DefaultLT((0, 0)))
+        .insert_resource(SystemClipboard(ClipboardContext::new().unwrap()))
         .insert_resource(Msaa::Sample4)
 
         .add_systems(Startup, setup)
@@ -66,7 +67,6 @@ fn main() {
         .init_state::<Mode>()
         .add_systems(Update, save_scene)
         .add_systems(Update, copy_scene)
-        .insert_resource(CopiedScene(None))
         .add_systems(Update, (post_load, apply_deferred, mark_children_change).chain())
         .init_resource::<DragModes>()
         // cursor
@@ -301,8 +301,10 @@ fn copy_scene(world: &mut World) {
             .allow::<Targets>()
             .extract_entities(query.iter(&world))
             .build();
-        let handle = world.resource::<AssetServer>().add(scene);
-        world.resource_mut::<CopiedScene>().0 = Some(handle);
+        let type_registry = world.resource::<AppTypeRegistry>();
+        let serialized_scene = scene.serialize_ron(type_registry).unwrap();
+        let mut ctx = world.resource_mut::<SystemClipboard>();
+        ctx.0.set_contents(serialized_scene).unwrap();
     }
 }
 

@@ -11,6 +11,9 @@ use fundsp::{
     shared::Shared,
     slot::Slot32,
 };
+
+use copypasta::ClipboardContext;
+
 // -------------------- components --------------------
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
@@ -225,7 +228,7 @@ pub struct ConnectionColor(pub Color);
 pub struct DefaultLT(pub (i32, i32));
 
 #[derive(Resource)]
-pub struct CopiedScene(pub Option<Handle<DynamicScene>>);
+pub struct SystemClipboard(pub ClipboardContext);
 
 // -------------------- events --------------------
 #[derive(Event, Default)]
