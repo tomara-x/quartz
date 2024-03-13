@@ -239,3 +239,6 @@ pub struct SaveCommand(pub String);
 
 #[derive(Event, Default)]
 pub struct CopyCommand;
+
+#[derive(Event, Default)]
+pub struct PasteCommand;

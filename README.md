@@ -219,6 +219,7 @@ todo!();
     - cpal https://github.com/rustaudio/cpal
     - assert_no_alloc https://github.com/Windfisch/rust-assert-no-alloc
     - copypasta https://github.com/alacritty/copypasta
+    - serde https://github.com/serde-rs/serde
     - bevy_github_ci_template https://github.com/bevyengine/bevy_github_ci_template
     - tracy https://github.com/wolfpld/tracy
     - vim https://github.com/vim/vim

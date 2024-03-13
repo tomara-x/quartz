@@ -2820,6 +2820,7 @@ dependencies = [
  "copypasta",
  "cpal",
  "fundsp",
+ "serde",
 ]
 
 [[package]]

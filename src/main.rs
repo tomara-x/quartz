@@ -6,13 +6,18 @@ use bevy::{
     utils::Duration,
     winit::{WinitSettings, UpdateMode},
     tasks::IoTaskPool,
-    scene::SceneInstance,
+    scene::{
+        SceneInstance,
+        serde::SceneDeserializer,
+    },
+    asset::ron::Deserializer,
     render::view::RenderLayers,
     prelude::*};
 
 use bevy_pancam::{PanCam, PanCamPlugin};
 use std::{fs::File, io::Write};
 use copypasta::{ClipboardContext, ClipboardProvider};
+use serde::de::DeserializeSeed;
 //use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 mod components;
@@ -66,7 +71,8 @@ fn main() {
         .add_systems(Update, toggle_pan)
         .init_state::<Mode>()
         .add_systems(Update, save_scene)
-        .add_systems(Update, copy_scene)
+        .add_systems(Update, copy_scene.run_if(on_event::<CopyCommand>()))
+        .add_systems(Update, paste_scene.run_if(on_event::<PasteCommand>()))
         .add_systems(Update, (post_load, apply_deferred, mark_children_change).chain())
         .init_resource::<DragModes>()
         // cursor
@@ -94,6 +100,7 @@ fn main() {
         // events
         .add_event::<SaveCommand>()
         .add_event::<CopyCommand>()
+        .add_event::<PasteCommand>()
         // connections
         .add_systems(Update, connect.run_if(in_state(Mode::Connect)))
         .add_systems(Update, target.run_if(in_state(Mode::Connect)))
@@ -280,31 +287,46 @@ fn save_scene(world: &mut World) {
 }
 
 fn copy_scene(world: &mut World) {
-    let mut copy_events = world.resource_mut::<Events<CopyCommand>>();
-    let events: Vec<CopyCommand> = copy_events.drain().collect();
-    for _ in events {
-        let mut query = world.query_filtered::<Entity, With<Selected>>();
-        let scene = DynamicSceneBuilder::from_world(&world)
-            .allow::<Radius>()
-            .allow::<Col>()
-            .allow::<Transform>()
-            .allow::<Op>()
-            .allow::<Number>()
-            .allow::<Arr>()
-            .allow::<Save>()
-            .allow::<Order>()
-            .allow::<BlackHole>()
-            .allow::<WhiteHole>()
-            .allow::<Parent>()
-            .allow::<Children>()
-            .allow::<Vertices>()
-            .allow::<Targets>()
-            .extract_entities(query.iter(&world))
-            .build();
+    let mut query = world.query_filtered::<Entity, With<Selected>>();
+    let scene = DynamicSceneBuilder::from_world(&world)
+        .allow::<Radius>()
+        .allow::<Col>()
+        .allow::<Transform>()
+        .allow::<Op>()
+        .allow::<Number>()
+        .allow::<Arr>()
+        .allow::<Save>()
+        .allow::<Order>()
+        .allow::<BlackHole>()
+        .allow::<WhiteHole>()
+        .allow::<Parent>()
+        .allow::<Children>()
+        .allow::<Vertices>()
+        .allow::<Targets>()
+        .extract_entities(query.iter(&world))
+        .build();
+    let type_registry = world.resource::<AppTypeRegistry>();
+    let serialized_scene = scene.serialize_ron(type_registry).unwrap();
+    let mut ctx = world.resource_mut::<SystemClipboard>();
+    ctx.0.set_contents(serialized_scene).unwrap();
+}
+
+fn paste_scene(world: &mut World) {
+    let mut ctx = world.resource_mut::<SystemClipboard>();
+    let bytes = ctx.0.get_contents().unwrap().into_bytes();
+    let mut scene = None;
+    if let Ok(mut deserializer) = Deserializer::from_bytes(&bytes) {
         let type_registry = world.resource::<AppTypeRegistry>();
-        let serialized_scene = scene.serialize_ron(type_registry).unwrap();
-        let mut ctx = world.resource_mut::<SystemClipboard>();
-        ctx.0.set_contents(serialized_scene).unwrap();
+        let scene_deserializer = SceneDeserializer {
+            type_registry: &type_registry.read(),
+        };
+        if let Ok(s) = scene_deserializer.deserialize(&mut deserializer) {
+            scene = Some(s);
+        }
+    }
+    if let Some(s) = scene {
+        let scene = world.resource_mut::<Assets<DynamicScene>>().add(s);
+        world.spawn(DynamicSceneBundle { scene: scene, ..default() });
     }
 }
 
