@@ -146,6 +146,9 @@ pub struct CommandText;
 #[derive(Component)]
 pub struct InfoText(pub Entity);
 
+#[derive(Component)]
+pub struct EmptyScene;
+
 // -------------------- states --------------------
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 pub enum Mode {

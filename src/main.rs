@@ -75,6 +75,7 @@ fn main() {
         .add_systems(Update, copy_scene.run_if(on_event::<CopyCommand>()))
         .add_systems(Update, paste_scene.run_if(on_event::<PasteCommand>()))
         .add_systems(Update, (post_load, apply_deferred, mark_children_change).chain())
+        .add_systems(Update, despawn_empty_scenes)
         .init_resource::<DragModes>()
         // cursor
         .insert_resource(CursorInfo::default())
@@ -427,7 +428,15 @@ fn post_load(
         let clt = &mut command_line_text.single_mut();
         clt.sections[0].style.color = command_color.0;
         // despawn the now empty instance
-        commands.entity(scene_id).despawn();
+        commands.entity(scene_id).try_insert(EmptyScene);
     }
 }
 
+fn despawn_empty_scenes(
+    mut commands: Commands,
+    scenes: Query<Entity, With<EmptyScene>>,
+) {
+    for id in scenes.iter() {
+        commands.entity(id).despawn();
+    }
+}
