@@ -82,6 +82,7 @@ pub struct Access<'w, 's> {
     connection_color: ResMut<'w, ConnectionColor>,
     selection_circle: Res<'w, SelectionCircle>,
     connecting_line: Res<'w, ConnectingLine>,
+    command_line_text: Query<'w, 's, &'static mut Text, With<CommandText>>,
 }
 
 pub fn process(
@@ -393,6 +394,15 @@ pub fn process(
                     if color.is_changed() {
                         let id = access.connecting_line.0;
                         access.col_query.get_mut(id).unwrap().0 = color.0;
+                    }
+                }
+                "command_color" => {
+                    let color = access.col_query.get_mut(*id).unwrap();
+                    // if we can trigger this on the first run of process
+                    // we can ditch the resources
+                    if color.is_changed() {
+                        let clt = &mut access.command_line_text.single_mut();
+                        clt.sections[0].style.color = color.0;
                     }
                 }
                 "cam" => {
