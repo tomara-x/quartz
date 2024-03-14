@@ -51,8 +51,8 @@ pub fn command_parser(
     mut command_line_text: Query<&mut Text, With<CommandText>>,
     circles_query: Query<Entity, With<Radius>>,
     mut access: Access,
-    mut mode: Local<i32>,
-    mut next_state: ResMut<NextState<Mode>>,
+    mut next_mode: ResMut<NextState<Mode>>,
+    mode: Res<State<Mode>>,
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     info_text_query: Query<(Entity, &InfoText)>,
@@ -77,25 +77,19 @@ pub fn command_parser(
         }
     }
 
-    // draw mode
-    if *mode == 1 {
+    if *mode.get() == Mode::Draw {
         // exit to edit
         if keyboard_input.any_just_pressed([KeyCode::Escape, KeyCode::KeyE]) {
             text.clear();
-            *mode = 0;
-            next_state.set(Mode::Edit);
+            next_mode.set(Mode::Edit);
             key_event.clear(); // we have an 'e' that we don't want
         }
         // switch to connect mode
         if keyboard_input.just_pressed(KeyCode::KeyC) {
             *text = "-- CONNECT --".to_string();
-            *mode = 2;
-            next_state.set(Mode::Connect);
+            next_mode.set(Mode::Connect);
         }
-    }
-
-    // connect mode
-    else if *mode == 2 {
+    } else if *mode.get() == Mode::Connect {
         // edit the link type
         if text.starts_with("-- CONNECT")
         && keyboard_input.just_pressed(KeyCode::KeyC) {
@@ -124,8 +118,7 @@ pub fn command_parser(
         // exit to edit
         if keyboard_input.any_just_pressed([KeyCode::Escape, KeyCode::KeyE]) {
             text.clear();
-            *mode = 0;
-            next_state.set(Mode::Edit);
+            next_mode.set(Mode::Edit);
             key_event.clear(); // consume the 'e' when exiting to edit
         }
         // target
@@ -134,13 +127,9 @@ pub fn command_parser(
         // switch to draw mode
         if keyboard_input.just_pressed(KeyCode::KeyD) {
             *text = "-- DRAW --".to_string();
-            *mode = 1;
-            next_state.set(Mode::Draw);
+            next_mode.set(Mode::Draw);
         }
-    }
-
-    // edit mode
-    else if *mode == 0 {
+    } else if *mode.get() == Mode::Edit {
         for key in key_event.read() {
             if key.state.is_pressed() {
                 match &key.logical_key {
@@ -678,13 +667,11 @@ pub fn command_parser(
         let mut command = text.as_str().split_ascii_whitespace();
         match command.next() {
             Some("d") => {
-                *mode = 1;
-                next_state.set(Mode::Draw);
+                next_mode.set(Mode::Draw);
                 *text = "-- DRAW --".to_string();
             }
             Some("c") => {
-                *mode = 2;
-                next_state.set(Mode::Connect);
+                next_mode.set(Mode::Connect);
                 *text = "-- CONNECT --".to_string();
             }
             Some("et") => {
