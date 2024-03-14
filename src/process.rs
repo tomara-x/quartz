@@ -398,8 +398,6 @@ pub fn process(
                 }
                 "command_color" => {
                     let color = access.col_query.get_mut(*id).unwrap();
-                    // if we can trigger this on the first run of process
-                    // we can ditch the resources
                     if color.is_changed() {
                         let clt = &mut access.command_line_text.single_mut();
                         clt.sections[0].style.color = color.0;

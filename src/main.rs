@@ -334,7 +334,7 @@ fn post_load(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
-    main_query: Query<(&Radius, &Transform, &Col, &Vertices)>,
+    mut main_query: Query<(&Radius, &Transform, &mut Col, &Vertices)>,
     mut order_change: EventWriter<OrderChange>,
     mut white_hole_query: Query<&mut WhiteHole>,
     black_hole_query: Query<&BlackHole>,
@@ -345,7 +345,8 @@ fn post_load(
 ) {
     if let Ok((scene_entity, children)) = scene.get_single() {
         for child in children {
-            if let Ok((r, t, c, v)) = main_query.get(*child) {
+            if let Ok((r, t, mut c, v)) = main_query.get_mut(*child) {
+                c.set_changed();
                 let op = &op_query.get_mut(*child).unwrap().0;
                 commands.entity(*child).insert((
                     ColorMesh2dBundle {
