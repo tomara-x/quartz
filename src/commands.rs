@@ -48,7 +48,7 @@ pub struct Access<'w, 's> {
 pub fn command_parser(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut key_event: EventReader<KeyboardInput>,
-    mut command_line: Query<&mut Text, With<CommandText>>,
+    mut command_line_text: Query<&mut Text, With<CommandText>>,
     circles_query: Query<Entity, With<Radius>>,
     mut access: Access,
     mut mode: Local<i32>,
@@ -61,10 +61,12 @@ pub fn command_parser(
     parent_query: Query<&Parent>,
     children_query: Query<Ref<Children>>,
 ) {
+    let clt = &mut command_line_text.single_mut();
     if key_event.is_empty()
+    && !clt.is_changed()
     && !keyboard_input.just_released(KeyCode::KeyT) { return; }
 
-    let text = &mut command_line.single_mut().sections[0].value;
+    let text = &mut clt.sections[0].value;
 
     // toggle fullscreen mode
     if keyboard_input.just_pressed(KeyCode::F11) {
