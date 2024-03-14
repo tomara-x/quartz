@@ -1116,8 +1116,16 @@ pub fn command_parser(
                 access.paste_event.send_default();
                 text.clear();
             }
-            Some("\u{71}\u{75}\u{61}\u{72}\u{74}\u{7a}") => {
+            Some(":help") | Some(":about") | Some("about") | Some("help") => {
+                *text = String::from(">see: github.com/tomara-x/quartz");
+            }
+            Some("quartz") => {
                 *text = String::from(">drink some water!");
+            }
+            Some("awa") => {
+                let mut aw = "aw".repeat(100);
+                aw.push('\n');
+                *text = format!(">{}", aw.repeat(60));
             }
             _ => {}
         }
