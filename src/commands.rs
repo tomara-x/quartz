@@ -146,12 +146,13 @@ pub fn command_parser(
                     }
                     Key::Backspace => { text.pop(); }
                     Key::Escape => { text.clear(); }
+                    Key::Enter => { text.push('\t'); }
                     // tab completion when?
                     _ => {}
                 }
             }
         }
-        if keyboard_input.just_pressed(KeyCode::Enter) {
+        if text.ends_with('\t') {
             // commands starting with :
             let lines = text.as_str().split(";");
             for line in lines {
