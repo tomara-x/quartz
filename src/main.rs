@@ -343,15 +343,15 @@ fn post_load(
     mut order_change: EventWriter<OrderChange>,
     mut white_hole_query: Query<&mut WhiteHole>,
     black_hole_query: Query<&BlackHole>,
-    scene: Query<Entity, With<SceneInstance>>,
+    scenes: Query<Entity, With<SceneInstance>>,
     children_query: Query<&Children>,
     mut op_query: Query<&mut Op>,
     connection_color: Res<ConnectionColor>,
     mut command_line_text: Query<&mut Text, With<CommandText>>,
     command_color: Res<CommandColor>,
 ) {
-    if let Ok(scene_entity) = scene.get_single() {
-        if let Ok(children) = children_query.get(scene_entity) {
+    for scene_id in scenes.iter() {
+        if let Ok(children) = children_query.get(scene_id) {
             for child in children {
                 if let Ok((r, t, c, v)) = main_query.get(*child) {
                     let op = &op_query.get_mut(*child).unwrap().0;
@@ -427,7 +427,7 @@ fn post_load(
         let clt = &mut command_line_text.single_mut();
         clt.sections[0].style.color = command_color.0;
         // despawn the now empty instance
-        commands.entity(scene_entity).despawn();
+        commands.entity(scene_id).despawn();
     }
 }
 
