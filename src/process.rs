@@ -83,6 +83,7 @@ pub struct Access<'w, 's> {
     selection_circle: Res<'w, SelectionCircle>,
     connecting_line: Res<'w, ConnectingLine>,
     command_line_text: Query<'w, 's, &'static mut Text, With<CommandText>>,
+    command_color: ResMut<'w, CommandColor>,
 }
 
 pub fn process(
@@ -399,6 +400,7 @@ pub fn process(
                 "command_color" => {
                     let color = access.col_query.get_mut(*id).unwrap();
                     if color.is_changed() {
+                        access.command_color.0 = color.0;
                         let clt = &mut access.command_line_text.single_mut();
                         clt.sections[0].style.color = color.0;
                     }

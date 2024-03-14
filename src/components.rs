@@ -224,6 +224,10 @@ pub struct HighlightColor(pub Color);
 #[reflect(Resource)]
 pub struct ConnectionColor(pub Color);
 
+#[derive(Resource, Reflect, Default)]
+#[reflect(Resource)]
+pub struct CommandColor(pub Color);
+
 #[derive(Resource)]
 pub struct DefaultLT(pub (i32, i32));
 
