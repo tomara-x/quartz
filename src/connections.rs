@@ -83,31 +83,33 @@ pub fn connect(
             // spawn circles
             let mut bh_depth: f32 = 0.001;
             let v = default_verts.0;
+            let bh_color = Color::hsl(0., 0., 0.2);
             if let Ok(children) = children_query.get(src) { bh_depth *= (children.len() + 1) as f32; }
             let black_hole = commands.spawn(( ColorMesh2dBundle {
                     mesh: meshes.add(RegularPolygon::new(src_radius * 0.15, v)).into(),
-                    material: materials.add(ColorMaterial::from(Color::BLACK)),
+                    material: materials.add(ColorMaterial::from(bh_color)),
                     transform: Transform::from_translation((cursor.i - src_trans.xy()).extend(bh_depth)),
                     ..default()
                 },
                 Visible,
                 Radius(src_radius * 0.15),
-                Col(Color::BLACK),
+                Col(bh_color),
                 Vertices(v),
                 RenderLayers::layer(2),
                 Save,
             )).id();
             let mut wh_depth: f32 = 0.001;
+            let wh_color = Color::hsl(0., 0., 0.8);
             if let Ok(children) = children_query.get(snk) { wh_depth *= (children.len() + 1) as f32; }
             let white_hole = commands.spawn(( ColorMesh2dBundle {
                     mesh: meshes.add(RegularPolygon::new(snk_radius * 0.15, v)).into(),
-                    material: materials.add(ColorMaterial::from(Color::WHITE)),
+                    material: materials.add(ColorMaterial::from(wh_color)),
                     transform: Transform::from_translation((cursor.f - snk_trans.xy()).extend(wh_depth)),
                     ..default()
                 },
                 Visible,
                 Radius(snk_radius * 0.15),
-                Col(Color::WHITE),
+                Col(wh_color),
                 Vertices(v),
                 WhiteHole {
                     bh_parent: src,
