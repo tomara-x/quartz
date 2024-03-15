@@ -1057,6 +1057,9 @@ pub fn command_parser(
                 }
                 text.clear();
             }
+            Some("sn") => {
+                *text = format!(">entities selected: {}", access.selected_query.iter().len());
+            }
             // render layers
             Some("vv") => {
                 *access.render_layers.single_mut() = RenderLayers::all();
