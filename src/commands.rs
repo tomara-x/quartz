@@ -1101,11 +1101,11 @@ pub fn command_parser(
                 }
                 text.clear();
             }
-            Some("yy") => {
+            Some("yy") | Some("\"+y") => {
                 access.copy_event.send_default();
                 text.clear();
             }
-            Some("p") => {
+            Some("p") | Some("\"+p") => {
                 access.paste_event.send_default();
                 text.clear();
             }
