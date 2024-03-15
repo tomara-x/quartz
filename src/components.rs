@@ -234,6 +234,10 @@ pub struct DefaultLT(pub (i32, i32));
 #[derive(Resource)]
 pub struct SystemClipboard(pub ClipboardContext);
 
+#[derive(Resource, Reflect, Default)]
+#[reflect(Resource)]
+pub struct Version(pub String);
+
 // -------------------- events --------------------
 #[derive(Event, Default)]
 pub struct OrderChange;

@@ -66,6 +66,7 @@ fn main() {
         .insert_resource(DefaultLT((0, 0)))
         .insert_resource(SystemClipboard(ClipboardContext::new().unwrap()))
         .insert_resource(Msaa::Sample4)
+        .insert_resource(Version(env!("CARGO_PKG_VERSION").into()))
 
         .add_systems(Startup, setup)
         .add_systems(Startup, ext_thread)
@@ -145,6 +146,7 @@ fn main() {
         .register_type::<HighlightColor>()
         .register_type::<ConnectionColor>()
         .register_type::<CommandColor>()
+        .register_type::<Version>()
         .run();
 }
 
@@ -276,6 +278,7 @@ fn save_scene(world: &mut World) {
             .allow_resource::<ConnectionColor>()
             .allow_resource::<ClearColor>()
             .allow_resource::<CommandColor>()
+            .allow_resource::<Version>()
             .extract_entities(query.iter(&world))
             .extract_resources()
             .build();

@@ -1110,7 +1110,7 @@ pub fn command_parser(
                 text.clear();
             }
             Some(":help") | Some(":about") | Some("about") | Some("help") => {
-                *text = String::from(">see: github.com/tomara-x/quartz");
+                *text = format!(">see: {}", env!("CARGO_PKG_REPOSITORY"));
             }
             Some("quartz") => {
                 *text = String::from(">drink some water!");
