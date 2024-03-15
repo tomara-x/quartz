@@ -343,91 +343,94 @@ fn post_load(
     mut order_change: EventWriter<OrderChange>,
     mut white_hole_query: Query<&mut WhiteHole>,
     black_hole_query: Query<&BlackHole>,
-    scenes: Query<Entity, With<SceneInstance>>,
+    scenes: Query<(Entity, &SceneInstance)>,
     children_query: Query<&Children>,
     mut op_query: Query<&mut Op>,
     connection_color: Res<ConnectionColor>,
     mut command_line_text: Query<&mut Text, With<CommandText>>,
     command_color: Res<CommandColor>,
+    scene_spawner: Res<SceneSpawner>,
 ) {
-    for scene_id in scenes.iter() {
-        if let Ok(children) = children_query.get(scene_id) {
-            for child in children {
-                if let Ok((r, t, c, v)) = main_query.get(*child) {
-                    let op = &op_query.get_mut(*child).unwrap().0;
-                    commands.entity(*child).insert((
-                        ColorMesh2dBundle {
-                            mesh: meshes.add(RegularPolygon::new(r.0, v.0)).into(),
-                            material: materials.add(ColorMaterial::from(c.0)),
-                            transform: *t,
-                            ..default()
-                        },
-                        Network(str_to_net(op)),
-                        NetIns(Vec::new()),
-                        OpChanged(true),
-                        GainedWH(false),
-                        LostWH(false),
-                        RenderLayers::layer(1),
-                    ));
-                    // thanks to multirious for this idea
-                    commands.entity(*child).remove::<Children>();
-                    if let Ok(holes) = children_query.get(*child) {
-                        for hole in holes {
-                            if let Ok(mut wh) = white_hole_query.get_mut(*hole) {
-                                if black_hole_query.contains(wh.bh) && main_query.contains(wh.bh_parent) {
-                                    wh.open = true;
-                                    let arrow = commands.spawn(( ColorMesh2dBundle {
-                                        mesh: meshes.add(RegularPolygon::new(0.1, 3)).into(),
-                                        material: materials.add(ColorMaterial::from(connection_color.0)),
-                                        transform: Transform::from_translation(Vec3::Z),
-                                        ..default()
-                                    },
-                                    RenderLayers::layer(4),
-                                    )).id();
-                                    commands.entity(*hole).insert((
-                                        ConnectionArrow(arrow),
-                                        RenderLayers::layer(3),
-                                    ));
-                                    commands.entity(*child).add_child(*hole);
-                                } else {
-                                    if let Some(mut e) = commands.get_entity(*hole) {
-                                        e.despawn();
+    for (scene_id, instance_id) in scenes.iter() {
+        if scene_spawner.instance_is_ready(**instance_id) {
+            if let Ok(children) = children_query.get(scene_id) {
+                for child in children {
+                    if let Ok((r, t, c, v)) = main_query.get(*child) {
+                        let op = &op_query.get_mut(*child).unwrap().0;
+                        commands.entity(*child).insert((
+                            ColorMesh2dBundle {
+                                mesh: meshes.add(RegularPolygon::new(r.0, v.0)).into(),
+                                material: materials.add(ColorMaterial::from(c.0)),
+                                transform: *t,
+                                ..default()
+                            },
+                            Network(str_to_net(op)),
+                            NetIns(Vec::new()),
+                            OpChanged(true),
+                            GainedWH(false),
+                            LostWH(false),
+                            RenderLayers::layer(1),
+                        ));
+                        // thanks to multirious for this idea
+                        commands.entity(*child).remove::<Children>();
+                        if let Ok(holes) = children_query.get(*child) {
+                            for hole in holes {
+                                if let Ok(mut wh) = white_hole_query.get_mut(*hole) {
+                                    if black_hole_query.contains(wh.bh) && main_query.contains(wh.bh_parent) {
+                                        wh.open = true;
+                                        let arrow = commands.spawn(( ColorMesh2dBundle {
+                                            mesh: meshes.add(RegularPolygon::new(0.1, 3)).into(),
+                                            material: materials.add(ColorMaterial::from(connection_color.0)),
+                                            transform: Transform::from_translation(Vec3::Z),
+                                            ..default()
+                                        },
+                                        RenderLayers::layer(4),
+                                        )).id();
+                                        commands.entity(*hole).insert((
+                                            ConnectionArrow(arrow),
+                                            RenderLayers::layer(3),
+                                        ));
+                                        commands.entity(*child).add_child(*hole);
+                                    } else {
+                                        if let Some(mut e) = commands.get_entity(*hole) {
+                                            e.despawn();
+                                        }
+                                        continue;
                                     }
-                                    continue;
-                                }
-                            } else if let Ok(bh) = black_hole_query.get(*hole) {
-                                if white_hole_query.contains(bh.wh) && main_query.contains(bh.wh_parent) {
-                                    commands.entity(*hole).insert(RenderLayers::layer(2));
-                                    commands.entity(*child).add_child(*hole);
-                                } else {
-                                    if let Some(mut e) = commands.get_entity(*hole) {
-                                        e.despawn();
+                                } else if let Ok(bh) = black_hole_query.get(*hole) {
+                                    if white_hole_query.contains(bh.wh) && main_query.contains(bh.wh_parent) {
+                                        commands.entity(*hole).insert(RenderLayers::layer(2));
+                                        commands.entity(*child).add_child(*hole);
+                                    } else {
+                                        if let Some(mut e) = commands.get_entity(*hole) {
+                                            e.despawn();
+                                        }
+                                        continue;
                                     }
-                                    continue;
                                 }
-                            }
-                            if let Ok((r, t, c, v)) = main_query.get(*hole) {
-                                commands.entity(*hole).insert(
-                                    ColorMesh2dBundle {
-                                        mesh: meshes.add(RegularPolygon::new(r.0, v.0)).into(),
-                                        material: materials.add(ColorMaterial::from(c.0)),
-                                        transform: *t,
-                                        ..default()
-                                    },
-                                );
+                                if let Ok((r, t, c, v)) = main_query.get(*hole) {
+                                    commands.entity(*hole).insert(
+                                        ColorMesh2dBundle {
+                                            mesh: meshes.add(RegularPolygon::new(r.0, v.0)).into(),
+                                            material: materials.add(ColorMaterial::from(c.0)),
+                                            transform: *t,
+                                            ..default()
+                                        },
+                                    );
+                                }
                             }
                         }
                     }
+                    commands.entity(*child).remove_parent();
                 }
-                commands.entity(*child).remove_parent();
+                order_change.send_default();
             }
-            order_change.send_default();
+            // update the command line color from resource
+            let clt = &mut command_line_text.single_mut();
+            clt.sections[0].style.color = command_color.0;
+            // despawn the now empty instance
+            commands.entity(scene_id).despawn();
         }
-        // update the command line color from resource
-        let clt = &mut command_line_text.single_mut();
-        clt.sections[0].style.color = command_color.0;
-        // despawn the now empty instance
-        commands.entity(scene_id).despawn();
     }
 }
 
