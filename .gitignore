@@ -1,3 +1,4 @@
 target
 *.swp
 screenshots
+.cargo
