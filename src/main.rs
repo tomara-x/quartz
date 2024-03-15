@@ -12,6 +12,7 @@ use bevy::{
     },
     asset::ron::Deserializer,
     render::view::RenderLayers,
+    window::FileDragAndDrop::DroppedFile,
     prelude::*};
 
 use bevy_pancam::{PanCam, PanCamPlugin};
@@ -75,6 +76,7 @@ fn main() {
         .add_systems(Update, copy_scene.run_if(on_event::<CopyCommand>()))
         .add_systems(Update, paste_scene.run_if(on_event::<PasteCommand>()))
         .add_systems(Update, (post_load, apply_deferred, mark_children_change).chain())
+        .add_systems(Update, file_drag_and_drop)
         .init_resource::<DragModes>()
         // cursor
         .insert_resource(CursorInfo::default())
@@ -332,6 +334,21 @@ fn paste_scene(world: &mut World) {
     if let Some(s) = scene {
         let scene = world.resource_mut::<Assets<DynamicScene>>().add(s);
         world.spawn(DynamicSceneBundle { scene: scene, ..default() });
+    }
+}
+
+fn file_drag_and_drop(
+    mut commands: Commands,
+    mut events: EventReader<FileDragAndDrop>,
+    asset_server: Res<AssetServer>,
+) {
+    for event in events.read() {
+        if let DroppedFile {path_buf, ..} = event {
+            commands.spawn(DynamicSceneBundle {
+                scene: asset_server.load(path_buf.clone()),
+                ..default()
+            });
+        }
     }
 }
 
