@@ -2,10 +2,7 @@ use bevy::{
     prelude::*,
     render::view::VisibleEntities,
     sprite::Mesh2dHandle,
-    render::{
-        primitives::Aabb,
-        view::RenderLayers,
-    },
+    render::view::RenderLayers,
 };
 
 use fundsp::net::Net32;
@@ -25,17 +22,29 @@ pub fn spawn_circles(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     default_color: Res<DefaultDrawColor>,
     default_verts: Res<DefaultDrawVerts>,
+    mut polygon_handles: ResMut<PolygonHandles>,
 ) {
     if mouse_button_input.just_released(MouseButton::Left) &&
     !keyboard_input.pressed(KeyCode::Space) {
         let r = cursor.f.distance(cursor.i);
         let v = default_verts.0;
         let color = default_color.0;
+        if polygon_handles.0.len() <= v {
+            polygon_handles.0.resize(v + 1, None);
+        }
+        if polygon_handles.0[v].is_none() {
+            let handle = meshes.add(RegularPolygon::new(1., v)).into();
+            polygon_handles.0[v] = Some(handle);
+        }
         commands.spawn((
             ColorMesh2dBundle {
-                mesh: meshes.add(RegularPolygon::new(r.max(0.1), v)).into(),
+                mesh: polygon_handles.0[v].clone().unwrap(),
                 material: materials.add(ColorMaterial::from(color)),
-                transform: Transform::from_translation(cursor.i.extend(*depth)),
+                transform: Transform {
+                    translation: cursor.i.extend(*depth),
+                    scale: Vec3::new(r,r,1.),
+                    ..default()
+                },
                 ..default()
             },
             Radius(r),
@@ -63,19 +72,25 @@ pub fn spawn_circles(
 
 pub fn highlight_selected(
     mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
-    selected: Query<Entity, (With<Selected>, Without<Highlight>)>,
+    selected: Query<(Entity, &Vertices, &GlobalTransform), (With<Selected>, Without<Highlight>)>,
     deselected: Query<Entity, (With<Highlight>, Without<Selected>)>,
     highlight_query: Query<&Highlight>,
     highlight_color: Res<HighlightColor>,
+    polygon_handles: Res<PolygonHandles>,
 ) {
-    for e in selected.iter() {
+    for (e, v, t) in selected.iter() {
+        let t = t.compute_transform();
+        let trans = t.translation.xy().extend(t.translation.z - 0.00001);
         let highlight = commands.spawn(
             ColorMesh2dBundle {
-                mesh: meshes.add(RegularPolygon::new(0.1, 3)).into(),
+                mesh: polygon_handles.0[v.0].clone().unwrap(),
                 material: materials.add(ColorMaterial::from(highlight_color.0)),
-                transform: Transform::from_translation(Vec3::Z),
+                transform: Transform {
+                    translation: trans,
+                    scale: Vec3::new(t.scale.x + 5., t.scale.y + 5., 1.),
+                    rotation: t.rotation,
+                },
                 ..default()
             }
         ).id();
@@ -89,26 +104,23 @@ pub fn highlight_selected(
 }
 
 pub fn transform_highlights(
-    moved: Query<(&GlobalTransform, &Highlight), Or<(Changed<Transform>, Added<Highlight>)>>,
-    resized: Query<(&Vertices, &Radius, &Highlight), Or<(Changed<Vertices>, Changed<Radius>, Added<Highlight>)>>,
+    moved: Query<(&GlobalTransform, &Highlight), Changed<Transform>>,
+    resized: Query<(&Vertices, &Highlight), Changed<Vertices>>,
     mut trans_query: Query<&mut Transform, Without<Highlight>>,
-    mesh_ids: Query<&Mesh2dHandle>,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut aabb_query: Query<&mut Aabb>,
+    mut handle_query: Query<&mut Mesh2dHandle>,
+    polygon_handles: Res<PolygonHandles>,
 ) {
     for (t, h) in moved.iter() {
         let t = t.compute_transform();
         let trans = t.translation.xy().extend(t.translation.z - 0.00001);
         trans_query.get_mut(h.0).unwrap().translation = trans;
         trans_query.get_mut(h.0).unwrap().rotation = t.rotation;
+        trans_query.get_mut(h.0).unwrap().scale.x = t.scale.x + 5.;
+        trans_query.get_mut(h.0).unwrap().scale.y = t.scale.y + 5.;
     }
-    for (v, r, h) in resized.iter() {
-        if let Ok(Mesh2dHandle(mesh_id)) = mesh_ids.get(h.0) {
-            let mesh = meshes.get_mut(mesh_id).unwrap();
-            *mesh = RegularPolygon::new(r.0 + 5., v.0).into();
-            if let Ok(mut aabb) = aabb_query.get_mut(h.0) {
-                *aabb = mesh.compute_aabb().unwrap();
-            }
+    for (v, h) in resized.iter() {
+        if let Ok(mut handle) = handle_query.get_mut(h.0) {
+            *handle = polygon_handles.0[v.0].clone().unwrap();
         }
     }
 }
@@ -415,7 +427,7 @@ pub fn update_mat(
 }
 
 pub fn update_radius(
-    mut query: Query<&mut Radius, With<Selected>>,
+    mut query: Query<(&mut Radius, &mut Transform), With<Selected>>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     cursor: Res<CursorInfo>,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
@@ -424,19 +436,25 @@ pub fn update_radius(
     if drag_modes.r {
         if mouse_button_input.pressed(MouseButton::Left)
         && !mouse_button_input.just_pressed(MouseButton::Left) {
-            for mut r in query.iter_mut() {
+            for (mut r, mut t) in query.iter_mut() {
                 r.0 += cursor.d.y;
                 r.0 = r.0.max(0.);
+                t.scale.x = r.0;
+                t.scale.y = r.0;
             }
         }
         if keyboard_input.any_pressed([KeyCode::ArrowUp, KeyCode::ArrowRight]) {
-            for mut r in query.iter_mut() {
+            for (mut r, mut t) in query.iter_mut() {
                 r.0 += 1.;
+                t.scale.x = r.0;
+                t.scale.y = r.0;
             }
         }
         if keyboard_input.any_pressed([KeyCode::ArrowDown, KeyCode::ArrowLeft]) {
-            for mut r in query.iter_mut() {
+            for (mut r, mut t) in query.iter_mut() {
                 r.0 = (r.0 - 1.).max(0.);
+                t.scale.x = r.0;
+                t.scale.y = r.0;
             }
         }
     }
@@ -485,14 +503,20 @@ pub fn update_vertices(
 
 pub fn update_mesh(
     mut meshes: ResMut<Assets<Mesh>>,
-    mesh_ids: Query<&Mesh2dHandle>,
-    mut query: Query<(Entity, &Vertices, &Radius, &mut Aabb), Or<(Changed<Vertices>, Changed<Radius>)>>,
+    mut handle_query: Query<&mut Mesh2dHandle>,
+    mut query: Query<(Entity, &Vertices), Changed<Vertices>>,
+    mut polygon_handles: ResMut<PolygonHandles>,
 ) {
-    for (id, v, r, mut aabb) in query.iter_mut() {
-        if let Ok(Mesh2dHandle(mesh_id)) = mesh_ids.get(id) {
-            let mesh = meshes.get_mut(mesh_id).unwrap();
-            *mesh = RegularPolygon::new(r.0.max(0.1), v.0).into();
-            *aabb = mesh.compute_aabb().unwrap();
+    for (id, v) in query.iter_mut() {
+        if polygon_handles.0.len() <= v.0 {
+            polygon_handles.0.resize(v.0 + 1, None);
+        }
+        if polygon_handles.0[v.0].is_none() {
+            let handle = meshes.add(RegularPolygon::new(1., v.0)).into();
+            polygon_handles.0[v.0] = Some(handle);
+        }
+        if let Ok(mut handle) = handle_query.get_mut(id) {
+            *handle = polygon_handles.0[v.0].clone().unwrap();
         }
     }
 }

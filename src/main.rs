@@ -73,6 +73,7 @@ fn main() {
                 .output().unwrap().stdout).unwrap().trim()
             )
         ))
+        .init_resource::<PolygonHandles>()
 
         .add_systems(Startup, setup)
         .add_systems(Startup, ext_thread)
@@ -365,7 +366,7 @@ fn post_load(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
-    main_query: Query<(&Radius, &Transform, &Col, &Vertices)>,
+    main_query: Query<(&Transform, &Col, &Vertices)>,
     mut order_change: EventWriter<OrderChange>,
     mut white_hole_query: Query<&mut WhiteHole>,
     black_hole_query: Query<&BlackHole>,
@@ -376,16 +377,25 @@ fn post_load(
     mut command_line_text: Query<&mut Text, With<CommandText>>,
     command_color: Res<CommandColor>,
     scene_spawner: Res<SceneSpawner>,
+    mut polygon_handles: ResMut<PolygonHandles>,
 ) {
     for (scene_id, instance_id) in scenes.iter() {
         if scene_spawner.instance_is_ready(**instance_id) {
             if let Ok(children) = children_query.get(scene_id) {
                 for child in children {
-                    if let Ok((r, t, c, v)) = main_query.get(*child) {
+                    if let Ok((t, c, v)) = main_query.get(*child) {
                         let op = &op_query.get_mut(*child).unwrap().0;
+                        // meshes
+                        if polygon_handles.0.len() <= v.0 {
+                            polygon_handles.0.resize(v.0 + 1, None);
+                        }
+                        if polygon_handles.0[v.0].is_none() {
+                            let handle = meshes.add(RegularPolygon::new(1., v.0)).into();
+                            polygon_handles.0[v.0] = Some(handle);
+                        }
                         commands.entity(*child).insert((
                             ColorMesh2dBundle {
-                                mesh: meshes.add(RegularPolygon::new(r.0, v.0)).into(),
+                                mesh: polygon_handles.0[v.0].clone().unwrap(),
                                 material: materials.add(ColorMaterial::from(c.0)),
                                 transform: *t,
                                 ..default()
@@ -434,10 +444,17 @@ fn post_load(
                                         continue;
                                     }
                                 }
-                                if let Ok((r, t, c, v)) = main_query.get(*hole) {
+                                if let Ok((t, c, v)) = main_query.get(*hole) {
+                                    if polygon_handles.0.len() <= v.0 {
+                                        polygon_handles.0.resize(v.0 + 1, None);
+                                    }
+                                    if polygon_handles.0[v.0].is_none() {
+                                        let handle = meshes.add(RegularPolygon::new(1., v.0)).into();
+                                        polygon_handles.0[v.0] = Some(handle);
+                                    }
                                     commands.entity(*hole).insert(
                                         ColorMesh2dBundle {
-                                            mesh: meshes.add(RegularPolygon::new(r.0, v.0)).into(),
+                                            mesh: polygon_handles.0[v.0].clone().unwrap(),
                                             material: materials.add(ColorMaterial::from(c.0)),
                                             transform: *t,
                                             ..default()

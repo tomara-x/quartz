@@ -1,5 +1,6 @@
 use bevy::{
     prelude::*,
+    sprite::Mesh2dHandle,
     ecs::{
         entity::MapEntities,
         reflect::{ReflectComponent, ReflectMapEntities},
@@ -237,6 +238,9 @@ pub struct SystemClipboard(pub ClipboardContext);
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
 pub struct Version(pub String);
+
+#[derive(Resource, Default)]
+pub struct PolygonHandles(pub Vec<Option<Mesh2dHandle>>);
 
 // -------------------- events --------------------
 #[derive(Event, Default)]
