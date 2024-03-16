@@ -112,9 +112,11 @@ pub fn command_parser(
             }
             return;
         }
-        *text = format!("-- CONNECT -- ({} {})",
-            lt_to_string(access.default_lt.0.0),
-            lt_to_string(access.default_lt.0.1));
+        if !keyboard_input.pressed(KeyCode::KeyT) {
+            *text = format!("-- CONNECT -- ({} {})",
+                lt_to_string(access.default_lt.0.0),
+                lt_to_string(access.default_lt.0.1));
+        }
         // exit to edit
         if keyboard_input.any_just_pressed([KeyCode::Escape, KeyCode::KeyE]) {
             text.clear();
@@ -123,7 +125,6 @@ pub fn command_parser(
         }
         // target
         if keyboard_input.just_pressed(KeyCode::KeyT) { *text = "-- TARGET --".to_string(); }
-        if keyboard_input.just_released(KeyCode::KeyT) { *text = "-- CONNECT --".to_string(); }
         // switch to draw mode
         if keyboard_input.just_pressed(KeyCode::KeyD) {
             *text = "-- DRAW --".to_string();
