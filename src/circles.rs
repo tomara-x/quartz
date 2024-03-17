@@ -47,7 +47,6 @@ pub fn spawn_circles(
                 },
                 ..default()
             },
-            Radius(r),
             Vertices(v),
             Col(color),
             Number(0.),
@@ -105,7 +104,7 @@ pub fn highlight_selected(
 
 pub fn transform_highlights(
     moved: Query<(&GlobalTransform, &Highlight), Changed<Transform>>,
-    resized: Query<(&Vertices, &Highlight), Changed<Vertices>>,
+    changed_verts: Query<(&Vertices, &Highlight), Changed<Vertices>>,
     mut trans_query: Query<&mut Transform, Without<Highlight>>,
     mut handle_query: Query<&mut Mesh2dHandle>,
     polygon_handles: Res<PolygonHandles>,
@@ -118,7 +117,7 @@ pub fn transform_highlights(
         trans_query.get_mut(h.0).unwrap().scale.x = t.scale.x + 5.;
         trans_query.get_mut(h.0).unwrap().scale.y = t.scale.y + 5.;
     }
-    for (v, h) in resized.iter() {
+    for (v, h) in changed_verts.iter() {
         if let Ok(mut handle) = handle_query.get_mut(h.0) {
             *handle = polygon_handles.0[v.0].clone().unwrap();
         }
@@ -129,7 +128,7 @@ pub fn mark_visible_circles(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     mut commands: Commands,
     marked_circles: Query<Entity, With<Visible>>,
-    circles_query: Query<(), With<Radius>>,
+    circles_query: Query<(), With<Vertices>>,
     visible: Query<&VisibleEntities>,
 ) {
     if mouse_button_input.just_released(MouseButton::Left) {
@@ -173,7 +172,7 @@ pub fn draw_drawing_circle(
 pub fn update_selection(
     mut commands: Commands,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
-    query: Query<(Entity, &Radius, &GlobalTransform), Or<(With<Visible>, With<Selected>)>>,
+    query: Query<(Entity, &GlobalTransform), Or<(With<Visible>, With<Selected>)>>,
     selected: Query<Entity, With<Selected>>,
     selected_query: Query<&Selected>,
     cursor: Res<CursorInfo>,
@@ -190,15 +189,16 @@ pub fn update_selection(
     let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
     let alt = keyboard_input.any_pressed([KeyCode::AltLeft, KeyCode::AltRight]);
     if mouse_button_input.just_pressed(MouseButton::Left) {
-        for (e, r, t) in query.iter() {
+        for (e, t) in query.iter() {
+            let t = t.compute_transform();
             if top_clicked_circle.is_some() {
-                if t.translation().z > top_clicked_circle.unwrap().1 &&
-                    cursor.i.distance(t.translation().xy()) < r.0 {
-                    *top_clicked_circle = Some((e, t.translation().z));
+                if t.translation.z > top_clicked_circle.unwrap().1 &&
+                    cursor.i.distance(t.translation.xy()) < t.scale.x {
+                    *top_clicked_circle = Some((e, t.translation.z));
                 }
             } else {
-                if cursor.i.distance(t.translation().xy()) < r.0 {
-                    *top_clicked_circle = Some((e, t.translation().z));
+                if cursor.i.distance(t.translation.xy()) < t.scale.x {
+                    *top_clicked_circle = Some((e, t.translation.z));
                 }
             }
         }
@@ -231,8 +231,9 @@ pub fn update_selection(
                 }
             }
             // select those in the dragged area
-            for (e, r, t) in query.iter() {
-                if cursor.i.distance(cursor.f) + r.0 > cursor.i.distance(t.translation().xy()) {
+            for (e, t) in query.iter() {
+                let t = t.compute_transform();
+                if cursor.i.distance(cursor.f) + t.scale.x > cursor.i.distance(t.translation.xy()) {
                     // only select holes if ctrl is held
                     if ctrl && order_query.contains(e) { continue; }
                     // only select non-holes if alt is held
@@ -427,7 +428,7 @@ pub fn update_mat(
 }
 
 pub fn update_radius(
-    mut query: Query<(&mut Radius, &mut Transform), With<Selected>>,
+    mut query: Query<&mut Transform, With<Selected>>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     cursor: Res<CursorInfo>,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
@@ -436,25 +437,21 @@ pub fn update_radius(
     if drag_modes.r {
         if mouse_button_input.pressed(MouseButton::Left)
         && !mouse_button_input.just_pressed(MouseButton::Left) {
-            for (mut r, mut t) in query.iter_mut() {
-                r.0 += cursor.d.y;
-                r.0 = r.0.max(0.);
-                t.scale.x = r.0;
-                t.scale.y = r.0;
+            for mut t in query.iter_mut() {
+                t.scale.x = (t.scale.x + cursor.d.y).max(0.);
+                t.scale.y = (t.scale.y + cursor.d.y).max(0.);
             }
         }
         if keyboard_input.any_pressed([KeyCode::ArrowUp, KeyCode::ArrowRight]) {
-            for (mut r, mut t) in query.iter_mut() {
-                r.0 += 1.;
-                t.scale.x = r.0;
-                t.scale.y = r.0;
+            for mut t in query.iter_mut() {
+                t.scale.x = (t.scale.x + 1.).max(0.);
+                t.scale.y = (t.scale.y + 1.).max(0.);
             }
         }
         if keyboard_input.any_pressed([KeyCode::ArrowDown, KeyCode::ArrowLeft]) {
-            for (mut r, mut t) in query.iter_mut() {
-                r.0 = (r.0 - 1.).max(0.);
-                t.scale.x = r.0;
-                t.scale.y = r.0;
+            for mut t in query.iter_mut() {
+                t.scale.x = (t.scale.x - 1.).max(0.);
+                t.scale.y = (t.scale.y - 1.).max(0.);
             }
         }
     }
@@ -550,8 +547,8 @@ pub fn update_num(
 
 pub fn update_info_text(
     mut text_query: Query<&mut Text>,
-    mut text_trans: Query<&mut Transform, Without<Radius>>,
-    trans_query: Query<(&GlobalTransform, &InfoText), (Or<(Changed<Transform>, Added<InfoText>)>, With<Radius>)>,
+    mut text_trans: Query<&mut Transform, (Without<Vertices>, Without<InfoText>)>,
+    trans_query: Query<(&GlobalTransform, &InfoText), Or<(Changed<Transform>, Added<InfoText>)>>,
     order_query: Query<(&Order, &InfoText), Or<(Changed<Order>, Added<InfoText>)>>,
     num_query: Query<(&Number, &InfoText), Or<(Changed<Number>, Added<InfoText>)>>,
     op_query: Query<(&Op, &InfoText), Or<(Changed<Op>, Added<InfoText>)>>,

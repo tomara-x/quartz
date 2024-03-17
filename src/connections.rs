@@ -15,34 +15,33 @@ use crate::{
 pub fn connect(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     mut commands: Commands,
-    query: Query<(Entity, &Radius, &GlobalTransform), (With<Visible>, With<Order>)>,
+    query: Query<(Entity, &GlobalTransform, &Vertices), With<Visible>>,
     cursor: Res<CursorInfo>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
-    rad_query: Query<&Radius>,
-    trans_query: Query<&GlobalTransform>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut order_query: Query<&mut Order>,
     mut order_change: EventWriter<OrderChange>,
     children_query: Query<&Children>,
     mut gained_wh_query: Query<&mut GainedWH>,
-    default_verts: Res<DefaultDrawVerts>,
     connection_color: Res<ConnectionColor>,
     default_lt: Res<DefaultLT>,
+    polygon_handles: Res<PolygonHandles>,
 ) {
     if mouse_button_input.just_released(MouseButton::Left)
     && !keyboard_input.pressed(KeyCode::KeyT)
     && !keyboard_input.pressed(KeyCode::Space) {
         let mut source_entity: (Option<Entity>, f32) = (None, f32::MIN);
         let mut sink_entity: (Option<Entity>, f32) = (None, f32::MIN);
-        for (e, r, t) in query.iter() {
-            if cursor.i.distance(t.translation().xy()) < r.0
-                && t.translation().z > source_entity.1 {
-                source_entity = (Some(e), t.translation().z);
+        for (e, t, _) in query.iter() {
+            let t = t.compute_transform();
+            if cursor.i.distance(t.translation.xy()) < t.scale.x
+                && t.translation.z > source_entity.1 {
+                source_entity = (Some(e), t.translation.z);
             }
-            if cursor.f.distance(t.translation().xy()) < r.0
-                && t.translation().z > sink_entity.1 {
-                sink_entity = (Some(e), t.translation().z);
+            if cursor.f.distance(t.translation.xy()) < t.scale.x
+                && t.translation.z > sink_entity.1 {
+                sink_entity = (Some(e), t.translation.z);
             }
         }
 
@@ -59,10 +58,14 @@ pub fn connect(
                 order_change.send_default();
             }
             // get radius and transform
-            let src_radius = rad_query.get(src).unwrap().0;
-            let snk_radius = rad_query.get(snk).unwrap().0;
-            let src_trans = trans_query.get(src).unwrap().translation();
-            let snk_trans = trans_query.get(snk).unwrap().translation();
+            let src_trans = query.get(src).unwrap().1.compute_transform();
+            let snk_trans = query.get(snk).unwrap().1.compute_transform();
+            let src_radius = src_trans.scale.x;
+            let snk_radius = snk_trans.scale.x;
+            let src_trans = src_trans.translation;
+            let snk_trans = snk_trans.translation;
+            let src_verts = query.get(src).unwrap().2.0;
+            let snk_verts = query.get(snk).unwrap().2.0;
 
             // spawn connection arrow
             let arrow = commands.spawn((
@@ -82,35 +85,42 @@ pub fn connect(
             )).id();
             // spawn circles
             let mut bh_depth: f32 = 0.001;
-            let v = default_verts.0;
+            let bh_verts = snk_verts;
             let bh_color = Color::hsl(0., 0., 0.2);
             if let Ok(children) = children_query.get(src) { bh_depth *= (children.len() + 1) as f32; }
             let black_hole = commands.spawn(( ColorMesh2dBundle {
-                    mesh: meshes.add(RegularPolygon::new(src_radius * 0.15, v)).into(),
+                    mesh: polygon_handles.0[bh_verts].clone().unwrap(),
                     material: materials.add(ColorMaterial::from(bh_color)),
-                    transform: Transform::from_translation((cursor.i - src_trans.xy()).extend(bh_depth)),
+                    transform: Transform {
+                        translation: (cursor.i - src_trans.xy()).extend(bh_depth),
+                        scale: Vec3::new(src_radius * 0.15, src_radius * 0.15, 1.),
+                        ..default()
+                    },
                     ..default()
                 },
                 Visible,
-                Radius(src_radius * 0.15),
                 Col(bh_color),
-                Vertices(v),
+                Vertices(bh_verts),
                 RenderLayers::layer(2),
                 Save,
             )).id();
             let mut wh_depth: f32 = 0.001;
+            let wh_verts = src_verts;
             let wh_color = Color::hsl(0., 0., 0.8);
             if let Ok(children) = children_query.get(snk) { wh_depth *= (children.len() + 1) as f32; }
             let white_hole = commands.spawn(( ColorMesh2dBundle {
-                    mesh: meshes.add(RegularPolygon::new(snk_radius * 0.15, v)).into(),
+                    mesh: polygon_handles.0[bh_verts].clone().unwrap(),
                     material: materials.add(ColorMaterial::from(wh_color)),
-                    transform: Transform::from_translation((cursor.f - snk_trans.xy()).extend(wh_depth)),
+                    transform: Transform {
+                        translation: (cursor.f - snk_trans.xy()).extend(wh_depth),
+                        scale: Vec3::new(src_radius * 0.15, src_radius * 0.15, 1.),
+                        ..default()
+                    },
                     ..default()
                 },
                 Visible,
-                Radius(snk_radius * 0.15),
                 Col(wh_color),
-                Vertices(v),
+                Vertices(wh_verts),
                 WhiteHole {
                     bh_parent: src,
                     bh: black_hole,
@@ -138,7 +148,7 @@ pub fn connect(
 
 pub fn target(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
-    query: Query<(Entity, &Radius, &GlobalTransform), With<Visible>>,
+    query: Query<(Entity, &GlobalTransform), With<Visible>>,
     cursor: Res<CursorInfo>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut targets_query: Query<&mut Targets>,
@@ -148,14 +158,15 @@ pub fn target(
     && !keyboard_input.pressed(KeyCode::Space) {
         let mut source_entity: (Option<Entity>, f32) = (None, f32::MIN);
         let mut sink_entity: (Option<Entity>, f32) = (None, f32::MIN);
-        for (e, r, t) in query.iter() {
-            if cursor.i.distance(t.translation().xy()) < r.0
-            && t.translation().z > source_entity.1 {
-                source_entity = (Some(e), t.translation().z);
+        for (e, t) in query.iter() {
+            let t = t.compute_transform();
+            if cursor.i.distance(t.translation.xy()) < t.scale.x
+            && t.translation.z > source_entity.1 {
+                source_entity = (Some(e), t.translation.z);
             }
-            if cursor.f.distance(t.translation().xy()) < r.0
-            && t.translation().z > sink_entity.1 {
-                sink_entity = (Some(e), t.translation().z);
+            if cursor.f.distance(t.translation.xy()) < t.scale.x
+            && t.translation.z > sink_entity.1 {
+                sink_entity = (Some(e), t.translation.z);
             }
         }
         if let (Some(src), Some(snk)) = (source_entity.0, sink_entity.0) {
@@ -171,10 +182,9 @@ pub fn target(
 // TODO(tomara): try different values for the bh/wh loops! lol
 // this needs cleaning
 pub fn update_connection_arrows(
-    bh_query: Query<(Entity, &BlackHole), Or<(Changed<Transform>, Changed<Radius>)>>,
-    wh_query: Query<(Entity, &WhiteHole), Or<(Changed<Transform>, Changed<Radius>)>>,
+    bh_query: Query<(Entity, &BlackHole), Changed<Transform>>,
+    wh_query: Query<(Entity, &WhiteHole), Changed<Transform>>,
     trans_query: Query<&GlobalTransform>,
-    radius_query: Query<&Radius>,
     arrow_query: Query<&ConnectionArrow>,
     mut meshes: ResMut<Assets<Mesh>>,
     mesh_ids: Query<&Mesh2dHandle>,
@@ -182,10 +192,12 @@ pub fn update_connection_arrows(
 ) {
     for (id, bh) in bh_query.iter() {
         if let (Ok(i), Ok(f)) = (trans_query.get(id), trans_query.get(bh.wh)) {
-            let i = i.translation().xy();
-            let f = f.translation().xy();
-            let ip = radius_query.get(id).unwrap().0;
-            let fp = radius_query.get(bh.wh).unwrap().0;
+            let it = i.compute_transform();
+            let ft = f.compute_transform();
+            let i = it.translation.xy();
+            let f = ft.translation.xy();
+            let ip = it.scale.x;
+            let fp = ft.scale.x;
             if let Ok(arrow_id) = arrow_query.get(bh.wh) {
                 let aabb = Aabb::enclosing([i.extend(1.), f.extend(1.)]).unwrap();
                 *aabb_query.get_mut(arrow_id.0).unwrap() = aabb;
@@ -197,10 +209,12 @@ pub fn update_connection_arrows(
     }
     for (id, wh) in wh_query.iter() {
         if let (Ok(f), Ok(i)) = (trans_query.get(id), trans_query.get(wh.bh)) {
-            let f = f.translation().xy();
-            let i = i.translation().xy();
-            let fp = radius_query.get(id).unwrap().0;
-            let ip = radius_query.get(wh.bh).unwrap().0;
+            let ft = f.compute_transform();
+            let it = i.compute_transform();
+            let f = ft.translation.xy();
+            let i = it.translation.xy();
+            let fp = ft.scale.x;
+            let ip = it.scale.x;
             if let Ok(arrow_id) = arrow_query.get(id) {
                 let aabb = Aabb::enclosing([i.extend(1.), f.extend(1.)]).unwrap();
                 *aabb_query.get_mut(arrow_id.0).unwrap() = aabb;

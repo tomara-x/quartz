@@ -131,7 +131,6 @@ fn main() {
         // type registry
         .register_type::<DragModes>()
         .register_type::<Queue>()
-        .register_type::<Radius>()
         .register_type::<Col>()
         .register_type::<Op>()
         .register_type::<Number>()
@@ -265,7 +264,6 @@ fn save_scene(world: &mut World) {
         let name = event.0.to_string();
         let mut query = world.query_filtered::<Entity, With<Save>>();
         let scene = DynamicSceneBuilder::from_world(&world)
-            .allow::<Radius>()
             .allow::<Col>()
             .allow::<Transform>()
             .allow::<Op>()
@@ -306,7 +304,6 @@ fn save_scene(world: &mut World) {
 fn copy_scene(world: &mut World) {
     let mut query = world.query_filtered::<Entity, With<Selected>>();
     let scene = DynamicSceneBuilder::from_world(&world)
-        .allow::<Radius>()
         .allow::<Col>()
         .allow::<Transform>()
         .allow::<Op>()

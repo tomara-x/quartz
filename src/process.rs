@@ -60,7 +60,6 @@ pub struct Access<'w, 's> {
     op_query: Query<'w, 's, &'static mut Op>,
     bloom: Query<'w, 's, & 'static mut BloomSettings, With<Camera>>,
     num_query: Query<'w, 's, &'static mut Number>,
-    radius_query: Query<'w, 's, &'static mut Radius>,
     trans_query: Query<'w, 's, &'static mut Transform>,
     arr_query: Query<'w, 's, &'static mut Arr>,
     tonemapping: Query<'w, 's, &'static mut Tonemapping, With<Camera>>,
@@ -111,7 +110,7 @@ pub fn process(
                     let mut input = 0.;
                     match wh.link_types.0 {
                         -1 => { input = access.num_query.get(wh.bh_parent).unwrap().0; }
-                        -2 => { input = access.radius_query.get(wh.bh_parent).unwrap().0; }
+                        -2 => { input = access.trans_query.get(wh.bh_parent).unwrap().scale.x; }
                         -3 => { input = access.trans_query.get(wh.bh_parent).unwrap().translation.x; }
                         -4 => { input = access.trans_query.get(wh.bh_parent).unwrap().translation.y; }
                         -5 => { input = access.trans_query.get(wh.bh_parent).unwrap().translation.z; }
@@ -127,7 +126,10 @@ pub fn process(
                     }
                     match wh.link_types.1 {
                         -1 => { access.num_query.get_mut(*id).unwrap().0 = input; }
-                        -2 => { access.radius_query.get_mut(*id).unwrap().0 = input.max(0.); }
+                        -2 => {
+                            access.trans_query.get_mut(*id).unwrap().scale.x = input.max(0.);
+                            access.trans_query.get_mut(*id).unwrap().scale.y = input.max(0.);
+                        }
                         -3 => { access.trans_query.get_mut(*id).unwrap().translation.x = input; }
                         -4 => { access.trans_query.get_mut(*id).unwrap().translation.y = input; }
                         -5 => { access.trans_query.get_mut(*id).unwrap().translation.z = input; }
@@ -498,7 +500,7 @@ pub fn process(
                 "butt" => {
                     if mouse_button_input.just_pressed(MouseButton::Left) {
                         let t = access.trans_query.get(*id).unwrap().translation.xy();
-                        let r = access.radius_query.get(*id).unwrap().0;
+                        let r = access.trans_query.get(*id).unwrap().scale.x;
                         if cursor.i.distance_squared(t) < r*r {
                             access.num_query.get_mut(*id).unwrap().0 = 1.;
                             lt_to_open = Some(-1);
@@ -512,7 +514,7 @@ pub fn process(
                 "toggle" => {
                     if mouse_button_input.just_pressed(MouseButton::Left) {
                         let t = access.trans_query.get(*id).unwrap().translation.xy();
-                        let r = access.radius_query.get(*id).unwrap().0;
+                        let r = access.trans_query.get(*id).unwrap().scale.x;
                         if cursor.i.distance_squared(t) < r*r {
                             let n = access.num_query.get(*id).unwrap().0;
                             access.num_query.get_mut(*id).unwrap().0 = 1. - n;
@@ -753,11 +755,14 @@ pub fn process(
                                 let targets = &access.targets_query.get(*id).unwrap().0;
                                 let len = Ord::min(arr.len(), targets.len());
                                 for i in 0..len {
-                                    if access.radius_query.get(targets[i]).is_err() { continue; }
+                                    if access.vertices_query.get(targets[i]).is_err() { continue; }
                                     // input link type determines what property to write to in targets
                                     match wh.link_types.1 {
                                         -1 => { access.num_query.get_mut(targets[i]).unwrap().0 = arr[i]; }
-                                        -2 => { access.radius_query.get_mut(targets[i]).unwrap().0 = arr[i].max(0.1); }
+                                        -2 => {
+                                            access.trans_query.get_mut(targets[i]).unwrap().scale.x = arr[i].max(0.1);
+                                            access.trans_query.get_mut(targets[i]).unwrap().scale.y = arr[i].max(0.1);
+                                        }
                                         -3 => { access.trans_query.get_mut(targets[i]).unwrap().translation.x = arr[i]; }
                                         -4 => { access.trans_query.get_mut(targets[i]).unwrap().translation.y = arr[i]; }
                                         -5 => { access.trans_query.get_mut(targets[i]).unwrap().translation.z = arr[i]; }

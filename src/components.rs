@@ -30,10 +30,6 @@ pub struct Arr(pub Vec<f32>);
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
-pub struct Radius(pub f32);
-
-#[derive(Component, Reflect, Default)]
-#[reflect(Component)]
 pub struct Vertices(pub usize);
 
 #[derive(Component, Reflect, Default)]

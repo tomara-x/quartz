@@ -18,7 +18,6 @@ use fundsp::audiounit::AudioUnit32;
 pub struct Access<'w, 's> {
     op_query: Query<'w, 's, &'static mut Op>,
     num_query: Query<'w, 's, &'static mut Number>,
-    radius_query: Query<'w, 's, &'static mut Radius>,
     col_query: Query<'w, 's, &'static mut Col>,
     trans_query: Query<'w, 's, &'static mut Transform>,
     arr_query: Query<'w, 's, &'static mut Arr>,
@@ -49,7 +48,7 @@ pub fn command_parser(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut key_event: EventReader<KeyboardInput>,
     mut command_line_text: Query<&mut Text, With<CommandText>>,
-    circles_query: Query<Entity, With<Radius>>,
+    circles_query: Query<Entity, With<Vertices>>,
     mut access: Access,
     mut next_mode: ResMut<NextState<Mode>>,
     mode: Res<State<Mode>>,
@@ -310,18 +309,20 @@ pub fn command_parser(
                             Some("r") => {
                                 if let Some(s) = command.next() {
                                     if let Some(e) = str_to_id(s) {
-                                        if let Ok(mut radius) = access.radius_query.get_mut(e) {
+                                        if let Ok(mut trans) = access.trans_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = parse_with_constants(n) {
-                                                    radius.0 = n.max(0.);
+                                                    trans.scale.x = n.max(0.);
+                                                    trans.scale.y = n.max(0.);
                                                     lt_to_open = (Some(e), Some(-2));
                                                 }
                                             }
                                         }
                                     } else if let Ok(n) = parse_with_constants(s) {
                                         for id in access.selected_query.iter() {
-                                            if let Ok(mut radius) = access.radius_query.get_mut(id) {
-                                                radius.0 = n.max(0.);
+                                            if let Ok(mut trans) = access.trans_query.get_mut(id) {
+                                                trans.scale.x = n.max(0.);
+                                                trans.scale.y = n.max(0.);
                                             }
                                         }
                                         lt_to_open = (None, Some(-2));
@@ -901,7 +902,7 @@ pub fn command_parser(
             Some("ira") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
-                    let ra = access.radius_query.get(e).unwrap().0;
+                    let ra = access.trans_query.get(e).unwrap().scale.x;
                     t = t + &format!("[{:?}]{}  ", e, ra);
                 }
                 *text = format!(">RADIUS: {}", t);
