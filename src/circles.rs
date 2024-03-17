@@ -251,7 +251,6 @@ pub fn move_selected(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     cursor: Res<CursorInfo>,
     mut circle_query: Query<&mut Transform, (With<Selected>, Without<Parent>)>,
-    //mut hole_query: Query<(&mut Transform, &Parent), With<Selected>>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     drag_modes: Res<DragModes>,
 ) {
@@ -262,52 +261,26 @@ pub fn move_selected(
                 t.translation.x += cursor.d.x;
                 t.translation.y += cursor.d.y;
             }
-            //for (mut t, parent) in hole_query.iter_mut() {
-            //    if !circle_query.contains(**parent) {
-            //        t.translation.x += cursor.d.x;
-            //        t.translation.y += cursor.d.y;
-            //    }
-            //}
         }
         if keyboard_input.pressed(KeyCode::ArrowUp) {
             for mut t in circle_query.iter_mut() {
                 t.translation.y += 1.;
             }
-            //for (mut t, parent) in hole_query.iter_mut() {
-            //    if !circle_query.contains(**parent) {
-            //        t.translation.y += 1.;
-            //    }
-            //}
         }
         if keyboard_input.pressed(KeyCode::ArrowDown) {
             for mut t in circle_query.iter_mut() {
                 t.translation.y -= 1.;
             }
-            //for (mut t, parent) in hole_query.iter_mut() {
-            //    if !circle_query.contains(**parent) {
-            //        t.translation.y -= 1.;
-            //    }
-            //}
         }
         if keyboard_input.pressed(KeyCode::ArrowRight) {
             for mut t in circle_query.iter_mut() {
                 t.translation.x += 1.;
             }
-            //for (mut t, parent) in hole_query.iter_mut() {
-            //    if !circle_query.contains(**parent) {
-            //        t.translation.x += 1.;
-            //    }
-            //}
         }
         if keyboard_input.pressed(KeyCode::ArrowLeft) {
             for mut t in circle_query.iter_mut() {
                 t.translation.x -= 1.;
             }
-            //for (mut t, parent) in hole_query.iter_mut() {
-            //    if !circle_query.contains(**parent) {
-            //        t.translation.x -= 1.;
-            //    }
-            //}
         }
     }
 }
