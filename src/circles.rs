@@ -471,10 +471,10 @@ pub fn update_vertices(
 pub fn update_mesh(
     mut meshes: ResMut<Assets<Mesh>>,
     mut handle_query: Query<&mut Mesh2dHandle>,
-    mut query: Query<(Entity, &Vertices), Changed<Vertices>>,
+    query: Query<(Entity, &Vertices), Changed<Vertices>>,
     mut polygon_handles: ResMut<PolygonHandles>,
 ) {
-    for (id, v) in query.iter_mut() {
+    for (id, v) in query.iter() {
         if polygon_handles.0.len() <= v.0 {
             polygon_handles.0.resize(v.0 + 1, None);
         }
