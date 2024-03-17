@@ -406,6 +406,7 @@ fn post_load(
                                 RenderLayers::layer(1),
                             ));
                             let holes = &mut holes_query.get_mut(*child).unwrap().0;
+                            holes.retain(|x| white_hole_query.contains(*x) || black_hole_query.contains(*x));
                             for hole in holes {
                                 if let Ok(mut wh) = white_hole_query.get_mut(*hole) {
                                     if black_hole_query.contains(wh.bh) && main_query.contains(wh.bh_parent) {
