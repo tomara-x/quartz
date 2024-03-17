@@ -930,7 +930,7 @@ pub fn command_parser(
                 }
                 *text = format!(">Z: {}", t);
             }
-            Some("ih") => {
+            Some("ihu") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
                     let h = access.col_query.get(e).unwrap().0.h();
@@ -1004,6 +1004,15 @@ pub fn command_parser(
                     }
                 }
                 *text = format!(">ARRAY: {}", t);
+            }
+            Some("iho") => {
+                let mut t = String::new();
+                for e in access.selected_query.iter() {
+                    if let Ok(holes) = holes_query.get(e) {
+                        t = t + &format!("[{:?}]{:?}  ", e, holes.0);
+                    }
+                }
+                *text = format!(">HOLES: {}", t);
             }
             Some("it") => {
                 let mut t = String::new();
