@@ -57,8 +57,7 @@ pub fn command_parser(
     info_text_query: Query<(Entity, &InfoText)>,
     mut ids_shown: Local<bool>,
     global_trans_rights: Query<&GlobalTransform>,
-    parent_query: Query<&Parent>,
-    children_query: Query<Ref<Children>>,
+    holes_query: Query<&Holes>,
 ) {
     let clt = &mut command_line_text.single_mut();
     if key_event.is_empty()
@@ -188,16 +187,16 @@ pub fn command_parser(
                                     if let Some(s) = command.next() {
                                         wh.link_types.1 = str_to_lt(s);
                                         wh.open = true;
-                                        let parent = parent_query.get(e).unwrap();
-                                        access.gained_wh_query.get_mut(**parent).unwrap().0 = true;
+                                        let parent = access.black_hole_query.get(wh.bh).unwrap().wh_parent;
+                                        access.gained_wh_query.get_mut(parent).unwrap().0 = true;
                                     }
                                 } else if let Ok(bh) = access.black_hole_query.get(e) {
                                     let wh = &mut access.white_hole_query.get_mut(bh.wh).unwrap();
                                     if let Some(s) = command.next() {
                                         wh.link_types.0 = str_to_lt(s);
                                         wh.open = true;
-                                        let parent = parent_query.get(bh.wh).unwrap();
-                                        access.gained_wh_query.get_mut(**parent).unwrap().0 = true;
+                                        let parent = access.white_hole_query.get(bh.wh).unwrap().bh_parent;
+                                        access.gained_wh_query.get_mut(parent).unwrap().0 = true;
                                     }
                                 }
                             } else {
@@ -205,14 +204,14 @@ pub fn command_parser(
                                     if let Ok(mut wh) = access.white_hole_query.get_mut(id) {
                                         wh.link_types.1 = str_to_lt(s);
                                         wh.open = true;
-                                        let parent = parent_query.get(id).unwrap();
-                                        access.gained_wh_query.get_mut(**parent).unwrap().0 = true;
+                                        let parent = access.black_hole_query.get(wh.bh).unwrap().wh_parent;
+                                        access.gained_wh_query.get_mut(parent).unwrap().0 = true;
                                     } else if let Ok(bh) = access.black_hole_query.get(id) {
                                         let wh = &mut access.white_hole_query.get_mut(bh.wh).unwrap();
                                         wh.link_types.0 = str_to_lt(s);
                                         wh.open = true;
-                                        let parent = parent_query.get(id).unwrap();
-                                        access.gained_wh_query.get_mut(**parent).unwrap().0 = true;
+                                        let parent = access.white_hole_query.get(bh.wh).unwrap().bh_parent;
+                                        access.gained_wh_query.get_mut(parent).unwrap().0 = true;
                                     }
                                 }
                             }
@@ -638,9 +637,9 @@ pub fn command_parser(
                 // open all white holes reading whatever changed
                 if let (None, Some(lt)) = lt_to_open {
                     for id in access.selected_query.iter() {
-                        if let Ok(children) = children_query.get(id) {
-                            for child in &children {
-                                if let Ok(bh) = access.black_hole_query.get(*child) {
+                        if let Ok(holes) = holes_query.get(id) {
+                            for hole in &holes.0 {
+                                if let Ok(bh) = access.black_hole_query.get(*hole) {
                                     if let Ok(wh) = access.white_hole_query.get_mut(bh.wh) {
                                         if wh.link_types.0 == lt {
                                             access.white_hole_query.get_mut(bh.wh).unwrap().open = true;
@@ -651,9 +650,9 @@ pub fn command_parser(
                         }
                     }
                 } else if let (Some(id), Some(lt)) = lt_to_open {
-                    if let Ok(children) = children_query.get(id) {
-                        for child in &children {
-                            if let Ok(bh) = access.black_hole_query.get(*child) {
+                    if let Ok(holes) = holes_query.get(id) {
+                        for hole in &holes.0 {
+                            if let Ok(bh) = access.black_hole_query.get(*hole) {
                                 if let Ok(wh) = access.white_hole_query.get_mut(bh.wh) {
                                     if wh.link_types.0 == lt {
                                         access.white_hole_query.get_mut(bh.wh).unwrap().open = true;
