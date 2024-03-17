@@ -58,7 +58,7 @@ pub struct Network(pub Net32);
 pub struct NetIns(pub Vec<Shared<f32>>);
 
 #[derive(Component, Reflect)]
-#[reflect(Component)]
+#[reflect(Component, MapEntities)]
 pub struct Holes(pub Vec<Entity>);
 impl FromWorld for Holes {
     fn from_world(_world: &mut World) -> Self {
