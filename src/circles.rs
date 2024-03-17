@@ -564,87 +564,79 @@ pub fn update_info_text(
     }
 }
 
-//pub fn delete_selected_circles(
-//    keyboard_input: Res<ButtonInput<KeyCode>>,
-//    query: Query<Entity, (With<Selected>, With<Order>)>,
-//    bh_query: Query<&BlackHole, Without<Selected>>,
-//    wh_query: Query<&WhiteHole, Without<Selected>>,
-//    arrow_query: Query<&ConnectionArrow>,
-//    mut commands: Commands,
-//    mut order_change: EventWriter<OrderChange>,
-//    info_text_query: Query<&InfoText>,
-//    children_query: Query<&Children>,
-//    highlight_query: Query<&Highlight>,
-//    parent_query: Query<&Parent>,
-//    mut lost_wh_query: Query<&mut LostWH>,
-//) {
-//    let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
-//    if keyboard_input.just_pressed(KeyCode::Delete) && !shift {
-//        for e in query.iter() {
-//            if let Ok(children) = children_query.get(e) {
-//                for child in children {
-//                    // TODO(amy): do we need to remove parent?
-//                    if let Ok(bh) = bh_query.get(*child) {
-//                        if wh_query.contains(bh.wh) {
-//                            let arrow = arrow_query.get(bh.wh).unwrap().0;
-//                            commands.entity(arrow).despawn();
-//                            commands.entity(*child).remove_parent();
-//                            commands.entity(*child).despawn_recursive();
-//                            commands.entity(bh.wh).remove_parent();
-//                            commands.entity(bh.wh).despawn_recursive();
-//                            if let Ok(wh_text) = info_text_query.get(bh.wh) {
-//                                commands.entity(wh_text.0).despawn();
-//                            }
-//                            if let Ok(bh_text) = info_text_query.get(*child) {
-//                                commands.entity(bh_text.0).despawn();
-//                            }
-//                            if let Ok(highlight) = highlight_query.get(bh.wh) {
-//                                commands.entity(highlight.0).despawn();
-//                            }
-//                            if let Ok(highlight) = highlight_query.get(*child) {
-//                                commands.entity(highlight.0).despawn();
-//                            }
-//                            // parent of wh lost a connection
-//                            let parent = parent_query.get(bh.wh).unwrap();
-//                            lost_wh_query.get_mut(**parent).unwrap().0 = true;
-//                        }
-//                    } else if let Ok(wh) = wh_query.get(*child) {
-//                        if bh_query.contains(wh.bh) {
-//                            // don't remove things that will get removed later
-//                            if query.contains(wh.bh_parent) { continue; }
-//                            let arrow = arrow_query.get(*child).unwrap().0;
-//                            commands.entity(arrow).despawn();
-//                            commands.entity(wh.bh).remove_parent();
-//                            commands.entity(wh.bh).despawn_recursive();
-//                            commands.entity(*child).remove_parent();
-//                            commands.entity(*child).despawn_recursive();
-//                            if let Ok(wh_text) = info_text_query.get(*child) {
-//                                commands.entity(wh_text.0).despawn();
-//                            }
-//                            if let Ok(bh_text) = info_text_query.get(wh.bh) {
-//                                commands.entity(bh_text.0).despawn();
-//                            }
-//                            if let Ok(highlight) = highlight_query.get(*child) {
-//                                commands.entity(highlight.0).despawn();
-//                            }
-//                            if let Ok(highlight) = highlight_query.get(wh.bh) {
-//                                commands.entity(highlight.0).despawn();
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//            if let Ok(text) = info_text_query.get(e) {
-//                commands.entity(text.0).despawn();
-//            }
-//            if let Ok(highlight) = highlight_query.get(e) {
-//                commands.entity(highlight.0).despawn();
-//            }
-//            commands.entity(e).despawn();
-//            order_change.send_default();
-//        }
-//    }
-//}
+pub fn delete_selected_circles(
+    keyboard_input: Res<ButtonInput<KeyCode>>,
+    query: Query<Entity, With<Selected>>,
+    bh_query: Query<&BlackHole, Without<Selected>>,
+    wh_query: Query<&WhiteHole, Without<Selected>>,
+    arrow_query: Query<&ConnectionArrow>,
+    mut commands: Commands,
+    mut order_change: EventWriter<OrderChange>,
+    info_text_query: Query<&InfoText>,
+    holes_query: Query<&Holes>,
+    highlight_query: Query<&Highlight>,
+    mut lost_wh_query: Query<&mut LostWH>,
+) {
+    let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
+    if keyboard_input.just_pressed(KeyCode::Delete) && !shift {
+        for e in query.iter() {
+            if let Ok(holes) = holes_query.get(e) {
+                for hole in &holes.0 {
+                    if let Ok(bh) = bh_query.get(*hole) {
+                        if wh_query.contains(bh.wh) {
+                            let arrow = arrow_query.get(bh.wh).unwrap().0;
+                            commands.entity(arrow).despawn();
+                            commands.entity(*hole).despawn();
+                            commands.entity(bh.wh).despawn();
+                            if let Ok(wh_text) = info_text_query.get(bh.wh) {
+                                commands.entity(wh_text.0).despawn();
+                            }
+                            if let Ok(bh_text) = info_text_query.get(*hole) {
+                                commands.entity(bh_text.0).despawn();
+                            }
+                            if let Ok(highlight) = highlight_query.get(bh.wh) {
+                                commands.entity(highlight.0).despawn();
+                            }
+                            if let Ok(highlight) = highlight_query.get(*hole) {
+                                commands.entity(highlight.0).despawn();
+                            }
+                            //lost_wh_query.get_mut(bh.wh_parent).unwrap().0 = true;
+                        }
+                    } else if let Ok(wh) = wh_query.get(*hole) {
+                        if bh_query.contains(wh.bh) {
+                            // don't remove things that will get removed later
+                            if query.contains(wh.bh_parent) { continue; }
+                            let arrow = arrow_query.get(*hole).unwrap().0;
+                            commands.entity(arrow).despawn();
+                            commands.entity(wh.bh).despawn();
+                            commands.entity(*hole).despawn();
+                            if let Ok(wh_text) = info_text_query.get(*hole) {
+                                commands.entity(wh_text.0).despawn();
+                            }
+                            if let Ok(bh_text) = info_text_query.get(wh.bh) {
+                                commands.entity(bh_text.0).despawn();
+                            }
+                            if let Ok(highlight) = highlight_query.get(*hole) {
+                                commands.entity(highlight.0).despawn();
+                            }
+                            if let Ok(highlight) = highlight_query.get(wh.bh) {
+                                commands.entity(highlight.0).despawn();
+                            }
+                        }
+                    }
+                }
+            }
+            if let Ok(text) = info_text_query.get(e) {
+                commands.entity(text.0).despawn();
+            }
+            if let Ok(highlight) = highlight_query.get(e) {
+                commands.entity(highlight.0).despawn();
+            }
+            commands.entity(e).despawn();
+            order_change.send_default();
+        }
+    }
+}
 
 pub fn open_after_drag(
     mouse_button_input: Res<ButtonInput<MouseButton>>,

@@ -105,7 +105,7 @@ fn main() {
         .add_systems(Update, open_after_drag.run_if(in_state(Mode::Edit)))
         .add_systems(PreUpdate, transform_highlights)
         .add_systems(Update, rotate_selected.after(update_selection).run_if(in_state(Mode::Edit)))
-        //.add_systems(Update, (delete_selected_holes, delete_selected_circles).chain().run_if(in_state(Mode::Edit)))
+        .add_systems(Update, (delete_selected_holes, delete_selected_circles).chain().run_if(in_state(Mode::Edit)))
         // text
         .add_systems(PreUpdate, update_info_text)
         // events
