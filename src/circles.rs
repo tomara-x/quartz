@@ -53,6 +53,7 @@ pub fn spawn_circles(
             Arr(Vec::new()),
             Op("empty".to_string()),
             Targets(Vec::new()),
+            Holes(Vec::new()),
             Order(0),
             (
                 Network(Net32::new(0,1)),
@@ -250,7 +251,7 @@ pub fn move_selected(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     cursor: Res<CursorInfo>,
     mut circle_query: Query<&mut Transform, (With<Selected>, Without<Parent>)>,
-    mut hole_query: Query<(&mut Transform, &Parent), With<Selected>>,
+    //mut hole_query: Query<(&mut Transform, &Parent), With<Selected>>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     drag_modes: Res<DragModes>,
 ) {
@@ -261,52 +262,52 @@ pub fn move_selected(
                 t.translation.x += cursor.d.x;
                 t.translation.y += cursor.d.y;
             }
-            for (mut t, parent) in hole_query.iter_mut() {
-                if !circle_query.contains(**parent) {
-                    t.translation.x += cursor.d.x;
-                    t.translation.y += cursor.d.y;
-                }
-            }
+            //for (mut t, parent) in hole_query.iter_mut() {
+            //    if !circle_query.contains(**parent) {
+            //        t.translation.x += cursor.d.x;
+            //        t.translation.y += cursor.d.y;
+            //    }
+            //}
         }
         if keyboard_input.pressed(KeyCode::ArrowUp) {
             for mut t in circle_query.iter_mut() {
                 t.translation.y += 1.;
             }
-            for (mut t, parent) in hole_query.iter_mut() {
-                if !circle_query.contains(**parent) {
-                    t.translation.y += 1.;
-                }
-            }
+            //for (mut t, parent) in hole_query.iter_mut() {
+            //    if !circle_query.contains(**parent) {
+            //        t.translation.y += 1.;
+            //    }
+            //}
         }
         if keyboard_input.pressed(KeyCode::ArrowDown) {
             for mut t in circle_query.iter_mut() {
                 t.translation.y -= 1.;
             }
-            for (mut t, parent) in hole_query.iter_mut() {
-                if !circle_query.contains(**parent) {
-                    t.translation.y -= 1.;
-                }
-            }
+            //for (mut t, parent) in hole_query.iter_mut() {
+            //    if !circle_query.contains(**parent) {
+            //        t.translation.y -= 1.;
+            //    }
+            //}
         }
         if keyboard_input.pressed(KeyCode::ArrowRight) {
             for mut t in circle_query.iter_mut() {
                 t.translation.x += 1.;
             }
-            for (mut t, parent) in hole_query.iter_mut() {
-                if !circle_query.contains(**parent) {
-                    t.translation.x += 1.;
-                }
-            }
+            //for (mut t, parent) in hole_query.iter_mut() {
+            //    if !circle_query.contains(**parent) {
+            //        t.translation.x += 1.;
+            //    }
+            //}
         }
         if keyboard_input.pressed(KeyCode::ArrowLeft) {
             for mut t in circle_query.iter_mut() {
                 t.translation.x -= 1.;
             }
-            for (mut t, parent) in hole_query.iter_mut() {
-                if !circle_query.contains(**parent) {
-                    t.translation.x -= 1.;
-                }
-            }
+            //for (mut t, parent) in hole_query.iter_mut() {
+            //    if !circle_query.contains(**parent) {
+            //        t.translation.x -= 1.;
+            //    }
+            //}
         }
     }
 }
@@ -594,104 +595,104 @@ pub fn update_info_text(
     }
 }
 
-pub fn delete_selected_circles(
-    keyboard_input: Res<ButtonInput<KeyCode>>,
-    query: Query<Entity, (With<Selected>, With<Order>)>,
-    bh_query: Query<&BlackHole, Without<Selected>>,
-    wh_query: Query<&WhiteHole, Without<Selected>>,
-    arrow_query: Query<&ConnectionArrow>,
-    mut commands: Commands,
-    mut order_change: EventWriter<OrderChange>,
-    info_text_query: Query<&InfoText>,
-    children_query: Query<&Children>,
-    highlight_query: Query<&Highlight>,
-    parent_query: Query<&Parent>,
-    mut lost_wh_query: Query<&mut LostWH>,
-) {
-    let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
-    if keyboard_input.just_pressed(KeyCode::Delete) && !shift {
-        for e in query.iter() {
-            if let Ok(children) = children_query.get(e) {
-                for child in children {
-                    // TODO(amy): do we need to remove parent?
-                    if let Ok(bh) = bh_query.get(*child) {
-                        if wh_query.contains(bh.wh) {
-                            let arrow = arrow_query.get(bh.wh).unwrap().0;
-                            commands.entity(arrow).despawn();
-                            commands.entity(*child).remove_parent();
-                            commands.entity(*child).despawn_recursive();
-                            commands.entity(bh.wh).remove_parent();
-                            commands.entity(bh.wh).despawn_recursive();
-                            if let Ok(wh_text) = info_text_query.get(bh.wh) {
-                                commands.entity(wh_text.0).despawn();
-                            }
-                            if let Ok(bh_text) = info_text_query.get(*child) {
-                                commands.entity(bh_text.0).despawn();
-                            }
-                            if let Ok(highlight) = highlight_query.get(bh.wh) {
-                                commands.entity(highlight.0).despawn();
-                            }
-                            if let Ok(highlight) = highlight_query.get(*child) {
-                                commands.entity(highlight.0).despawn();
-                            }
-                            // parent of wh lost a connection
-                            let parent = parent_query.get(bh.wh).unwrap();
-                            lost_wh_query.get_mut(**parent).unwrap().0 = true;
-                        }
-                    } else if let Ok(wh) = wh_query.get(*child) {
-                        if bh_query.contains(wh.bh) {
-                            // don't remove things that will get removed later
-                            if query.contains(wh.bh_parent) { continue; }
-                            let arrow = arrow_query.get(*child).unwrap().0;
-                            commands.entity(arrow).despawn();
-                            commands.entity(wh.bh).remove_parent();
-                            commands.entity(wh.bh).despawn_recursive();
-                            commands.entity(*child).remove_parent();
-                            commands.entity(*child).despawn_recursive();
-                            if let Ok(wh_text) = info_text_query.get(*child) {
-                                commands.entity(wh_text.0).despawn();
-                            }
-                            if let Ok(bh_text) = info_text_query.get(wh.bh) {
-                                commands.entity(bh_text.0).despawn();
-                            }
-                            if let Ok(highlight) = highlight_query.get(*child) {
-                                commands.entity(highlight.0).despawn();
-                            }
-                            if let Ok(highlight) = highlight_query.get(wh.bh) {
-                                commands.entity(highlight.0).despawn();
-                            }
-                        }
-                    }
-                }
-            }
-            if let Ok(text) = info_text_query.get(e) {
-                commands.entity(text.0).despawn();
-            }
-            if let Ok(highlight) = highlight_query.get(e) {
-                commands.entity(highlight.0).despawn();
-            }
-            commands.entity(e).despawn();
-            order_change.send_default();
-        }
-    }
-}
+//pub fn delete_selected_circles(
+//    keyboard_input: Res<ButtonInput<KeyCode>>,
+//    query: Query<Entity, (With<Selected>, With<Order>)>,
+//    bh_query: Query<&BlackHole, Without<Selected>>,
+//    wh_query: Query<&WhiteHole, Without<Selected>>,
+//    arrow_query: Query<&ConnectionArrow>,
+//    mut commands: Commands,
+//    mut order_change: EventWriter<OrderChange>,
+//    info_text_query: Query<&InfoText>,
+//    children_query: Query<&Children>,
+//    highlight_query: Query<&Highlight>,
+//    parent_query: Query<&Parent>,
+//    mut lost_wh_query: Query<&mut LostWH>,
+//) {
+//    let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
+//    if keyboard_input.just_pressed(KeyCode::Delete) && !shift {
+//        for e in query.iter() {
+//            if let Ok(children) = children_query.get(e) {
+//                for child in children {
+//                    // TODO(amy): do we need to remove parent?
+//                    if let Ok(bh) = bh_query.get(*child) {
+//                        if wh_query.contains(bh.wh) {
+//                            let arrow = arrow_query.get(bh.wh).unwrap().0;
+//                            commands.entity(arrow).despawn();
+//                            commands.entity(*child).remove_parent();
+//                            commands.entity(*child).despawn_recursive();
+//                            commands.entity(bh.wh).remove_parent();
+//                            commands.entity(bh.wh).despawn_recursive();
+//                            if let Ok(wh_text) = info_text_query.get(bh.wh) {
+//                                commands.entity(wh_text.0).despawn();
+//                            }
+//                            if let Ok(bh_text) = info_text_query.get(*child) {
+//                                commands.entity(bh_text.0).despawn();
+//                            }
+//                            if let Ok(highlight) = highlight_query.get(bh.wh) {
+//                                commands.entity(highlight.0).despawn();
+//                            }
+//                            if let Ok(highlight) = highlight_query.get(*child) {
+//                                commands.entity(highlight.0).despawn();
+//                            }
+//                            // parent of wh lost a connection
+//                            let parent = parent_query.get(bh.wh).unwrap();
+//                            lost_wh_query.get_mut(**parent).unwrap().0 = true;
+//                        }
+//                    } else if let Ok(wh) = wh_query.get(*child) {
+//                        if bh_query.contains(wh.bh) {
+//                            // don't remove things that will get removed later
+//                            if query.contains(wh.bh_parent) { continue; }
+//                            let arrow = arrow_query.get(*child).unwrap().0;
+//                            commands.entity(arrow).despawn();
+//                            commands.entity(wh.bh).remove_parent();
+//                            commands.entity(wh.bh).despawn_recursive();
+//                            commands.entity(*child).remove_parent();
+//                            commands.entity(*child).despawn_recursive();
+//                            if let Ok(wh_text) = info_text_query.get(*child) {
+//                                commands.entity(wh_text.0).despawn();
+//                            }
+//                            if let Ok(bh_text) = info_text_query.get(wh.bh) {
+//                                commands.entity(bh_text.0).despawn();
+//                            }
+//                            if let Ok(highlight) = highlight_query.get(*child) {
+//                                commands.entity(highlight.0).despawn();
+//                            }
+//                            if let Ok(highlight) = highlight_query.get(wh.bh) {
+//                                commands.entity(highlight.0).despawn();
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//            if let Ok(text) = info_text_query.get(e) {
+//                commands.entity(text.0).despawn();
+//            }
+//            if let Ok(highlight) = highlight_query.get(e) {
+//                commands.entity(highlight.0).despawn();
+//            }
+//            commands.entity(e).despawn();
+//            order_change.send_default();
+//        }
+//    }
+//}
 
-pub fn mark_children_change(
-    query: Query<&Children, (With<Order>, Changed<Transform>)>,
-    mut trans_query: Query<&mut Transform, Without<Order>>,
-) {
-    for children in query.iter() {
-        for child in children {
-            trans_query.get_mut(*child).unwrap().set_changed();
-        }
-    }
-}
+//pub fn mark_children_change(
+//    query: Query<&Children, (With<Order>, Changed<Transform>)>,
+//    mut trans_query: Query<&mut Transform, Without<Order>>,
+//) {
+//    for children in query.iter() {
+//        for child in children {
+//            trans_query.get_mut(*child).unwrap().set_changed();
+//        }
+//    }
+//}
 
 pub fn open_after_drag(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     drag_modes: Res<DragModes>,
-    query: Query<&Children, With<Selected>>,
+    query: Query<&Holes, With<Selected>>,
     mut white_hole_query: Query<&mut WhiteHole>,
     black_hole_query: Query<&BlackHole>,
 ) {
@@ -708,9 +709,9 @@ pub fn open_after_drag(
         if drag_modes.a { lts_to_open.push(-9); }
         if drag_modes.o { lts_to_open.push(-12); }
         if drag_modes.v { lts_to_open.push(-11); }
-        for children in query.iter() {
-            for child in children {
-                if let Ok(bh) = black_hole_query.get(*child) {
+        for holes in query.iter() {
+            for hole in &holes.0 {
+                if let Ok(bh) = black_hole_query.get(*hole) {
                     if let Ok(wh) = white_hole_query.get(bh.wh) {
                         if lts_to_open.contains(&wh.link_types.0) {
                             white_hole_query.get_mut(bh.wh).unwrap().open = true;

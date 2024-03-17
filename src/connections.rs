@@ -22,7 +22,7 @@ pub fn connect(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut order_query: Query<&mut Order>,
     mut order_change: EventWriter<OrderChange>,
-    children_query: Query<&Children>,
+    mut holes_query: Query<&mut Holes>,
     mut gained_wh_query: Query<&mut GainedWH>,
     connection_color: Res<ConnectionColor>,
     default_lt: Res<DefaultLT>,
@@ -84,15 +84,14 @@ pub fn connect(
                 RenderLayers::layer(4),
             )).id();
             // spawn circles
-            let mut bh_depth: f32 = 0.001;
+            let bh_depth = 0.001 * (holes_query.get(src).unwrap().0.len() + 1) as f32;
             let bh_verts = snk_verts;
             let bh_color = Color::hsl(0., 0., 0.2);
-            if let Ok(children) = children_query.get(src) { bh_depth *= (children.len() + 1) as f32; }
             let black_hole = commands.spawn(( ColorMesh2dBundle {
                     mesh: polygon_handles.0[bh_verts].clone().unwrap(),
                     material: materials.add(ColorMaterial::from(bh_color)),
                     transform: Transform {
-                        translation: (cursor.i - src_trans.xy()).extend(bh_depth),
+                        translation: cursor.i.extend(bh_depth + src_trans.z),
                         scale: Vec3::new(src_radius * 0.15, src_radius * 0.15, 1.),
                         ..default()
                     },
@@ -104,15 +103,14 @@ pub fn connect(
                 RenderLayers::layer(2),
                 Save,
             )).id();
-            let mut wh_depth: f32 = 0.001;
+            let wh_depth = 0.001 * (holes_query.get(snk).unwrap().0.len() + 1) as f32;
             let wh_verts = src_verts;
             let wh_color = Color::hsl(0., 0., 0.8);
-            if let Ok(children) = children_query.get(snk) { wh_depth *= (children.len() + 1) as f32; }
             let white_hole = commands.spawn(( ColorMesh2dBundle {
                     mesh: polygon_handles.0[bh_verts].clone().unwrap(),
                     material: materials.add(ColorMaterial::from(wh_color)),
                     transform: Transform {
-                        translation: (cursor.f - snk_trans.xy()).extend(wh_depth),
+                        translation: cursor.f.extend(wh_depth + snk_trans.z),
                         scale: Vec3::new(src_radius * 0.15, src_radius * 0.15, 1.),
                         ..default()
                     },
@@ -140,8 +138,8 @@ pub fn connect(
                 });
                 
             // add to parents
-            commands.entity(src).add_child(black_hole);
-            commands.entity(snk).add_child(white_hole);
+            holes_query.get_mut(src).unwrap().0.push(black_hole);
+            holes_query.get_mut(snk).unwrap().0.push(white_hole);
         }
     }
 }
@@ -251,68 +249,68 @@ pub fn draw_connecting_arrow(
     }
 }
 
-pub fn delete_selected_holes(
-    keyboard_input: Res<ButtonInput<KeyCode>>,
-    bh_query: Query<(Entity, &BlackHole), With<Selected>>,
-    wh_query: Query<(Entity, &WhiteHole), With<Selected>>,
-    unselected: Query<Entity, (Without<Selected>, Or<(With<BlackHole>, With<WhiteHole>)>)>,
-    arrow_query: Query<&ConnectionArrow>,
-    mut commands: Commands,
-    info_text_query: Query<&InfoText>,
-    highlight_query: Query<&Highlight>,
-    parent_query: Query<&Parent>,
-    mut lost_wh_query: Query<&mut LostWH>,
-) {
-    if keyboard_input.just_pressed(KeyCode::Delete) {
-        for (e, bh) in bh_query.iter() {
-            if let Ok(wh_id) = unselected.get(bh.wh) {
-                let arrow = arrow_query.get(wh_id).unwrap().0;
-                commands.entity(arrow).despawn();
-                commands.entity(wh_id).remove_parent();
-                commands.entity(wh_id).despawn_recursive();
-                if let Ok(wh_text) = info_text_query.get(wh_id) {
-                    commands.entity(wh_text.0).despawn();
-                }
-                if let Ok(highlight) = highlight_query.get(wh_id) {
-                    commands.entity(highlight.0).despawn();
-                }
-                // parent has lost a connection
-                let parent = parent_query.get(wh_id).unwrap();
-                lost_wh_query.get_mut(**parent).unwrap().0 = true;
-            }
-            commands.entity(e).remove_parent();
-            commands.entity(e).despawn_recursive();
-            if let Ok(bh_text) = info_text_query.get(e) {
-                commands.entity(bh_text.0).despawn();
-            }
-            if let Ok(highlight) = highlight_query.get(e) {
-                commands.entity(highlight.0).despawn();
-            }
-        }
-        for (e, wh) in wh_query.iter() {
-            if let Ok(bh_id) = unselected.get(wh.bh) {
-                commands.entity(bh_id).remove_parent();
-                commands.entity(bh_id).despawn_recursive();
-                if let Ok(bh_text) = info_text_query.get(bh_id) {
-                    commands.entity(bh_text.0).despawn();
-                }
-                if let Ok(highlight) = highlight_query.get(bh_id) {
-                    commands.entity(highlight.0).despawn();
-                }
-            }
-            let arrow = arrow_query.get(e).unwrap().0;
-            commands.entity(arrow).despawn();
-            commands.entity(e).remove_parent();
-            commands.entity(e).despawn_recursive();
-            if let Ok(wh_text) = info_text_query.get(e) {
-                commands.entity(wh_text.0).despawn();
-            }
-            if let Ok(highlight) = highlight_query.get(e) {
-                commands.entity(highlight.0).despawn();
-            }
-            // parent has lost a connection
-            let parent = parent_query.get(e).unwrap();
-            lost_wh_query.get_mut(**parent).unwrap().0 = true;
-        }
-    }
-}
+//pub fn delete_selected_holes(
+//    keyboard_input: Res<ButtonInput<KeyCode>>,
+//    bh_query: Query<(Entity, &BlackHole), With<Selected>>,
+//    wh_query: Query<(Entity, &WhiteHole), With<Selected>>,
+//    unselected: Query<Entity, (Without<Selected>, Or<(With<BlackHole>, With<WhiteHole>)>)>,
+//    arrow_query: Query<&ConnectionArrow>,
+//    mut commands: Commands,
+//    info_text_query: Query<&InfoText>,
+//    highlight_query: Query<&Highlight>,
+//    parent_query: Query<&Parent>,
+//    mut lost_wh_query: Query<&mut LostWH>,
+//) {
+//    if keyboard_input.just_pressed(KeyCode::Delete) {
+//        for (e, bh) in bh_query.iter() {
+//            if let Ok(wh_id) = unselected.get(bh.wh) {
+//                let arrow = arrow_query.get(wh_id).unwrap().0;
+//                commands.entity(arrow).despawn();
+//                commands.entity(wh_id).remove_parent();
+//                commands.entity(wh_id).despawn_recursive();
+//                if let Ok(wh_text) = info_text_query.get(wh_id) {
+//                    commands.entity(wh_text.0).despawn();
+//                }
+//                if let Ok(highlight) = highlight_query.get(wh_id) {
+//                    commands.entity(highlight.0).despawn();
+//                }
+//                // parent has lost a connection
+//                let parent = parent_query.get(wh_id).unwrap();
+//                lost_wh_query.get_mut(**parent).unwrap().0 = true;
+//            }
+//            commands.entity(e).remove_parent();
+//            commands.entity(e).despawn_recursive();
+//            if let Ok(bh_text) = info_text_query.get(e) {
+//                commands.entity(bh_text.0).despawn();
+//            }
+//            if let Ok(highlight) = highlight_query.get(e) {
+//                commands.entity(highlight.0).despawn();
+//            }
+//        }
+//        for (e, wh) in wh_query.iter() {
+//            if let Ok(bh_id) = unselected.get(wh.bh) {
+//                commands.entity(bh_id).remove_parent();
+//                commands.entity(bh_id).despawn_recursive();
+//                if let Ok(bh_text) = info_text_query.get(bh_id) {
+//                    commands.entity(bh_text.0).despawn();
+//                }
+//                if let Ok(highlight) = highlight_query.get(bh_id) {
+//                    commands.entity(highlight.0).despawn();
+//                }
+//            }
+//            let arrow = arrow_query.get(e).unwrap().0;
+//            commands.entity(arrow).despawn();
+//            commands.entity(e).remove_parent();
+//            commands.entity(e).despawn_recursive();
+//            if let Ok(wh_text) = info_text_query.get(e) {
+//                commands.entity(wh_text.0).despawn();
+//            }
+//            if let Ok(highlight) = highlight_query.get(e) {
+//                commands.entity(highlight.0).despawn();
+//            }
+//            // parent has lost a connection
+//            let parent = parent_query.get(e).unwrap();
+//            lost_wh_query.get_mut(**parent).unwrap().0 = true;
+//        }
+//    }
+//}

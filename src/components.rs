@@ -57,6 +57,22 @@ pub struct Network(pub Net32);
 #[derive(Component)]
 pub struct NetIns(pub Vec<Shared<f32>>);
 
+#[derive(Component, Reflect)]
+#[reflect(Component)]
+pub struct Holes(pub Vec<Entity>);
+impl FromWorld for Holes {
+    fn from_world(_world: &mut World) -> Self {
+        Holes(Vec::new())
+    }
+}
+impl MapEntities for Holes {
+    fn map_entities<M: EntityMapper>(&mut self, entity_mapper: &mut M) {
+        for entity in &mut self.0 {
+            *entity = entity_mapper.map_entity(*entity);
+        }
+    }
+}
+
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
 pub struct GainedWH(pub bool);
