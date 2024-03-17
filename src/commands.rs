@@ -1069,6 +1069,16 @@ pub fn command_parser(
             Some("sn") => {
                 *text = format!(">entities selected: {}", access.selected_query.iter().len());
             }
+            Some("sg") => {
+                for e in access.selected_query.iter() {
+                    if let Ok(holes) = holes_query.get(e) {
+                        for hole in &holes.0 {
+                            commands.entity(*hole).insert(Selected);
+                        }
+                    }
+                }
+                text.clear();
+            }
             // render layers
             Some("vv") => {
                 *access.render_layers.single_mut() = RenderLayers::all();

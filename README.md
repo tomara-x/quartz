@@ -148,6 +148,7 @@ audio unit info:
 - `sa` select all
 - `sc` select all circles
 - `sh` select all holes
+- `sg` select holes of the selected circles
 - `<delete>` delete selected entities
 - `<shift>+<delete>` will only delete selected connections
 - `yy` copy selection to clipboard
