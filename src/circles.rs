@@ -250,7 +250,7 @@ pub fn update_selection(
 pub fn move_selected(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     cursor: Res<CursorInfo>,
-    mut circle_query: Query<&mut Transform, (With<Selected>, Without<Parent>)>,
+    mut circle_query: Query<&mut Transform, With<Selected>>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     drag_modes: Res<DragModes>,
 ) {
