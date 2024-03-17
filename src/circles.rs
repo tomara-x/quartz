@@ -73,14 +73,13 @@ pub fn spawn_circles(
 pub fn highlight_selected(
     mut commands: Commands,
     mut materials: ResMut<Assets<ColorMaterial>>,
-    selected: Query<(Entity, &Vertices, &GlobalTransform), (With<Selected>, Without<Highlight>)>,
+    selected: Query<(Entity, &Vertices, &Transform), (With<Selected>, Without<Highlight>)>,
     deselected: Query<Entity, (With<Highlight>, Without<Selected>)>,
     highlight_query: Query<&Highlight>,
     highlight_color: Res<HighlightColor>,
     polygon_handles: Res<PolygonHandles>,
 ) {
     for (e, v, t) in selected.iter() {
-        let t = t.compute_transform();
         let trans = t.translation.xy().extend(t.translation.z - 0.00001);
         let highlight = commands.spawn(
             ColorMesh2dBundle {
@@ -104,14 +103,13 @@ pub fn highlight_selected(
 }
 
 pub fn transform_highlights(
-    moved: Query<(&GlobalTransform, &Highlight), Changed<Transform>>,
+    moved: Query<(&Transform, &Highlight), Changed<Transform>>,
     changed_verts: Query<(&Vertices, &Highlight), Changed<Vertices>>,
     mut trans_query: Query<&mut Transform, Without<Highlight>>,
     mut handle_query: Query<&mut Mesh2dHandle>,
     polygon_handles: Res<PolygonHandles>,
 ) {
     for (t, h) in moved.iter() {
-        let t = t.compute_transform();
         let trans = t.translation.xy().extend(t.translation.z - 0.00001);
         trans_query.get_mut(h.0).unwrap().translation = trans;
         trans_query.get_mut(h.0).unwrap().rotation = t.rotation;
@@ -173,14 +171,14 @@ pub fn draw_drawing_circle(
 pub fn update_selection(
     mut commands: Commands,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
-    query: Query<(Entity, &GlobalTransform), Or<(With<Visible>, With<Selected>)>>,
+    query: Query<(Entity, &Transform), (Or<(With<Visible>, With<Selected>)>, With<Vertices>)>,
     selected: Query<Entity, With<Selected>>,
     selected_query: Query<&Selected>,
     cursor: Res<CursorInfo>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut top_clicked_circle: Local<Option<(Entity, f32)>>,
     id: Res<SelectionCircle>,
-    mut trans_query: Query<&mut Transform>,
+    mut trans_query: Query<&mut Transform, Without<Vertices>>,
     mut meshes: ResMut<Assets<Mesh>>,
     mesh_ids: Query<&Mesh2dHandle>,
     order_query: Query<(), With<Order>>, // non-hole circle
@@ -191,7 +189,6 @@ pub fn update_selection(
     let alt = keyboard_input.any_pressed([KeyCode::AltLeft, KeyCode::AltRight]);
     if mouse_button_input.just_pressed(MouseButton::Left) {
         for (e, t) in query.iter() {
-            let t = t.compute_transform();
             if top_clicked_circle.is_some() {
                 if t.translation.z > top_clicked_circle.unwrap().1 &&
                     cursor.i.distance(t.translation.xy()) < t.scale.x {
@@ -233,7 +230,6 @@ pub fn update_selection(
             }
             // select those in the dragged area
             for (e, t) in query.iter() {
-                let t = t.compute_transform();
                 if cursor.i.distance(cursor.f) + t.scale.x > cursor.i.distance(t.translation.xy()) {
                     // only select holes if ctrl is held
                     if ctrl && order_query.contains(e) { continue; }
@@ -522,7 +518,7 @@ pub fn update_num(
 pub fn update_info_text(
     mut text_query: Query<&mut Text>,
     mut text_trans: Query<&mut Transform, (Without<Vertices>, Without<InfoText>)>,
-    trans_query: Query<(&GlobalTransform, &InfoText), Or<(Changed<Transform>, Added<InfoText>)>>,
+    trans_query: Query<(&Transform, &InfoText), Or<(Changed<Transform>, Added<InfoText>)>>,
     order_query: Query<(&Order, &InfoText), Or<(Changed<Order>, Added<InfoText>)>>,
     num_query: Query<(&Number, &InfoText), Or<(Changed<Number>, Added<InfoText>)>>,
     op_query: Query<(&Op, &InfoText), Or<(Changed<Op>, Added<InfoText>)>>,
@@ -534,7 +530,7 @@ pub fn update_info_text(
     generic_wh_query: Query<&WhiteHole>,
 ) {
     for (trans, text) in trans_query.iter() {
-        let t = trans.translation();
+        let t = trans.translation;
         text_trans.get_mut(text.0).unwrap().translation = t.xy().extend(t.z + 0.00001);
     }
     for (order, text) in order_query.iter() {

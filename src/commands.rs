@@ -56,7 +56,6 @@ pub fn command_parser(
     asset_server: Res<AssetServer>,
     info_text_query: Query<(Entity, &InfoText)>,
     mut ids_shown: Local<bool>,
-    global_trans_rights: Query<&GlobalTransform>,
     holes_query: Query<&Holes>,
 ) {
     let clt = &mut command_line_text.single_mut();
@@ -909,7 +908,7 @@ pub fn command_parser(
             Some("ix") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
-                    let x = global_trans_rights.get(e).unwrap().translation().x;
+                    let x = access.trans_query.get(e).unwrap().translation.x;
                     t = t + &format!("[{:?}]{}  ", e, x);
                 }
                 *text = format!(">X: {}", t);
@@ -917,7 +916,7 @@ pub fn command_parser(
             Some("iy") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
-                    let y = global_trans_rights.get(e).unwrap().translation().y;
+                    let y = access.trans_query.get(e).unwrap().translation.y;
                     t = t + &format!("[{:?}]{}  ", e, y);
                 }
                 *text = format!(">Y: {}", t);
@@ -925,7 +924,7 @@ pub fn command_parser(
             Some("iz") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
-                    let z = global_trans_rights.get(e).unwrap().translation().z;
+                    let z = access.trans_query.get(e).unwrap().translation.z;
                     t = t + &format!("[{:?}]{}  ", e, z);
                 }
                 *text = format!(">Z: {}", t);

@@ -15,7 +15,7 @@ use crate::{
 pub fn connect(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     mut commands: Commands,
-    query: Query<(Entity, &GlobalTransform, &Vertices), With<Visible>>,
+    query: Query<(Entity, &Transform, &Vertices), With<Visible>>,
     cursor: Res<CursorInfo>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
@@ -34,7 +34,6 @@ pub fn connect(
         let mut source_entity: (Option<Entity>, f32) = (None, f32::MIN);
         let mut sink_entity: (Option<Entity>, f32) = (None, f32::MIN);
         for (e, t, _) in query.iter() {
-            let t = t.compute_transform();
             if cursor.i.distance(t.translation.xy()) < t.scale.x
                 && t.translation.z > source_entity.1 {
                 source_entity = (Some(e), t.translation.z);
@@ -57,13 +56,11 @@ pub fn connect(
                 order_query.get_mut(snk).unwrap().0 = src_order + 1;
                 order_change.send_default();
             }
-            // get radius and transform
-            let src_trans = query.get(src).unwrap().1.compute_transform();
-            let snk_trans = query.get(snk).unwrap().1.compute_transform();
-            let src_radius = src_trans.scale.x;
-            let snk_radius = snk_trans.scale.x;
-            let src_trans = src_trans.translation;
-            let snk_trans = snk_trans.translation;
+            // get translation, radius, and vertices
+            let src_trans = query.get(src).unwrap().1.translation;
+            let snk_trans = query.get(snk).unwrap().1.translation;
+            let src_radius = query.get(src).unwrap().1.scale.x;
+            let snk_radius = query.get(snk).unwrap().1.scale.x;
             let src_verts = query.get(src).unwrap().2.0;
             let snk_verts = query.get(snk).unwrap().2.0;
 
@@ -111,7 +108,7 @@ pub fn connect(
                     material: materials.add(ColorMaterial::from(wh_color)),
                     transform: Transform {
                         translation: cursor.f.extend(wh_depth + snk_trans.z),
-                        scale: Vec3::new(src_radius * 0.15, src_radius * 0.15, 1.),
+                        scale: Vec3::new(snk_radius * 0.15, snk_radius * 0.15, 1.),
                         ..default()
                     },
                     ..default()
@@ -146,7 +143,7 @@ pub fn connect(
 
 pub fn target(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
-    query: Query<(Entity, &GlobalTransform), With<Visible>>,
+    query: Query<(Entity, &Transform), With<Visible>>,
     cursor: Res<CursorInfo>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut targets_query: Query<&mut Targets>,
@@ -157,7 +154,6 @@ pub fn target(
         let mut source_entity: (Option<Entity>, f32) = (None, f32::MIN);
         let mut sink_entity: (Option<Entity>, f32) = (None, f32::MIN);
         for (e, t) in query.iter() {
-            let t = t.compute_transform();
             if cursor.i.distance(t.translation.xy()) < t.scale.x
             && t.translation.z > source_entity.1 {
                 source_entity = (Some(e), t.translation.z);
@@ -182,7 +178,7 @@ pub fn target(
 pub fn update_connection_arrows(
     bh_query: Query<(Entity, &BlackHole), Changed<Transform>>,
     wh_query: Query<(Entity, &WhiteHole), Changed<Transform>>,
-    trans_query: Query<&GlobalTransform>,
+    trans_query: Query<&Transform>,
     arrow_query: Query<&ConnectionArrow>,
     mut meshes: ResMut<Assets<Mesh>>,
     mesh_ids: Query<&Mesh2dHandle>,
@@ -190,12 +186,10 @@ pub fn update_connection_arrows(
 ) {
     for (id, bh) in bh_query.iter() {
         if let (Ok(i), Ok(f)) = (trans_query.get(id), trans_query.get(bh.wh)) {
-            let it = i.compute_transform();
-            let ft = f.compute_transform();
-            let i = it.translation.xy();
-            let f = ft.translation.xy();
-            let ip = it.scale.x;
-            let fp = ft.scale.x;
+            let ip = i.scale.x;
+            let fp = f.scale.x;
+            let i = i.translation.xy();
+            let f = f.translation.xy();
             if let Ok(arrow_id) = arrow_query.get(bh.wh) {
                 let aabb = Aabb::enclosing([i.extend(1.), f.extend(1.)]).unwrap();
                 *aabb_query.get_mut(arrow_id.0).unwrap() = aabb;
@@ -207,12 +201,10 @@ pub fn update_connection_arrows(
     }
     for (id, wh) in wh_query.iter() {
         if let (Ok(f), Ok(i)) = (trans_query.get(id), trans_query.get(wh.bh)) {
-            let ft = f.compute_transform();
-            let it = i.compute_transform();
-            let f = ft.translation.xy();
-            let i = it.translation.xy();
-            let fp = ft.scale.x;
-            let ip = it.scale.x;
+            let fp = f.scale.x;
+            let ip = i.scale.x;
+            let f = f.translation.xy();
+            let i = i.translation.xy();
             if let Ok(arrow_id) = arrow_query.get(id) {
                 let aabb = Aabb::enclosing([i.extend(1.), f.extend(1.)]).unwrap();
                 *aabb_query.get_mut(arrow_id.0).unwrap() = aabb;
