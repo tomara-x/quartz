@@ -1,5 +1,6 @@
 use bevy::{
     prelude::*,
+    sprite::Mesh2dHandle,
     ecs::{
         entity::MapEntities,
         reflect::{ReflectComponent, ReflectMapEntities},
@@ -29,10 +30,6 @@ pub struct Arr(pub Vec<f32>);
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
-pub struct Radius(pub f32);
-
-#[derive(Component, Reflect, Default)]
-#[reflect(Component)]
 pub struct Vertices(pub usize);
 
 #[derive(Component, Reflect, Default)]
@@ -59,6 +56,22 @@ pub struct Network(pub Net32);
 
 #[derive(Component)]
 pub struct NetIns(pub Vec<Shared<f32>>);
+
+#[derive(Component, Reflect)]
+#[reflect(Component, MapEntities)]
+pub struct Holes(pub Vec<Entity>);
+impl FromWorld for Holes {
+    fn from_world(_world: &mut World) -> Self {
+        Holes(Vec::new())
+    }
+}
+impl MapEntities for Holes {
+    fn map_entities<M: EntityMapper>(&mut self, entity_mapper: &mut M) {
+        for entity in &mut self.0 {
+            *entity = entity_mapper.map_entity(*entity);
+        }
+    }
+}
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
@@ -237,6 +250,9 @@ pub struct SystemClipboard(pub ClipboardContext);
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
 pub struct Version(pub String);
+
+#[derive(Resource, Default)]
+pub struct PolygonHandles(pub Vec<Option<Mesh2dHandle>>);
 
 // -------------------- events --------------------
 #[derive(Event, Default)]

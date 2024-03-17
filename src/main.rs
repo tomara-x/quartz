@@ -73,6 +73,7 @@ fn main() {
                 .output().unwrap().stdout).unwrap().trim()
             )
         ))
+        .init_resource::<PolygonHandles>()
 
         .add_systems(Startup, setup)
         .add_systems(Startup, ext_thread)
@@ -82,7 +83,7 @@ fn main() {
         .add_systems(Update, save_scene)
         .add_systems(Update, copy_scene.run_if(on_event::<CopyCommand>()))
         .add_systems(Update, paste_scene.run_if(on_event::<PasteCommand>()))
-        .add_systems(Update, (post_load, apply_deferred, mark_children_change).chain())
+        .add_systems(Update, post_load)
         .add_systems(Update, file_drag_and_drop)
         .init_resource::<DragModes>()
         // cursor
@@ -98,13 +99,13 @@ fn main() {
         .add_systems(Update, update_mat)
         .add_systems(Update, update_radius.after(update_selection).run_if(in_state(Mode::Edit)))
         .add_systems(Update, update_vertices.after(update_selection).run_if(in_state(Mode::Edit)))
-        .add_systems(Update, update_mesh)
+        .add_systems(Update, update_mesh.after(update_vertices))
         .add_systems(Update, update_num.after(update_selection).run_if(in_state(Mode::Edit)))
         .add_systems(Update, highlight_selected)
         .add_systems(Update, open_after_drag.run_if(in_state(Mode::Edit)))
         .add_systems(PreUpdate, transform_highlights)
         .add_systems(Update, rotate_selected.after(update_selection).run_if(in_state(Mode::Edit)))
-        .add_systems(Update, (delete_selected_holes, delete_selected_circles).chain().run_if(in_state(Mode::Edit)))
+        //.add_systems(Update, (delete_selected_holes, delete_selected_circles).chain().run_if(in_state(Mode::Edit)))
         // text
         .add_systems(PreUpdate, update_info_text)
         // events
@@ -130,7 +131,6 @@ fn main() {
         // type registry
         .register_type::<DragModes>()
         .register_type::<Queue>()
-        .register_type::<Radius>()
         .register_type::<Col>()
         .register_type::<Op>()
         .register_type::<Number>()
@@ -153,6 +153,7 @@ fn main() {
         .register_type::<ConnectionColor>()
         .register_type::<CommandColor>()
         .register_type::<Version>()
+        .register_type::<Holes>()
         .run();
 }
 
@@ -264,7 +265,6 @@ fn save_scene(world: &mut World) {
         let name = event.0.to_string();
         let mut query = world.query_filtered::<Entity, With<Save>>();
         let scene = DynamicSceneBuilder::from_world(&world)
-            .allow::<Radius>()
             .allow::<Col>()
             .allow::<Transform>()
             .allow::<Op>()
@@ -274,8 +274,7 @@ fn save_scene(world: &mut World) {
             .allow::<Order>()
             .allow::<BlackHole>()
             .allow::<WhiteHole>()
-            .allow::<Parent>()
-            .allow::<Children>()
+            .allow::<Holes>()
             .allow::<Vertices>()
             .allow::<Targets>()
             .allow_resource::<DefaultDrawColor>()
@@ -305,7 +304,6 @@ fn save_scene(world: &mut World) {
 fn copy_scene(world: &mut World) {
     let mut query = world.query_filtered::<Entity, With<Selected>>();
     let scene = DynamicSceneBuilder::from_world(&world)
-        .allow::<Radius>()
         .allow::<Col>()
         .allow::<Transform>()
         .allow::<Op>()
@@ -315,8 +313,7 @@ fn copy_scene(world: &mut World) {
         .allow::<Order>()
         .allow::<BlackHole>()
         .allow::<WhiteHole>()
-        .allow::<Parent>()
-        .allow::<Children>()
+        .allow::<Holes>()
         .allow::<Vertices>()
         .allow::<Targets>()
         .extract_entities(query.iter(&world))
@@ -365,41 +362,51 @@ fn post_load(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
-    main_query: Query<(&Radius, &Transform, &Col, &Vertices)>,
+    main_query: Query<(&Transform, &Col, &Vertices)>,
     mut order_change: EventWriter<OrderChange>,
     mut white_hole_query: Query<&mut WhiteHole>,
     black_hole_query: Query<&BlackHole>,
     scenes: Query<(Entity, &SceneInstance)>,
     children_query: Query<&Children>,
+    mut holes_query: Query<&mut Holes>,
     mut op_query: Query<&mut Op>,
     connection_color: Res<ConnectionColor>,
     mut command_line_text: Query<&mut Text, With<CommandText>>,
     command_color: Res<CommandColor>,
     scene_spawner: Res<SceneSpawner>,
+    mut polygon_handles: ResMut<PolygonHandles>,
 ) {
     for (scene_id, instance_id) in scenes.iter() {
         if scene_spawner.instance_is_ready(**instance_id) {
             if let Ok(children) = children_query.get(scene_id) {
                 for child in children {
-                    if let Ok((r, t, c, v)) = main_query.get(*child) {
-                        let op = &op_query.get_mut(*child).unwrap().0;
-                        commands.entity(*child).insert((
+                    if let Ok((t, c, v)) = main_query.get(*child) {
+                        if polygon_handles.0.len() <= v.0 {
+                            polygon_handles.0.resize(v.0 + 1, None);
+                        }
+                        if polygon_handles.0[v.0].is_none() {
+                            let handle = meshes.add(RegularPolygon::new(1., v.0)).into();
+                            polygon_handles.0[v.0] = Some(handle);
+                        }
+                        commands.entity(*child).insert(
                             ColorMesh2dBundle {
-                                mesh: meshes.add(RegularPolygon::new(r.0, v.0)).into(),
+                                mesh: polygon_handles.0[v.0].clone().unwrap(),
                                 material: materials.add(ColorMaterial::from(c.0)),
                                 transform: *t,
                                 ..default()
-                            },
-                            Network(str_to_net(op)),
-                            NetIns(Vec::new()),
-                            OpChanged(true),
-                            GainedWH(false),
-                            LostWH(false),
-                            RenderLayers::layer(1),
-                        ));
-                        // thanks to multirious for this idea
-                        commands.entity(*child).remove::<Children>();
-                        if let Ok(holes) = children_query.get(*child) {
+                            }
+                        );
+                        if let Ok(op) = op_query.get_mut(*child) {
+                            commands.entity(*child).insert((
+                                Network(str_to_net(&op.0)),
+                                NetIns(Vec::new()),
+                                OpChanged(true),
+                                GainedWH(false),
+                                LostWH(false),
+                                RenderLayers::layer(1),
+                            ));
+                            let holes = &mut holes_query.get_mut(*child).unwrap().0;
+                            holes.retain(|x| white_hole_query.contains(*x) || black_hole_query.contains(*x));
                             for hole in holes {
                                 if let Ok(mut wh) = white_hole_query.get_mut(*hole) {
                                     if black_hole_query.contains(wh.bh) && main_query.contains(wh.bh_parent) {
@@ -416,33 +423,15 @@ fn post_load(
                                             ConnectionArrow(arrow),
                                             RenderLayers::layer(3),
                                         ));
-                                        commands.entity(*child).add_child(*hole);
-                                    } else {
-                                        if let Some(mut e) = commands.get_entity(*hole) {
-                                            e.despawn();
-                                        }
-                                        continue;
+                                    } else if let Some(mut e) = commands.get_entity(*hole) {
+                                        e.despawn();
                                     }
                                 } else if let Ok(bh) = black_hole_query.get(*hole) {
                                     if white_hole_query.contains(bh.wh) && main_query.contains(bh.wh_parent) {
                                         commands.entity(*hole).insert(RenderLayers::layer(2));
-                                        commands.entity(*child).add_child(*hole);
-                                    } else {
-                                        if let Some(mut e) = commands.get_entity(*hole) {
-                                            e.despawn();
-                                        }
-                                        continue;
+                                    } else if let Some(mut e) = commands.get_entity(*hole) {
+                                        e.despawn();
                                     }
-                                }
-                                if let Ok((r, t, c, v)) = main_query.get(*hole) {
-                                    commands.entity(*hole).insert(
-                                        ColorMesh2dBundle {
-                                            mesh: meshes.add(RegularPolygon::new(r.0, v.0)).into(),
-                                            material: materials.add(ColorMaterial::from(c.0)),
-                                            transform: *t,
-                                            ..default()
-                                        },
-                                    );
                                 }
                             }
                         }

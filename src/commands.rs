@@ -18,7 +18,6 @@ use fundsp::audiounit::AudioUnit32;
 pub struct Access<'w, 's> {
     op_query: Query<'w, 's, &'static mut Op>,
     num_query: Query<'w, 's, &'static mut Number>,
-    radius_query: Query<'w, 's, &'static mut Radius>,
     col_query: Query<'w, 's, &'static mut Col>,
     trans_query: Query<'w, 's, &'static mut Transform>,
     arr_query: Query<'w, 's, &'static mut Arr>,
@@ -49,7 +48,7 @@ pub fn command_parser(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut key_event: EventReader<KeyboardInput>,
     mut command_line_text: Query<&mut Text, With<CommandText>>,
-    circles_query: Query<Entity, With<Radius>>,
+    circles_query: Query<Entity, With<Vertices>>,
     mut access: Access,
     mut next_mode: ResMut<NextState<Mode>>,
     mode: Res<State<Mode>>,
@@ -57,9 +56,7 @@ pub fn command_parser(
     asset_server: Res<AssetServer>,
     info_text_query: Query<(Entity, &InfoText)>,
     mut ids_shown: Local<bool>,
-    global_trans_rights: Query<&GlobalTransform>,
-    parent_query: Query<&Parent>,
-    children_query: Query<Ref<Children>>,
+    holes_query: Query<&Holes>,
 ) {
     let clt = &mut command_line_text.single_mut();
     if key_event.is_empty()
@@ -189,16 +186,16 @@ pub fn command_parser(
                                     if let Some(s) = command.next() {
                                         wh.link_types.1 = str_to_lt(s);
                                         wh.open = true;
-                                        let parent = parent_query.get(e).unwrap();
-                                        access.gained_wh_query.get_mut(**parent).unwrap().0 = true;
+                                        let parent = access.black_hole_query.get(wh.bh).unwrap().wh_parent;
+                                        access.gained_wh_query.get_mut(parent).unwrap().0 = true;
                                     }
                                 } else if let Ok(bh) = access.black_hole_query.get(e) {
                                     let wh = &mut access.white_hole_query.get_mut(bh.wh).unwrap();
                                     if let Some(s) = command.next() {
                                         wh.link_types.0 = str_to_lt(s);
                                         wh.open = true;
-                                        let parent = parent_query.get(bh.wh).unwrap();
-                                        access.gained_wh_query.get_mut(**parent).unwrap().0 = true;
+                                        let parent = access.white_hole_query.get(bh.wh).unwrap().bh_parent;
+                                        access.gained_wh_query.get_mut(parent).unwrap().0 = true;
                                     }
                                 }
                             } else {
@@ -206,14 +203,14 @@ pub fn command_parser(
                                     if let Ok(mut wh) = access.white_hole_query.get_mut(id) {
                                         wh.link_types.1 = str_to_lt(s);
                                         wh.open = true;
-                                        let parent = parent_query.get(id).unwrap();
-                                        access.gained_wh_query.get_mut(**parent).unwrap().0 = true;
+                                        let parent = access.black_hole_query.get(wh.bh).unwrap().wh_parent;
+                                        access.gained_wh_query.get_mut(parent).unwrap().0 = true;
                                     } else if let Ok(bh) = access.black_hole_query.get(id) {
                                         let wh = &mut access.white_hole_query.get_mut(bh.wh).unwrap();
                                         wh.link_types.0 = str_to_lt(s);
                                         wh.open = true;
-                                        let parent = parent_query.get(id).unwrap();
-                                        access.gained_wh_query.get_mut(**parent).unwrap().0 = true;
+                                        let parent = access.white_hole_query.get(bh.wh).unwrap().bh_parent;
+                                        access.gained_wh_query.get_mut(parent).unwrap().0 = true;
                                     }
                                 }
                             }
@@ -310,18 +307,20 @@ pub fn command_parser(
                             Some("r") => {
                                 if let Some(s) = command.next() {
                                     if let Some(e) = str_to_id(s) {
-                                        if let Ok(mut radius) = access.radius_query.get_mut(e) {
+                                        if let Ok(mut trans) = access.trans_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = parse_with_constants(n) {
-                                                    radius.0 = n.max(0.);
+                                                    trans.scale.x = n.max(0.);
+                                                    trans.scale.y = n.max(0.);
                                                     lt_to_open = (Some(e), Some(-2));
                                                 }
                                             }
                                         }
                                     } else if let Ok(n) = parse_with_constants(s) {
                                         for id in access.selected_query.iter() {
-                                            if let Ok(mut radius) = access.radius_query.get_mut(id) {
-                                                radius.0 = n.max(0.);
+                                            if let Ok(mut trans) = access.trans_query.get_mut(id) {
+                                                trans.scale.x = n.max(0.);
+                                                trans.scale.y = n.max(0.);
                                             }
                                         }
                                         lt_to_open = (None, Some(-2));
@@ -637,9 +636,9 @@ pub fn command_parser(
                 // open all white holes reading whatever changed
                 if let (None, Some(lt)) = lt_to_open {
                     for id in access.selected_query.iter() {
-                        if let Ok(children) = children_query.get(id) {
-                            for child in &children {
-                                if let Ok(bh) = access.black_hole_query.get(*child) {
+                        if let Ok(holes) = holes_query.get(id) {
+                            for hole in &holes.0 {
+                                if let Ok(bh) = access.black_hole_query.get(*hole) {
                                     if let Ok(wh) = access.white_hole_query.get_mut(bh.wh) {
                                         if wh.link_types.0 == lt {
                                             access.white_hole_query.get_mut(bh.wh).unwrap().open = true;
@@ -650,9 +649,9 @@ pub fn command_parser(
                         }
                     }
                 } else if let (Some(id), Some(lt)) = lt_to_open {
-                    if let Ok(children) = children_query.get(id) {
-                        for child in &children {
-                            if let Ok(bh) = access.black_hole_query.get(*child) {
+                    if let Ok(holes) = holes_query.get(id) {
+                        for hole in &holes.0 {
+                            if let Ok(bh) = access.black_hole_query.get(*hole) {
                                 if let Ok(wh) = access.white_hole_query.get_mut(bh.wh) {
                                     if wh.link_types.0 == lt {
                                         access.white_hole_query.get_mut(bh.wh).unwrap().open = true;
@@ -901,7 +900,7 @@ pub fn command_parser(
             Some("ira") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
-                    let ra = access.radius_query.get(e).unwrap().0;
+                    let ra = access.trans_query.get(e).unwrap().scale.x;
                     t = t + &format!("[{:?}]{}  ", e, ra);
                 }
                 *text = format!(">RADIUS: {}", t);
@@ -909,7 +908,7 @@ pub fn command_parser(
             Some("ix") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
-                    let x = global_trans_rights.get(e).unwrap().translation().x;
+                    let x = access.trans_query.get(e).unwrap().translation.x;
                     t = t + &format!("[{:?}]{}  ", e, x);
                 }
                 *text = format!(">X: {}", t);
@@ -917,7 +916,7 @@ pub fn command_parser(
             Some("iy") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
-                    let y = global_trans_rights.get(e).unwrap().translation().y;
+                    let y = access.trans_query.get(e).unwrap().translation.y;
                     t = t + &format!("[{:?}]{}  ", e, y);
                 }
                 *text = format!(">Y: {}", t);
@@ -925,12 +924,12 @@ pub fn command_parser(
             Some("iz") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
-                    let z = global_trans_rights.get(e).unwrap().translation().z;
+                    let z = access.trans_query.get(e).unwrap().translation.z;
                     t = t + &format!("[{:?}]{}  ", e, z);
                 }
                 *text = format!(">Z: {}", t);
             }
-            Some("ih") => {
+            Some("ihu") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
                     let h = access.col_query.get(e).unwrap().0.h();
@@ -1004,6 +1003,15 @@ pub fn command_parser(
                     }
                 }
                 *text = format!(">ARRAY: {}", t);
+            }
+            Some("iho") => {
+                let mut t = String::new();
+                for e in access.selected_query.iter() {
+                    if let Ok(holes) = holes_query.get(e) {
+                        t = t + &format!("[{:?}]{:?}  ", e, holes.0);
+                    }
+                }
+                *text = format!(">HOLES: {}", t);
             }
             Some("it") => {
                 let mut t = String::new();

@@ -2,10 +2,7 @@ use bevy::{
     prelude::*,
     render::view::VisibleEntities,
     sprite::Mesh2dHandle,
-    render::{
-        primitives::Aabb,
-        view::RenderLayers,
-    },
+    render::view::RenderLayers,
 };
 
 use fundsp::net::Net32;
@@ -25,26 +22,38 @@ pub fn spawn_circles(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     default_color: Res<DefaultDrawColor>,
     default_verts: Res<DefaultDrawVerts>,
+    mut polygon_handles: ResMut<PolygonHandles>,
 ) {
     if mouse_button_input.just_released(MouseButton::Left) &&
     !keyboard_input.pressed(KeyCode::Space) {
         let r = cursor.f.distance(cursor.i);
         let v = default_verts.0;
         let color = default_color.0;
+        if polygon_handles.0.len() <= v {
+            polygon_handles.0.resize(v + 1, None);
+        }
+        if polygon_handles.0[v].is_none() {
+            let handle = meshes.add(RegularPolygon::new(1., v)).into();
+            polygon_handles.0[v] = Some(handle);
+        }
         commands.spawn((
             ColorMesh2dBundle {
-                mesh: meshes.add(RegularPolygon::new(r.max(0.1), v)).into(),
+                mesh: polygon_handles.0[v].clone().unwrap(),
                 material: materials.add(ColorMaterial::from(color)),
-                transform: Transform::from_translation(cursor.i.extend(*depth)),
+                transform: Transform {
+                    translation: cursor.i.extend(*depth),
+                    scale: Vec3::new(r,r,1.),
+                    ..default()
+                },
                 ..default()
             },
-            Radius(r),
             Vertices(v),
             Col(color),
             Number(0.),
             Arr(Vec::new()),
             Op("empty".to_string()),
             Targets(Vec::new()),
+            Holes(Vec::new()),
             Order(0),
             (
                 Network(Net32::new(0,1)),
@@ -63,19 +72,24 @@ pub fn spawn_circles(
 
 pub fn highlight_selected(
     mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
-    selected: Query<Entity, (With<Selected>, Without<Highlight>)>,
+    selected: Query<(Entity, &Vertices, &Transform), (With<Selected>, Without<Highlight>)>,
     deselected: Query<Entity, (With<Highlight>, Without<Selected>)>,
     highlight_query: Query<&Highlight>,
     highlight_color: Res<HighlightColor>,
+    polygon_handles: Res<PolygonHandles>,
 ) {
-    for e in selected.iter() {
+    for (e, v, t) in selected.iter() {
+        let trans = t.translation.xy().extend(t.translation.z - 0.00001);
         let highlight = commands.spawn(
             ColorMesh2dBundle {
-                mesh: meshes.add(RegularPolygon::new(0.1, 3)).into(),
+                mesh: polygon_handles.0[v.0].clone().unwrap(),
                 material: materials.add(ColorMaterial::from(highlight_color.0)),
-                transform: Transform::from_translation(Vec3::Z),
+                transform: Transform {
+                    translation: trans,
+                    scale: Vec3::new(t.scale.x + 5., t.scale.y + 5., 1.),
+                    rotation: t.rotation,
+                },
                 ..default()
             }
         ).id();
@@ -89,26 +103,22 @@ pub fn highlight_selected(
 }
 
 pub fn transform_highlights(
-    moved: Query<(&GlobalTransform, &Highlight), Or<(Changed<Transform>, Added<Highlight>)>>,
-    resized: Query<(&Vertices, &Radius, &Highlight), Or<(Changed<Vertices>, Changed<Radius>, Added<Highlight>)>>,
+    moved: Query<(&Transform, &Highlight), Changed<Transform>>,
+    changed_verts: Query<(&Vertices, &Highlight), Changed<Vertices>>,
     mut trans_query: Query<&mut Transform, Without<Highlight>>,
-    mesh_ids: Query<&Mesh2dHandle>,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut aabb_query: Query<&mut Aabb>,
+    mut handle_query: Query<&mut Mesh2dHandle>,
+    polygon_handles: Res<PolygonHandles>,
 ) {
     for (t, h) in moved.iter() {
-        let t = t.compute_transform();
         let trans = t.translation.xy().extend(t.translation.z - 0.00001);
         trans_query.get_mut(h.0).unwrap().translation = trans;
         trans_query.get_mut(h.0).unwrap().rotation = t.rotation;
+        trans_query.get_mut(h.0).unwrap().scale.x = t.scale.x + 5.;
+        trans_query.get_mut(h.0).unwrap().scale.y = t.scale.y + 5.;
     }
-    for (v, r, h) in resized.iter() {
-        if let Ok(Mesh2dHandle(mesh_id)) = mesh_ids.get(h.0) {
-            let mesh = meshes.get_mut(mesh_id).unwrap();
-            *mesh = RegularPolygon::new(r.0 + 5., v.0).into();
-            if let Ok(mut aabb) = aabb_query.get_mut(h.0) {
-                *aabb = mesh.compute_aabb().unwrap();
-            }
+    for (v, h) in changed_verts.iter() {
+        if let Ok(mut handle) = handle_query.get_mut(h.0) {
+            *handle = polygon_handles.0[v.0].clone().unwrap();
         }
     }
 }
@@ -117,7 +127,7 @@ pub fn mark_visible_circles(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     mut commands: Commands,
     marked_circles: Query<Entity, With<Visible>>,
-    circles_query: Query<(), With<Radius>>,
+    circles_query: Query<(), With<Vertices>>,
     visible: Query<&VisibleEntities>,
 ) {
     if mouse_button_input.just_released(MouseButton::Left) {
@@ -161,14 +171,14 @@ pub fn draw_drawing_circle(
 pub fn update_selection(
     mut commands: Commands,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
-    query: Query<(Entity, &Radius, &GlobalTransform), Or<(With<Visible>, With<Selected>)>>,
+    query: Query<(Entity, &Transform), (Or<(With<Visible>, With<Selected>)>, With<Vertices>)>,
     selected: Query<Entity, With<Selected>>,
     selected_query: Query<&Selected>,
     cursor: Res<CursorInfo>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut top_clicked_circle: Local<Option<(Entity, f32)>>,
     id: Res<SelectionCircle>,
-    mut trans_query: Query<&mut Transform>,
+    mut trans_query: Query<&mut Transform, Without<Vertices>>,
     mut meshes: ResMut<Assets<Mesh>>,
     mesh_ids: Query<&Mesh2dHandle>,
     order_query: Query<(), With<Order>>, // non-hole circle
@@ -178,15 +188,15 @@ pub fn update_selection(
     let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
     let alt = keyboard_input.any_pressed([KeyCode::AltLeft, KeyCode::AltRight]);
     if mouse_button_input.just_pressed(MouseButton::Left) {
-        for (e, r, t) in query.iter() {
+        for (e, t) in query.iter() {
             if top_clicked_circle.is_some() {
-                if t.translation().z > top_clicked_circle.unwrap().1 &&
-                    cursor.i.distance(t.translation().xy()) < r.0 {
-                    *top_clicked_circle = Some((e, t.translation().z));
+                if t.translation.z > top_clicked_circle.unwrap().1 &&
+                    cursor.i.distance(t.translation.xy()) < t.scale.x {
+                    *top_clicked_circle = Some((e, t.translation.z));
                 }
             } else {
-                if cursor.i.distance(t.translation().xy()) < r.0 {
-                    *top_clicked_circle = Some((e, t.translation().z));
+                if cursor.i.distance(t.translation.xy()) < t.scale.x {
+                    *top_clicked_circle = Some((e, t.translation.z));
                 }
             }
         }
@@ -219,8 +229,8 @@ pub fn update_selection(
                 }
             }
             // select those in the dragged area
-            for (e, r, t) in query.iter() {
-                if cursor.i.distance(cursor.f) + r.0 > cursor.i.distance(t.translation().xy()) {
+            for (e, t) in query.iter() {
+                if cursor.i.distance(cursor.f) + t.scale.x > cursor.i.distance(t.translation.xy()) {
                     // only select holes if ctrl is held
                     if ctrl && order_query.contains(e) { continue; }
                     // only select non-holes if alt is held
@@ -236,8 +246,7 @@ pub fn update_selection(
 pub fn move_selected(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     cursor: Res<CursorInfo>,
-    mut circle_query: Query<&mut Transform, (With<Selected>, Without<Parent>)>,
-    mut hole_query: Query<(&mut Transform, &Parent), With<Selected>>,
+    mut circle_query: Query<&mut Transform, With<Selected>>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     drag_modes: Res<DragModes>,
 ) {
@@ -248,51 +257,25 @@ pub fn move_selected(
                 t.translation.x += cursor.d.x;
                 t.translation.y += cursor.d.y;
             }
-            for (mut t, parent) in hole_query.iter_mut() {
-                if !circle_query.contains(**parent) {
-                    t.translation.x += cursor.d.x;
-                    t.translation.y += cursor.d.y;
-                }
-            }
         }
         if keyboard_input.pressed(KeyCode::ArrowUp) {
             for mut t in circle_query.iter_mut() {
                 t.translation.y += 1.;
-            }
-            for (mut t, parent) in hole_query.iter_mut() {
-                if !circle_query.contains(**parent) {
-                    t.translation.y += 1.;
-                }
             }
         }
         if keyboard_input.pressed(KeyCode::ArrowDown) {
             for mut t in circle_query.iter_mut() {
                 t.translation.y -= 1.;
             }
-            for (mut t, parent) in hole_query.iter_mut() {
-                if !circle_query.contains(**parent) {
-                    t.translation.y -= 1.;
-                }
-            }
         }
         if keyboard_input.pressed(KeyCode::ArrowRight) {
             for mut t in circle_query.iter_mut() {
                 t.translation.x += 1.;
             }
-            for (mut t, parent) in hole_query.iter_mut() {
-                if !circle_query.contains(**parent) {
-                    t.translation.x += 1.;
-                }
-            }
         }
         if keyboard_input.pressed(KeyCode::ArrowLeft) {
             for mut t in circle_query.iter_mut() {
                 t.translation.x -= 1.;
-            }
-            for (mut t, parent) in hole_query.iter_mut() {
-                if !circle_query.contains(**parent) {
-                    t.translation.x -= 1.;
-                }
             }
         }
     }
@@ -415,7 +398,7 @@ pub fn update_mat(
 }
 
 pub fn update_radius(
-    mut query: Query<&mut Radius, With<Selected>>,
+    mut query: Query<&mut Transform, With<Selected>>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     cursor: Res<CursorInfo>,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
@@ -424,19 +407,21 @@ pub fn update_radius(
     if drag_modes.r {
         if mouse_button_input.pressed(MouseButton::Left)
         && !mouse_button_input.just_pressed(MouseButton::Left) {
-            for mut r in query.iter_mut() {
-                r.0 += cursor.d.y;
-                r.0 = r.0.max(0.);
+            for mut t in query.iter_mut() {
+                t.scale.x = (t.scale.x + cursor.d.y).max(0.);
+                t.scale.y = (t.scale.y + cursor.d.y).max(0.);
             }
         }
         if keyboard_input.any_pressed([KeyCode::ArrowUp, KeyCode::ArrowRight]) {
-            for mut r in query.iter_mut() {
-                r.0 += 1.;
+            for mut t in query.iter_mut() {
+                t.scale.x = (t.scale.x + 1.).max(0.);
+                t.scale.y = (t.scale.y + 1.).max(0.);
             }
         }
         if keyboard_input.any_pressed([KeyCode::ArrowDown, KeyCode::ArrowLeft]) {
-            for mut r in query.iter_mut() {
-                r.0 = (r.0 - 1.).max(0.);
+            for mut t in query.iter_mut() {
+                t.scale.x = (t.scale.x - 1.).max(0.);
+                t.scale.y = (t.scale.y - 1.).max(0.);
             }
         }
     }
@@ -485,14 +470,20 @@ pub fn update_vertices(
 
 pub fn update_mesh(
     mut meshes: ResMut<Assets<Mesh>>,
-    mesh_ids: Query<&Mesh2dHandle>,
-    mut query: Query<(Entity, &Vertices, &Radius, &mut Aabb), Or<(Changed<Vertices>, Changed<Radius>)>>,
+    mut handle_query: Query<&mut Mesh2dHandle>,
+    mut query: Query<(Entity, &Vertices), Changed<Vertices>>,
+    mut polygon_handles: ResMut<PolygonHandles>,
 ) {
-    for (id, v, r, mut aabb) in query.iter_mut() {
-        if let Ok(Mesh2dHandle(mesh_id)) = mesh_ids.get(id) {
-            let mesh = meshes.get_mut(mesh_id).unwrap();
-            *mesh = RegularPolygon::new(r.0.max(0.1), v.0).into();
-            *aabb = mesh.compute_aabb().unwrap();
+    for (id, v) in query.iter_mut() {
+        if polygon_handles.0.len() <= v.0 {
+            polygon_handles.0.resize(v.0 + 1, None);
+        }
+        if polygon_handles.0[v.0].is_none() {
+            let handle = meshes.add(RegularPolygon::new(1., v.0)).into();
+            polygon_handles.0[v.0] = Some(handle);
+        }
+        if let Ok(mut handle) = handle_query.get_mut(id) {
+            *handle = polygon_handles.0[v.0].clone().unwrap();
         }
     }
 }
@@ -526,8 +517,8 @@ pub fn update_num(
 
 pub fn update_info_text(
     mut text_query: Query<&mut Text>,
-    mut text_trans: Query<&mut Transform, Without<Radius>>,
-    trans_query: Query<(&GlobalTransform, &InfoText), (Or<(Changed<Transform>, Added<InfoText>)>, With<Radius>)>,
+    mut text_trans: Query<&mut Transform, (Without<Vertices>, Without<InfoText>)>,
+    trans_query: Query<(&Transform, &InfoText), Or<(Changed<Transform>, Added<InfoText>)>>,
     order_query: Query<(&Order, &InfoText), Or<(Changed<Order>, Added<InfoText>)>>,
     num_query: Query<(&Number, &InfoText), Or<(Changed<Number>, Added<InfoText>)>>,
     op_query: Query<(&Op, &InfoText), Or<(Changed<Op>, Added<InfoText>)>>,
@@ -539,7 +530,7 @@ pub fn update_info_text(
     generic_wh_query: Query<&WhiteHole>,
 ) {
     for (trans, text) in trans_query.iter() {
-        let t = trans.translation();
+        let t = trans.translation;
         text_trans.get_mut(text.0).unwrap().translation = t.xy().extend(t.z + 0.00001);
     }
     for (order, text) in order_query.iter() {
@@ -573,104 +564,93 @@ pub fn update_info_text(
     }
 }
 
-pub fn delete_selected_circles(
-    keyboard_input: Res<ButtonInput<KeyCode>>,
-    query: Query<Entity, (With<Selected>, With<Order>)>,
-    bh_query: Query<&BlackHole, Without<Selected>>,
-    wh_query: Query<&WhiteHole, Without<Selected>>,
-    arrow_query: Query<&ConnectionArrow>,
-    mut commands: Commands,
-    mut order_change: EventWriter<OrderChange>,
-    info_text_query: Query<&InfoText>,
-    children_query: Query<&Children>,
-    highlight_query: Query<&Highlight>,
-    parent_query: Query<&Parent>,
-    mut lost_wh_query: Query<&mut LostWH>,
-) {
-    let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
-    if keyboard_input.just_pressed(KeyCode::Delete) && !shift {
-        for e in query.iter() {
-            if let Ok(children) = children_query.get(e) {
-                for child in children {
-                    // TODO(amy): do we need to remove parent?
-                    if let Ok(bh) = bh_query.get(*child) {
-                        if wh_query.contains(bh.wh) {
-                            let arrow = arrow_query.get(bh.wh).unwrap().0;
-                            commands.entity(arrow).despawn();
-                            commands.entity(*child).remove_parent();
-                            commands.entity(*child).despawn_recursive();
-                            commands.entity(bh.wh).remove_parent();
-                            commands.entity(bh.wh).despawn_recursive();
-                            if let Ok(wh_text) = info_text_query.get(bh.wh) {
-                                commands.entity(wh_text.0).despawn();
-                            }
-                            if let Ok(bh_text) = info_text_query.get(*child) {
-                                commands.entity(bh_text.0).despawn();
-                            }
-                            if let Ok(highlight) = highlight_query.get(bh.wh) {
-                                commands.entity(highlight.0).despawn();
-                            }
-                            if let Ok(highlight) = highlight_query.get(*child) {
-                                commands.entity(highlight.0).despawn();
-                            }
-                            // parent of wh lost a connection
-                            let parent = parent_query.get(bh.wh).unwrap();
-                            lost_wh_query.get_mut(**parent).unwrap().0 = true;
-                        }
-                    } else if let Ok(wh) = wh_query.get(*child) {
-                        if bh_query.contains(wh.bh) {
-                            // don't remove things that will get removed later
-                            if query.contains(wh.bh_parent) { continue; }
-                            let arrow = arrow_query.get(*child).unwrap().0;
-                            commands.entity(arrow).despawn();
-                            commands.entity(wh.bh).remove_parent();
-                            commands.entity(wh.bh).despawn_recursive();
-                            commands.entity(*child).remove_parent();
-                            commands.entity(*child).despawn_recursive();
-                            if let Ok(wh_text) = info_text_query.get(*child) {
-                                commands.entity(wh_text.0).despawn();
-                            }
-                            if let Ok(bh_text) = info_text_query.get(wh.bh) {
-                                commands.entity(bh_text.0).despawn();
-                            }
-                            if let Ok(highlight) = highlight_query.get(*child) {
-                                commands.entity(highlight.0).despawn();
-                            }
-                            if let Ok(highlight) = highlight_query.get(wh.bh) {
-                                commands.entity(highlight.0).despawn();
-                            }
-                        }
-                    }
-                }
-            }
-            if let Ok(text) = info_text_query.get(e) {
-                commands.entity(text.0).despawn();
-            }
-            if let Ok(highlight) = highlight_query.get(e) {
-                commands.entity(highlight.0).despawn();
-            }
-            commands.entity(e).despawn();
-            order_change.send_default();
-        }
-    }
-}
-
-pub fn mark_children_change(
-    query: Query<&Children, (With<Order>, Changed<Transform>)>,
-    mut trans_query: Query<&mut Transform, Without<Order>>,
-) {
-    for children in query.iter() {
-        for child in children {
-            trans_query.get_mut(*child).unwrap().set_changed();
-        }
-    }
-}
+//pub fn delete_selected_circles(
+//    keyboard_input: Res<ButtonInput<KeyCode>>,
+//    query: Query<Entity, (With<Selected>, With<Order>)>,
+//    bh_query: Query<&BlackHole, Without<Selected>>,
+//    wh_query: Query<&WhiteHole, Without<Selected>>,
+//    arrow_query: Query<&ConnectionArrow>,
+//    mut commands: Commands,
+//    mut order_change: EventWriter<OrderChange>,
+//    info_text_query: Query<&InfoText>,
+//    children_query: Query<&Children>,
+//    highlight_query: Query<&Highlight>,
+//    parent_query: Query<&Parent>,
+//    mut lost_wh_query: Query<&mut LostWH>,
+//) {
+//    let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
+//    if keyboard_input.just_pressed(KeyCode::Delete) && !shift {
+//        for e in query.iter() {
+//            if let Ok(children) = children_query.get(e) {
+//                for child in children {
+//                    // TODO(amy): do we need to remove parent?
+//                    if let Ok(bh) = bh_query.get(*child) {
+//                        if wh_query.contains(bh.wh) {
+//                            let arrow = arrow_query.get(bh.wh).unwrap().0;
+//                            commands.entity(arrow).despawn();
+//                            commands.entity(*child).remove_parent();
+//                            commands.entity(*child).despawn_recursive();
+//                            commands.entity(bh.wh).remove_parent();
+//                            commands.entity(bh.wh).despawn_recursive();
+//                            if let Ok(wh_text) = info_text_query.get(bh.wh) {
+//                                commands.entity(wh_text.0).despawn();
+//                            }
+//                            if let Ok(bh_text) = info_text_query.get(*child) {
+//                                commands.entity(bh_text.0).despawn();
+//                            }
+//                            if let Ok(highlight) = highlight_query.get(bh.wh) {
+//                                commands.entity(highlight.0).despawn();
+//                            }
+//                            if let Ok(highlight) = highlight_query.get(*child) {
+//                                commands.entity(highlight.0).despawn();
+//                            }
+//                            // parent of wh lost a connection
+//                            let parent = parent_query.get(bh.wh).unwrap();
+//                            lost_wh_query.get_mut(**parent).unwrap().0 = true;
+//                        }
+//                    } else if let Ok(wh) = wh_query.get(*child) {
+//                        if bh_query.contains(wh.bh) {
+//                            // don't remove things that will get removed later
+//                            if query.contains(wh.bh_parent) { continue; }
+//                            let arrow = arrow_query.get(*child).unwrap().0;
+//                            commands.entity(arrow).despawn();
+//                            commands.entity(wh.bh).remove_parent();
+//                            commands.entity(wh.bh).despawn_recursive();
+//                            commands.entity(*child).remove_parent();
+//                            commands.entity(*child).despawn_recursive();
+//                            if let Ok(wh_text) = info_text_query.get(*child) {
+//                                commands.entity(wh_text.0).despawn();
+//                            }
+//                            if let Ok(bh_text) = info_text_query.get(wh.bh) {
+//                                commands.entity(bh_text.0).despawn();
+//                            }
+//                            if let Ok(highlight) = highlight_query.get(*child) {
+//                                commands.entity(highlight.0).despawn();
+//                            }
+//                            if let Ok(highlight) = highlight_query.get(wh.bh) {
+//                                commands.entity(highlight.0).despawn();
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//            if let Ok(text) = info_text_query.get(e) {
+//                commands.entity(text.0).despawn();
+//            }
+//            if let Ok(highlight) = highlight_query.get(e) {
+//                commands.entity(highlight.0).despawn();
+//            }
+//            commands.entity(e).despawn();
+//            order_change.send_default();
+//        }
+//    }
+//}
 
 pub fn open_after_drag(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     drag_modes: Res<DragModes>,
-    query: Query<&Children, With<Selected>>,
+    query: Query<&Holes, With<Selected>>,
     mut white_hole_query: Query<&mut WhiteHole>,
     black_hole_query: Query<&BlackHole>,
 ) {
@@ -687,9 +667,9 @@ pub fn open_after_drag(
         if drag_modes.a { lts_to_open.push(-9); }
         if drag_modes.o { lts_to_open.push(-12); }
         if drag_modes.v { lts_to_open.push(-11); }
-        for children in query.iter() {
-            for child in children {
-                if let Ok(bh) = black_hole_query.get(*child) {
+        for holes in query.iter() {
+            for hole in &holes.0 {
+                if let Ok(bh) = black_hole_query.get(*hole) {
                     if let Ok(wh) = white_hole_query.get(bh.wh) {
                         if lts_to_open.contains(&wh.link_types.0) {
                             white_hole_query.get_mut(bh.wh).unwrap().open = true;
