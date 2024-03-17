@@ -650,17 +650,6 @@ pub fn update_info_text(
 //    }
 //}
 
-//pub fn mark_children_change(
-//    query: Query<&Children, (With<Order>, Changed<Transform>)>,
-//    mut trans_query: Query<&mut Transform, Without<Order>>,
-//) {
-//    for children in query.iter() {
-//        for child in children {
-//            trans_query.get_mut(*child).unwrap().set_changed();
-//        }
-//    }
-//}
-
 pub fn open_after_drag(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     keyboard_input: Res<ButtonInput<KeyCode>>,

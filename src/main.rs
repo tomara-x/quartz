@@ -83,7 +83,6 @@ fn main() {
         .add_systems(Update, save_scene)
         .add_systems(Update, copy_scene.run_if(on_event::<CopyCommand>()))
         .add_systems(Update, paste_scene.run_if(on_event::<PasteCommand>()))
-        //.add_systems(Update, (post_load, apply_deferred, mark_children_change).chain())
         .add_systems(Update, post_load)
         .add_systems(Update, file_drag_and_drop)
         .init_resource::<DragModes>()
