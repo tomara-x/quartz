@@ -15,9 +15,8 @@ use crate::{
 pub fn connect(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     mut commands: Commands,
-    query: Query<(Entity, &Transform, &Vertices), With<Visible>>,
+    query: Query<(Entity, &Transform, &Vertices), (With<Visible>, With<Order>)>,
     cursor: Res<CursorInfo>,
-    mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut order_query: Query<&mut Order>,
@@ -27,6 +26,7 @@ pub fn connect(
     connection_color: Res<ConnectionColor>,
     default_lt: Res<DefaultLT>,
     polygon_handles: Res<PolygonHandles>,
+    arrow_handle: Res<ArrowHandle>,
 ) {
     if mouse_button_input.just_released(MouseButton::Left)
     && !keyboard_input.pressed(KeyCode::KeyT)
@@ -63,19 +63,20 @@ pub fn connect(
             let snk_radius = query.get(snk).unwrap().1.scale.x;
             let src_verts = query.get(src).unwrap().2.0;
             let snk_verts = query.get(snk).unwrap().2.0;
+            let bh_radius = src_radius * 0.15;
+            let wh_radius = snk_radius * 0.15;
+            let perp = (cursor.i - cursor.f).perp();
 
             // spawn connection arrow
             let arrow = commands.spawn((
                 ColorMesh2dBundle {
-                    mesh: meshes.add(Tri {
-                        i: cursor.i,
-                        f: cursor.f,
-                        ip: src_radius * 0.15,
-                        fp: snk_radius * 0.15,
-                        b: 2.
-                    }).into(),
+                    mesh: arrow_handle.0.clone(),
                     material: materials.add(ColorMaterial::from(connection_color.0)),
-                    transform: Transform::from_translation(Vec3::new(0.,0.,100.)),
+                    transform: Transform {
+                        translation: ((cursor.i + cursor.f) / 2.).extend(100.),
+                        scale: Vec3::new(4., cursor.i.distance(cursor.f) - (bh_radius + wh_radius), 1.),
+                        rotation: Quat::from_rotation_z(perp.y.atan2(perp.x)),
+                    },
                     ..default()
                 },
                 RenderLayers::layer(4),
@@ -89,7 +90,7 @@ pub fn connect(
                     material: materials.add(ColorMaterial::from(bh_color)),
                     transform: Transform {
                         translation: cursor.i.extend(bh_depth + src_trans.z),
-                        scale: Vec3::new(src_radius * 0.15, src_radius * 0.15, 1.),
+                        scale: Vec3::new(bh_radius, bh_radius, 1.),
                         ..default()
                     },
                     ..default()
@@ -108,7 +109,7 @@ pub fn connect(
                     material: materials.add(ColorMaterial::from(wh_color)),
                     transform: Transform {
                         translation: cursor.f.extend(wh_depth + snk_trans.z),
-                        scale: Vec3::new(snk_radius * 0.15, snk_radius * 0.15, 1.),
+                        scale: Vec3::new(wh_radius, wh_radius, 1.),
                         ..default()
                     },
                     ..default()
@@ -173,44 +174,43 @@ pub fn target(
     }
 }
 
-// TODO(tomara): try different values for the bh/wh loops! lol
-// this needs cleaning
 pub fn update_connection_arrows(
-    bh_query: Query<(Entity, &BlackHole), Changed<Transform>>,
-    wh_query: Query<(Entity, &WhiteHole), Changed<Transform>>,
-    trans_query: Query<&Transform>,
+    bh_query: Query<(Entity, &BlackHole), (Changed<Transform>, With<Vertices>)>,
+    wh_query: Query<(Entity, &WhiteHole), (Changed<Transform>, With<Vertices>)>,
+    trans_query: Query<&Transform, With<Vertices>>,
+    mut arrow_trans: Query<&mut Transform, Without<Vertices>>,
     arrow_query: Query<&ConnectionArrow>,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mesh_ids: Query<&Mesh2dHandle>,
-    mut aabb_query: Query<&mut Aabb>,
 ) {
     for (id, bh) in bh_query.iter() {
-        if let (Ok(i), Ok(f)) = (trans_query.get(id), trans_query.get(bh.wh)) {
-            let ip = i.scale.x;
-            let fp = f.scale.x;
-            let i = i.translation.xy();
-            let f = f.translation.xy();
+        if wh_query.contains(bh.wh) { continue; }
+        if let (Ok(bh_t), Ok(wh_t)) = (trans_query.get(id), trans_query.get(bh.wh)) {
+            let bh_radius = bh_t.scale.x;
+            let wh_radius = wh_t.scale.x;
+            let bh_trans = bh_t.translation.xy();
+            let wh_trans = wh_t.translation.xy();
             if let Ok(arrow_id) = arrow_query.get(bh.wh) {
-                let aabb = Aabb::enclosing([i.extend(1.), f.extend(1.)]).unwrap();
-                *aabb_query.get_mut(arrow_id.0).unwrap() = aabb;
-                let Mesh2dHandle(mesh_id) = mesh_ids.get(arrow_id.0).unwrap();
-                let mesh = meshes.get_mut(mesh_id).unwrap();
-                *mesh = Tri { i, f, ip, fp, b: 2. } .into();
+                let perp = (bh_trans - wh_trans).perp();
+                *arrow_trans.get_mut(arrow_id.0).unwrap() = Transform {
+                    translation: ((bh_trans + wh_trans) / 2.).extend(100.),
+                    scale: Vec3::new(4., wh_trans.distance(bh_trans) - (bh_radius + wh_radius), 1.),
+                    rotation: Quat::from_rotation_z(perp.y.atan2(perp.x)),
+                };
             }
         }
     }
     for (id, wh) in wh_query.iter() {
-        if let (Ok(f), Ok(i)) = (trans_query.get(id), trans_query.get(wh.bh)) {
-            let fp = f.scale.x;
-            let ip = i.scale.x;
-            let f = f.translation.xy();
-            let i = i.translation.xy();
+        if let (Ok(bh_t), Ok(wh_t)) = (trans_query.get(wh.bh), trans_query.get(id)) {
+            let bh_radius = bh_t.scale.x;
+            let wh_radius = wh_t.scale.x;
+            let bh_trans = bh_t.translation.xy();
+            let wh_trans = wh_t.translation.xy();
             if let Ok(arrow_id) = arrow_query.get(id) {
-                let aabb = Aabb::enclosing([i.extend(1.), f.extend(1.)]).unwrap();
-                *aabb_query.get_mut(arrow_id.0).unwrap() = aabb;
-                let Mesh2dHandle(mesh_id) = mesh_ids.get(arrow_id.0).unwrap();
-                let mesh = meshes.get_mut(mesh_id).unwrap();
-                *mesh = Tri { i, f, ip, fp, b: 2. } .into();
+                let perp = (bh_trans - wh_trans).perp();
+                *arrow_trans.get_mut(arrow_id.0).unwrap() = Transform {
+                    translation: ((bh_trans + wh_trans) / 2.).extend(100.),
+                    scale: Vec3::new(4., wh_trans.distance(bh_trans) - (bh_radius + wh_radius), 1.),
+                    rotation: Quat::from_rotation_z(perp.y.atan2(perp.x)),
+                };
             }
         }
     }

@@ -242,6 +242,8 @@ fn setup(
         Col(Color::hsla(0., 1., 0.5, 0.3)),
     )).id();
     commands.insert_resource(ConnectingLine(id));
+
+    commands.insert_resource(ArrowHandle(meshes.add(Triangle2d::default()).into()));
 }
 
 fn toggle_pan(
