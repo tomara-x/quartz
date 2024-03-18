@@ -1,16 +1,9 @@
 use bevy::{
     prelude::*,
-    sprite::Mesh2dHandle,
-    render::{
-        primitives::Aabb,
-        view::RenderLayers,
-    },
+    render::view::RenderLayers,
 };
 
-use crate::{
-    components::*,
-    meshes::*,
-};
+use crate::components::*;
 
 pub fn connect(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
@@ -65,7 +58,6 @@ pub fn connect(
             let snk_verts = query.get(snk).unwrap().2.0;
             let bh_radius = src_radius * 0.15;
             let wh_radius = snk_radius * 0.15;
-            let perp = (cursor.i - cursor.f).perp();
 
             // spawn connection arrow
             let arrow = commands.spawn((
@@ -223,23 +215,20 @@ pub fn draw_connecting_arrow(
     cursor: Res<CursorInfo>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     id: Res<ConnectingLine>,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mesh_ids: Query<&Mesh2dHandle>,
-    mut aabb_query: Query<&mut Aabb>,
+    mut trans_query: Query<&mut Transform>,
 ) {
     if mouse_button_input.pressed(MouseButton::Left)
     && !mouse_button_input.just_pressed(MouseButton::Left)
     && !keyboard_input.pressed(KeyCode::Space) {
-        let aabb = Aabb::enclosing([cursor.i.extend(1.), cursor.f.extend(1.)]).unwrap();
-        *aabb_query.get_mut(id.0).unwrap() = aabb;
-        let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
-        let mesh = meshes.get_mut(mesh_id).unwrap();
-        *mesh = Tri { i: cursor.i, f: cursor.f, ip:0.0, fp:0.0, b:2. } .into();
+        let perp = (cursor.i - cursor.f).perp();
+        *trans_query.get_mut(id.0).unwrap() = Transform {
+            translation: ((cursor.i + cursor.f) / 2.).extend(100.),
+            scale: Vec3::new(4., cursor.f.distance(cursor.i), 1.),
+            rotation: Quat::from_rotation_z(perp.y.atan2(perp.x)),
+        }
     }
     if mouse_button_input.just_released(MouseButton::Left) {
-        let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
-        let mesh = meshes.get_mut(mesh_id).unwrap();
-        *mesh = RegularPolygon::new(0.1, 3).into();
+        *trans_query.get_mut(id.0).unwrap() = Transform::default();
     }
 }
 
