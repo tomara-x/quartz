@@ -327,7 +327,7 @@ fn copy_scene(world: &mut World) {
 }
 
 fn paste_scene(world: &mut World) {
-    if let Ok(mut ctx) = world.resource_mut::<SystemClipboard>().0.get_contents() {
+    if let Ok(ctx) = world.resource_mut::<SystemClipboard>().0.get_contents() {
         let bytes = ctx.into_bytes();
         let mut scene = None;
         if let Ok(mut deserializer) = Deserializer::from_bytes(&bytes) {
