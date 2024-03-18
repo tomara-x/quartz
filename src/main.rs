@@ -327,21 +327,22 @@ fn copy_scene(world: &mut World) {
 }
 
 fn paste_scene(world: &mut World) {
-    let mut ctx = world.resource_mut::<SystemClipboard>();
-    let bytes = ctx.0.get_contents().unwrap().into_bytes();
-    let mut scene = None;
-    if let Ok(mut deserializer) = Deserializer::from_bytes(&bytes) {
-        let type_registry = world.resource::<AppTypeRegistry>();
-        let scene_deserializer = SceneDeserializer {
-            type_registry: &type_registry.read(),
-        };
-        if let Ok(s) = scene_deserializer.deserialize(&mut deserializer) {
-            scene = Some(s);
+    if let Ok(mut ctx) = world.resource_mut::<SystemClipboard>().0.get_contents() {
+        let bytes = ctx.into_bytes();
+        let mut scene = None;
+        if let Ok(mut deserializer) = Deserializer::from_bytes(&bytes) {
+            let type_registry = world.resource::<AppTypeRegistry>();
+            let scene_deserializer = SceneDeserializer {
+                type_registry: &type_registry.read(),
+            };
+            if let Ok(s) = scene_deserializer.deserialize(&mut deserializer) {
+                scene = Some(s);
+            }
         }
-    }
-    if let Some(s) = scene {
-        let scene = world.resource_mut::<Assets<DynamicScene>>().add(s);
-        world.spawn(DynamicSceneBundle { scene: scene, ..default() });
+        if let Some(s) = scene {
+            let scene = world.resource_mut::<Assets<DynamicScene>>().add(s);
+            world.spawn(DynamicSceneBundle { scene: scene, ..default() });
+        }
     }
 }
 
