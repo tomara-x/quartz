@@ -73,6 +73,7 @@ pub fn connect(
                     mesh: arrow_handle.0.clone(),
                     material: materials.add(ColorMaterial::from(connection_color.0)),
                     transform: Transform {
+                        // doesn't matter, it'll get corrected next frame
                         translation: ((cursor.i + cursor.f) / 2.).extend(100.),
                         scale: Vec3::new(4., cursor.i.distance(cursor.f) - (bh_radius + wh_radius), 1.),
                         rotation: Quat::from_rotation_z(perp.y.atan2(perp.x)),
@@ -190,8 +191,11 @@ pub fn update_connection_arrows(
             let wh_trans = wh_t.translation.xy();
             if let Ok(arrow_id) = arrow_query.get(bh.wh) {
                 let perp = (bh_trans - wh_trans).perp();
+                let norm = (wh_trans - bh_trans).normalize_or_zero();
+                let i = wh_trans - wh_radius * norm;
+                let f = bh_trans + bh_radius * norm;
                 *arrow_trans.get_mut(arrow_id.0).unwrap() = Transform {
-                    translation: ((bh_trans + wh_trans) / 2.).extend(100.),
+                    translation: ((i+f) / 2.).extend(100.),
                     scale: Vec3::new(4., wh_trans.distance(bh_trans) - (bh_radius + wh_radius), 1.),
                     rotation: Quat::from_rotation_z(perp.y.atan2(perp.x)),
                 };
@@ -206,8 +210,11 @@ pub fn update_connection_arrows(
             let wh_trans = wh_t.translation.xy();
             if let Ok(arrow_id) = arrow_query.get(id) {
                 let perp = (bh_trans - wh_trans).perp();
+                let norm = (wh_trans - bh_trans).normalize_or_zero();
+                let i = wh_trans - wh_radius * norm;
+                let f = bh_trans + bh_radius * norm;
                 *arrow_trans.get_mut(arrow_id.0).unwrap() = Transform {
-                    translation: ((bh_trans + wh_trans) / 2.).extend(100.),
+                    translation: ((i+f) / 2.).extend(100.),
                     scale: Vec3::new(4., wh_trans.distance(bh_trans) - (bh_radius + wh_radius), 1.),
                     rotation: Quat::from_rotation_z(perp.y.atan2(perp.x)),
                 };
