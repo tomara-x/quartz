@@ -13,6 +13,7 @@ use bevy::{
     asset::ron::Deserializer,
     render::view::RenderLayers,
     window::FileDragAndDrop::DroppedFile,
+    ecs::system::SystemParam,
     prelude::*};
 
 use bevy_pancam::{PanCam, PanCamPlugin};
@@ -361,6 +362,14 @@ fn file_drag_and_drop(
     }
 }
 
+
+#[derive(SystemParam)]
+struct MoreParams<'w> {
+    command_color: Res<'w, CommandColor>,
+    connection_color: Res<'w, ConnectionColor>,
+    arrow_handle: Res<'w, ArrowHandle>,
+}
+
 fn post_load(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -373,11 +382,10 @@ fn post_load(
     children_query: Query<&Children>,
     mut holes_query: Query<&mut Holes>,
     mut op_query: Query<&mut Op>,
-    connection_color: Res<ConnectionColor>,
     mut command_line_text: Query<&mut Text, With<CommandText>>,
-    command_color: Res<CommandColor>,
     scene_spawner: Res<SceneSpawner>,
     mut polygon_handles: ResMut<PolygonHandles>,
+    more: MoreParams,
 ) {
     for (scene_id, instance_id) in scenes.iter() {
         if scene_spawner.instance_is_ready(**instance_id) {
@@ -415,9 +423,9 @@ fn post_load(
                                     if black_hole_query.contains(wh.bh) && main_query.contains(wh.bh_parent) {
                                         wh.open = true;
                                         let arrow = commands.spawn(( ColorMesh2dBundle {
-                                            mesh: meshes.add(RegularPolygon::new(0.1, 3)).into(),
-                                            material: materials.add(ColorMaterial::from(connection_color.0)),
-                                            transform: Transform::from_translation(Vec3::Z),
+                                            mesh: more.arrow_handle.0.clone(),
+                                            material: materials.add(ColorMaterial::from(more.connection_color.0)),
+                                            transform: Transform::default(),
                                             ..default()
                                         },
                                         RenderLayers::layer(4),
@@ -445,7 +453,7 @@ fn post_load(
             }
             // update the command line color from resource
             let clt = &mut command_line_text.single_mut();
-            clt.sections[0].style.color = command_color.0;
+            clt.sections[0].style.color = more.command_color.0;
             // despawn the now empty instance
             commands.entity(scene_id).despawn();
         }
