@@ -72,12 +72,7 @@ pub fn connect(
                 ColorMesh2dBundle {
                     mesh: arrow_handle.0.clone(),
                     material: materials.add(ColorMaterial::from(connection_color.0)),
-                    transform: Transform {
-                        // doesn't matter, it'll get corrected next frame
-                        translation: ((cursor.i + cursor.f) / 2.).extend(100.),
-                        scale: Vec3::new(4., cursor.i.distance(cursor.f) - (bh_radius + wh_radius), 1.),
-                        rotation: Quat::from_rotation_z(perp.y.atan2(perp.x)),
-                    },
+                    transform: Transform::default(),
                     ..default()
                 },
                 RenderLayers::layer(4),
