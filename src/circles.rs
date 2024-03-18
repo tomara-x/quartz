@@ -212,7 +212,7 @@ pub fn update_selection(
             }
         }
     } else if mouse_button_input.pressed(MouseButton::Left) && top_clicked_circle.is_none() {
-        trans_query.get_mut(id.0).unwrap().translation = cursor.i.extend(1.);
+        trans_query.get_mut(id.0).unwrap().translation = cursor.i.extend(100.);
         let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
         let mesh = meshes.get_mut(mesh_id).unwrap();
         *mesh = RegularPolygon::new(cursor.i.distance(cursor.f).max(0.1), 8).into();
