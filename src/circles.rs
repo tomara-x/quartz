@@ -163,7 +163,7 @@ pub fn draw_drawing_circle(
         trans_query.get_mut(id.0).unwrap().translation = Vec3::Z;
         let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
         let mesh = meshes.get_mut(mesh_id).unwrap();
-        *mesh = RegularPolygon::new(0.1, 3).into();
+        *mesh = Triangle2d::default().into();
     }
 }
 
@@ -223,7 +223,7 @@ pub fn update_selection(
         trans_query.get_mut(id.0).unwrap().translation = Vec3::Z;
         let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
         let mesh = meshes.get_mut(mesh_id).unwrap();
-        *mesh = RegularPolygon::new(0.1, 3).into();
+        *mesh = Triangle2d::default().into();
         if top_clicked_circle.is_none() {
             if !shift {
                 for entity in selected.iter() {

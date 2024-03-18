@@ -222,7 +222,7 @@ fn setup(
     // selection / drawing circle
     let id = commands.spawn((
         ColorMesh2dBundle {
-            mesh: meshes.add(RegularPolygon::new(0.1, 12)).into(),
+            mesh: meshes.add(Triangle2d::default()).into(),
             material: materials.add(ColorMaterial::from(Color::hsla(0., 1., 0.5, 0.3))),
             transform: Transform::from_translation(Vec3::Z),
             ..default()
