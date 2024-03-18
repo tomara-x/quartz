@@ -209,6 +209,8 @@ pub fn update_selection(
                     }
                     commands.entity(top.0).insert(Selected);
                 }
+            } else if ctrl {
+                commands.entity(top.0).remove::<Selected>();
             }
         }
     } else if mouse_button_input.pressed(MouseButton::Left) && top_clicked_circle.is_none() {
