@@ -38,10 +38,12 @@ pub struct Col(pub Color);
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
+#[component(storage = "SparseSet")]
 pub struct Selected;
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
+#[component(storage = "SparseSet")]
 pub struct Visible;
 
 #[derive(Component, Reflect, Default)]
