@@ -150,7 +150,6 @@ audio unit info:
 - `sh` select all holes
 - `sg` select holes of the selected circles
 - `<delete>` delete selected entities
-- `<shift>+<delete>` will only delete selected connections
 - `yy` copy selection to clipboard
 - `p` paste copied
 

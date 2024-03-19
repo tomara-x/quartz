@@ -579,12 +579,10 @@ pub fn delete_selected(
     mut order_change: EventWriter<OrderChange>,
     mut lost_wh_query: Query<&mut LostWH>,
 ) {
-    let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
     if keyboard_input.just_pressed(KeyCode::Delete) {
         let mut order = false;
         for e in selected_query.iter() {
             if let Ok(holes) = holes_query.get(e) { // it's a circle
-                if shift { continue; }
                 for hole in &holes.0.clone() {
                     if let Ok(bh) = bh_query.get(*hole) {
                         let arrow = arrow_query.get(bh.wh).unwrap().0;
