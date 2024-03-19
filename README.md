@@ -147,7 +147,9 @@ audio unit info:
 ###### selection
 - `sa` select all
 - `sc` select all circles
+- `sC` deselect circles
 - `sh` select all holes
+- `sH` deselect holes
 - `sg` select holes of the selected circles
 - `<delete>` delete selected entities
 - `yy` copy selection to clipboard

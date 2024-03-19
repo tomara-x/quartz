@@ -49,7 +49,7 @@ pub fn command_parser(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut key_event: EventReader<KeyboardInput>,
     mut command_line_text: Query<&mut Text, With<CommandText>>,
-    circles_query: Query<Entity, With<Vertices>>,
+    entity_query: Query<Entity, With<Vertices>>,
     mut access: Access,
     mut next_mode: ResMut<NextState<Mode>>,
     mode: Res<State<Mode>>,
@@ -1049,13 +1049,13 @@ pub fn command_parser(
                 *text = format!(">WH_OPEN: {}", t);
             }
             Some("sa") => {
-                for e in circles_query.iter() {
+                for e in entity_query.iter() {
                     commands.entity(e).insert(Selected);
                 }
                 text.clear();
             }
             Some("sc") => {
-                for e in circles_query.iter() {
+                for e in entity_query.iter() {
                     if access.order_query.contains(e) {
                         commands.entity(e).insert(Selected);
                     }
@@ -1063,7 +1063,7 @@ pub fn command_parser(
                 text.clear();
             }
             Some("sh") => {
-                for e in circles_query.iter() {
+                for e in entity_query.iter() {
                     if !access.order_query.contains(e) {
                         commands.entity(e).insert(Selected);
                     }
@@ -1079,6 +1079,22 @@ pub fn command_parser(
                         for hole in &holes.0 {
                             commands.entity(*hole).insert(Selected);
                         }
+                    }
+                }
+                text.clear();
+            }
+            Some("sC") => {
+                for e in access.selected_query.iter() {
+                    if access.order_query.contains(e) {
+                        commands.entity(e).remove::<Selected>();
+                    }
+                }
+                text.clear();
+            }
+            Some("sH") => {
+                for e in access.selected_query.iter() {
+                    if !access.order_query.contains(e) {
+                        commands.entity(e).remove::<Selected>();
                     }
                 }
                 text.clear();
