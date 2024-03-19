@@ -20,7 +20,9 @@ use bevy_pancam::{PanCam, PanCamPlugin};
 use std::{fs::File, io::Write};
 use copypasta::{ClipboardContext, ClipboardProvider};
 use serde::de::DeserializeSeed;
-//use bevy_inspector_egui::quick::WorldInspectorPlugin;
+
+#[cfg(feature = "inspector")]
+use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 mod components;
 mod process;
@@ -35,126 +37,130 @@ use {components::*, process::*, cursor::*, connections::*,
      circles::*, audio::*, commands::*, functions::*};
 
 fn main() {
-    App::new()
-        .add_plugins(DefaultPlugins.set(WindowPlugin {
-            primary_window: Some(Window {
-                //transparent: true,
-                title: String::from("awawawa"),
-                ..default()
-            }),
+    let mut app = App::new();
+
+    app.add_plugins(DefaultPlugins.set(WindowPlugin {
+        primary_window: Some(Window {
+            //transparent: true,
+            title: String::from("awawawa"),
             ..default()
-        }))
-        .insert_resource(WinitSettings {
-            focused_mode: UpdateMode::ReactiveLowPower {
-                wait: Duration::from_secs_f64(1.0 / 60.0),
-            },
-            unfocused_mode: UpdateMode::ReactiveLowPower {
-                wait: Duration::from_secs_f64(1.0 / 30.0),
-            },
-            ..default()
-        })
+        }),
+        ..default()
+    }))
+    .insert_resource(WinitSettings {
+        focused_mode: UpdateMode::ReactiveLowPower {
+            wait: Duration::from_secs_f64(1.0 / 60.0),
+        },
+        unfocused_mode: UpdateMode::ReactiveLowPower {
+            wait: Duration::from_secs_f64(1.0 / 30.0),
+        },
+        ..default()
+    })
 
-        .add_plugins(PanCamPlugin::default())
-        //.add_plugins(WorldInspectorPlugin::new())
+    .add_plugins(PanCamPlugin::default())
 
-        .insert_resource(ClearColor(Color::BLACK))
-        .insert_resource(DefaultDrawColor(Color::hsl(1.,1.,0.84)))
-        .insert_resource(DefaultDrawVerts(4))
-        .insert_resource(HighlightColor(Color::hsl(0.0,1.0,0.5)))
-        .insert_resource(ConnectionColor(Color::hsla(0., 1., 1., 0.7)))
-        .insert_resource(CommandColor(Color::hsla(0., 0., 0.7, 1.)))
-        .insert_resource(DefaultLT((0, 0)))
-        .insert_resource(SystemClipboard(ClipboardContext::new().unwrap()))
-        .insert_resource(Msaa::Sample4)
-        .insert_resource(Version(
-            format!("{} {}", env!("CARGO_PKG_VERSION"),
-                String::from_utf8(std::process::Command::new("git")
-                .args(&["rev-parse", "--short", "HEAD"])
-                .output().unwrap().stdout).unwrap().trim()
-            )
-        ))
-        .init_resource::<PolygonHandles>()
+    .insert_resource(ClearColor(Color::BLACK))
+    .insert_resource(DefaultDrawColor(Color::hsl(1.,1.,0.84)))
+    .insert_resource(DefaultDrawVerts(4))
+    .insert_resource(HighlightColor(Color::hsl(0.0,1.0,0.5)))
+    .insert_resource(ConnectionColor(Color::hsla(0., 1., 1., 0.7)))
+    .insert_resource(CommandColor(Color::hsla(0., 0., 0.7, 1.)))
+    .insert_resource(DefaultLT((0, 0)))
+    .insert_resource(SystemClipboard(ClipboardContext::new().unwrap()))
+    .insert_resource(Msaa::Sample4)
+    .insert_resource(Version(
+        format!("{} {}", env!("CARGO_PKG_VERSION"),
+            String::from_utf8(std::process::Command::new("git")
+            .args(&["rev-parse", "--short", "HEAD"])
+            .output().unwrap().stdout).unwrap().trim()
+        )
+    ))
+    .init_resource::<PolygonHandles>()
 
-        .add_systems(Startup, setup)
-        .add_systems(Startup, ext_thread)
-        
-        .add_systems(Update, toggle_pan)
-        .init_state::<Mode>()
-        .add_systems(Update, save_scene)
-        .add_systems(Update, copy_scene.run_if(on_event::<CopyCommand>()))
-        .add_systems(Update, paste_scene.run_if(on_event::<PasteCommand>()))
-        .add_systems(Update, post_load)
-        .add_systems(Update, file_drag_and_drop)
-        .init_resource::<DragModes>()
-        // cursor
-        .insert_resource(CursorInfo::default())
-        .add_systems(Update, update_cursor_info)
-        // circles
-        .add_systems(Update, spawn_circles.run_if(in_state(Mode::Draw)))
-        .add_systems(Update, mark_visible_circles.after(update_cursor_info))
-        .add_systems(Update, draw_drawing_circle.run_if(in_state(Mode::Draw)))
-        .add_systems(Update, update_selection.after(mark_visible_circles).run_if(in_state(Mode::Edit)))
-        .add_systems(Update, move_selected.after(update_selection).run_if(in_state(Mode::Edit)))
-        .add_systems(Update, update_color.after(update_selection).run_if(in_state(Mode::Edit)))
-        .add_systems(Update, update_mat)
-        .add_systems(Update, update_radius.after(update_selection).run_if(in_state(Mode::Edit)))
-        .add_systems(Update, update_vertices.after(update_selection).run_if(in_state(Mode::Edit)))
-        .add_systems(Update, update_mesh.after(update_vertices))
-        .add_systems(Update, update_num.after(update_selection).run_if(in_state(Mode::Edit)))
-        .add_systems(Update, highlight_selected)
-        .add_systems(Update, open_after_drag.run_if(in_state(Mode::Edit)))
-        .add_systems(PreUpdate, transform_highlights)
-        .add_systems(Update, rotate_selected.after(update_selection).run_if(in_state(Mode::Edit)))
-        .add_systems(Update, (delete_selected_holes, delete_selected_circles).chain().run_if(in_state(Mode::Edit)))
-        // text
-        .add_systems(PreUpdate, update_info_text)
-        // events
-        .add_event::<SaveCommand>()
-        .add_event::<CopyCommand>()
-        .add_event::<PasteCommand>()
-        // connections
-        .add_systems(Update, connect.run_if(in_state(Mode::Connect)))
-        .add_systems(Update, target.run_if(in_state(Mode::Connect)))
-        .add_systems(PreUpdate, update_connection_arrows)
-        .add_systems(Update, draw_connecting_arrow.run_if(in_state(Mode::Connect)))
-        // order
-        .init_resource::<Queue>()
-        .init_resource::<LoopQueue>()
-        .add_event::<OrderChange>()
-        .add_systems(PostUpdate, sort_by_order.before(process).run_if(on_event::<OrderChange>()))
-        .add_systems(PostUpdate, prepare_loop_queue.after(sort_by_order))
-        // process
-        .add_systems(PostUpdate, process)
-        // commands
-        .add_systems(Update, command_parser)
+    .add_systems(Startup, setup)
+    .add_systems(Startup, ext_thread)
 
-        // type registry
-        .register_type::<DragModes>()
-        .register_type::<Queue>()
-        .register_type::<Col>()
-        .register_type::<Op>()
-        .register_type::<Number>()
-        .register_type::<Arr>()
-        .register_type::<Vec<f32>>()
-        .register_type::<Selected>()
-        .register_type::<Visible>()
-        .register_type::<Save>()
-        .register_type::<Order>()
-        .register_type::<BlackHole>()
-        .register_type::<WhiteHole>()
-        .register_type::<(i32, i32)>()
-        .register_type::<Vertices>()
-        .register_type::<Targets>()
-        .register_type::<GainedWH>()
-        .register_type::<LostWH>()
-        .register_type::<DefaultDrawColor>()
-        .register_type::<DefaultDrawVerts>()
-        .register_type::<HighlightColor>()
-        .register_type::<ConnectionColor>()
-        .register_type::<CommandColor>()
-        .register_type::<Version>()
-        .register_type::<Holes>()
-        .run();
+    .add_systems(Update, toggle_pan)
+    .init_state::<Mode>()
+    .add_systems(Update, save_scene)
+    .add_systems(Update, copy_scene.run_if(on_event::<CopyCommand>()))
+    .add_systems(Update, paste_scene.run_if(on_event::<PasteCommand>()))
+    .add_systems(Update, post_load)
+    .add_systems(Update, file_drag_and_drop)
+    .init_resource::<DragModes>()
+    // cursor
+    .insert_resource(CursorInfo::default())
+    .add_systems(Update, update_cursor_info)
+    // circles
+    .add_systems(Update, spawn_circles.run_if(in_state(Mode::Draw)))
+    .add_systems(Update, mark_visible_circles.after(update_cursor_info))
+    .add_systems(Update, draw_drawing_circle.run_if(in_state(Mode::Draw)))
+    .add_systems(Update, update_selection.after(mark_visible_circles).run_if(in_state(Mode::Edit)))
+    .add_systems(Update, move_selected.after(update_selection).run_if(in_state(Mode::Edit)))
+    .add_systems(Update, update_color.after(update_selection).run_if(in_state(Mode::Edit)))
+    .add_systems(Update, update_mat)
+    .add_systems(Update, update_radius.after(update_selection).run_if(in_state(Mode::Edit)))
+    .add_systems(Update, update_vertices.after(update_selection).run_if(in_state(Mode::Edit)))
+    .add_systems(Update, update_mesh.after(update_vertices))
+    .add_systems(Update, update_num.after(update_selection).run_if(in_state(Mode::Edit)))
+    .add_systems(Update, highlight_selected)
+    .add_systems(Update, open_after_drag.run_if(in_state(Mode::Edit)))
+    .add_systems(PreUpdate, transform_highlights)
+    .add_systems(Update, rotate_selected.after(update_selection).run_if(in_state(Mode::Edit)))
+    .add_systems(Update, (delete_selected_holes, delete_selected_circles).chain().run_if(in_state(Mode::Edit)))
+    .add_systems(PreUpdate, update_info_text)
+    // events
+    .add_event::<SaveCommand>()
+    .add_event::<CopyCommand>()
+    .add_event::<PasteCommand>()
+    // connections
+    .add_systems(Update, connect.run_if(in_state(Mode::Connect)))
+    .add_systems(Update, target.run_if(in_state(Mode::Connect)))
+    .add_systems(PreUpdate, update_connection_arrows)
+    .add_systems(Update, draw_connecting_arrow.run_if(in_state(Mode::Connect)))
+    // order
+    .init_resource::<Queue>()
+    .init_resource::<LoopQueue>()
+    .add_event::<OrderChange>()
+    .add_systems(PostUpdate, sort_by_order.before(process).run_if(on_event::<OrderChange>()))
+    .add_systems(PostUpdate, prepare_loop_queue.after(sort_by_order))
+    // process
+    .add_systems(PostUpdate, process)
+    // commands
+    .add_systems(Update, command_parser)
+
+    // type registry
+    .register_type::<DragModes>()
+    .register_type::<Queue>()
+    .register_type::<Col>()
+    .register_type::<Op>()
+    .register_type::<Number>()
+    .register_type::<Arr>()
+    .register_type::<Vec<f32>>()
+    .register_type::<Selected>()
+    .register_type::<Visible>()
+    .register_type::<Save>()
+    .register_type::<Order>()
+    .register_type::<BlackHole>()
+    .register_type::<WhiteHole>()
+    .register_type::<(i32, i32)>()
+    .register_type::<Vertices>()
+    .register_type::<Targets>()
+    .register_type::<GainedWH>()
+    .register_type::<LostWH>()
+    .register_type::<DefaultDrawColor>()
+    .register_type::<DefaultDrawVerts>()
+    .register_type::<HighlightColor>()
+    .register_type::<ConnectionColor>()
+    .register_type::<CommandColor>()
+    .register_type::<Version>()
+    .register_type::<Holes>()
+    ;
+
+    #[cfg(feature = "inspector")]
+    { app.add_plugins(WorldInspectorPlugin::new()); }
+
+    app.run();
 }
 
 fn setup(

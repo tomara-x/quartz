@@ -6,6 +6,9 @@ authors = ["amy universe <nopenullnilvoid00@gmail.com>"]
 repository = "https://github.com/tomara-x/quartz"
 license = "MIT OR Apache-2.0"
 
+[features]
+inspector = ["dep:bevy-inspector-egui"]
+
 [dependencies.bevy]
 version = "0.13.1"
 default-features = false
@@ -32,7 +35,7 @@ cpal = "0.15.2"
 assert_no_alloc = "1.1.2"
 copypasta = "0.10.1"
 serde = "1.0.196"
-#bevy-inspector-egui = {version = "0.23.2",  default-features = false}
+bevy-inspector-egui = {version = "0.23.2",  default-features = false, optional = true}
 
 # smol amount of optimization for our stuff
 [profile.dev]
