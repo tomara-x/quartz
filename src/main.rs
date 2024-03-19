@@ -178,7 +178,7 @@ fn setup(
                 ..default()
             },
             tonemapping: Tonemapping::TonyMcMapface,
-            transform: Transform::from_translation(Vec3::Z),
+            transform: Transform::from_translation(Vec3::Z * 200.),
         ..default()
         },
         BloomSettings {
