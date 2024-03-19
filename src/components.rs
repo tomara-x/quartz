@@ -269,3 +269,6 @@ pub struct CopyCommand;
 
 #[derive(Event, Default)]
 pub struct PasteCommand;
+
+#[derive(Event, Default)]
+pub struct DeleteCommand;

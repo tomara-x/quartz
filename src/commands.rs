@@ -30,6 +30,7 @@ pub struct Access<'w, 's> {
     save_event: EventWriter<'w, SaveCommand>,
     copy_event: EventWriter<'w, CopyCommand>,
     paste_event: EventWriter<'w, PasteCommand>,
+    delete_event: EventWriter<'w, DeleteCommand>,
     targets_query: Query<'w, 's, &'static mut Targets>,
     gained_wh_query: Query<'w, 's, &'static mut GainedWH>,
     text_query: Query<'w, 's, &'static mut Text, Without<CommandText>>,
@@ -72,6 +73,9 @@ pub fn command_parser(
         } else {
             access.windows.single_mut().mode = WindowMode::Fullscreen;
         }
+    }
+    if keyboard_input.just_pressed(KeyCode::Delete) {
+        access.delete_event.send_default();
     }
 
     if *mode.get() == Mode::Draw {
@@ -1126,6 +1130,10 @@ pub fn command_parser(
             }
             Some("p") | Some("\"+p") => {
                 access.paste_event.send_default();
+                text.clear();
+            }
+            Some(":delete") => {
+                access.delete_event.send_default();
                 text.clear();
             }
             Some(":help") | Some(":about") | Some("about") | Some("help") => {

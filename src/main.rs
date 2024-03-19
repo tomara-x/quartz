@@ -108,12 +108,13 @@ fn main() {
     .add_systems(Update, open_after_drag.run_if(in_state(Mode::Edit)))
     .add_systems(PreUpdate, transform_highlights)
     .add_systems(Update, rotate_selected.after(update_selection).run_if(in_state(Mode::Edit)))
-    .add_systems(Update, delete_selected.run_if(in_state(Mode::Edit))) //event?
+    .add_systems(Update, delete_selected.run_if(on_event::<DeleteCommand>()))
     .add_systems(PreUpdate, update_info_text)
     // events
     .add_event::<SaveCommand>()
     .add_event::<CopyCommand>()
     .add_event::<PasteCommand>()
+    .add_event::<DeleteCommand>()
     // connections
     .add_systems(Update, connect.run_if(in_state(Mode::Connect)))
     .add_systems(Update, target.run_if(in_state(Mode::Connect)))
