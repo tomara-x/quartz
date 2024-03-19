@@ -640,6 +640,7 @@ pub fn delete_selected(
                     // get parent
                     let parent = bh_query.get(wh.bh).unwrap().wh_parent;
                     if selected_query.contains(parent) { continue; }
+                    if selected_query.contains(wh.bh_parent) { continue; }
                     // remove from parents' vecs
                     holes_query.get_mut(parent).unwrap().0.retain(|x| *x != e);
                     holes_query.get_mut(wh.bh_parent).unwrap().0.retain(|x| *x != wh.bh);
@@ -665,6 +666,7 @@ pub fn delete_selected(
                 } else if let Ok(bh) = bh_query.get(e) {
                     let parent = wh_query.get(bh.wh).unwrap().bh_parent;
                     if selected_query.contains(parent) { continue; }
+                    if selected_query.contains(bh.wh_parent) { continue; }
                     if selected_query.contains(bh.wh) { continue; }
                     holes_query.get_mut(parent).unwrap().0.retain(|x| *x != e);
                     holes_query.get_mut(bh.wh_parent).unwrap().0.retain(|x| *x != bh.wh);
