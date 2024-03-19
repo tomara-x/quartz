@@ -2,7 +2,7 @@ use bevy::{
     core_pipeline::{
         bloom::{BloomCompositeMode, BloomSettings},
         tonemapping::Tonemapping,
-        },
+    },
     utils::Duration,
     winit::{WinitSettings, UpdateMode},
     tasks::IoTaskPool,
@@ -14,7 +14,8 @@ use bevy::{
     render::view::RenderLayers,
     window::FileDragAndDrop::DroppedFile,
     ecs::system::SystemParam,
-    prelude::*};
+    prelude::*
+};
 
 use bevy_pancam::{PanCam, PanCamPlugin};
 use std::{fs::File, io::Write};
