@@ -125,7 +125,7 @@ add a drag mode: (to drag multiple properties at the same time)
 - `ix` x position
 - `iy` y position
 - `iz` z position
-- `ih` hue value
+- `ihu` hue value
 - `is` saturation
 - `il` lightness
 - `ial` alpha
@@ -134,6 +134,7 @@ add a drag mode: (to drag multiple properties at the same time)
 - `ior` order
 - `iop` op
 - `iar` array
+- `iho` holes
 - `it` targets
 - `iL` hole link type
 - `iO` white hole open status
