@@ -77,6 +77,7 @@ fn main() {
         )
     ))
     .init_resource::<PolygonHandles>()
+    .init_resource::<DacCircles>()
 
     .add_systems(Startup, setup)
     .add_systems(Startup, ext_thread)
@@ -115,6 +116,7 @@ fn main() {
     .add_event::<CopyCommand>()
     .add_event::<PasteCommand>()
     .add_event::<DeleteCommand>()
+    .add_event::<DacChange>()
     // connections
     .add_systems(Update, connect.run_if(in_state(Mode::Connect)))
     .add_systems(Update, target.run_if(in_state(Mode::Connect)))
@@ -128,6 +130,7 @@ fn main() {
     .add_systems(PostUpdate, prepare_loop_queue.after(sort_by_order))
     // process
     .add_systems(PostUpdate, process)
+    .add_systems(Update, update_slot.run_if(on_event::<DacChange>()))
     // commands
     .add_systems(Update, command_parser)
 

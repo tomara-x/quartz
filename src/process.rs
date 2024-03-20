@@ -83,6 +83,8 @@ pub struct Access<'w, 's> {
     connecting_line: Res<'w, ConnectingLine>,
     command_line_text: Query<'w, 's, &'static mut Text, With<CommandText>>,
     command_color: ResMut<'w, CommandColor>,
+    dac_change_event: EventWriter<'w, DacChange>,
+    dac_circles: ResMut<'w, DacCircles>,
 }
 
 pub fn process(
@@ -92,7 +94,6 @@ pub fn process(
     mut white_hole_query: Query<&mut WhiteHole>,
     black_hole_query: Query<&BlackHole>,
     mut access: Access,
-    mut slot: ResMut<Slot>,
     cursor: Res<CursorInfo>,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     mut key_event: EventReader<KeyboardInput>,
@@ -1102,34 +1103,19 @@ pub fn process(
             "out()" | "dac()" => {
                 let op_changed = access.op_changed_query.get(*id).unwrap().0;
                 let lost = access.lost_wh_query.get(*id).unwrap().0;
-                let mut changed = false;
-                let mut net = None;
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
-                        if wh.link_types == (0, 1) {
-                            net = Some(wh.bh_parent);
-                        }
-                        if wh.open {
-                            changed = true;
+                        if (wh.link_types == (0, 1) && wh.open) || lost || op_changed {
+                            if !access.dac_circles.0.contains(id) {
+                                access.dac_circles.0.push(*id);
+                            }
+                            access.dac_change_event.send_default();
                         }
                     }
                 }
-                if lost || op_changed || changed {
-                    if let Some(net) = net {
-                        let net = access.net_query.get(net).unwrap().0.clone();
-                        if net.outputs() == 1 && net.inputs() == 0 {
-                            slot.0.set(Fade::Smooth, 0.1, Box::new(net | dc(0.)));
-                        } else if net.outputs() == 2 && net.inputs() == 0 {
-                            slot.0.set(Fade::Smooth, 0.1, Box::new(net));
-                        } else {
-                            slot.0.set(Fade::Smooth, 0.1, Box::new(dc(0.) | dc(0.)));
-                        }
-                    } else {
-                        slot.0.set(Fade::Smooth, 0.1, Box::new(dc(0.) | dc(0.)));
-                    }
-                }
-                if holes.len() == 0 {
-                    slot.0.set(Fade::Smooth, 0.1, Box::new(dc(0.) | dc(0.)));
+                if holes.len() == 0 && lost {
+                    access.dac_circles.0.retain(|x| x != id);
+                    access.dac_change_event.send_default();
                 }
             }
             _ => {},
@@ -1155,4 +1141,35 @@ pub fn process(
             }
         }
     }
+}
+
+pub fn update_slot(
+    mut slot: ResMut<Slot>,
+    mut dac_circles: ResMut<DacCircles>,
+    net_query: Query<&Network>,
+    holes_query: Query<&Holes>,
+    white_hole_query: Query<&WhiteHole>,
+) {
+    dac_circles.0.retain(|x| holes_query.contains(*x));
+    let mut nets = Vec::new();
+    for e in &dac_circles.0 {
+        for hole in &holes_query.get(*e).unwrap().0 {
+            if let Ok(wh) = white_hole_query.get(*hole) {
+                if wh.link_types == (0, 1) {
+                    nets.push(wh.bh_parent);
+                }
+            }
+        }
+    }
+    let mut graph = Net32::wrap(Box::new(dc((0., 0.))));
+    for n in nets {
+        let net = net_query.get(n).unwrap().0.clone();
+        if net.inputs() != 0 { continue; }
+        if net.outputs() == 1 {
+            graph = graph + (net | dc(0.));
+        } else if net.outputs() == 2 {
+            graph = graph + net;
+        }
+    }
+    slot.0.set(Fade::Smooth, 0.1, Box::new(graph));
 }

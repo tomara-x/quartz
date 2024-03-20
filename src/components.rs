@@ -259,6 +259,9 @@ pub struct PolygonHandles(pub Vec<Option<Mesh2dHandle>>);
 #[derive(Resource)]
 pub struct ArrowHandle(pub Mesh2dHandle);
 
+#[derive(Resource, Default)]
+pub struct DacCircles(pub Vec<Entity>);
+
 // -------------------- events --------------------
 #[derive(Event, Default)]
 pub struct OrderChange;
@@ -274,3 +277,6 @@ pub struct PasteCommand;
 
 #[derive(Event, Default)]
 pub struct DeleteCommand;
+
+#[derive(Event, Default)]
+pub struct DacChange;
