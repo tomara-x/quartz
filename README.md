@@ -228,6 +228,7 @@ todo!();
     - vim https://github.com/vim/vim
     - void linux https://voidlinux.org/
 - learning / inspiration / used for a while:
+    - modulus salomonis regis https://github.com/AriaSalvatrice/AriaModules
     - network https://github.com/JustMog/Mog-VCV
     - csound https://csound.com
     - faust https://faust.grame.fr
