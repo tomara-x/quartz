@@ -577,11 +577,17 @@ pub fn delete_selected(
     highlight_query: Query<&Highlight>,
     mut order_change: EventWriter<OrderChange>,
     mut lost_wh_query: Query<&mut LostWH>,
+    mut dac_change_event: EventWriter<DacChange>,
+    op_query: Query<&Op>,
 ) {
     let mut order = false;
     for e in selected_query.iter() {
         if let Ok(holes) = holes_query.get(e) { // it's a circle
             for hole in &holes.0.clone() {
+                let op = &op_query.get(e).unwrap().0;
+                if op == "out()" || op == "dac()" {
+                    dac_change_event.send_default();
+                }
                 if let Ok(bh) = bh_query.get(*hole) {
                     let arrow = arrow_query.get(bh.wh).unwrap().0;
                     commands.entity(arrow).despawn();
