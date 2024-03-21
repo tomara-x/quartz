@@ -633,6 +633,7 @@ pub fn command_parser(
                                     for selected in access.selected_query.iter() {
                                         targets.0.push(selected);
                                     }
+                                    lt_to_open = (Some(e), Some(-14));
                                 }
                             }
                         }
