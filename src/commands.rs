@@ -628,9 +628,11 @@ pub fn command_parser(
                     Some(":tsel") => {
                         if let Some(s) = command.next() {
                             if let Some(e) = str_to_id(s) {
-                                access.targets_query.get_mut(e).unwrap().0.clear();
-                                for selected in access.selected_query.iter() {
-                                    access.targets_query.get_mut(e).unwrap().0.push(selected);
+                                if let Ok(mut targets) = access.targets_query.get_mut(e) {
+                                    targets.0.clear();
+                                    for selected in access.selected_query.iter() {
+                                        targets.0.push(selected);
+                                    }
                                 }
                             }
                         }
