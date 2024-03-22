@@ -182,11 +182,7 @@ pub fn process(
                                 let targets = &access.targets_query.get(*id).unwrap().0;
                                 for t in targets {
                                     if let Ok(mut wh) = white_hole_query.get_mut(*t) {
-                                        if op == "open_target" {
-                                            wh.open = true;
-                                        } else {
-                                            wh.open = false;
-                                        }
+                                        wh.open = op == "open_target";
                                     }
                                 }
                             }
