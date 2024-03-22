@@ -55,10 +55,9 @@ fn main() {
         unfocused_mode: UpdateMode::ReactiveLowPower {
             wait: Duration::from_secs_f64(1.0 / 30.0),
         },
-        ..default()
     })
 
-    .add_plugins(PanCamPlugin::default())
+    .add_plugins(PanCamPlugin)
 
     .insert_resource(ClearColor(Color::BLACK))
     .insert_resource(DefaultDrawColor(Color::hsl(1.,1.,0.84)))
