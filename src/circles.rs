@@ -445,6 +445,7 @@ pub fn update_vertices(
             if d >= 1 {
                 for mut v in query.iter_mut() {
                     v.0 += d as usize;
+                    v.0 = v.0.min(64);
                 }
                 *delta = 0.;
             } else if d <= -1 {
@@ -459,7 +460,7 @@ pub fn update_vertices(
         }
         if keyboard_input.any_just_pressed([KeyCode::ArrowUp, KeyCode::ArrowRight]) {
             for mut v in query.iter_mut() {
-                v.0 += 1;
+                v.0 = (v.0 + 1).min(64);
             }
         }
         if keyboard_input.any_just_pressed([KeyCode::ArrowDown, KeyCode::ArrowLeft]) {

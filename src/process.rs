@@ -141,7 +141,7 @@ pub fn process(
                     -7 => { access.col_query.get_mut(*id).unwrap().0.set_s(input); }
                     -8 => { access.col_query.get_mut(*id).unwrap().0.set_l(input); }
                     -9 => { access.col_query.get_mut(*id).unwrap().0.set_a(input); }
-                    -11 => { access.vertices_query.get_mut(*id).unwrap().0 = input.max(3.) as usize; }
+                    -11 => { access.vertices_query.get_mut(*id).unwrap().0 = (input as usize).clamp(3,64); }
                     -12 => {
                         let q = Quat::from_euler(EulerRot::XYZ, 0., 0., input);
                         access.trans_query.get_mut(*id).unwrap().rotation = q;
