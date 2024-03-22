@@ -409,14 +409,15 @@ fn post_load(
                             let handle = meshes.add(RegularPolygon::new(1., v.0)).into();
                             polygon_handles.0[v.0] = Some(handle);
                         }
-                        commands.entity(*child).insert(
+                        commands.entity(*child).insert((
                             ColorMesh2dBundle {
                                 mesh: polygon_handles.0[v.0].clone().unwrap(),
                                 material: materials.add(ColorMaterial::from(c.0)),
                                 transform: *t,
                                 ..default()
-                            }
-                        );
+                            },
+                            Visible,
+                        ));
                         if let Ok(op) = op_query.get_mut(*child) {
                             commands.entity(*child).insert((
                                 Network(str_to_net(&op.0)),
