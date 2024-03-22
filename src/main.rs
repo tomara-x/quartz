@@ -352,7 +352,7 @@ fn paste_scene(world: &mut World) {
         }
         if let Some(s) = scene {
             let scene = world.resource_mut::<Assets<DynamicScene>>().add(s);
-            world.spawn(DynamicSceneBundle { scene: scene, ..default() });
+            world.spawn(DynamicSceneBundle { scene, ..default() });
         }
     }
 }
