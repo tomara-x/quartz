@@ -177,13 +177,11 @@ pub fn process(
             "open_target" | "close_target" => {
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
-                        if wh.link_types == (-1, 1) {
-                            if access.num_query.get(wh.bh_parent).unwrap().0 == 1. {
-                                let targets = &access.targets_query.get(*id).unwrap().0;
-                                for t in targets {
-                                    if let Ok(mut wh) = white_hole_query.get_mut(*t) {
-                                        wh.open = op == "open_target";
-                                    }
+                        if wh.link_types == (-1, 1) && access.num_query.get(wh.bh_parent).unwrap().0 == 1. {
+                            let targets = &access.targets_query.get(*id).unwrap().0;
+                            for t in targets {
+                                if let Ok(mut wh) = white_hole_query.get_mut(*t) {
+                                    wh.open = op == "open_target";
                                 }
                             }
                         }
@@ -193,19 +191,17 @@ pub fn process(
             "del_target" => {
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
-                        if wh.link_types == (-1, 1) {
-                            if access.num_query.get(wh.bh_parent).unwrap().0 == 1. {
-                                for e in access.selected_query.iter() {
-                                    commands.entity(e).remove::<Selected>();
-                                }
-                                for t in &access.targets_query.get(*id).unwrap().0 {
-                                    if access.vertices_query.contains(*t) {
-                                        commands.entity(*t).insert(Selected);
-                                    }
-                                }
-                                access.targets_query.get_mut(*id).unwrap().0.clear();
-                                access.delete_event.send_default();
+                        if wh.link_types == (-1, 1) && access.num_query.get(wh.bh_parent).unwrap().0 == 1. {
+                            for e in access.selected_query.iter() {
+                                commands.entity(e).remove::<Selected>();
                             }
+                            for t in &access.targets_query.get(*id).unwrap().0 {
+                                if access.vertices_query.contains(*t) {
+                                    commands.entity(*t).insert(Selected);
+                                }
+                            }
+                            access.targets_query.get_mut(*id).unwrap().0.clear();
+                            access.delete_event.send_default();
                         }
                     }
                 }
@@ -466,16 +462,14 @@ pub fn process(
             "screenshot" => {
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
-                        if wh.link_types == (-1, 1) {
-                            if access.num_query.get(wh.bh_parent).unwrap().0 == 1. {
-                                let win = windows.single().0;
-                                let epoch = std::time::UNIX_EPOCH;
-                                let now = std::time::SystemTime::now();
-                                if let Ok(dur) = now.duration_since(epoch) {
-                                    let time = dur.as_millis();
-                                    let path = format!("screenshots/{:?}.png", time);
-                                    access.screensot_manager.save_screenshot_to_disk(win, path).unwrap();
-                                }
+                        if wh.link_types == (-1, 1) && access.num_query.get(wh.bh_parent).unwrap().0 == 1. {
+                            let win = windows.single().0;
+                            let epoch = std::time::UNIX_EPOCH;
+                            let now = std::time::SystemTime::now();
+                            if let Ok(dur) = now.duration_since(epoch) {
+                                let time = dur.as_millis();
+                                let path = format!("screenshots/{:?}.png", time);
+                                access.screensot_manager.save_screenshot_to_disk(win, path).unwrap();
                             }
                         }
                     }
