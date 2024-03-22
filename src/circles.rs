@@ -444,16 +444,12 @@ pub fn update_vertices(
             let d = *delta as i32;
             if d >= 1 {
                 for mut v in query.iter_mut() {
-                    v.0 += d as usize;
-                    v.0 = v.0.min(64);
+                    v.0 = (v.0 as i32 + d).min(64) as usize;
                 }
                 *delta = 0.;
             } else if d <= -1 {
                 for mut v in query.iter_mut() {
-                    let x = v.0 as i32 + d;
-                    if x >= 3 {
-                        v.0 = x as usize;
-                    }
+                    v.0 = (v.0 as i32 + d).max(3) as usize;
                 }
                 *delta = 0.;
             }
