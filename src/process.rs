@@ -1136,7 +1136,7 @@ pub fn process(
                         }
                     }
                 }
-                if holes.len() == 0 && lost {
+                if holes.is_empty() && lost {
                     access.dac_circles.0.retain(|x| x != id);
                     access.dac_change_event.send_default();
                 }
