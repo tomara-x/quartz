@@ -306,7 +306,7 @@ fn save_scene(world: &mut World) {
         #[cfg(not(target_arch = "wasm32"))]
         IoTaskPool::get()
             .spawn(async move {
-                File::create(format!("assets/{}.scn.ron", name))
+                File::create(format!("assets/{}", name))
                     .and_then(|mut file| file.write(serialized_scene.as_bytes()))
                     .expect("Error while writing scene to file");
             })

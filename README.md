@@ -34,12 +34,12 @@ when you open quartz, it will be an empty window. there's 3 modes:
 ##### return-terminated commands
 (you can separate commands with `;` to run more than one command at once)
 ###### file io
-- `:e` edit (open) a scene file (in the assets path and without extension)
+- `:e` edit (open) a scene file (in the assets path) (no spaces)
 - `:w` write(save) a scene file (same)
 
 ```
-:w moth     // will save the current scene as the file "assets/moth.scn.ron" (OVERWRITES)
-:e moth     // will try to open the file "assets/moth.scn.ron" if it's there
+:w moth.cute     // saves the current scene as the file "assets/moth.cute" (OVERWRITES)
+:e soup.fun     // opens the file "assets/soup.fun" if it's there
 ```
 
 ###### set values

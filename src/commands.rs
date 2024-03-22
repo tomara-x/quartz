@@ -166,7 +166,7 @@ pub fn command_parser(
                     Some(":e") => {
                         if let Some(s) = command.next() {
                             commands.spawn(DynamicSceneBundle {
-                                scene: asset_server.load(format!("{}.scn.ron", s)),
+                                scene: asset_server.load(format!("{}", s)),
                                 ..default()
                             });
                         }
