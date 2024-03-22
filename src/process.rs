@@ -963,12 +963,10 @@ pub fn process(
                 }
                 if changed || lost || op_changed {
                     let mut nets = Vec::new();
-                    for i in inputs {
-                        if let Some(i) = i {
-                            let net = &access.net_query.get(i).unwrap().0;
-                            if net.inputs() == 0 && net.outputs() == 1 {
-                                nets.push(net.clone());
-                            }
+                    for i in inputs.iter().flatten() {
+                        let net = &access.net_query.get(*i).unwrap().0;
+                        if net.inputs() == 0 && net.outputs() == 1 {
+                            nets.push(net.clone());
                         }
                     }
                     let n = &mut access.net_query.get_mut(*id).unwrap().0;
@@ -1075,31 +1073,29 @@ pub fn process(
                     let mut empty = true;
                     let n = access.num_query.get(*id).unwrap().0.max(1.) as i32;
                     for _ in 0..n {
-                        for i in &inputs {
-                            if let Some(i) = i {
-                                let net = access.net_query.get(*i).unwrap().0.clone();
-                                if empty {
-                                    graph = net;
-                                    empty = false;
-                                }
-                                else {
-                                    let (gi, go) = (graph.inputs(), graph.outputs());
-                                    let (ni, no) = (net.inputs(), net.outputs());
-                                    match op {
-                                        ">>" | "PIP" => {
-                                            if go == ni { graph = graph >> net; }
-                                        }
-                                        "|" | "STA" => {
-                                            graph = graph | net;
-                                        }
-                                        "&" | "BUS" => {
-                                            if gi == ni && go == no { graph = graph & net; }
-                                        }
-                                        "^" | "BRA" => {
-                                            if gi == ni { graph = graph ^ net; }
-                                        }
-                                        _ => {}
+                        for i in inputs.iter().flatten() {
+                            let net = access.net_query.get(*i).unwrap().0.clone();
+                            if empty {
+                                graph = net;
+                                empty = false;
+                            }
+                            else {
+                                let (gi, go) = (graph.inputs(), graph.outputs());
+                                let (ni, no) = (net.inputs(), net.outputs());
+                                match op {
+                                    ">>" | "PIP" => {
+                                        if go == ni { graph = graph >> net; }
                                     }
+                                    "|" | "STA" => {
+                                        graph = graph | net;
+                                    }
+                                    "&" | "BUS" => {
+                                        if gi == ni && go == no { graph = graph & net; }
+                                    }
+                                    "^" | "BRA" => {
+                                        if gi == ni { graph = graph ^ net; }
+                                    }
+                                    _ => {}
                                 }
                             }
                         }
