@@ -156,7 +156,7 @@ pub fn command_parser(
         }
         if text.ends_with('\t') {
             // commands starting with :
-            let lines = text.as_str().split(";");
+            let lines = text.as_str().split(';');
             for line in lines {
                 // (entity, lt) if there's a given entity
                 let mut lt_to_open = (None, None);
@@ -604,7 +604,7 @@ pub fn command_parser(
                                 }
                                 // set the rest (cdr) as the targets of first (car)
                                 if access.selected_query.is_empty() {
-                                    if tmp.len() != 0 {
+                                    if !tmp.is_empty() {
                                         let controller = tmp.remove(0);
                                         if let Ok(mut c) = access.targets_query.get_mut(controller) {
                                             c.0 = tmp;
