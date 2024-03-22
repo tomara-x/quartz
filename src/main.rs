@@ -72,7 +72,7 @@ fn main() {
     .insert_resource(Version(
         format!("{} {}", env!("CARGO_PKG_VERSION"),
             String::from_utf8(std::process::Command::new("git")
-            .args(&["rev-parse", "--short", "HEAD"])
+            .args(["rev-parse", "--short", "HEAD"])
             .output().unwrap().stdout).unwrap().trim()
         )
     ))
