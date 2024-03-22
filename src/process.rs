@@ -757,10 +757,8 @@ pub fn process(
                 if changed || lost {
                     let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
                     arr.clear();
-                    for i in inputs {
-                        if let Some(i) = i {
-                            arr.push(i);
-                        }
+                    for i in inputs.iter().flatten() {
+                        arr.push(*i);
                     }
                     lt_to_open = Some(-13);
                 }
