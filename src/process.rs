@@ -875,7 +875,7 @@ pub fn process(
                 }
                 let num = access.num_query.get_mut(*id).unwrap();
                 if num.is_changed() {
-                    if let Some(var) = &access.net_ins_query.get(*id).unwrap().0.get(0) {
+                    if let Some(var) = &access.net_ins_query.get(*id).unwrap().0.first() {
                         var.set_value(num.0);
                     }
                 }
@@ -893,7 +893,7 @@ pub fn process(
                     inputs.push(s);
                     lt_to_open = Some(0);
                 }
-                if let Some(var) = access.net_ins_query.get(*id).unwrap().0.get(0) {
+                if let Some(var) = access.net_ins_query.get(*id).unwrap().0.first() {
                     access.num_query.get_mut(*id).unwrap().0 = var.value();
                 }
             }
