@@ -85,6 +85,8 @@ pub struct Access<'w, 's> {
     command_color: ResMut<'w, CommandColor>,
     dac_change_event: EventWriter<'w, DacChange>,
     dac_circles: ResMut<'w, DacCircles>,
+    selected_query: Query<'w, 's, Entity, With<Selected>>,
+    delete_event: EventWriter<'w, DeleteCommand>,
 }
 
 pub fn process(
@@ -100,6 +102,7 @@ pub fn process(
     camera_query: Query<(Entity, &Camera, &GlobalTransform)>,
     windows: Query<(Entity, &Window)>,
     mut ortho: Query<&mut OrthographicProjection>,
+    mut commands: Commands,
 ) {
     for id in queue.0.iter().flatten().chain(loopq.0.iter()) {
         let holes = &holes_query.get(*id).unwrap().0;
@@ -186,6 +189,26 @@ pub fn process(
                                         }
                                     }
                                 }
+                            }
+                        }
+                    }
+                }
+            }
+            "del_target" => {
+                for hole in holes {
+                    if let Ok(wh) = white_hole_query.get(*hole) {
+                        if wh.link_types == (-1, 1) {
+                            if access.num_query.get(wh.bh_parent).unwrap().0 == 1. {
+                                for e in access.selected_query.iter() {
+                                    commands.entity(e).remove::<Selected>();
+                                }
+                                for t in &access.targets_query.get(*id).unwrap().0 {
+                                    if access.vertices_query.contains(*t) {
+                                        commands.entity(*t).insert(Selected);
+                                    }
+                                }
+                                access.targets_query.get_mut(*id).unwrap().0.clear();
+                                access.delete_event.send_default();
                             }
                         }
                     }
