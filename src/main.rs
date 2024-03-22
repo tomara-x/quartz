@@ -278,7 +278,7 @@ fn save_scene(world: &mut World) {
     for event in events {
         let name = event.0.to_string();
         let mut query = world.query_filtered::<Entity, With<Save>>();
-        let scene = DynamicSceneBuilder::from_world(&world)
+        let scene = DynamicSceneBuilder::from_world(world)
             .allow::<Col>()
             .allow::<Transform>()
             .allow::<Op>()
@@ -298,7 +298,7 @@ fn save_scene(world: &mut World) {
             .allow_resource::<ClearColor>()
             .allow_resource::<CommandColor>()
             .allow_resource::<Version>()
-            .extract_entities(query.iter(&world))
+            .extract_entities(query.iter(world))
             .extract_resources()
             .build();
         let type_registry = world.resource::<AppTypeRegistry>();
@@ -317,7 +317,7 @@ fn save_scene(world: &mut World) {
 
 fn copy_scene(world: &mut World) {
     let mut query = world.query_filtered::<Entity, With<Selected>>();
-    let scene = DynamicSceneBuilder::from_world(&world)
+    let scene = DynamicSceneBuilder::from_world(world)
         .allow::<Col>()
         .allow::<Transform>()
         .allow::<Op>()
@@ -330,7 +330,7 @@ fn copy_scene(world: &mut World) {
         .allow::<Holes>()
         .allow::<Vertices>()
         .allow::<Targets>()
-        .extract_entities(query.iter(&world))
+        .extract_entities(query.iter(world))
         .build();
     let type_registry = world.resource::<AppTypeRegistry>();
     let serialized_scene = scene.serialize_ron(type_registry).unwrap();
