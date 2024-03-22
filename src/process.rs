@@ -565,7 +565,7 @@ pub fn process(
                     if key.state.is_pressed() {
                         match &key.logical_key {
                             Key::Character(c) => {
-                                if let Some(c) = c.chars().nth(0) {
+                                if let Some(c) = c.chars().next() {
                                     let c = (c as i32) as f32;
                                     access.arr_query.get_mut(*id).unwrap().0.push(c);
                                     lt_to_open = Some(-13);
@@ -577,7 +577,7 @@ pub fn process(
                     } else {
                         match &key.logical_key {
                             Key::Character(c) => {
-                                if let Some(c) = c.chars().nth(0) {
+                                if let Some(c) = c.chars().next() {
                                     let c = (c as i32) as f32;
                                     access.arr_query.get_mut(*id).unwrap().0.retain(|&x| x != c);
                                     lt_to_open = Some(-13);

@@ -136,8 +136,8 @@ pub fn command_parser(
             if key.state.is_pressed() {
                 match &key.logical_key {
                     Key::Character(c) => {
-                        if let Some(c) = c.chars().nth(0) {
-                            if text.chars().nth(0) == Some('>') { text.clear(); }
+                        if let Some(c) = c.chars().next() {
+                            if text.starts_with('>') { text.clear(); }
                             if !c.is_control() && *text != "F" { text.push(c); }
                         }
                     }
