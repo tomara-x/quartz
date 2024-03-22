@@ -715,5 +715,5 @@ pub fn str_to_net(op: &str) -> Net32 {
         }
         _ => {}
     }
-    return Net32::wrap(Box::new(dc(0.)));
+    Net32::wrap(Box::new(dc(0.)))
 }
