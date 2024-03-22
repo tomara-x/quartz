@@ -434,10 +434,7 @@ pub fn str_to_net(op: &str) -> Net32 {
         }
         "mls_bits" => {
             if let Some(p) = p.first() {
-                let p = *p as i64;
-                if p >= 1 && p <= 31 {
-                    return Net32::wrap(Box::new(mls_bits(p)));
-                }
+                return Net32::wrap(Box::new(mls_bits(p.clamp(1.,31.) as i64)));
             }
         }
         "moog" => {
