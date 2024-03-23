@@ -535,6 +535,15 @@ pub fn str_to_net(op: &str) -> Net32 {
             }
         }
 
+        "t" => { return Net32::wrap(Box::new(lfo(|t| t))); }
+        "xd" => {
+            if let Some(p) = p.first() {
+                let p = *p;
+                return Net32::wrap(Box::new(lfo(move |t| exp(-t*p))));
+            } else {
+                return Net32::wrap(Box::new(lfo_in(|t, i: &Frame<f32, U1>| exp(-t*i[0]))));
+            }
+        }
         "ramp" => { return Net32::wrap(Box::new(lfo_in(|t, i: &Frame<f32, U1>| (t*i[0]).rem_euclid(1.)))); }
         "clock" => { return Net32::wrap(Box::new(sine() >> map(|i: &Frame<f32,U1>| if i[0] > 0. {1.} else {0.}))); }
         "rise" => {
