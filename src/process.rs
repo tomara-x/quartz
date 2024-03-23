@@ -866,11 +866,11 @@ pub fn process(
                     lt_to_open = Some(0);
                 }
                 let num = access.num_query.get_mut(*id).unwrap();
-                if num.is_changed() {
+                //if num.is_changed() {
                     if let Some(var) = &access.net_ins_query.get(*id).unwrap().0.first() {
                         var.set_value(num.0);
                     }
-                }
+                //}
             }
             "monitor()" | "timer()" => {
                 if access.op_changed_query.get(*id).unwrap().0 {
