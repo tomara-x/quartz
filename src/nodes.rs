@@ -66,7 +66,7 @@ impl AudioNode for Seq {
         input: &Frame<Self::Sample, Self::Inputs>,
     ) -> Frame<Self::Sample, Self::Outputs> {
         // triggered, add an event
-        if input[0] == 1. {
+        if input[0] != 0. {
             self.events.push((
                 input[1] as usize,
                 (input[2] * 44100.).round() as usize,
