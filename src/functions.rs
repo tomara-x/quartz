@@ -619,7 +619,6 @@ pub fn str_to_net(op: &str) -> Net32 {
                 return Net32::wrap(Box::new(map(move |i: &Frame<f32,U1>| i[0].max(p))));
             } else {return Net32::wrap(Box::new(map(|i: &Frame<f32,U2>| i[0].max(i[1]))));}
         }
-        // TODO(amy): powf?
         "pow" => {
             if let Some(p) = p.first() {
                 let p = *p;
