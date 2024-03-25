@@ -544,6 +544,24 @@ pub fn str_to_net(op: &str) -> Net32 {
                 return Net32::wrap(Box::new(lfo_in(|t, i: &Frame<f32, U1>| exp(-t*i[0]))));
             }
         }
+        "xD" => {
+            if let Some(p) = p.get(0..2) {
+                let p0 = p[0];
+                let p1 = p[1];
+                return Net32::wrap(Box::new(lfo(move |t| {
+                    if t < p0 { ((p0 - t)/p0).powf(p1) } else { 0. }
+                })));
+            } else if let Some(p) = p.first() {
+                let p = *p;
+                return Net32::wrap(Box::new(lfo_in(move |t, i: &Frame<f32, U1>| {
+                    if t < i[0] { ((i[0] - t)/i[0]).powf(p) } else { 0. }
+                })));
+            } else {
+                return Net32::wrap(Box::new(lfo_in(|t, i: &Frame<f32, U2>| {
+                    if t < i[0] { ((i[0] - t)/i[0]).powf(i[1]) } else { 0. }
+                })));
+            }
+        }
         "ramp" => { return Net32::wrap(Box::new(lfo_in(|t, i: &Frame<f32, U1>| (t*i[0]).rem_euclid(1.)))); }
         "clock" => { return Net32::wrap(Box::new(sine() >> map(|i: &Frame<f32,U1>| if i[0] > 0. {1.} else {0.}))); }
         "rise" => {
@@ -601,6 +619,7 @@ pub fn str_to_net(op: &str) -> Net32 {
                 return Net32::wrap(Box::new(map(move |i: &Frame<f32,U1>| i[0].max(p))));
             } else {return Net32::wrap(Box::new(map(|i: &Frame<f32,U2>| i[0].max(i[1]))));}
         }
+        // TODO(amy): powf?
         "pow" => {
             if let Some(p) = p.first() {
                 let p = *p;
