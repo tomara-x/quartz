@@ -1,7 +1,7 @@
 use fundsp::hacker32::*;
 
-pub fn str_to_lt(s: &str) -> i32 {
-    if let Ok(n) = s.parse::<i32>() {
+pub fn str_to_lt(s: &str) -> i8 {
+    if let Ok(n) = s.parse::<i8>() {
         n
     } else {
         match s {
@@ -23,7 +23,7 @@ pub fn str_to_lt(s: &str) -> i32 {
     }
 }
 
-pub fn lt_to_string(n: i32) -> String {
+pub fn lt_to_string(n: i8) -> String {
     match n {
         -1 => "n".to_string(),
         -2 => "r".to_string(),

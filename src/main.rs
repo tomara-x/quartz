@@ -147,7 +147,7 @@ fn main() {
     .register_type::<Order>()
     .register_type::<BlackHole>()
     .register_type::<WhiteHole>()
-    .register_type::<(i32, i32)>()
+    .register_type::<(i8, i8)>()
     .register_type::<Vertices>()
     .register_type::<Targets>()
     .register_type::<GainedWH>()

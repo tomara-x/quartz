@@ -111,7 +111,7 @@ impl MapEntities for Targets {
 pub struct WhiteHole {
     pub bh: Entity,
     pub bh_parent: Entity,
-    pub link_types: (i32, i32), //(black, white)
+    pub link_types: (i8, i8), //(black, white)
     pub open: bool,
 }
 impl FromWorld for WhiteHole {
@@ -244,7 +244,7 @@ pub struct ConnectionColor(pub Color);
 pub struct CommandColor(pub Color);
 
 #[derive(Resource)]
-pub struct DefaultLT(pub (i32, i32));
+pub struct DefaultLT(pub (i8, i8));
 
 #[derive(Resource)]
 pub struct SystemClipboard(pub ClipboardContext);
