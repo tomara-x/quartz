@@ -177,7 +177,7 @@ pub fn process(
             "open_target" | "close_target" => {
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
-                        if wh.link_types == (-1, 1) && access.num_query.get(wh.bh_parent).unwrap().0 == 1. {
+                        if wh.link_types == (-1, 1) && access.num_query.get(wh.bh_parent).unwrap().0 != 0. {
                             let targets = &access.targets_query.get(*id).unwrap().0;
                             for t in targets {
                                 if let Ok(mut wh) = white_hole_query.get_mut(*t) {
@@ -191,7 +191,7 @@ pub fn process(
             "del_target" => {
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
-                        if wh.link_types == (-1, 1) && access.num_query.get(wh.bh_parent).unwrap().0 == 1. {
+                        if wh.link_types == (-1, 1) && access.num_query.get(wh.bh_parent).unwrap().0 != 0. {
                             for e in access.selected_query.iter() {
                                 commands.entity(e).remove::<Selected>();
                             }
@@ -326,7 +326,7 @@ pub fn process(
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (-1, 1)
-                        && access.num_query.get(wh.bh_parent).unwrap().0 == 1. {
+                        && access.num_query.get(wh.bh_parent).unwrap().0 != 0. {
                             if let Some(n) = access.arr_query.get_mut(*id).unwrap().0.pop() {
                                 access.num_query.get_mut(*id).unwrap().0 = n;
                                 lt_to_open = Some(-1);
@@ -478,7 +478,7 @@ pub fn process(
             "screenshot" => {
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
-                        if wh.link_types == (-1, 1) && access.num_query.get(wh.bh_parent).unwrap().0 == 1. {
+                        if wh.link_types == (-1, 1) && access.num_query.get(wh.bh_parent).unwrap().0 != 0. {
                             let win = windows.single().0;
                             let epoch = std::time::UNIX_EPOCH;
                             let now = std::time::SystemTime::now();
@@ -858,7 +858,7 @@ pub fn process(
                         }
                         if wh.link_types == (-1, 2) {
                             // interesting thought, using the num as a gate
-                            if access.num_query.get(*id).unwrap().0 == 1. {
+                            if access.num_query.get(*id).unwrap().0 != 0. {
                                 let len = access.num_query.get(wh.bh_parent).unwrap().0 / 44100.;
                                 let output = &mut access.arr_query.get_mut(*id).unwrap().0;
                                 let net = &mut access.net_query.get_mut(*id).unwrap().0;
