@@ -206,6 +206,22 @@ pub fn process(
                     }
                 }
             }
+            "spin_target" => {
+                for hole in holes {
+                    if let Ok(wh) = white_hole_query.get(*hole) {
+                        if wh.link_types == (-1, 1) && access.num_query.get(wh.bh_parent).unwrap().0 != 0. {
+                            let point = access.trans_query.get(*id).unwrap().translation;
+                            let n = access.num_query.get(*id).unwrap().0;
+                            let rotation = Quat::from_euler(EulerRot::XYZ, 0., 0., n);
+                            for t in &access.targets_query.get(*id).unwrap().0 {
+                                if let Ok(mut trans) = access.trans_query.get_mut(*t) {
+                                    trans.rotate_around(point, rotation);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             "reorder" => {
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
