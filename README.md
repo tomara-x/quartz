@@ -212,6 +212,7 @@ todo!();
 todo!();
 ```
 
+
 ## thanks
 - tools / dependencies:
     - rust https://github.com/rust-lang/rust
@@ -256,6 +257,10 @@ at your option.
 ### your contributions
 
 unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you, as defined in the Apache-2.0 license, shall be dual licensed as above, without any additional terms or conditions.
+
+## devlog
+
+https://www.youtube.com/playlist?list=PLW3qKRjtGsGZC7V4eKU_tNwszVZAYvKow
 
 ## donate if you can
 
