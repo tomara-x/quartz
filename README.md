@@ -47,7 +47,8 @@ in addition to the shared properties that both circles and holes have (position,
 
 #### commands
 ##### return-terminated commands
-(you can separate commands with `;` to run more than one command at once)
+(type then press enter)
+(you can separate them with `;` to run more than one at once)
 ###### file io
 - `:e` edit (open) a scene file (in the assets path) (no spaces)
 - `:w` write(save) a scene file (same)
@@ -90,6 +91,7 @@ these can take an optional entity id
 - `:q` exit
 
 ##### immediate commands
+(these execute when you finish typing them)
 ###### run mode switching
 - `d` go to draw mode
 - `c` go to connect mode
