@@ -260,6 +260,7 @@ todo!();
     - faust https://faust.grame.fr
     - plugdata https://github.com/plugdata-team/plugdata
     - bevy-cheatbook: https://github.com/bevy-cheatbook/bevy-cheatbook
+    - bevy best practices https://github.com/tbillington/bevy_best_practices
     - knyst https://github.com/ErikNatanael/knyst
     - shadplay https://github.com/alphastrata/shadplay
     - rust-ants-colony-simulation https://github.com/bones-ai/rust-ants-colony-simulation
