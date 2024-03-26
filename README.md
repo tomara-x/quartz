@@ -215,14 +215,6 @@ lower order processes first, and the higher the order, the later that circle pro
 
 unless...
 
-#### process
-```
-todo!();
-```
-#### ops
-```
-todo!();
-```
 #### targets
 
 a circle has an array of "targets" those are just entity id's. so it's like a "pointer" to another circles or hole. think of it as a one-way wireless connection. 
@@ -230,7 +222,19 @@ some ops make a circle do things to its targets. like `del_targets`, `spin_targe
 
 (they allow some things that aren't easy through normal processing. since circles read their input when they process, while targets are written to when the controller circle is processed instead)
 
+#### process
+`process` is an op that will process its targets in the order they appear in that targets array. it doesn't care about those targets' order. even if they're at order 0 (it's preferable they are at 0 so you don't cause unexpected things)
 
+so for every frame a circle with a `process` op is processed, it processes all of its targets in order.
+
+combining that with the "reorder" and "rise" ops can allow you to perform things like that in a triggered way.
+
+combining that with the ability to store any number of targets (and repeated targets with the "repeat" op) allows for complex logic-time looping
+
+#### ops
+```
+todo!();
+```
 
 ## thanks
 - tools / dependencies:
