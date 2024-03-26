@@ -30,6 +30,21 @@ when you open quartz, it will be an empty window. there's 3 modes:
 - **connect**: connect circles (press `c`)
     - **target**: target an entity from another (hold `t` in connect mode)
 
+#### circle anatomy
+first, define your terms:
+- circle: an object that you create in draw mode (they're regular polygons)
+- hole: a connection object. these always come in (black hole - white hole) pairs
+- entity: i'll use that to refer to any object (circle or hole)
+
+in addition to the shared properties that both circles and holes have (position, color, radius, vertices) a circle holds other things:
+- a number (just a float)
+- an op string: defining what that circle does
+ for example: "sum", "screenshot", "lowpass()" (will get to those parentheses in a minute)
+- an array of numbers: for different uses (don't worry it's empty by default, thus allocating no memory)
+- an array of target entities that this circle controls in some way (empty by default too)
+- an order number: defining when that circle is processed
+- an audio network (defined by the op string)...
+
 #### commands
 ##### return-terminated commands
 (you can separate commands with `;` to run more than one command at once)
