@@ -544,6 +544,9 @@ pub fn str_to_net(op: &str) -> Net32 {
                 return Net32::wrap(Box::new(lfo_in(|t, i: &Frame<f32, U1>| exp(-t*i[0]))));
             }
         }
+        // decay time (in seconds), decay curvature
+        // they're power functions, so a fractional (0..1) is like log,
+        // 1 is linear, and above 1 is exponential (the higher the steeper)
         "xD" => {
             if let Some(p) = p.get(0..2) {
                 let p0 = p[0];
@@ -559,6 +562,36 @@ pub fn str_to_net(op: &str) -> Net32 {
             } else {
                 return Net32::wrap(Box::new(lfo_in(|t, i: &Frame<f32, U2>| {
                     if t < i[0] { ((i[0] - t)/i[0]).powf(i[1]) } else { 0. }
+                })));
+            }
+        }
+        // attack time, attack curvature, release time, release curvature
+        "ar" => {
+            if let Some(p) = p.get(0..4) {
+                let (p0, p1, p2, p3) = (p[0], p[1], p[2], p[3]);
+                return Net32::wrap(Box::new(lfo(move |t| {
+                    if t < p0 {
+                        (t/p0).powf(p1)
+                    } else if t < p0 + p2 {
+                        ((p2 - (t - p0))/p2).powf(p3)
+                    } else { 0. }
+                })));
+            } else if let Some(p) = p.get(0..2) {
+                let (p0, p1) = (p[0], p[1]);
+                return Net32::wrap(Box::new(lfo_in(move |t, i: &Frame<f32, U2>| {
+                    if t < i[0] {
+                        (t/i[0]).powf(p0)
+                    } else if t < i[0] + i[1] {
+                        ((i[1] - (t - i[0]))/i[1]).powf(p1)
+                    } else { 0. }
+                })));
+            } else {
+                return Net32::wrap(Box::new(lfo_in(|t, i: &Frame<f32, U4>| {
+                    if t < i[0] {
+                        (t/i[0]).powf(i[1])
+                    } else if t < i[0] + i[2] {
+                        ((i[2] - (t - i[0]))/i[2]).powf(i[3])
+                    } else { 0. }
                 })));
             }
         }
