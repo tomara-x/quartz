@@ -903,6 +903,7 @@ pub fn process(
                 }
                 if let Some(var) = access.net_ins_query.get(*id).unwrap().0.first() {
                     access.num_query.get_mut(*id).unwrap().0 = var.value();
+                    lt_to_open = Some(-1);
                 }
             }
             "get()" => {
