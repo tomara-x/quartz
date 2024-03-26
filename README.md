@@ -42,8 +42,8 @@ in addition to the shared properties that both circles and holes have (position,
      - for example: `sum`, `toggle`, `screenshot`, `lowpass()`
 - an array of numbers: for different uses (don't worry it's empty by default, thus allocating no memory)
 - an array of target entities that this circle controls in some way (empty by default too)
-- an order number: defining when that circle is processed
-- an audio network (defined by the op string)...
+- an order number: defining if/when that circle is processed
+- an audio network (defined by the op string) (`dc(0)` by default)
 
 #### commands
 ##### return-terminated commands
