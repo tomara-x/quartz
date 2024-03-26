@@ -39,7 +39,7 @@ first, define your terms:
 in addition to the shared properties that both circles and holes have (position, color, radius, vertices) a circle holds other things:
 - a number (just a float)
 - an op string: defining what that circle does
- for example: "sum", "screenshot", "lowpass()" (will get to those parentheses in a minute)
+     - for example: `sum`, `toggle`, `screenshot`, `lowpass()`
 - an array of numbers: for different uses (don't worry it's empty by default, thus allocating no memory)
 - an array of target entities that this circle controls in some way (empty by default too)
 - an order number: defining when that circle is processed
