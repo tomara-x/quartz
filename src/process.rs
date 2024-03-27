@@ -188,6 +188,21 @@ pub fn process(
                     }
                 }
             }
+            "open_nth" => {
+                for hole in holes {
+                    if let Ok(wh) = white_hole_query.get(*hole) {
+                        if wh.link_types == (-1, 1) && wh.open {
+                            let n = access.num_query.get(wh.bh_parent).unwrap().0;
+                            let targets = &access.targets_query.get(*id).unwrap().0;
+                            if let Some(nth) = targets.get(n as usize) {
+                                if let Ok(mut wh) = white_hole_query.get_mut(*nth) {
+                                    wh.open = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             "del_target" => {
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
