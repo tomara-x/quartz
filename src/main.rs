@@ -126,7 +126,7 @@ fn main() {
     .init_resource::<LoopQueue>()
     .add_event::<OrderChange>()
     .add_systems(PostUpdate, sort_by_order.before(process).run_if(on_event::<OrderChange>()))
-    .add_systems(PostUpdate, prepare_loop_queue.after(sort_by_order))
+    .add_systems(PostUpdate, prepare_loop_queue.after(sort_by_order).before(process))
     // process
     .add_systems(PostUpdate, process)
     .add_systems(Update, update_slot.run_if(on_event::<DacChange>()))
