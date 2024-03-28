@@ -771,21 +771,22 @@ pub fn process(
             }
             "key" => {
                 for key in key_event.read() {
+                    let mut n = 1729.;
                     match &key.logical_key {
                         Key::Character(c) => {
                             if let Some(c) = c.chars().next() {
-                                let c = (c as i32) as f32;
-                                let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
-                                if key.state.is_pressed() {
-                                    if !arr.contains(&c) { arr.push(c); }
-                                } else {
-                                    arr.retain(|&x| x != c);
-                                }
-                                lt_to_open = Some(-13);
+                                n = (c as i32) as f32;
                             }
                         }
                         _ => {}
                     }
+                    let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
+                    if key.state.is_pressed() {
+                        if !arr.contains(&n) { arr.push(n); }
+                    } else {
+                        arr.retain(|&x| x != n);
+                    }
+                    lt_to_open = Some(-13);
                 }
             }
             // -------------------- data management --------------------
