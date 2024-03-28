@@ -156,10 +156,10 @@ add a drag mode: (to drag multiple properties at the same time)
 - `iL` hole link type
 - `iO` white hole open status
 
-audio unit info:
+audio node info:
 - `ni` number of inputs
 - `no` number of outputs
-- `np` info about the unit
+- `np` info about the node
 
 
 ###### selection
@@ -201,8 +201,8 @@ any connection links 2 circles together in some way. the black hole is taking so
 - `o` or `-12` : rotation
 - `A` or `-13` : array
 - `T` or `-14` : targets
-- `0` usually means audio network (or nothing)
-generally a 0 to 0 connection is gonna do nothing, but when connecting networks, the black hole is type 0, and the white hole is type (positive number)
+- `0` usually means audio node (or nothing)
+generally a 0 to 0 connection is gonna do nothing, but when connecting node, the black hole is type 0, and the white hole is type (positive number)
 
 
 #### order
