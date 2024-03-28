@@ -174,6 +174,7 @@ pub fn process(
         let mut lt_to_open = None;
         match op {
             "empty" => {}
+            // -------------------- targets --------------------
             "open_target" | "close_target" => {
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
@@ -253,6 +254,63 @@ pub fn process(
                     }
                 }
             }
+            // distribute input array among targets' values
+            "distro" => {
+                let mut target_lt_to_open = None;
+                for hole in holes {
+                    if let Ok(wh) = white_hole_query.get(*hole) {
+                        if wh.link_types.0 == -13 && wh.open {
+                            let arr = &access.arr_query.get(wh.bh_parent).unwrap().0;
+                            let targets = &access.targets_query.get(*id).unwrap().0;
+                            let len = Ord::min(arr.len(), targets.len());
+                            for i in 0..len {
+                                if access.vertices_query.get(targets[i]).is_err() { continue; }
+                                // input link type determines what property to write to in targets
+                                match wh.link_types.1 {
+                                    -1 => { if let Ok(mut n) = access.num_query.get_mut(targets[i]) { n.0 = arr[i]; }}
+                                    -2 => {
+                                        access.trans_query.get_mut(targets[i]).unwrap().scale.x = arr[i].max(0.1);
+                                        access.trans_query.get_mut(targets[i]).unwrap().scale.y = arr[i].max(0.1);
+                                    }
+                                    -3 => { access.trans_query.get_mut(targets[i]).unwrap().translation.x = arr[i]; }
+                                    -4 => { access.trans_query.get_mut(targets[i]).unwrap().translation.y = arr[i]; }
+                                    -5 => { access.trans_query.get_mut(targets[i]).unwrap().translation.z = arr[i]; }
+                                    -6 => { access.col_query.get_mut(targets[i]).unwrap().0.set_h(arr[i]); }
+                                    -7 => { access.col_query.get_mut(targets[i]).unwrap().0.set_s(arr[i]); }
+                                    -8 => { access.col_query.get_mut(targets[i]).unwrap().0.set_l(arr[i]); }
+                                    -9 => { access.col_query.get_mut(targets[i]).unwrap().0.set_a(arr[i]); }
+                                    -11 => {
+                                        let v = arr[i].max(3.) as usize;
+                                        access.vertices_query.get_mut(targets[i]).unwrap().0 = v;
+                                    }
+                                    -12 => {
+                                        let q = Quat::from_euler(EulerRot::XYZ, 0., 0., arr[i]);
+                                        access.trans_query.get_mut(targets[i]).unwrap().rotation = q;
+                                    }
+                                    _ => {}
+                                }
+                                target_lt_to_open = Some(wh.link_types.1);
+                            }
+                        }
+                    }
+                }
+                if let Some(lt) = target_lt_to_open {
+                    for t in &access.targets_query.get(*id).unwrap().0 {
+                        if let Ok(holes) = &holes_query.get(*t) {
+                            for hole in &holes.0 {
+                                if let Ok(bh) = black_hole_query.get(*hole) {
+                                    if let Ok(wh) = white_hole_query.get_mut(bh.wh) {
+                                        if wh.link_types.0 == lt {
+                                            white_hole_query.get_mut(bh.wh).unwrap().open = true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            // -------------------- arrays --------------------
             "repeat" => {
                 let mut arr = None;
                 let mut targets = None;
@@ -430,312 +488,6 @@ pub fn process(
                     }
                 }
             }
-            "clear_color" => {
-                let color = access.col_query.get_mut(*id).unwrap();
-                if color.is_changed() {
-                    access.clear_color.0 = color.0;
-                }
-            }
-            "draw_verts" => {
-                let verts = access.vertices_query.get_mut(*id).unwrap();
-                if verts.is_changed() {
-                    access.default_verts.0 = verts.0;
-                }
-            }
-            "draw_color" => {
-                let color = access.col_query.get_mut(*id).unwrap();
-                if color.is_changed() {
-                    access.default_color.0 = color.0;
-                }
-            }
-            "highlight_color" => {
-                let color = access.col_query.get_mut(*id).unwrap();
-                if color.is_changed() {
-                    access.highlight_color.0 = color.0;
-                }
-            }
-            "selection_color" => {
-                let color = access.col_query.get_mut(*id).unwrap();
-                if color.is_changed() {
-                    let id = access.selection_circle.0;
-                    access.col_query.get_mut(id).unwrap().0 = color.0;
-                }
-            }
-            "connection_color" => {
-                let color = access.col_query.get_mut(*id).unwrap();
-                if color.is_changed() {
-                    access.connection_color.0 = color.0;
-                }
-            }
-            "connecting_line_color" => {
-                let color = access.col_query.get_mut(*id).unwrap();
-                if color.is_changed() {
-                    let id = access.connecting_line.0;
-                    access.col_query.get_mut(id).unwrap().0 = color.0;
-                }
-            }
-            "command_color" => {
-                let color = access.col_query.get_mut(*id).unwrap();
-                if color.is_changed() {
-                    access.command_color.0 = color.0;
-                    let clt = &mut access.command_line_text.single_mut();
-                    clt.sections[0].style.color = color.0;
-                }
-            }
-            "cam" => {
-                for hole in holes {
-                    if let Ok(wh) = white_hole_query.get(*hole) {
-                        if wh.link_types.0 == -1 && wh.open {
-                            let n = access.num_query.get(wh.bh_parent).unwrap().0;
-                            let id = camera_query.single().0;
-                            let t = &mut access.trans_query.get_mut(id).unwrap();
-                            match wh.link_types.1 {
-                                1 => { t.translation.x = n; }
-                                2 => { t.translation.y = n; }
-                                3 => { t.translation.z = n; }
-                                4 => { t.rotation = Quat::from_euler(EulerRot::XYZ,0.,0.,n); }
-                                5 => { ortho.single_mut().scale = n.clamp(0.1, 4.); }
-                                _ => {}
-                            }
-                        }
-                    }
-                }
-            }
-            "update_rate" => {
-                for hole in holes {
-                    if let Ok(wh) = white_hole_query.get(*hole) {
-                        if wh.link_types == (-1, 1) && wh.open {
-                            let n = access.num_query.get(wh.bh_parent).unwrap().0;
-                            access.winit_settings.focused_mode = UpdateMode::ReactiveLowPower {
-                                wait: Duration::from_secs_f64((1.0 / n.max(0.01)).into()),
-                            }
-                        } else if wh.link_types == (-1, 2) && wh.open {
-                            let n = access.num_query.get(wh.bh_parent).unwrap().0;
-                            access.winit_settings.unfocused_mode = UpdateMode::ReactiveLowPower {
-                                wait: Duration::from_secs_f64((1.0 / n.max(0.01)).into()),
-                            }
-                        }
-                    }
-                }
-            }
-            "screenshot" => {
-                for hole in holes {
-                    if let Ok(wh) = white_hole_query.get(*hole) {
-                        if wh.link_types == (-1, 1) && access.num_query.get(wh.bh_parent).unwrap().0 != 0. {
-                            let win = windows.single().0;
-                            let epoch = std::time::UNIX_EPOCH;
-                            let now = std::time::SystemTime::now();
-                            if let Ok(dur) = now.duration_since(epoch) {
-                                let time = dur.as_millis();
-                                let path = format!("screenshots/{:?}.png", time);
-                                access.screensot_manager.save_screenshot_to_disk(win, path).unwrap();
-                            }
-                        }
-                    }
-                }
-            }
-            "mouse" => {
-                let (_, cam, cam_transform) = camera_query.single();
-                if let Some(cursor_pos) = windows.single().1.cursor_position() {
-                    if let Some(point) = cam.viewport_to_world_2d(cam_transform, cursor_pos) {
-                        access.arr_query.get_mut(*id).unwrap().0 = point.to_array().into();
-                        lt_to_open = Some(-13);
-                    }
-                }
-            }
-            "lmb_pressed" => {
-                if mouse_button_input.pressed(MouseButton::Left) {
-                    access.num_query.get_mut(*id).unwrap().0 = 1.;
-                    lt_to_open = Some(-1);
-                } else {
-                    access.num_query.get_mut(*id).unwrap().0 = 0.;
-                    lt_to_open = Some(-1);
-                }
-            }
-            "mmb_pressed" => {
-                if mouse_button_input.pressed(MouseButton::Middle) {
-                    access.num_query.get_mut(*id).unwrap().0 = 1.;
-                    lt_to_open = Some(-1);
-                } else {
-                    access.num_query.get_mut(*id).unwrap().0 = 0.;
-                    lt_to_open = Some(-1);
-                }
-            }
-            "rmb_pressed" => {
-                if mouse_button_input.pressed(MouseButton::Right) {
-                    access.num_query.get_mut(*id).unwrap().0 = 1.;
-                    lt_to_open = Some(-1);
-                } else {
-                    access.num_query.get_mut(*id).unwrap().0 = 0.;
-                    lt_to_open = Some(-1);
-                }
-            }
-            "butt" => {
-                if mouse_button_input.just_pressed(MouseButton::Left) {
-                    let t = access.trans_query.get(*id).unwrap().translation.xy();
-                    let r = access.trans_query.get(*id).unwrap().scale.x;
-                    if cursor.i.distance_squared(t) < r*r {
-                        access.num_query.get_mut(*id).unwrap().0 = 1.;
-                        lt_to_open = Some(-1);
-                    }
-                }
-                if mouse_button_input.just_released(MouseButton::Left) {
-                    access.num_query.get_mut(*id).unwrap().0 = 0.;
-                    lt_to_open = Some(-1);
-                }
-            }
-            "toggle" => {
-                if mouse_button_input.just_pressed(MouseButton::Left) {
-                    let t = access.trans_query.get(*id).unwrap().translation.xy();
-                    let r = access.trans_query.get(*id).unwrap().scale.x;
-                    if cursor.i.distance_squared(t) < r*r {
-                        let n = access.num_query.get(*id).unwrap().0;
-                        access.num_query.get_mut(*id).unwrap().0 = 1. - n;
-                        lt_to_open = Some(-1);
-                    }
-                }
-            }
-            // uses the array to store prevous num value
-            "rise" | "fall" => {
-                if access.arr_query.get(*id).unwrap().0.len() != 1 {
-                    access.arr_query.get_mut(*id).unwrap().0 = vec!(0.);
-                }
-                for hole in holes {
-                    if let Ok(wh) = white_hole_query.get(*hole) {
-                        if wh.link_types == (-1, 1) {
-                            let input = access.num_query.get(wh.bh_parent).unwrap().0;
-                            let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
-                            if op == "rise" {
-                                if input > arr[0] { access.num_query.get_mut(*id).unwrap().0 = 1.; }
-                            } else {
-                                if input < arr[0] { access.num_query.get_mut(*id).unwrap().0 = 1.; }
-                            }
-                            if input == arr[0] {
-                                access.num_query.get_mut(*id).unwrap().0 = 0.
-                            }
-                            arr[0] = input;
-                            lt_to_open = Some(-1);
-                        }
-                    }
-                }
-            }
-            "key" => {
-                for key in key_event.read() {
-                    match &key.logical_key {
-                        Key::Character(c) => {
-                            if let Some(c) = c.chars().next() {
-                                let c = (c as i32) as f32;
-                                let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
-                                if key.state.is_pressed() {
-                                    if !arr.contains(&c) { arr.push(c); }
-                                } else {
-                                    arr.retain(|&x| x != c);
-                                }
-                                lt_to_open = Some(-13);
-                            }
-                        }
-                        _ => {}
-                    }
-                }
-            }
-            "sum" => {
-                let mut out = 0.;
-                for hole in holes {
-                    if let Ok(wh) = white_hole_query.get(*hole) {
-                        if wh.link_types == (-1, 1) {
-                            out += access.num_query.get(wh.bh_parent).unwrap().0;
-                        }
-                    }
-                }
-                access.num_query.get_mut(*id).unwrap().0 = out;
-                lt_to_open = Some(-1);
-            }
-            "product" => {
-                let mut out = 1.;
-                for hole in holes {
-                    if let Ok(wh) = white_hole_query.get(*hole) {
-                        if wh.link_types == (-1, 1) {
-                            out *= access.num_query.get(wh.bh_parent).unwrap().0;
-                        }
-                    }
-                }
-                access.num_query.get_mut(*id).unwrap().0 = out;
-                lt_to_open = Some(-1);
-            }
-            "store" => {
-                for hole in holes {
-                    if let Ok(wh) = white_hole_query.get(*hole) {
-                        if wh.link_types == (-1, 1) && wh.open {
-                            let n = access.num_query.get(wh.bh_parent).unwrap().0;
-                            access.num_query.get_mut(*id).unwrap().0 = n;
-                            // this op only stores the value, don't open wh
-                        }
-                    }
-                }
-            }
-            "tonemapping" => {
-                let mut tm = access.tonemapping.single_mut();
-                for hole in holes {
-                    if let Ok(wh) = white_hole_query.get(*hole) {
-                        if wh.link_types == (-1, 1) && wh.open {
-                            let input = access.num_query.get(wh.bh_parent).unwrap().0;
-                            match input as usize {
-                                0 => *tm = Tonemapping::None,
-                                1 => *tm = Tonemapping::Reinhard,
-                                2 => *tm = Tonemapping::ReinhardLuminance,
-                                3 => *tm = Tonemapping::AcesFitted,
-                                4 => *tm = Tonemapping::AgX,
-                                5 => *tm = Tonemapping::SomewhatBoringDisplayTransform,
-                                6 => *tm = Tonemapping::TonyMcMapface,
-                                7 => *tm = Tonemapping::BlenderFilmic,
-                                _ => {},
-                            }
-                        }
-                    }
-                }
-            }
-            "bloom" => {
-                let mut bloom_settings = access.bloom.single_mut();
-                for hole in holes {
-                    if let Ok(wh) = white_hole_query.get(*hole) {
-                        if !wh.open { continue; }
-                        let input = access.num_query.get(wh.bh_parent).unwrap().0 / 100.;
-                        match wh.link_types {
-                            (-1, 1) => bloom_settings.intensity = input,
-                            (-1, 2) => bloom_settings.low_frequency_boost = input,
-                            (-1, 3) => bloom_settings.low_frequency_boost_curvature = input,
-                            (-1, 4) => bloom_settings.high_pass_frequency = input,
-                            (-1, 5) => bloom_settings.composite_mode = if input > 0. {
-                            BloomCompositeMode::Additive } else { BloomCompositeMode::EnergyConserving },
-                            (-1, 6) => bloom_settings.prefilter_settings.threshold = input,
-                            (-1, 7) => bloom_settings.prefilter_settings.threshold_softness = input,
-                            _ => {},
-                        }
-                    }
-                }
-            }
-            "count" => {
-                let mut trig = None;
-                let mut high = None;
-                for hole in holes {
-                    if let Ok(wh) = white_hole_query.get(*hole) {
-                        if wh.link_types == (-1, 1) {
-                            trig = Some(access.num_query.get(wh.bh_parent).unwrap().0);
-                        }
-                        if wh.link_types == (-1, 2) {
-                            high = Some(access.num_query.get(wh.bh_parent).unwrap().0);
-                        }
-                    }
-                }
-                if let Some(trig) = trig {
-                    let num = &mut access.num_query.get_mut(*id).unwrap().0;
-                    *num += trig;
-                    if let Some(high) = high {
-                        if *num >= high { *num = 0.; }
-                    }
-                    lt_to_open = Some(-1);
-                }
-            }
             "set" => {
                 let mut changed = false;
                 let mut ndx = None;
@@ -808,60 +560,314 @@ pub fn process(
                     lt_to_open = Some(-13);
                 }
             }
-            // distribute input array among targets' values
-            "distro" => {
-                let mut target_lt_to_open = None;
+            // -------------------- settings --------------------
+            "clear_color" => {
+                let color = access.col_query.get_mut(*id).unwrap();
+                if color.is_changed() {
+                    access.clear_color.0 = color.0;
+                }
+            }
+            "draw_verts" => {
+                let verts = access.vertices_query.get_mut(*id).unwrap();
+                if verts.is_changed() {
+                    access.default_verts.0 = verts.0;
+                }
+            }
+            "draw_color" => {
+                let color = access.col_query.get_mut(*id).unwrap();
+                if color.is_changed() {
+                    access.default_color.0 = color.0;
+                }
+            }
+            "highlight_color" => {
+                let color = access.col_query.get_mut(*id).unwrap();
+                if color.is_changed() {
+                    access.highlight_color.0 = color.0;
+                }
+            }
+            "selection_color" => {
+                let color = access.col_query.get_mut(*id).unwrap();
+                if color.is_changed() {
+                    let id = access.selection_circle.0;
+                    access.col_query.get_mut(id).unwrap().0 = color.0;
+                }
+            }
+            "connection_color" => {
+                let color = access.col_query.get_mut(*id).unwrap();
+                if color.is_changed() {
+                    access.connection_color.0 = color.0;
+                }
+            }
+            "connecting_line_color" => {
+                let color = access.col_query.get_mut(*id).unwrap();
+                if color.is_changed() {
+                    let id = access.connecting_line.0;
+                    access.col_query.get_mut(id).unwrap().0 = color.0;
+                }
+            }
+            "command_color" => {
+                let color = access.col_query.get_mut(*id).unwrap();
+                if color.is_changed() {
+                    access.command_color.0 = color.0;
+                    let clt = &mut access.command_line_text.single_mut();
+                    clt.sections[0].style.color = color.0;
+                }
+            }
+            "tonemapping" => {
+                let mut tm = access.tonemapping.single_mut();
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
-                        if wh.link_types.0 == -13 && wh.open {
-                            let arr = &access.arr_query.get(wh.bh_parent).unwrap().0;
-                            let targets = &access.targets_query.get(*id).unwrap().0;
-                            let len = Ord::min(arr.len(), targets.len());
-                            for i in 0..len {
-                                if access.vertices_query.get(targets[i]).is_err() { continue; }
-                                // input link type determines what property to write to in targets
-                                match wh.link_types.1 {
-                                    -1 => { if let Ok(mut n) = access.num_query.get_mut(targets[i]) { n.0 = arr[i]; }}
-                                    -2 => {
-                                        access.trans_query.get_mut(targets[i]).unwrap().scale.x = arr[i].max(0.1);
-                                        access.trans_query.get_mut(targets[i]).unwrap().scale.y = arr[i].max(0.1);
-                                    }
-                                    -3 => { access.trans_query.get_mut(targets[i]).unwrap().translation.x = arr[i]; }
-                                    -4 => { access.trans_query.get_mut(targets[i]).unwrap().translation.y = arr[i]; }
-                                    -5 => { access.trans_query.get_mut(targets[i]).unwrap().translation.z = arr[i]; }
-                                    -6 => { access.col_query.get_mut(targets[i]).unwrap().0.set_h(arr[i]); }
-                                    -7 => { access.col_query.get_mut(targets[i]).unwrap().0.set_s(arr[i]); }
-                                    -8 => { access.col_query.get_mut(targets[i]).unwrap().0.set_l(arr[i]); }
-                                    -9 => { access.col_query.get_mut(targets[i]).unwrap().0.set_a(arr[i]); }
-                                    -11 => {
-                                        let v = arr[i].max(3.) as usize;
-                                        access.vertices_query.get_mut(targets[i]).unwrap().0 = v;
-                                    }
-                                    -12 => {
-                                        let q = Quat::from_euler(EulerRot::XYZ, 0., 0., arr[i]);
-                                        access.trans_query.get_mut(targets[i]).unwrap().rotation = q;
-                                    }
-                                    _ => {}
-                                }
-                                target_lt_to_open = Some(wh.link_types.1);
+                        if wh.link_types == (-1, 1) && wh.open {
+                            let input = access.num_query.get(wh.bh_parent).unwrap().0;
+                            match input as usize {
+                                0 => *tm = Tonemapping::None,
+                                1 => *tm = Tonemapping::Reinhard,
+                                2 => *tm = Tonemapping::ReinhardLuminance,
+                                3 => *tm = Tonemapping::AcesFitted,
+                                4 => *tm = Tonemapping::AgX,
+                                5 => *tm = Tonemapping::SomewhatBoringDisplayTransform,
+                                6 => *tm = Tonemapping::TonyMcMapface,
+                                7 => *tm = Tonemapping::BlenderFilmic,
+                                _ => {},
                             }
                         }
                     }
                 }
-                if let Some(lt) = target_lt_to_open {
-                    for t in &access.targets_query.get(*id).unwrap().0 {
-                        if let Ok(holes) = &holes_query.get(*t) {
-                            for hole in &holes.0 {
-                                if let Ok(bh) = black_hole_query.get(*hole) {
-                                    if let Ok(wh) = white_hole_query.get_mut(bh.wh) {
-                                        if wh.link_types.0 == lt {
-                                            white_hole_query.get_mut(bh.wh).unwrap().open = true;
-                                        }
-                                    }
-                                }
+            }
+            "bloom" => {
+                let mut bloom_settings = access.bloom.single_mut();
+                for hole in holes {
+                    if let Ok(wh) = white_hole_query.get(*hole) {
+                        if !wh.open { continue; }
+                        let input = access.num_query.get(wh.bh_parent).unwrap().0 / 100.;
+                        match wh.link_types {
+                            (-1, 1) => bloom_settings.intensity = input,
+                            (-1, 2) => bloom_settings.low_frequency_boost = input,
+                            (-1, 3) => bloom_settings.low_frequency_boost_curvature = input,
+                            (-1, 4) => bloom_settings.high_pass_frequency = input,
+                            (-1, 5) => bloom_settings.composite_mode = if input > 0. {
+                            BloomCompositeMode::Additive } else { BloomCompositeMode::EnergyConserving },
+                            (-1, 6) => bloom_settings.prefilter_settings.threshold = input,
+                            (-1, 7) => bloom_settings.prefilter_settings.threshold_softness = input,
+                            _ => {},
+                        }
+                    }
+                }
+            }
+            // -------------------- utils --------------------
+            "cam" => {
+                for hole in holes {
+                    if let Ok(wh) = white_hole_query.get(*hole) {
+                        if wh.link_types.0 == -1 && wh.open {
+                            let n = access.num_query.get(wh.bh_parent).unwrap().0;
+                            let id = camera_query.single().0;
+                            let t = &mut access.trans_query.get_mut(id).unwrap();
+                            match wh.link_types.1 {
+                                1 => { t.translation.x = n; }
+                                2 => { t.translation.y = n; }
+                                3 => { t.translation.z = n; }
+                                4 => { t.rotation = Quat::from_euler(EulerRot::XYZ,0.,0.,n); }
+                                5 => { ortho.single_mut().scale = n.clamp(0.1, 4.); }
+                                _ => {}
                             }
                         }
                     }
+                }
+            }
+            "update_rate" => {
+                for hole in holes {
+                    if let Ok(wh) = white_hole_query.get(*hole) {
+                        if wh.link_types == (-1, 1) && wh.open {
+                            let n = access.num_query.get(wh.bh_parent).unwrap().0;
+                            access.winit_settings.focused_mode = UpdateMode::ReactiveLowPower {
+                                wait: Duration::from_secs_f64((1.0 / n.max(0.01)).into()),
+                            }
+                        } else if wh.link_types == (-1, 2) && wh.open {
+                            let n = access.num_query.get(wh.bh_parent).unwrap().0;
+                            access.winit_settings.unfocused_mode = UpdateMode::ReactiveLowPower {
+                                wait: Duration::from_secs_f64((1.0 / n.max(0.01)).into()),
+                            }
+                        }
+                    }
+                }
+            }
+            "screenshot" => {
+                for hole in holes {
+                    if let Ok(wh) = white_hole_query.get(*hole) {
+                        if wh.link_types == (-1, 1) && access.num_query.get(wh.bh_parent).unwrap().0 != 0. {
+                            let win = windows.single().0;
+                            let epoch = std::time::UNIX_EPOCH;
+                            let now = std::time::SystemTime::now();
+                            if let Ok(dur) = now.duration_since(epoch) {
+                                let time = dur.as_millis();
+                                let path = format!("screenshots/{:?}.png", time);
+                                access.screensot_manager.save_screenshot_to_disk(win, path).unwrap();
+                            }
+                        }
+                    }
+                }
+            }
+            // -------------------- input --------------------
+            "mouse" => {
+                let (_, cam, cam_transform) = camera_query.single();
+                if let Some(cursor_pos) = windows.single().1.cursor_position() {
+                    if let Some(point) = cam.viewport_to_world_2d(cam_transform, cursor_pos) {
+                        access.arr_query.get_mut(*id).unwrap().0 = point.to_array().into();
+                        lt_to_open = Some(-13);
+                    }
+                }
+            }
+            "lmb_pressed" => {
+                if mouse_button_input.pressed(MouseButton::Left) {
+                    access.num_query.get_mut(*id).unwrap().0 = 1.;
+                    lt_to_open = Some(-1);
+                } else {
+                    access.num_query.get_mut(*id).unwrap().0 = 0.;
+                    lt_to_open = Some(-1);
+                }
+            }
+            "mmb_pressed" => {
+                if mouse_button_input.pressed(MouseButton::Middle) {
+                    access.num_query.get_mut(*id).unwrap().0 = 1.;
+                    lt_to_open = Some(-1);
+                } else {
+                    access.num_query.get_mut(*id).unwrap().0 = 0.;
+                    lt_to_open = Some(-1);
+                }
+            }
+            "rmb_pressed" => {
+                if mouse_button_input.pressed(MouseButton::Right) {
+                    access.num_query.get_mut(*id).unwrap().0 = 1.;
+                    lt_to_open = Some(-1);
+                } else {
+                    access.num_query.get_mut(*id).unwrap().0 = 0.;
+                    lt_to_open = Some(-1);
+                }
+            }
+            "butt" => {
+                if mouse_button_input.just_pressed(MouseButton::Left) {
+                    let t = access.trans_query.get(*id).unwrap().translation.xy();
+                    let r = access.trans_query.get(*id).unwrap().scale.x;
+                    if cursor.i.distance_squared(t) < r*r {
+                        access.num_query.get_mut(*id).unwrap().0 = 1.;
+                        lt_to_open = Some(-1);
+                    }
+                }
+                if mouse_button_input.just_released(MouseButton::Left) {
+                    access.num_query.get_mut(*id).unwrap().0 = 0.;
+                    lt_to_open = Some(-1);
+                }
+            }
+            "toggle" => {
+                if mouse_button_input.just_pressed(MouseButton::Left) {
+                    let t = access.trans_query.get(*id).unwrap().translation.xy();
+                    let r = access.trans_query.get(*id).unwrap().scale.x;
+                    if cursor.i.distance_squared(t) < r*r {
+                        let n = access.num_query.get(*id).unwrap().0;
+                        access.num_query.get_mut(*id).unwrap().0 = 1. - n;
+                        lt_to_open = Some(-1);
+                    }
+                }
+            }
+            "key" => {
+                for key in key_event.read() {
+                    match &key.logical_key {
+                        Key::Character(c) => {
+                            if let Some(c) = c.chars().next() {
+                                let c = (c as i32) as f32;
+                                let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
+                                if key.state.is_pressed() {
+                                    if !arr.contains(&c) { arr.push(c); }
+                                } else {
+                                    arr.retain(|&x| x != c);
+                                }
+                                lt_to_open = Some(-13);
+                            }
+                        }
+                        _ => {}
+                    }
+                }
+            }
+            // -------------------- data management --------------------
+            // uses the array to store previous num value
+            "rise" | "fall" => {
+                if access.arr_query.get(*id).unwrap().0.len() != 1 {
+                    access.arr_query.get_mut(*id).unwrap().0 = vec!(0.);
+                }
+                for hole in holes {
+                    if let Ok(wh) = white_hole_query.get(*hole) {
+                        if wh.link_types == (-1, 1) {
+                            let input = access.num_query.get(wh.bh_parent).unwrap().0;
+                            let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
+                            if op == "rise" {
+                                if input > arr[0] { access.num_query.get_mut(*id).unwrap().0 = 1.; }
+                            } else {
+                                if input < arr[0] { access.num_query.get_mut(*id).unwrap().0 = 1.; }
+                            }
+                            if input == arr[0] {
+                                access.num_query.get_mut(*id).unwrap().0 = 0.
+                            }
+                            arr[0] = input;
+                            lt_to_open = Some(-1);
+                        }
+                    }
+                }
+            }
+            "store" => {
+                for hole in holes {
+                    if let Ok(wh) = white_hole_query.get(*hole) {
+                        if wh.link_types == (-1, 1) && wh.open {
+                            let n = access.num_query.get(wh.bh_parent).unwrap().0;
+                            access.num_query.get_mut(*id).unwrap().0 = n;
+                            // this op only stores the value, don't open wh
+                        }
+                    }
+                }
+            }
+            "sum" => {
+                let mut out = 0.;
+                for hole in holes {
+                    if let Ok(wh) = white_hole_query.get(*hole) {
+                        if wh.link_types == (-1, 1) {
+                            out += access.num_query.get(wh.bh_parent).unwrap().0;
+                        }
+                    }
+                }
+                access.num_query.get_mut(*id).unwrap().0 = out;
+                lt_to_open = Some(-1);
+            }
+            "product" => {
+                let mut out = 1.;
+                for hole in holes {
+                    if let Ok(wh) = white_hole_query.get(*hole) {
+                        if wh.link_types == (-1, 1) {
+                            out *= access.num_query.get(wh.bh_parent).unwrap().0;
+                        }
+                    }
+                }
+                access.num_query.get_mut(*id).unwrap().0 = out;
+                lt_to_open = Some(-1);
+            }
+            "count" => {
+                let mut trig = None;
+                let mut high = None;
+                for hole in holes {
+                    if let Ok(wh) = white_hole_query.get(*hole) {
+                        if wh.link_types == (-1, 1) {
+                            trig = Some(access.num_query.get(wh.bh_parent).unwrap().0);
+                        }
+                        if wh.link_types == (-1, 2) {
+                            high = Some(access.num_query.get(wh.bh_parent).unwrap().0);
+                        }
+                    }
+                }
+                if let Some(trig) = trig {
+                    let num = &mut access.num_query.get_mut(*id).unwrap().0;
+                    *num += trig;
+                    if let Some(high) = high {
+                        if *num >= high { *num = 0.; }
+                    }
+                    lt_to_open = Some(-1);
                 }
             }
             "apply" => {
@@ -907,6 +913,7 @@ pub fn process(
                     }
                 }
             }
+            // -------------------- audio nodes --------------------
             "var()" => {
                 if access.op_changed_query.get(*id).unwrap().0 {
                     let net = &mut access.net_query.get_mut(*id).unwrap().0;
