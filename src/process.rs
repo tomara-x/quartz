@@ -402,6 +402,26 @@ pub fn process(
                     }
                 }
             }
+            "contains" => {
+                let mut arr = None;
+                let mut n = None;
+                for hole in holes {
+                    if let Ok(wh) = white_hole_query.get(*hole) {
+                        if wh.link_types == (-13, 1) { arr = Some(wh.bh_parent); }
+                        if wh.link_types == (-1, 2) && wh.open {
+                            n = Some(access.num_query.get(wh.bh_parent).unwrap().0);
+                        }
+                    }
+                }
+                if let (Some(arr), Some(n)) = (arr, n) {
+                    if access.arr_query.get(arr).unwrap().0.contains(&n) {
+                        access.num_query.get_mut(*id).unwrap().0 = 1.;
+                    } else {
+                        access.num_query.get_mut(*id).unwrap().0 = 0.;
+                    }
+                    lt_to_open = Some(-1);
+                }
+            }
             "clear_color" => {
                 let color = access.col_query.get_mut(*id).unwrap();
                 if color.is_changed() {
