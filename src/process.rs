@@ -778,6 +778,12 @@ pub fn process(
                                 n = (c as i32) as f32;
                             }
                         }
+                        Key::Space => { n = 32.; }
+                        Key::Escape => { n = 27.; }
+                        Key::Enter => { n = 10.; }
+                        Key::Tab => { n = 9.; }
+                        Key::Delete => { n = 127.; }
+                        Key::Backspace => { n = 8.; }
                         _ => {}
                     }
                     let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
