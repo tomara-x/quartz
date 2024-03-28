@@ -102,7 +102,7 @@ fn main() {
     .add_systems(Update, update_mat)
     .add_systems(Update, update_radius.after(update_selection).run_if(in_state(Mode::Edit)))
     .add_systems(Update, update_vertices.after(update_selection).run_if(in_state(Mode::Edit)))
-    .add_systems(Update, update_mesh.after(update_vertices))
+    .add_systems(Update, update_mesh.after(update_vertices).after(command_parser))
     .add_systems(Update, update_num.after(update_selection).run_if(in_state(Mode::Edit)))
     .add_systems(Update, highlight_selected.after(delete_selected))
     .add_systems(Update, open_after_drag.run_if(in_state(Mode::Edit)))
