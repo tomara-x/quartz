@@ -793,7 +793,7 @@ pub fn process(
                                 if access.vertices_query.get(targets[i]).is_err() { continue; }
                                 // input link type determines what property to write to in targets
                                 match wh.link_types.1 {
-                                    -1 => { access.num_query.get_mut(targets[i]).unwrap().0 = arr[i]; }
+                                    -1 => { if let Ok(mut n) = access.num_query.get_mut(targets[i]) { n.0 = arr[i]; }}
                                     -2 => {
                                         access.trans_query.get_mut(targets[i]).unwrap().scale.x = arr[i].max(0.1);
                                         access.trans_query.get_mut(targets[i]).unwrap().scale.y = arr[i].max(0.1);
