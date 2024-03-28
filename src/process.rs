@@ -737,18 +737,19 @@ pub fn process(
             }
             "get" => {
                 let mut arr = None;
+                let mut n = None;
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (-13, 1) { arr = Some(wh.bh_parent); }
                         if wh.link_types == (-1, 2) && wh.open {
-                            let n = access.num_query.get_mut(wh.bh_parent).unwrap();
-                            if let Some(arr) = arr {
-                                if let Some(v) = access.arr_query.get(arr).unwrap().0.get(n.0 as usize) {
-                                    access.num_query.get_mut(*id).unwrap().0 = *v;
-                                    lt_to_open = Some(-1);
-                                }
-                            }
+                            n = Some(access.num_query.get(wh.bh_parent).unwrap().0);
                         }
+                    }
+                }
+                if let (Some(arr), Some(n)) = (arr, n) {
+                    if let Some(v) = access.arr_query.get(arr).unwrap().0.get(n as usize) {
+                        access.num_query.get_mut(*id).unwrap().0 = *v;
+                        lt_to_open = Some(-1);
                     }
                 }
             }
