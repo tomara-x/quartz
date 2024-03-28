@@ -784,6 +784,36 @@ pub fn process(
                         Key::Tab => { n = 9.; }
                         Key::Delete => { n = 127.; }
                         Key::Backspace => { n = 8.; }
+                        Key::Control => { n = 128.; }
+                        Key::Shift => { n = 129.; }
+                        Key::Alt => { n = 130.; }
+                        Key::Super => { n = 131.; }
+                        Key::Fn => { n = 132.; }
+                        Key::CapsLock => { n = 133.; }
+                        Key::NumLock => { n = 134.; }
+                        Key::ScrollLock => { n = 135.; }
+                        Key::End => { n = 136.; }
+                        Key::Home => { n = 137.; }
+                        Key::PageUp => { n = 138.; }
+                        Key::PageDown => { n = 139.; }
+                        Key::Insert => { n = 140.; }
+                        Key::ContextMenu => { n = 141.; }
+                        Key::ArrowUp => { n = 200.; }
+                        Key::ArrowDown => { n = 201.; }
+                        Key::ArrowLeft => { n = 202.; }
+                        Key::ArrowRight => { n = 203.; }
+                        Key::F1 => { n = -1.; }
+                        Key::F2 => { n = -2.; }
+                        Key::F3 => { n = -3.; }
+                        Key::F4 => { n = -4.; }
+                        Key::F5 => { n = -5.; }
+                        Key::F6 => { n = -6.; }
+                        Key::F7 => { n = -7.; }
+                        Key::F8 => { n = -8.; }
+                        Key::F9 => { n = -9.; }
+                        Key::F10 => { n = -10.; }
+                        Key::F11 => { n = -11.; }
+                        Key::F12 => { n = -12.; }
                         _ => {}
                     }
                     let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
