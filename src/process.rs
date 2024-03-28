@@ -403,23 +403,31 @@ pub fn process(
                 }
             }
             "contains" => {
+                let mut changed = false;
                 let mut arr = None;
                 let mut n = None;
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
-                        if wh.link_types == (-13, 1) { arr = Some(wh.bh_parent); }
-                        if wh.link_types == (-1, 2) && wh.open {
-                            n = Some(access.num_query.get(wh.bh_parent).unwrap().0);
+                        if wh.link_types == (-13, 1) {
+                            arr = Some(wh.bh_parent);
+                            if wh.open { changed = true; }
+                        }
+                        if wh.link_types == (-1, 2) {
+                            n = Some(wh.bh_parent);
+                            if wh.open { changed = true; }
                         }
                     }
                 }
-                if let (Some(arr), Some(n)) = (arr, n) {
-                    if access.arr_query.get(arr).unwrap().0.contains(&n) {
-                        access.num_query.get_mut(*id).unwrap().0 = 1.;
-                    } else {
-                        access.num_query.get_mut(*id).unwrap().0 = 0.;
+                if changed {
+                    if let (Some(arr), Some(n)) = (arr, n) {
+                        let n = access.num_query.get(n).unwrap().0;
+                        if access.arr_query.get(arr).unwrap().0.contains(&n) {
+                            access.num_query.get_mut(*id).unwrap().0 = 1.;
+                        } else {
+                            access.num_query.get_mut(*id).unwrap().0 = 0.;
+                        }
+                        lt_to_open = Some(-1);
                     }
-                    lt_to_open = Some(-1);
                 }
             }
             "clear_color" => {
