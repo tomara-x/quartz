@@ -1,4 +1,5 @@
 use fundsp::hacker32::*;
+use crate::nodes::*;
 
 pub fn str_to_lt(s: &str) -> i8 {
     if let Ok(n) = s.parse::<i8>() {
@@ -105,6 +106,7 @@ pub fn str_to_net(op: &str) -> Net32 {
         }
     } else { return Net32::wrap(Box::new(dc(0.))); } // no parentheses
     match args[0] {
+        "shift_reg" => { return Net32::wrap(Box::new(An(ShiftReg::new()))); }
         "meter" => {
             if let (Some(arg), Some(p)) = (args.get(1), p.first()) {
                 if arg.starts_with("peak") {

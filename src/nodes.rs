@@ -126,3 +126,42 @@ impl AudioNode for ArrGet {
         buffer.into()
     }
 }
+
+/// shift register
+/// - input 0: trigger
+/// - input 1: input signal
+/// - output 0...8: output from each index
+#[derive(Default, Clone)]
+pub struct ShiftReg {
+    reg: [f32;8],
+}
+
+impl ShiftReg {
+    pub fn new() -> Self { ShiftReg { reg: [0.;8] } }
+}
+
+impl AudioNode for ShiftReg {
+    const ID: u64 = 1110;
+    type Sample = f32;
+    type Inputs = U2;
+    type Outputs = U8;
+    type Setting = ();
+
+    #[inline]
+    fn tick(
+        &mut self,
+        input: &Frame<Self::Sample, Self::Inputs>,
+    ) -> Frame<Self::Sample, Self::Outputs> {
+        if input[0] != 0. {
+            self.reg[7] = self.reg[6];
+            self.reg[6] = self.reg[5];
+            self.reg[5] = self.reg[4];
+            self.reg[4] = self.reg[3];
+            self.reg[3] = self.reg[2];
+            self.reg[2] = self.reg[1];
+            self.reg[1] = self.reg[0];
+            self.reg[0] = input[1];
+        }
+        self.reg.into()
+    }
+}
