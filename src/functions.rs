@@ -133,6 +133,7 @@ pub fn str_to_net(op: &str) -> Net32 {
         "rossler" => { return Net32::wrap(Box::new(rossler())); }
         "tick" => { return Net32::wrap(Box::new(tick())); }
         "zero" => { return Net32::wrap(Box::new(zero())); }
+        "impulse" => { return Net32::wrap(Box::new(impulse::<U1>())); }
 
         "pan" => {
             if let Some(p) = p.first() {
