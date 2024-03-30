@@ -518,8 +518,12 @@ pub fn str_to_net(op: &str) -> Net32 {
             } else { return Net32::wrap(Box::new(resonator())); }
         }
         "reverb_stereo" => {
-            if let Some(p) = p.get(0..2) {
-                return Net32::wrap(Box::new(reverb_stereo(p[0].into(), p[1].into())));
+            if let Some(p) = p.get(0..3) {
+                return Net32::wrap(Box::new(reverb_stereo(p[0].into(), p[1].into(), p[2].into())));
+            } else if let Some(p) = p.get(0..2) {
+                return Net32::wrap(Box::new(reverb_stereo(p[0].into(), p[1].into(), 1.)));
+            } else if let Some(p) = p.first() {
+                return Net32::wrap(Box::new(reverb_stereo((*p).into(), 5., 1.)));
             }
         }
         "soft_saw" => {
@@ -530,10 +534,24 @@ pub fn str_to_net(op: &str) -> Net32 {
         "tap" => {
             if let Some(p) = p.get(0..2) {
                 if p[0] <= p[1] {
-                    return Net32::wrap(Box::new(tap(p[0], p[1])));
+                    return Net32::wrap(Box::new(tap(p[0].max(0.), p[1])));
                 } else {
-                    return Net32::wrap(Box::new(tap(p[1], p[0])));
+                    return Net32::wrap(Box::new(tap(p[1].max(0.), p[0])));
                 }
+            }
+        }
+        "tap_linear" => {
+            if let Some(p) = p.get(0..2) {
+                if p[0] <= p[1] {
+                    return Net32::wrap(Box::new(tap_linear(p[0].max(0.), p[1])));
+                } else {
+                    return Net32::wrap(Box::new(tap_linear(p[1].max(0.), p[0])));
+                }
+            }
+        }
+        "rotate" => {
+            if let Some(p) = p.get(0..2) {
+                return Net32::wrap(Box::new(rotate(p[0], p[1])));
             }
         }
 
