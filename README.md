@@ -246,7 +246,6 @@ todo!();
     - bevy-inspector-egui https://github.com/jakobhellermann/bevy-inspector-egui/
     - fundsp https://github.com/SamiPerttu/fundsp
     - cpal https://github.com/rustaudio/cpal
-    - assert_no_alloc https://github.com/Windfisch/rust-assert-no-alloc
     - copypasta https://github.com/alacritty/copypasta
     - serde https://github.com/serde-rs/serde
     - bevy_github_ci_template https://github.com/bevyengine/bevy_github_ci_template
@@ -270,6 +269,7 @@ todo!();
     - bevy_mod_picking https://github.com/aevyrie/bevy_mod_picking/
     - bevy_vector_shapes https://github.com/james-j-obrien/bevy_vector_shapes
     - anyhow https://github.com/dtolnay/anyhow
+    - assert_no_alloc https://github.com/Windfisch/rust-assert-no-alloc
 
 ## license
 

@@ -225,12 +225,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "assert_no_alloc"
-version = "1.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "55ca83137a482d61d916ceb1eba52a684f98004f18e0cafea230fe5579c178a3"
-
-[[package]]
 name = "async-broadcast"
 version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2896,7 +2890,6 @@ checksum = "43d84d1d7a6ac92673717f9f6d1518374ef257669c24ebc5ac25d5033828be58"
 name = "quartz"
 version = "0.1.0"
 dependencies = [
- "assert_no_alloc",
  "bevy",
  "bevy-inspector-egui",
  "bevy_pancam",

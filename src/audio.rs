@@ -1,6 +1,5 @@
 use bevy::prelude::*;
 
-use assert_no_alloc::*;
 use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
 use cpal::{FromSample, SizedSample};
 use fundsp::hacker32::*;
@@ -42,13 +41,11 @@ fn run<T>(
     let mut slot = BlockRateAdapter32::new(Box::new(slot));
 
     let mut next_value = move || {
-        assert_no_alloc(|| {
-            let (l, r) = slot.get_stereo();
-            (
-                if l.is_normal() { l.clamp(-1., 1.) } else { 0. },
-                if r.is_normal() { r.clamp(-1., 1.) } else { 0. },
-            )
-        })
+        let (l, r) = slot.get_stereo();
+        (
+            if l.is_normal() { l.clamp(-1., 1.) } else { 0. },
+            if r.is_normal() { r.clamp(-1., 1.) } else { 0. },
+        )
     };
     let err_fn = |err| eprintln!("an error occurred on stream: {}", err);
     let stream = device.build_output_stream(
