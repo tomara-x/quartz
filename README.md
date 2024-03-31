@@ -51,7 +51,7 @@ in addition to the shared properties that both circles and holes have (position,
 ##### return-terminated commands
 (type then press enter)
 (you can separate them with `;` to run more than one at once)
-###### file io
+###### scene saving/loading
 - `:e` edit (open) a scene file (in the assets path) (no spaces)
 - `:w` write(save) a scene file (same)
 
@@ -59,6 +59,7 @@ in addition to the shared properties that both circles and holes have (position,
 :w moth.cute     // saves the current scene as the file "assets/moth.cute" (OVERWRITES)
 :e soup.fun     // opens the file "assets/soup.fun" if it's there
 ```
+(draging and droping scene files into a window also works)
 
 ###### set values
 
@@ -187,6 +188,7 @@ note: when drag-selecting, holding `alt` will only select circles (ignores holes
 ###### other
 - `quartz` shhh!
 - `awa` awawawa
+- `<F11>` toggle fullscreen
 
 #### link types
 any connection links 2 circles together in some way. the black hole is taking some data from the source circle, and the white hole is getting that data and feeding it to the sink circle. the link type determines what that data is.
