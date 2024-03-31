@@ -534,20 +534,16 @@ pub fn str_to_net(op: &str) -> Net32 {
         }
         "tap" => {
             if let Some(p) = p.get(0..2) {
-                if p[0] <= p[1] {
-                    return Net32::wrap(Box::new(tap(p[0].max(0.), p[1])));
-                } else {
-                    return Net32::wrap(Box::new(tap(p[1].max(0.), p[0])));
-                }
+                let p0 = p[0].max(0.);
+                let p1 = p[1].max(0.);
+                return Net32::wrap(Box::new(tap(min(p0,p1), max(p0,p1))));
             }
         }
         "tap_linear" => {
             if let Some(p) = p.get(0..2) {
-                if p[0] <= p[1] {
-                    return Net32::wrap(Box::new(tap_linear(p[0].max(0.), p[1])));
-                } else {
-                    return Net32::wrap(Box::new(tap_linear(p[1].max(0.), p[0])));
-                }
+                let p0 = p[0].max(0.);
+                let p1 = p[1].max(0.);
+                return Net32::wrap(Box::new(tap_linear(min(p0,p1), max(p0,p1))));
             }
         }
         "rotate" => {
