@@ -763,7 +763,7 @@ pub fn str_to_net(op: &str) -> Net32 {
         "a_weight" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| a_weight(i[0])))); }
         "m_weight" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| m_weight(i[0])))); }
         "spline" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U5>| spline(i[0], i[1], i[2], i[3], i[4])))); }
-        "spline_mone" => {return Net32::wrap(Box::new(map(|i:&Frame<f32,U5>| spline_mono(i[0],i[1],i[2],i[3],i[4]))));}
+        "spline_mono" => {return Net32::wrap(Box::new(map(|i:&Frame<f32,U5>| spline_mono(i[0],i[1],i[2],i[3],i[4]))));}
         "softsign" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| softsign(i[0])))); }
         "softexp" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| softexp(i[0])))); }
         "softmix" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U3>| softmix(i[0], i[1], i[2])))); }
