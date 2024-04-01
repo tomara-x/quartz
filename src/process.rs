@@ -19,6 +19,7 @@ use fundsp::hacker32::*;
 use crate::{
     components::*,
     nodes::*,
+    functions::*,
 };
 
 pub fn sort_by_order(
@@ -1147,6 +1148,59 @@ pub fn process(
                         }
                     }
                     access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(graph));
+                    lt_to_open = Some(0);
+                }
+            }
+            "branch()" | "bus()" | "pipe()" | "stack()" | "sum()" => {
+                let op_changed = access.op_changed_query.get(*id).unwrap().0;
+                let lost = access.lost_wh_query.get(*id).unwrap().0;
+                let mut changed = false;
+                let mut arr = None;
+                let mut op_str = None;
+                for hole in holes {
+                    if let Ok(wh) = white_hole_query.get(*hole) {
+                        if wh.link_types == (-13, 1) { arr = Some(wh.bh_parent); }
+                        if wh.link_types == (0, 2) { op_str = Some(wh.bh_parent); }
+                        if wh.open { changed = true; }
+                    }
+                }
+                if changed || lost || op_changed {
+                    let mut graph = Net32::new(0,0);
+                    let mut empty = true;
+                    if let (Some(arr), Some(op_str)) = (arr, op_str) {
+                        let arr = &access.arr_query.get(arr).unwrap().0;
+                        let op_str = &access.op_query.get(op_str).unwrap().0;
+                        for i in arr {
+                            let net = str_to_net(&op_str.replace("#", &format!("{}", i)));
+                            if empty {
+                                graph = net;
+                                empty = false;
+                            } else {
+                                let (gi, go) = (graph.inputs(), graph.outputs());
+                                let (ni, no) = (net.inputs(), net.outputs());
+                                match op {
+                                    "pipe()" => {
+                                        if go == ni { graph = graph >> net; }
+                                    }
+                                    "stack()" => {
+                                        graph = graph | net;
+                                    }
+                                    "bus()" => {
+                                        if gi == ni && go == no { graph = graph & net; }
+                                    }
+                                    "branch()" => {
+                                        if gi == ni { graph = graph ^ net; }
+                                    }
+                                    "sum()" => {
+                                        if go == no { graph = graph + net; }
+                                    }
+                                    _ => {}
+                                }
+                            }
+                        }
+                    }
+                    let output = &mut access.net_query.get_mut(*id).unwrap().0;
+                    *output = Net32::wrap(Box::new(graph));
                     lt_to_open = Some(0);
                 }
             }
