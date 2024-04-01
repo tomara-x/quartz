@@ -522,7 +522,7 @@ pub fn command_parser(
                             }
                             Some("op") => {
                                 if let Some(s) = command.next() {
-                                    let op_str = line.trim_start();
+                                    let op_str = line.trim(); // we have a \t at the end
                                     let op_str = if op_str.starts_with(':') {
                                         op_str.trim_start_matches(":set op ")
                                     } else {
