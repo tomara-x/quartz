@@ -522,23 +522,26 @@ pub fn command_parser(
                             }
                             Some("op") => {
                                 if let Some(s) = command.next() {
+                                    let op_str = line.trim_start();
+                                    let op_str = if op_str.starts_with(':') {
+                                        op_str.trim_start_matches(":set op ")
+                                    } else {
+                                        op_str.trim_start_matches("set op ")
+                                    };
                                     if let Some(e) = str_to_id(s) {
                                         if let Ok(mut op) = access.op_query.get_mut(e) {
-                                            if let Some(n) = command.next() {
-                                                op.0 = n.to_string();
-                                                access.op_changed_query.get_mut(e).unwrap().0 = true;
-                                                access.net_query.get_mut(e).unwrap().0 = str_to_net(n);
-                                                lt_to_open = (Some(e), Some(0));
-                                            }
+                                            let op_str = op_str.trim_start_matches(s).trim_start();
+                                            op.0 = op_str.into();
+                                            access.op_changed_query.get_mut(e).unwrap().0 = true;
+                                            access.net_query.get_mut(e).unwrap().0 = str_to_net(op_str);
+                                            lt_to_open = (Some(e), Some(0));
                                         }
                                     } else {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut op) = access.op_query.get_mut(id) {
-                                                op.0.clear();
-                                                op.0.push_str(s);
-                                                for a in command.clone() { op.0.push_str(a); }
+                                                op.0 = op_str.into();
                                                 access.op_changed_query.get_mut(id).unwrap().0 = true;
-                                                access.net_query.get_mut(id).unwrap().0 = str_to_net(&op.0);
+                                                access.net_query.get_mut(id).unwrap().0 = str_to_net(op_str);
                                             }
                                         }
                                         lt_to_open = (None, Some(0));
