@@ -688,6 +688,7 @@ pub fn str_to_net(op: &str) -> Net32 {
                 return Net32::wrap(Box::new(map(move |i: &Frame<f32,U1>| i[0].log(p))));
             } else {return Net32::wrap(Box::new(map(|i: &Frame<f32,U2>| i[0].log(i[1]))));}
         }
+
         "bitand" => {
             if let Some(p) = p.first() {
                 let p = *p as i32;
@@ -719,6 +720,71 @@ pub fn str_to_net(op: &str) -> Net32 {
             } else {return Net32::wrap(Box::new(map(|i: &Frame<f32,U2>| ((i[0] as i32) >> (i[1] as i32)) as f32)));}
         }
 
+        "lerp" => {
+            if let Some(p) = p.get(0..2) {
+                let (p0, p1) = (p[0], p[1]);
+                return Net32::wrap(Box::new(map(move |i: &Frame<f32, U1>| lerp(p0, p1, i[0]))));
+            } else {
+                return Net32::wrap(Box::new(map(|i: &Frame<f32, U3>| lerp(i[0], i[1], i[2]))));
+            }
+        }
+        "lerp11" => {
+            if let Some(p) = p.get(0..2) {
+                let (p0, p1) = (p[0], p[1]);
+                return Net32::wrap(Box::new(map(move |i: &Frame<f32, U1>| lerp11(p0, p1, i[0]))));
+            } else {
+                return Net32::wrap(Box::new(map(|i: &Frame<f32, U3>| lerp11(i[0], i[1], i[2]))));
+            }
+        }
+        "delerp" => {
+            if let Some(p) = p.get(0..2) {
+                let (p0, p1) = (p[0], p[1]);
+                return Net32::wrap(Box::new(map(move |i: &Frame<f32, U1>| delerp(p0, p1, i[0]))));
+            } else {
+                return Net32::wrap(Box::new(map(|i: &Frame<f32, U3>| delerp(i[0], i[1], i[2]))));
+            }
+        }
+        "delerp11" => {
+            if let Some(p) = p.get(0..2) {
+                let (p0, p1) = (p[0], p[1]);
+                return Net32::wrap(Box::new(map(move |i: &Frame<f32, U1>| delerp11(p0, p1, i[0]))));
+            } else {
+                return Net32::wrap(Box::new(map(|i: &Frame<f32, U3>| delerp11(i[0], i[1], i[2]))));
+            }
+        }
+        "xerp" => {
+            if let Some(p) = p.get(0..2) {
+                let (p0, p1) = (p[0], p[1]);
+                return Net32::wrap(Box::new(map(move |i: &Frame<f32, U1>| xerp(p0, p1, i[0]))));
+            } else {
+                return Net32::wrap(Box::new(map(|i: &Frame<f32, U3>| xerp(i[0], i[1], i[2]))));
+            }
+        }
+        "xerp11" => {
+            if let Some(p) = p.get(0..2) {
+                let (p0, p1) = (p[0], p[1]);
+                return Net32::wrap(Box::new(map(move |i: &Frame<f32, U1>| xerp11(p0, p1, i[0]))));
+            } else {
+                return Net32::wrap(Box::new(map(|i: &Frame<f32, U3>| xerp11(i[0], i[1], i[2]))));
+            }
+        }
+        "dexerp" => {
+            if let Some(p) = p.get(0..2) {
+                let (p0, p1) = (p[0], p[1]);
+                return Net32::wrap(Box::new(map(move |i: &Frame<f32, U1>| dexerp(p0, p1, i[0]))));
+            } else {
+                return Net32::wrap(Box::new(map(|i: &Frame<f32, U3>| dexerp(i[0], i[1], i[2]))));
+            }
+        }
+        "dexerp11" => {
+            if let Some(p) = p.get(0..2) {
+                let (p0, p1) = (p[0], p[1]);
+                return Net32::wrap(Box::new(map(move |i: &Frame<f32, U1>| dexerp11(p0, p1, i[0]))));
+            } else {
+                return Net32::wrap(Box::new(map(|i: &Frame<f32, U3>| dexerp11(i[0], i[1], i[2]))));
+            }
+        }
+
         "abs" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].abs()))); }
         "signum" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].signum()))); }
         "floor" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].floor()))); }
@@ -748,14 +814,6 @@ pub fn str_to_net(op: &str) -> Net32 {
         "atanh" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].atanh()))); }
         "squared" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0] * i[0]))); }
         "cubed" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0] * i[0] * i[0]))); }
-        "lerp" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U3>| lerp(i[0], i[1], i[2])))); }
-        "lerp11" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U3>| lerp11(i[0], i[1], i[2])))); }
-        "delerp" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U3>| delerp(i[0], i[1], i[2])))); }
-        "delerp11" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U3>| delerp11(i[0], i[1], i[2])))); }
-        "xerp" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U3>| xerp(i[0], i[1], i[2])))); }
-        "xerp11" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U3>| xerp11(i[0], i[1], i[2])))); }
-        "dexerp" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U3>| dexerp(i[0], i[1], i[2])))); }
-        "dexerp11" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U3>| dexerp11(i[0], i[1], i[2])))); }
         "dissonance" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| dissonance(i[0], i[1])))); }
         "dissonance_max" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| dissonance_max(i[0])))); }
         "db_amp" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| db_amp(i[0])))); }
