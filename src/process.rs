@@ -1135,7 +1135,7 @@ pub fn process(
                     }
                 }
             }
-            "branch()" | "bus()" | "pipe()" | "stack()" | "sum()" => {
+            "branch()" | "bus()" | "pipe()" | "stack()" | "sum()" | "product()" => {
                 let op_changed = access.op_changed_query.get(*id).unwrap().0;
                 let lost = access.lost_wh_query.get(*id).unwrap().0;
                 let mut changed = false;
@@ -1177,6 +1177,9 @@ pub fn process(
                                     }
                                     "sum()" => {
                                         if go == no { graph = graph + net; }
+                                    }
+                                    "product()" => {
+                                        if go == no { graph = graph * net; }
                                     }
                                     _ => {}
                                 }
