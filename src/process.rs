@@ -1231,6 +1231,32 @@ pub fn process(
                     lt_to_open = Some(0);
                 }
             }
+            "SUB" | "-" => {
+                let op_changed = access.op_changed_query.get(*id).unwrap().0;
+                let lost = access.lost_wh_query.get(*id).unwrap().0;
+                let mut changed = false;
+                let mut lhs = None;
+                let mut rhs = None;
+                for hole in holes {
+                    if let Ok(wh) = white_hole_query.get(*hole) {
+                        if wh.link_types == (0, 1) { lhs = Some(wh.bh_parent); }
+                        if wh.link_types == (0, 2) { rhs = Some(wh.bh_parent); }
+                        if wh.open {
+                            changed = true;
+                        }
+                    }
+                }
+                if changed || lost || op_changed {
+                    if let (Some(lhs), Some(rhs)) = (lhs, rhs) {
+                        let lhs = access.net_query.get(lhs).unwrap().0.clone();
+                        let rhs = access.net_query.get(rhs).unwrap().0.clone();
+                        if lhs.outputs() == rhs.outputs() {
+                            access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(lhs - rhs));
+                        }
+                    }
+                    lt_to_open = Some(0);
+                }
+            }
             ">>" | "|" | "&" | "^" | "PIP" | "STA" | "BUS" | "BRA" => {
                 let op_changed = access.op_changed_query.get(*id).unwrap().0;
                 let lost = access.lost_wh_query.get(*id).unwrap().0;
