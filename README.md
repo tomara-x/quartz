@@ -27,7 +27,7 @@ cargo run --release
 ---
 #### modes
 when you open quartz, it will be an empty window. there's 3 modes:
-- **edit**: (default) interact with entities and execute commands (press `e` or `esc`) 
+- **edit**: (default) interact with entities and execute commands (press `e` or `esc`)
 - **draw**: draw new circles (press `d`)
 - **connect**: connect circles (press `c`)
     - **target**: target an entity from another (hold `t` in connect mode)
@@ -83,7 +83,7 @@ these can take an optional entity id
 - `:set arr` or `:set array` set the array (space separated, no commas!)
 - `:set tar` or `:set targets` set targets (space separated id's) (if nothing is selected, the first entity gets the rest of the list as its targets)
 - `:tsel` target selected (`:tsel 4v2` sets selected entities as targets of entity 4v2)
-- `:push` push a number to the array, or an id to the targets array 
+- `:push` push a number to the array, or an id to the targets array
 - `:dv` set default number of vertices of drawn circles
 - `:dc` set default color of drawn circles
 
@@ -221,7 +221,7 @@ unless...
 ---
 #### targets
 
-a circle has an array of "targets" those are just entity id's. so it's like a "pointer" to another circles or hole. think of it as a one-way wireless connection. 
+a circle has an array of "targets" those are just entity id's. so it's like a "pointer" to another circles or hole. think of it as a one-way wireless connection.
 some ops make a circle do things to its targets. like [`process`](#process), `del_targets`, `spin_target`, `distro`, `reorder`, `open_target`, `close_target`, `open_nth` (those 3 work on hole targets)
 
 (they allow some things that aren't easy through normal processing. since circles read their input when they process, while targets are written to when the controller circle is processed instead)
@@ -239,112 +239,105 @@ combining that with the ability to store any number of targets (and repeated tar
 ---
 #### ops
 
-targets
-| op                        | inputs                         | notes                                                              |
-| ------------------------- | ------------------------------ | ------------------------------------------------------------------ |
-| `open_target`             | `n -> 1`                       | open target white holes when input is non-zero                     |
-| `close_target`            | `n -> 1`                       | close target white holes when input is non-zero                    |
-| `open_nth`                | `n -> 1`                       | open nth target once if it's a white hole                          |
-| `del_target`              | `n -> 1`                       | delete targets and clear targets array when input is non-zero      |
-| `spin_target`             | `n` `n -> 1`                   | rotate targets around self by self `n` when input `n` is non-zero  |
-| `reorder`                 | `n -> 1`                       | set target circles' order to input `n`                             |
-| `spawn`                   | `n -> 1`                       | spawn a new circle similar to self when input is non-zero          |
-| `distro`                  | `A -> n/r/x/y/z/r/o/v/h/s/l/a` | distribute values from input array among targets                   |
-
-arrays
-| op                        | inputs        | outputs       | notes                     |
-| ------------------------- | ------------- | ------------- | ------------------------- |
-| `repeat`                  |               |               |                           |
-| `zip`                     |               |               |                           |
-| `unzip`                   |               |               |                           |
-| `push`                    |               |               |                           |
-| `pop`                     |               |               |                           |
-| `len`                     |               |               |                           |
-| `append`                  |               |               |                           |
-| `slice`                   |               |               |                           |
-| `resize`                  |               |               |                           |
-| `contains`                |               |               |                           |
-| `set`                     |               |               |                           |
-| `get`                     |               |               |                           |
-| `collect`                 |               |               |                           |
-
-settings
-| op                        | inputs        | outputs       | notes                     |
-| ------------------------- | ------------- | ------------- | ------------------------- |
-| `clear_color`             |               |               |                           |
-| `draw_verts`              |               |               |                           |
-| `draw_color`              |               |               |                           |
-| `highlight_color`         |               |               |                           |
-| `selection_color`         |               |               |                           |
-| `connection_color`        |               |               |                           |
-| `connecting_line_color`   |               |               |                           |
-| `command_color`           |               |               |                           |
-| `tonemapping`             |               |               |                           |
-| `bloom`                   |               |               |                           |
-
-utils
-| op                        | inputs        | outputs       | notes                     |
-| ------------------------- | ------------- | ------------- | ------------------------- |
-| `cam`                     |               |               |                           |
-| `update_rate`             |               |               |                           |
-| `screenshot`              |               |               |                           |
-
-input
-| op                        | inputs        | outputs       | notes                     |
-| ------------------------- | ------------- | ------------- | ------------------------- |
-| `mouse`                   |               |               |                           |
-| `lmb_pressed`             |               |               |                           |
-| `mmb_pressed`             |               |               |                           |
-| `rmb_pressed`             |               |               |                           |
-| `butt`                    |               |               |                           |
-| `toggle`                  |               |               |                           |
-| `key`                     |               |               |                           |
-
-data management xD
-| op                        | inputs        | outputs       | notes                     |
-| ------------------------- | ------------- | ------------- | ------------------------- |
-| `process`                 |               |               |                           |
-| `apply`                   |               |               |                           |
-| `render`                  |               |               |                           |
-| `rise`                    |               |               |                           |
-| `fall`                    |               |               |                           |
-| `store`                   |               |               |                           |
-| `sum`                     |               |               |                           |
-| `product`                 |               |               |                           |
-| `count`                   |               |               |                           |
-
-audio nodes A
-| op                        | inputs        | outputs       | notes                     |
-| ------------------------- | ------------- | ------------- | ------------------------- |
-| `var()`                   |               |               |                           |
-| `monitor()`               |               |               |                           |
-| `timer()`                 |               |               |                           |
-| `get()`                   |               |               |                           |
-| `feedback()`              |               |               |                           |
-| `seq()`                   |               |               |                           |
-| `select()`                |               |               |                           |
-| `wave()`                  |               |               |                           |
-| `+` `SUM`                 |               |               |                           |
-| `*` `PRO`                 |               |               |                           |
-| `-` `SUB`                 |               |               |                           |
-| `>>` `PIP`                |               |               |                           |
-| `\|` `STA`                |               |               |                           |
-| `&` `BUS`                 |               |               |                           |
-| `^` `BRA`                 |               |               |                           |
-| `!` `THR`                 |               |               |                           |
-| `branch()`                |               |               |                           |
-| `bus()`                   |               |               |                           |
-| `pipe()`                  |               |               |                           |
-| `stack()`                 |               |               |                           |
-| `sum()`                   |               |               |                           |
-| `product()`               |               |               |                           |
-| `out()` `dac()`           |               |               |                           |
-
-audio nodes B
-| op                        | inputs        | outputs       | notes                     |
-| ------------------------- | ------------- | ------------- | ------------------------- |
-| `shift_reg()`             |               |               |                           |
-| ...                       |               |               |                           |
+- targets
+    - `open_target`
+        - inputs: `n -> 1`
+        - open target white holes when input is non-zero
+    - `close_target`
+        - inputs: `n -> 1`
+        - close target white holes when input is non-zero
+    - `open_nth`
+        - inputs: `n -> 1`
+        - open nth target once if it's a white hole
+    - `del_target`
+        - inputs: `n -> 1`
+        - delete targets and clear targets array when input is non-zero
+    - `spin_target`
+        - `n` `n -> 1`
+        - rotate targets around self by self `n` when input `n` is non-zero
+    - `reorder`
+        - inputs: `n -> 1`
+        - set target circles' order to input `n`
+    - `spawn`
+        - `n -> 1`
+        - spawn a new circle similar to self when input is non-zero
+    - `distro`
+        - `A -> n/r/x/y/z/r/o/v/h/s/l/a`
+        - distribute values from input array among targets
+- arrays
+    - `repeat`
+    - `zip`
+    - `unzip`
+    - `push`
+    - `pop`
+    - `len`
+    - `append`
+    - `slice`
+    - `resize`
+    - `contains`
+    - `set`
+    - `get`
+    - `collect`
+- settings
+    - `clear_color`
+    - `draw_verts`
+    - `draw_color`
+    - `highlight_color`
+    - `selection_color`
+    - `connection_color`
+    - `connecting_line_color`
+    - `command_color`
+    - `tonemapping`
+    - `bloom`
+- utils
+    - `cam`
+    - `update_rate`
+    - `screenshot`
+- input
+    - `mouse`
+    - `lmb_pressed`
+    - `mmb_pressed`
+    - `rmb_pressed`
+    - `butt`
+    - `toggle`
+    - `key`
+- data management xD
+    - `process`
+    - `apply`
+    - `render`
+    - `rise`
+    - `fall`
+    - `store`
+    - `sum`
+    - `product`
+    - `count`
+- audio nodes A
+    - `var()`
+    - `monitor()`
+    - `timer()`
+    - `get()`
+    - `feedback()`
+    - `seq()`
+    - `select()`
+    - `wave()`
+    - `+` `SUM`
+    - `*` `PRO`
+    - `-` `SUB`
+    - `>>` `PIP`
+    - `\|` `STA`
+    - `&` `BUS`
+    - `^` `BRA`
+    - `!` `THR`
+    - `branch()`
+    - `bus()`
+    - `pipe()`
+    - `stack()`
+    - `sum()`
+    - `product()`
+    - `out()` `dac()`
+- audio nodes B
+    - `shift_reg()`
+    - ...
 
 ## thanks
 - tools / dependencies:
