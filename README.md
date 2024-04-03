@@ -86,9 +86,9 @@ there are 2 types of commands:
 ```
 
 - other
-    - `:dv` set default number of vertices of drawn circles
-    - `:dc` set default color of drawn circles
-    - `:lt` set link type of hole (use shortcut `l`)
+    - `:lt {link type}` set [link type](#link-types) of selected holes (use shortcut `l`)
+    - `:dv {float}` set default number of vertices of drawn circles
+    - `:dc {float} [float] [float] float]` set default color of drawn circles (h s l a)
     - `:ht` toggle open a white hole (by id)
     - `:q` exit (don't combine with other commands using `;`)
 
