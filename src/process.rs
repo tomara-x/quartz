@@ -1314,14 +1314,23 @@ pub fn process(
                 }
             }
             "!" | "THR" => {
+                let op_changed = access.op_changed_query.get(*id).unwrap().0;
+                let lost = access.lost_wh_query.get(*id).unwrap().0;
+                let mut input = None;
+                let mut changed = false;
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
-                        if wh.link_types == (0, 1) && wh.open {
-                            let input = access.net_query.get(wh.bh_parent).unwrap().0.clone();
-                            access.net_query.get_mut(*id).unwrap().0 = !input;
-                            lt_to_open = Some(0);
-                        }
+                        if wh.link_types == (0, 1) { input = Some(wh.bh_parent); }
+                        if wh.open { changed = true }
                     }
+                }
+                if changed || lost || op_changed {
+                    let mut graph = Net32::new(0,0);
+                    if let Some(input) = input {
+                        graph = access.net_query.get(input).unwrap().0.clone();
+                    }
+                    access.net_query.get_mut(*id).unwrap().0 = !graph;
+                    lt_to_open = Some(0);
                 }
             }
             "out()" | "dac()" => {
