@@ -290,7 +290,7 @@ combining that with the ability to store any number of targets (and repeated tar
         - inputs: `A -> 1`, `n -> 2`
         - get the value at index of the input array
     - `collect`
-        - inputs: `n -> {non-negative}`
+        - inputs: `n -> {non-negative}` (any number of those)
         - collect all connected nums and create an array of them in order (in self)
 - settings
     - `clear_color`
@@ -358,14 +358,31 @@ combining that with the ability to store any number of targets (and repeated tar
             - F1: -1, F2: -2 .. F12: -12
 - data management xD
     - `process`
+        - [`process`](#process)
     - `apply`
+        - inputs: `0 -> 1` (input audio node), `A -> 2` (input array)
+        - process the input array as input to the given audio node (array length must match the number of input channels the node has) output of the node is written to self's array
     - `render`
+        - inputs: `0 -> 1`, `n -> 2`
+        - render n samples from the given audio node into the array (node must have 0 inputs, and only first channel's output is saved)
     - `rise`
+        - inputs: `n -> 1`
+        - num = 1 when there's a rise in the input num (current input > previous input), 0 otherwise (uses the array to store previous value)
     - `fall`
+        - inputs: `n -> 1`
+        - num = 1 when there's a fall in the input num, 0 otherwise (same)
     - `store`
+        - inputs: `n -> 1`
+        - store the input num into self's num, but doesn't open the white holes reading nums like usual
     - `sum`
+        - inputs: `n -> 1` (any number of those)
+        - convenience op for adding numbers together
     - `product`
+        - inputs: `n -> 1` (any number of those)
+        - multiply numbers together
     - `count`
+        - inputs: `n -> 1`, [`n -> 2`]
+        - count up by first input. if second input is connected, count will wrap around that given number
 - audio nodes A
     - `var()`
     - `monitor()`
