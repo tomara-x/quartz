@@ -174,7 +174,7 @@ note: when drag-selecting, holding `alt` will only select circles (ignores holes
 - other
     - `<F11>` toggle fullscreen
     - `quartz` shhh!
-    - `awa` awawawa
+    - `awa` [awawawa](https://www.youtube.com/watch?v=LLrIGJEz818)
 ---
 #### link types
 any connection links 2 circles together in some way. the black hole is taking some data from the source circle, and the white hole is getting that data and feeding it to the sink circle. the link type determines what that data is.
