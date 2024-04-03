@@ -694,7 +694,7 @@ pub fn process(
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if !wh.open { continue; }
-                        let input = access.num_query.get(wh.bh_parent).unwrap().0 / 100.;
+                        let input = access.num_query.get(wh.bh_parent).unwrap().0;
                         match wh.link_types {
                             (-1, 1) => bloom_settings.intensity = input,
                             (-1, 2) => bloom_settings.low_frequency_boost = input,
