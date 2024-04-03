@@ -59,7 +59,7 @@ there are 2 types of commands:
 :w moth.cute    // saves the current scene as the file "assets/moth.cute" (OVERWRITES)
 :e soup.fun     // opens the file "assets/soup.fun" if it's there
 ```
-(draging and droping scene files into a window also works)
+(dragging and dropping scene files into a window also works)
 
 - set values
     - `:set n [id] {float}` set num value
@@ -362,7 +362,7 @@ combining that with the ability to store any number of targets (and repeated tar
         - [`process`](#process)
     - `apply`
         - inputs: `0 -> 1` (input audio node), `A -> 2` (input array)
-        - process the input array as input to the given audio node (array length must match the number of input channels the node has) output of the node is written to this circles's array (process one audio frame)
+        - process the input array as input to the given audio node (array length must match the number of input channels the node has) output of the node is written to this circle's array (process one audio frame)
     - `render`
         - inputs: `0 -> 1`, `n -> 2`
         - render n samples from the given audio node into the array (node must have 0 inputs, and only first channel's output is saved)
@@ -384,15 +384,15 @@ combining that with the ability to store any number of targets (and repeated tar
     - `count`
         - inputs: `n -> 1`, [`n -> 2`]
         - count up by first input. if second input is connected, count will wrap around that given number
-- audio nodes A (refer to the fundsp [readme](https://github.com/SamiPerttu/fundsp), and [docs](https://docs.rs/fundsp/latest/fundsp/) for more details)
+- audio node management (refer to the fundsp [readme](https://github.com/SamiPerttu/fundsp), and [docs](https://docs.rs/fundsp/latest/fundsp/) for more details)
     - `var()`
         - node: 0 ins, 1 out
-        - create a chared variable audio node. its output is the value of this circle's num
+        - create a shared variable audio node. its output is the value of this circle's num
     - `monitor()`
         - node: 1 in, 1 out (it passes audio through)
         - create a monitor node. sets the value of this circle's num to the latest sample that passed through this node
     - `timer()`
-        - this one's wierd (might delete later) (has to be stacked with another node and sets self's num to the time..
+        - this one's weird (might delete later) (has to be stacked with another node and sets self's num to the time..
     - `get()`
         - custom node: 1 in (index), 1 out (value)
         - copies this circle's array into node so it can be indexed at audio-rate. input is index, output is the value at that index
@@ -453,11 +453,12 @@ combining that with the ability to store any number of targets (and repeated tar
     - `out()` `dac()`
         - inputs: `0 -> 1`
         - output given node to speakers (node must have 1 or 2 outputs)
-- audio nodes B
-    - `shift_reg()`
-        - create shift register node
-        - node: 2 ins (trigger signal, input signal), 8 outs (outputs of the shift register)
-    - `meter([peak, float]/[rms, float])`
+
+<details><summary>audio nodes</summary>
+<p>
+
+    - `shift_reg()` 2 ins (trigger signal, input signal), 8 outs (outputs of the shift register)
+    - `meter(peak/rms, float)`
     - `sink()`
     - `pass()`
     - `panner()`
@@ -616,6 +617,9 @@ combining that with the ability to store any number of targets (and repeated tar
     - `rnd2()`
     - `spline_noise()`
     - `fractal_noise()`
+
+</p>
+</details>
 
 i hope that everyone will become friends
 
