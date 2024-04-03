@@ -92,6 +92,8 @@ there are 2 types of commands:
     - `:ht {id}` toggle open a white hole (by id)
     - `:q` exit (don't combine with other commands using `;`)
 
+note: using the [std constants](https://doc.rust-lang.org/std/f32/consts/index.html) in the commands works. e.g. `:set op dc(-PI)`, `:set n TAU`
+
 ##### immediate commands
 (these execute when you finish typing them)
 - run mode switching
