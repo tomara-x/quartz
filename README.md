@@ -294,15 +294,42 @@ combining that with the ability to store any number of targets (and repeated tar
         - collect all connected nums and create an array of them in order (in self)
 - settings
     - `clear_color`
+        - inputs: `dummy` (in order to process, circles need at least 1 hole
+        - when color changes (drag h/s/l), sets the background color (the clear color)
     - `draw_verts`
+        - inputs: `dummy`
+        - when vertices change, set the default drawing vertices for future circles
     - `draw_color`
+        - inputs: `dummy`
+        - when color changes, set the default drawing color
     - `highlight_color`
+        - inputs: `dummy`
+        - when color changes, set the highlight color (the outline around selected entities)
     - `selection_color`
+        - inputs: `dummy`
+        - when color changes, set the color of the selection lasso circle (and draw mode indicator)
     - `connection_color`
+        - inputs: `dummy`
+        - when color changes, set the color of connection arrows
     - `connecting_line_color`
+        - inputs: `dummy`
+        - when color changes, set the connect mode indicator
     - `command_color`
+        - inputs: `dummy`
+        - when color changes, set color of the command line text
     - `tonemapping`
+        - inputs: `n -> 1`
+        - input num sets the tonemapping mode. 0 = none, 1 = Reinhard, 2 = ReinhardLuminance, 3 = AcesFitted, 4 = AgX, 5 = SomewhatBoringDisplayTransform, 6 = TonyMcMapface, 7 = BlenderFilmic
     - `bloom`
+        - control bloom parameters
+        - inputs:
+            - `n -> 1` : intensity
+            - `n -> 2` : low_frequency_boost
+            - `n -> 3` : low_frequency_boost_curvature
+            - `n -> 4` : high_pass_frequency
+            - `n -> 5` : composite_mode (if n > 0 `Additive` else `EnergyConserving`)
+            - `n -> 6` : prefilter threshold
+            - `n -> 7` : prefilter threshold softness
 - utils
     - `cam`
     - `update_rate`
