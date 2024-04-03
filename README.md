@@ -75,7 +75,7 @@ there are 2 types of commands:
     - `:set o [id] {float}` set rotation [-pi...pi] (`:set rot` and `:set rotation` also work)
     - `:set op [id] {string}` set op (use shortcut `o`)
     - `:set ord[der] [id] {float}` set order (use `[` and `]` to increment/decrement order)
-    - `:set arr [id] {float float ...}` or `:set array` set the array (space separated)
+    - `:set arr[ay] [id] {float float ...}` set the array (space separated)
     - `:set tar[gets] {id id ...}` set targets (if nothing is selected, the first entity gets the rest of the list as its targets)
     - `:tsel {id}` target selected (`:tsel 4v2` sets selected entities as targets of entity 4v2)
     - `:push {float}/{id}` push a number to the array, or an id to the targets array
@@ -191,8 +191,9 @@ any connection links 2 circles together in some way. the black hole is taking so
 - `o` or `-12` : rotation
 - `A` or `-13` : array
 - `T` or `-14` : targets
-- `0` usually means audio node (or nothing) (it depends)
-generally a 0 to 0 connection is gonna do nothing, but when connecting audio node, the black hole is type 0, and the white hole is type (positive number)
+- positive numbers: used to denote "input number x"
+- `0` usually means audio node (or nothing)
+a `0 -> 0` connection does nothing (except for specific ops), but when connecting audio nodes, the connection is usually `0 -> x` (x is positive)
 ---
 #### order
 every circle has an order (0 or higher). things in order 0 do nothing.
