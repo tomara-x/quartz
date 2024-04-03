@@ -191,8 +191,8 @@ any connection links 2 circles together in some way. the black hole is taking so
 - `o` or `-12` : rotation
 - `A` or `-13` : array
 - `T` or `-14` : targets
-- `0` usually means audio node (or nothing)
-generally a 0 to 0 connection is gonna do nothing, but when connecting node, the black hole is type 0, and the white hole is type (positive number)
+- `0` usually means audio node (or nothing) (it depends)
+generally a 0 to 0 connection is gonna do nothing, but when connecting audio node, the black hole is type 0, and the white hole is type (positive number)
 ---
 #### order
 every circle has an order (0 or higher). things in order 0 do nothing.
@@ -241,31 +241,57 @@ combining that with the ability to store any number of targets (and repeated tar
         - inputs: `n -> 1`
         - delete targets and clear targets array when input is non-zero
     - `spin_target`
-        - `n` `n -> 1`
+        - inputs: `n`, `n -> 1`
         - rotate targets around self by self `n` when input `n` is non-zero
     - `reorder`
         - inputs: `n -> 1`
         - set target circles' order to input `n`
     - `spawn`
-        - `n -> 1`
+        - inputs: `n -> 1`
         - spawn a new circle similar to self when input is non-zero
     - `distro`
-        - `A -> n/r/x/y/z/r/o/v/h/s/l/a`
+        - inputs: `A -> n/r/x/y/z/r/o/v/h/s/l/a`
         - distribute values from input array among targets
 - arrays
     - `repeat`
+        - inputs: `n -> 1` (repetitions), `A -> 2` or `T -> 2`
+        - repeat input array (or input targets array) n times 
     - `zip`
+        - inputs: `A -> 1`, `A -> 2`
+        - zip array 1 and array 2
     - `unzip`
+        - inputs: `A -> 1`
+        - unzip input array (one side remains in input array, the other side is in self)
     - `push`
+        - inputs: `n -> 1`
+        - push input num to self's array
     - `pop`
+        - inputs: `n -> 1`
+        - pop the last number in the array and set self's num to it when input is non-zero
     - `len`
+        - inputs: `A -> 1`
+        - length of input array
     - `append`
+        - inputs: `A -> 1`
+        - copy input array and append it to the end of self's array
     - `slice`
+        - inputs: `n`, `A -> 1`
+        - slice input array at index `n`, [0..n] remain in input array, [n..len] are moved to self's array
     - `resize`
+        - inputs: `n -> 1`
+        - resize self's array, discards numbers when shrinking, and adds zeros when growing
     - `contains`
+        - inputs: `A -> 1`, `n -> 2`
+        - outputs 1 when input array contains input num, 0 otherwise
     - `set`
+        - inputs: `n -> 1`, `n -> 2`
+        - first input is index, second is value. sets the value of the given index of self's array
     - `get`
+        - inputs: `A -> 1`, `n -> 2`
+        - get the value at index of the input array
     - `collect`
+        - inputs: `n -> {non-negative}`
+        - collect all connected nums and create and array of them in order (in self)
 - settings
     - `clear_color`
     - `draw_verts`
@@ -312,7 +338,7 @@ combining that with the ability to store any number of targets (and repeated tar
     - `*` `PRO`
     - `-` `SUB`
     - `>>` `PIP`
-    - `\|` `STA`
+    - `|` `STA`
     - `&` `BUS`
     - `^` `BRA`
     - `!` `THR`
@@ -326,6 +352,8 @@ combining that with the ability to store any number of targets (and repeated tar
 - audio nodes B
     - `shift_reg()`
     - ...
+
+i hope that everyone will become friends
 
 ## thanks
 - tools / dependencies:
@@ -380,4 +408,3 @@ https://www.youtube.com/playlist?list=PLW3qKRjtGsGZC7V4eKU_tNwszVZAYvKow
 ## donate if you can
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/auaudio)
-
