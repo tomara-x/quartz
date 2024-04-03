@@ -291,7 +291,7 @@ combining that with the ability to store any number of targets (and repeated tar
         - get the value at index of the input array
     - `collect`
         - inputs: `n -> {non-negative}`
-        - collect all connected nums and create and array of them in order (in self)
+        - collect all connected nums and create an array of them in order (in self)
 - settings
     - `clear_color`
     - `draw_verts`
