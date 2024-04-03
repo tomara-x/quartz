@@ -349,6 +349,13 @@ combining that with the ability to store any number of targets (and repeated tar
     - `toggle`
         - num = 1 when clicked, 0 when clicked again (kinda)
     - `key`
+        - pressed keyboard keys are added to this circle's array and removed when released. for keys corresponding to an ascii character that's their decimal [ascii](https://en.wikipedia.org/wiki/ASCII#Control_code_chart) code, for other keys it's an arbitrary convention that i put together in 5 minutes:
+            - Control: 128, Shift: 129, Alt: 130, Super: 131, Fn: 132
+            - CapsLock: 133, NumLock: 134, ScrollLock: 135
+            - End: 136, Home: 137, PageUp: 138, PageDown: 139
+            - Insert: 140, ContextMenu: 141
+            - ArrowUp: 200, ArrowDown: 201, ArrowLeft: 202, ArrowRight: 203
+            - F1: -1, F2: -2 .. F12: -12
 - data management xD
     - `process`
     - `apply`
