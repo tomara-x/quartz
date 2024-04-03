@@ -232,30 +232,30 @@ combining that with the ability to store any number of targets (and repeated tar
 <details><summary>targets</summary>
 <p>
 
-    - `open_target`
-        - inputs: `n -> 1`
-        - open target white holes when input is non-zero
-    - `close_target`
-        - inputs: `n -> 1`
-        - close target white holes when input is non-zero
-    - `open_nth`
-        - inputs: `n -> 1`
-        - open nth target once if it's a white hole
-    - `del_target`
-        - inputs: `n -> 1`
-        - delete targets and clear targets array when input is non-zero
-    - `spin_target`
-        - inputs: `n`, `n -> 1`
-        - rotate targets around self by self `n` when input `n` is non-zero
-    - `reorder`
-        - inputs: `n -> 1`
-        - set target circles' order to input `n`
-    - `spawn`
-        - inputs: `n -> 1`
-        - spawn a new circle similar to self when input is non-zero
-    - `distro`
-        - inputs: `A -> n/r/x/y/z/r/o/v/h/s/l/a`
-        - distribute values from input array among targets
+- `open_target`
+    - inputs: `n -> 1`
+    - open target white holes when input is non-zero
+- `close_target`
+    - inputs: `n -> 1`
+    - close target white holes when input is non-zero
+- `open_nth`
+    - inputs: `n -> 1`
+    - open nth target once if it's a white hole
+- `del_target`
+    - inputs: `n -> 1`
+    - delete targets and clear targets array when input is non-zero
+- `spin_target`
+    - inputs: `n`, `n -> 1`
+    - rotate targets around self by self `n` when input `n` is non-zero
+- `reorder`
+    - inputs: `n -> 1`
+    - set target circles' order to input `n`
+- `spawn`
+    - inputs: `n -> 1`
+    - spawn a new circle similar to self when input is non-zero
+- `distro`
+    - inputs: `A -> n/r/x/y/z/r/o/v/h/s/l/a`
+    - distribute values from input array among targets
 
 </p>
 </details>
@@ -385,13 +385,13 @@ combining that with the ability to store any number of targets (and repeated tar
 - `toggle`
     - num = 1 when clicked, 0 when clicked again (kinda)
 - `key`
-        - pressed keyboard keys are added to this circle's array and removed when released. for keys corresponding to an ascii character that's their decimal [ascii](https://en.wikipedia.org/wiki/ASCII#Control_code_chart) code, for other keys it's an arbitrary convention that i put together in 5 minutes:
-            - Control: 128, Shift: 129, Alt: 130, Super: 131, Fn: 132
-            - CapsLock: 133, NumLock: 134, ScrollLock: 135
-            - End: 136, Home: 137, PageUp: 138, PageDown: 139
-            - Insert: 140, ContextMenu: 141
-            - ArrowUp: 200, ArrowDown: 201, ArrowLeft: 202, ArrowRight: 203
-            - F1: -1, F2: -2 .. F12: -12
+    - pressed keyboard keys are added to this circle's array and removed when released. for keys corresponding to an ascii character that's their decimal [ascii](https://en.wikipedia.org/wiki/ASCII#Control_code_chart) code, for other keys it's an arbitrary convention that i put together in 5 minutes:
+        - `Control`: 128, `Shift`: 129, `Alt`: 130, `Super`: 131, `Fn`: 132
+        - `CapsLock`: 133, `NumLock`: 134, `ScrollLock`: 135
+        - `End`: 136, `Home`: 137, `PageUp`: 138, `PageDown`: 139
+        - `Insert`: 140, `ContextMenu`: 141
+        - `ArrowUp`: 200, `ArrowDown`: 201, `ArrowLeft`: 202, `ArrowRight`: 203
+        - `F1`: -1, `F2`: -2 .. `F12`: -12
 
 </p>
 </details>
