@@ -227,12 +227,9 @@ pub fn str_to_net(op: &str) -> Net32 {
         "bell" => {
             if let Some(p) = p.get(0..3) {
                 return Net32::wrap(Box::new(bell_hz(p[0], p[1], p[2])));
-            } else { return Net32::wrap(Box::new(bell())); }
-        }
-        "bell_q" => {
-            if let Some(p) = p.get(0..2) {
+            } else if let Some(p) = p.get(0..2) {
                 return Net32::wrap(Box::new(bell_q(p[0], p[1])));
-            }
+            } else { return Net32::wrap(Box::new(bell())); }
         }
         "biquad" => {
             if let Some(p) = p.get(0..5) {
