@@ -89,7 +89,7 @@ there are 2 types of commands:
     - `:lt {link type}` set [link type](#link-types) of selected holes (use shortcut `l`)
     - `:dv {float}` set default number of vertices of drawn circles
     - `:dc {float} [float] [float] float]` set default color of drawn circles (h s l a)
-    - `:ht` toggle open a white hole (by id)
+    - `:ht {id}` toggle open a white hole (by id)
     - `:q` exit (don't combine with other commands using `;`)
 
 ##### immediate commands
@@ -362,7 +362,7 @@ combining that with the ability to store any number of targets (and repeated tar
         - [`process`](#process)
     - `apply`
         - inputs: `0 -> 1` (input audio node), `A -> 2` (input array)
-        - process the input array as input to the given audio node (array length must match the number of input channels the node has) output of the node is written to self's array
+        - process the input array as input to the given audio node (array length must match the number of input channels the node has) output of the node is written to this circles's array (process one audio frame)
     - `render`
         - inputs: `0 -> 1`, `n -> 2`
         - render n samples from the given audio node into the array (node must have 0 inputs, and only first channel's output is saved)
@@ -384,33 +384,238 @@ combining that with the ability to store any number of targets (and repeated tar
     - `count`
         - inputs: `n -> 1`, [`n -> 2`]
         - count up by first input. if second input is connected, count will wrap around that given number
-- audio nodes A
+- audio nodes A (refer to the fundsp [readme](https://github.com/SamiPerttu/fundsp), and [docs](https://docs.rs/fundsp/latest/fundsp/) for more details)
     - `var()`
+        - node: 0 ins, 1 out
+        - create a chared variable audio node. its output is the value of this circle's num
     - `monitor()`
+        - node: 1 in, 1 out (it passes audio through)
+        - create a monitor node. sets the value of this circle's num to the latest sample that passed through this node
     - `timer()`
+        - this one's wierd (might delete later) (has to be stacked with another node and sets self's num to the time..
     - `get()`
+        - custom node: 1 in (index), 1 out (value)
+        - copies this circle's array into node so it can be indexed at audio-rate. input is index, output is the value at that index
     - `feedback()`
+        - inputs: `0 -> 1` (input node), [`n -> 2`] (optional delay)
+        - mixes outputs of given node back into its inputs (number of node ins/outs must match)
+        - node: ins and outs are the same as the input node
     - `seq()`
+        - inputs: `0 -> {non-negative}` (any number of those)
+        - node: 4 ins (trig, node index, delay, duration), 1 out (output from sequenced nodes)
+        - sequences the given nodes and mixes their outputs at output (valid input nodes must have no inputs, and only one output). for every sample trig is non-zero, add an event for the node at index with the given delay and duration (in seconds, rounded to nearest sample)
+        - indexes are collected. e.g. if circle has three connections: `0 -> 1` `0 -> 5` `0 -> 8` this is gonna be a sequencer node that accepts indexes 0, 1, and 2. the node at 1 at index 0, the node at 5 at index 2, etc. and only valid nodes are added.
     - `select()`
+        - inputs: `0 -> {non-negative}` (any number of those)
+        - node: 1 in (index of selected node), 1 out (output from that node)
+        - create a node that switches between input nodes based on index
     - `wave()`
+        - inputs: `A -> 1`
+        - node: 0 ins, 1 out
+        - create a wave player from the input array
     - `+` `SUM`
+        - inputs: `0 -> {non-negative}` (any number of those)
+        - sum given nodes together. their number of outputs must match, their inputs are stacked together in the order they appear in connections
     - `*` `PRO`
+        - inputs: `0 -> {non-negative}` (any number of those)
+        - multiply given nodes together. their number of outputs must match, their inputs are stacked together in the order they appear in connections
     - `-` `SUB`
+        - inputs: `0 -> 1`, `0 -> 2`
+        - node 1 - node 2 (number of outputs of those nodes must match)
     - `>>` `PIP`
+        - inputs: `0 -> {non-negative}` (any number of those)
+        - pipe nodes though each other. if outputs of node 1 matches inputs of node 2 they're piped together, and so on
     - `|` `STA`
+        - inputs: `0 -> {non-negative}` (any number of those)
+        - stack inputs and outputs of given nodes
     - `&` `BUS`
+        - inputs: `0 -> {non-negative}` (any number of those)
+        - bus given nodes together. number of inputs and outputs must match. input is passed through each node and output from them is mixed at output
     - `^` `BRA`
+        - inputs: `0 -> {non-negative}` (any number of those)
+        - branch given nodes together (same inputs are passed to each node, but their outputs are kept separate)
     - `!` `THR`
+        - inputs: `0 -> 1`
+        - pass extra inputs through
     - `branch()`
+        - inputs: `A -> 1`, `0 -> 2`
+        - create as many nodes as the input array has values, replacing the "#" in the second input's op with each value, all branched together. e.g. array: [1, 2, 3] and op string "lowpass(1729, #)" creates the node `lowpass(1729, 1) ^ lowpass(1729, 2) ^ lowpass(1729, 3)`
     - `bus()`
+        - same as branch() but bus nodes together instead
     - `pipe()`
+        - same as branch() but pipe nodes together
     - `stack()`
+        - same as branch() but stack nodes
     - `sum()`
+        - same as branch() but sum
     - `product()`
+        - same as branch() but
     - `out()` `dac()`
+        - inputs: `0 -> 1`
+        - output given node to speakers (node must have 1 or 2 outputs)
 - audio nodes B
     - `shift_reg()`
-    - ...
+        - create shift register node
+        - node: 2 ins (trigger signal, input signal), 8 outs (outputs of the shift register)
+    - `meter([peak, float]/[rms, float])`
+    - `sink()`
+    - `pass()`
+    - `panner()`
+    - `pulse()`
+    - `brown()`
+    - `pink()`
+    - `white()` `noise()`
+    - `allpole()`
+    - `lorenz()`
+    - `mls()`
+    - `pinkpass()`
+    - `rossler()`
+    - `tick()`
+    - `zero()`
+    - `impulse()`
+    - `pan(float)`
+    - `sine([float])`
+    - `saw([float])`
+    - `square([float])`
+    - `triangle([float])`
+    - `organ([float])`
+    - `add(float, [float], [float], ...)` (up to 8 params)
+    - `sub(float, [float], [float], ...)` (up to 8)
+    - `adsr(float, float, float, float)`
+    - `allpass([float], [float])` if 1 param is given, that's the q, and the node takes 2 input channels (signal, and hz) if 2 are given, that's the hz and q and the node only takes input signal.. that's a bit verbose
+    - `allpole_delay(float)`
+    - `bandpass([float], [float])`
+    - `bandrez([float], [float])`
+    - `bell([float, float], [float])`
+    - `biquad(float, float, float, float, float)`
+    - `butterpass([float])`
+    - `chorus(float, float, float, float)`
+    - `clip([float, float])`
+    - `constant(float)` `dc(float)`
+    - `dc_block([float])`
+    - `declick([float])`
+    - `delay(float)`
+    - `dsf_saw([float])`
+    - `dsf_square([float])`
+    - `fir(float [float], [float], ...)` (up to 10 weights)
+    - `fir3(float)`
+    - `follow(float, [float])`
+    - `hammond([float])`
+    - `highpass([float], [float])`
+    - `highpole([float])`
+    - `highshelf([float, float], [float])`
+    - `hold([float], [float])`
+    - `join(float)`
+    - `split(float)`
+    - `reverse(float)`
+    - `limiter(float, [float])`
+    - `limiter_stereo(float, [float])`
+    - `lowpass([float], [float])`
+    - `lowpole([float])`
+    - `lowrez([float], [float])`
+    - `lowshelf([float, float], [float])`
+    - `mls_bits(float)`
+    - `moog([float], [float])`
+    - `morph([float, float, float])`
+    - `mul(float, [float], [float], ...)` (up to 8 params)
+    - `div(float, [float], [float], ...)` (up to 8 params)
+    - `notch([float], [float])`
+    - `peak([float], [float])`
+    - `pluck(float, float, float)`
+    - `resonator([float, float])`
+    - `reverb_stereo(float, [float], [float])`
+    - `soft_saw([float])`
+    - `tap(float, float)`
+    - `tap_linear(float, float)`
+    - `rotate(float, float)`
+    - `t()`
+    - `xd()`
+    - `xD()`
+    - `ar()`
+    - `ramp()`
+    - `clock()`
+    - `rise()`
+    - `fall()`
+    - `>([float])`
+    - `<([float])`
+    - `==([float])`
+    - `!=([float])`
+    - `>=([float])`
+    - `<=([float])`
+    - `min([float])`
+    - `max([float])`
+    - `pow([float])`
+    - `mod([float])` `rem([float])`
+    - `log([float])`
+    - `bitand([float])`
+    - `bitor([float])`
+    - `bitxor([float])`
+    - `shl([float])`
+    - `shr([float])`
+    - `lerp([float, float])`
+    - `lerp11([float, float])`
+    - `delerp([float, float])`
+    - `delerp11([float, float])`
+    - `xerp([float, float])`
+    - `xerp11([float, float])`
+    - `dexerp([float, float])`
+    - `dexerp11([float, float])`
+    - `abs()`
+    - `signum()`
+    - `floor()`
+    - `fract()`
+    - `ceil()`
+    - `round()`
+    - `sqrt()`
+    - `exp()`
+    - `exp2()`
+    - `exp10()`
+    - `exp_m1()`
+    - `ln_1p()`
+    - `ln()`
+    - `log2()`
+    - `log10()`
+    - `sin()`
+    - `cos()`
+    - `tan()`
+    - `asin()`
+    - `acos()`
+    - `atan()`
+    - `sinh()`
+    - `cosh()`
+    - `tanh()`
+    - `asinh()`
+    - `acosh()`
+    - `atanh()`
+    - `squared()`
+    - `cubed()`
+    - `dissonance()`
+    - `dissonance_max()`
+    - `db_amp()`
+    - `amp_db()`
+    - `a_weight()`
+    - `m_weight()`
+    - `spline()`
+    - `spline_mono()`
+    - `soft_sign()`
+    - `soft_exp()`
+    - `soft_mix()`
+    - `smooth3()`
+    - `smooth5()`
+    - `smooth7()`
+    - `smooth9()`
+    - `uparc()`
+    - `downarc()`
+    - `sine_ease()`
+    - `sin_hz()`
+    - `cos_hz()`
+    - `sqr_hz()`
+    - `tri_hz()`
+    - `semitone_ratio()`
+    - `rnd()`
+    - `rnd2()`
+    - `spline_noise()`
+    - `fractal_noise()`
 
 i hope that everyone will become friends
 
