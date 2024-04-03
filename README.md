@@ -172,9 +172,9 @@ note: when drag-selecting, holding `alt` will only select circles (ignores holes
     - `va` toggle arrow visibility
     - `vv` show all
 - other
+    - `<F11>` toggle fullscreen
     - `quartz` shhh!
     - `awa` awawawa
-    - `<F11>` toggle fullscreen
 ---
 #### link types
 any connection links 2 circles together in some way. the black hole is taking some data from the source circle, and the white hole is getting that data and feeding it to the sink circle. the link type determines what that data is.
@@ -294,53 +294,60 @@ combining that with the ability to store any number of targets (and repeated tar
         - collect all connected nums and create an array of them in order (in self)
 - settings
     - `clear_color`
-        - inputs: `dummy` (in order to process, circles need at least 1 hole
         - when color changes (drag h/s/l), sets the background color (the clear color)
     - `draw_verts`
-        - inputs: `dummy`
         - when vertices change, set the default drawing vertices for future circles
     - `draw_color`
-        - inputs: `dummy`
         - when color changes, set the default drawing color
     - `highlight_color`
-        - inputs: `dummy`
         - when color changes, set the highlight color (the outline around selected entities)
     - `selection_color`
-        - inputs: `dummy`
         - when color changes, set the color of the selection lasso circle (and draw mode indicator)
     - `connection_color`
-        - inputs: `dummy`
         - when color changes, set the color of connection arrows
     - `connecting_line_color`
-        - inputs: `dummy`
         - when color changes, set the connect mode indicator
     - `command_color`
-        - inputs: `dummy`
         - when color changes, set color of the command line text
     - `tonemapping`
         - inputs: `n -> 1`
-        - input num sets the tonemapping mode. 0 = none, 1 = Reinhard, 2 = ReinhardLuminance, 3 = AcesFitted, 4 = AgX, 5 = SomewhatBoringDisplayTransform, 6 = TonyMcMapface, 7 = BlenderFilmic
+        - input num sets the tonemapping mode. 0 = `None`, 1 = `Reinhard`, 2 = `ReinhardLuminance`, 3 = `AcesFitted`, 4 = `AgX`, 5 = `SomewhatBoringDisplayTransform`, 6 = `TonyMcMapface`, 7 = `BlenderFilmic`
     - `bloom`
         - control bloom parameters
         - inputs:
             - `n -> 1` : intensity
-            - `n -> 2` : low_frequency_boost
-            - `n -> 3` : low_frequency_boost_curvature
-            - `n -> 4` : high_pass_frequency
-            - `n -> 5` : composite_mode (if n > 0 `Additive` else `EnergyConserving`)
+            - `n -> 2` : low frequency boost
+            - `n -> 3` : low frequency boost curvature
+            - `n -> 4` : high pass frequency
+            - `n -> 5` : composite mode (if n > 0 `Additive` else `EnergyConserving`)
             - `n -> 6` : prefilter threshold
             - `n -> 7` : prefilter threshold softness
 - utils
     - `cam`
+        - `n -> 1` camera x position
+        - `n -> 2` camera y position
+        - `n -> 3` camera z position (can be useful if you're playing with extremes in depth)
+        - `n -> 4` camera rotation
+        - `n -> 5` zoom
     - `update_rate`
+        - inputs: `n -> 1`, `n -> 2`
+        - by default quartz will respond (as fast as possible) to any mouse input/movement, or keyboard input, or if the refresh duration has elapsed. that duration is by default 1/60 of a second (60fps) when the window is in focus, and 30fps when out of focus. first input is the refresh rate (in hz) for focused mode, second input is unfocused rate
     - `screenshot`
+        - inputs: `n -> 1`
+        - when input num is non-zero, take a screenshot and save it as screenshots/{time in ms since 1970}.png (make sure that folder exists)
 - input
     - `mouse`
+        - array stores mouse position (in world coordinates) [x, y]
     - `lmb_pressed`
+        - num = 1 if left mouse button is pressed, 0 otherwise
     - `mmb_pressed`
+        - num = 1 if middle mouse button is pressed, 0 otherwise
     - `rmb_pressed`
+        - num = 1 if right mouse button is pressed, 0 otherwise
     - `butt`
+        - num = 1 when clicked, 0 otherwise
     - `toggle`
+        - num = 1 when clicked, 0 when clicked again (kinda)
     - `key`
 - data management xD
     - `process`
