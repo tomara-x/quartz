@@ -68,13 +68,7 @@ fn main() {
     .insert_resource(DefaultLT((0, 0)))
     .insert_resource(SystemClipboard(ClipboardContext::new().unwrap()))
     .insert_resource(Msaa::Sample4)
-    .insert_resource(Version(
-        format!("{} {}", env!("CARGO_PKG_VERSION"),
-            String::from_utf8(std::process::Command::new("git")
-            .args(["rev-parse", "--short", "HEAD"])
-            .output().unwrap().stdout).unwrap().trim()
-        )
-    ))
+    .insert_resource(Version(format!("{} {}", env!("CARGO_PKG_VERSION"), env!("COMMIT_HASH"))))
     .init_resource::<PolygonHandles>()
     .init_resource::<DacCircles>()
 
