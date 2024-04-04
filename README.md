@@ -469,25 +469,25 @@ refer to the fundsp [readme](https://github.com/SamiPerttu/fundsp), and [docs](h
     - node: 0 ins, 1 out
     - create a wave player from the input array
 - `+` `SUM`
-    - inputs: `0 -> {non-negative}` (any number of those)
+    - inputs: `0 -> {non-negative}` (any number of those), `n` (repetitions)
     - sum given nodes together. their number of outputs must match, their inputs are stacked together in the order they appear in connections
 - `*` `PRO`
-    - inputs: `0 -> {non-negative}` (any number of those)
+    - inputs: `0 -> {non-negative}` (any number of those), `n` (repetitions)
     - multiply given nodes together. their number of outputs must match, their inputs are stacked together in the order they appear in connections
 - `-` `SUB`
     - inputs: `0 -> 1`, `0 -> 2`
     - node 1 - node 2 (number of outputs of those nodes must match)
 - `>>` `PIP`
-    - inputs: `0 -> {non-negative}` (any number of those)
+    - inputs: `0 -> {non-negative}` (any number of those), `n` (repetitions)
     - pipe nodes though each other. if outputs of node 1 matches inputs of node 2 they're piped together, and so on
 - `|` `STA`
-    - inputs: `0 -> {non-negative}` (any number of those)
+    - inputs: `0 -> {non-negative}` (any number of those), `n` (repetitions)
     - stack inputs and outputs of given nodes
 - `&` `BUS`
-    - inputs: `0 -> {non-negative}` (any number of those)
+    - inputs: `0 -> {non-negative}` (any number of those), `n` (repetitions)
     - bus given nodes together. number of inputs and outputs must match. input is passed through each node and output from them is mixed at output
 - `^` `BRA`
-    - inputs: `0 -> {non-negative}` (any number of those)
+    - inputs: `0 -> {non-negative}` (any number of those), `n` (repetitions)
     - branch given nodes together (same inputs are passed to each node, but their outputs are kept separate)
 - `!` `THR`
     - inputs: `0 -> 1`
