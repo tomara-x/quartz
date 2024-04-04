@@ -43,6 +43,7 @@ pub struct Access<'w, 's> {
     default_color: ResMut<'w, DefaultDrawColor>,
     default_verts: ResMut<'w, DefaultDrawVerts>,
     default_lt: ResMut<'w, DefaultLT>,
+    version: Res<'w, Version>,
 }
 
 pub fn command_parser(
@@ -1160,6 +1161,9 @@ pub fn command_parser(
             }
             Some(":help") | Some(":about") | Some("about") | Some("help") => {
                 *text = format!(">see: {}", env!("CARGO_PKG_REPOSITORY"));
+            }
+            Some(":version") => {
+                *text = format!(">quartz version: {}", &access.version.0);
             }
             Some("quartz") => {
                 *text = String::from(">drink some water!");
