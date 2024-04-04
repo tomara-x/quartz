@@ -12,7 +12,7 @@ and you non-africans, listen to me with open mind"
 ```
 ## let's play
 
-#### building
+### building
 - install rust: https://www.rust-lang.org/tools/install
 - install bevy dependencies: https://bevyengine.org/learn/quick-start/getting-started/setup/#installing-os-dependencies
 - clone quartz
@@ -25,14 +25,14 @@ cd quartz
 cargo run --release
 ```
 ---
-#### modes
+### modes
 when you open quartz, it will be an empty window. there's 3 modes:
 - **edit**: (default) interact with entities and execute commands (press `e` or `esc`)
 - **draw**: draw new circles (press `d`)
 - **connect**: connect circles (press `c`)
     - **target**: target an entity from another (hold `t` in connect mode)
 ---
-#### circle anatomy
+### circle anatomy
 first, define your terms:
 - circle: an object that you create in draw mode (they're regular polygons)
 - hole: a connection object. these always come in (black hole - white hole) pairs
@@ -47,7 +47,7 @@ in addition to the shared properties that both circles and holes have (position,
 - an [order](#order) number: defining if/when that circle is processed
 - an audio node (defined by the op string) (`dc(0)` by default)
 ---
-#### commands
+### commands
 there are 2 types of commands:
 
 1. return-terminated
@@ -241,7 +241,7 @@ note: when drag-selecting, holding `alt` will only select circles (ignores holes
 </details>
 
 ---
-#### link types
+### link types
 any connection links 2 circles together in some way. the black hole is taking some data from the source circle, and the white hole is getting that data and feeding it to the sink circle. the link type determines what that data is.
 - `n` or `-1` : num
 - `r` or `-2` : radius
@@ -260,7 +260,7 @@ any connection links 2 circles together in some way. the black hole is taking so
 - `0` usually means audio node (or nothing)
 a `0 -> 0` connection does nothing (except for specific ops), but when connecting audio nodes, the connection is usually `0 -> x` (x is positive)
 ---
-#### order
+### order
 every circle has an order (0 or higher). things in order 0 do nothing.
 
 each frame, every circle with a positive order gets processed (does whatever its op defines)
@@ -273,7 +273,7 @@ lower order processes first, and the higher the order, the later that circle pro
 unless...
 
 ---
-#### targets
+### targets
 
 a circle has an array of "targets" those are just entity id's. so it's like a "pointer" to another circles or hole. think of it as a one-way wireless connection.
 some ops make a circle do things to its targets. like [`process`](#process), `del_targets`, `spin_target`, `distro`, `reorder`, `open_target`, `close_target`, `open_nth` (those 3 work on hole targets)
@@ -281,7 +281,7 @@ some ops make a circle do things to its targets. like [`process`](#process), `de
 (they allow some things that aren't easy through normal processing. since circles read their input when they process, while targets are written to when the controller circle is processed instead)
 
 ---
-#### process
+### process
 `process` is an op that will process its targets in the order they appear in that targets array. it doesn't care about those targets' order. even if they're at order 0 (it's preferable they are at 0 so you don't cause unexpected things)
 
 so for every frame a circle with a `process` op is processed, it processes all of its targets in order.
@@ -291,7 +291,7 @@ combining that with the "reorder" and "rise" ops can allow you to perform things
 combining that with the ability to store any number of targets (and repeated targets with the "repeat" op) allows for complex logic-time looping
 
 ---
-#### ops
+### ops
 
 
 <details><summary>targets</summary>
