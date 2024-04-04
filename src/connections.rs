@@ -16,10 +16,10 @@ pub fn connect(
     mut order_change: EventWriter<OrderChange>,
     mut holes_query: Query<&mut Holes>,
     mut gained_wh_query: Query<&mut GainedWH>,
-    connection_color: Res<ConnectionColor>,
     default_lt: Res<DefaultLT>,
     polygon_handles: Res<PolygonHandles>,
     arrow_handle: Res<ArrowHandle>,
+    connection_mat: Res<ConnectionMat>,
 ) {
     if mouse_button_input.just_released(MouseButton::Left)
     && !keyboard_input.pressed(KeyCode::KeyT)
@@ -63,7 +63,7 @@ pub fn connect(
             let arrow = commands.spawn((
                 ColorMesh2dBundle {
                     mesh: arrow_handle.0.clone(),
-                    material: materials.add(ColorMaterial::from(connection_color.0)),
+                    material: connection_mat.0.clone(),
                     transform: Transform::default(),
                     ..default()
                 },

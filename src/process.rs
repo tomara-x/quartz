@@ -93,6 +93,7 @@ pub struct Access<'w, 's> {
     delete_event: EventWriter<'w, DeleteCommand>,
     polygon_handles: Res<'w, PolygonHandles>,
     materials: ResMut<'w, Assets<ColorMaterial>>,
+    connection_mat: ResMut<'w, ConnectionMat>,
 }
 
 pub fn process(
@@ -651,6 +652,8 @@ pub fn process(
                 let color = access.col_query.get_mut(*id).unwrap();
                 if color.is_changed() {
                     access.connection_color.0 = color.0;
+                    let mat_id = &access.connection_mat.0;
+                    access.materials.get_mut(mat_id).unwrap().color = color.0;
                 }
             }
             "connecting_line_color" => {

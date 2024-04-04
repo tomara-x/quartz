@@ -172,6 +172,7 @@ fn setup(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     command_color: Res<CommandColor>,
+    connection_color: Res<ConnectionColor>,
 ) {
     // camera
     commands.spawn((
@@ -255,6 +256,9 @@ fn setup(
 
     // arrow mesh
     commands.insert_resource(ArrowHandle(meshes.add(Triangle2d::default()).into()));
+
+    // connection material
+    commands.insert_resource(ConnectionMat(materials.add(ColorMaterial::from(connection_color.0))));
 }
 
 fn toggle_pan(
@@ -378,6 +382,7 @@ struct MoreParams<'w> {
     command_color: Res<'w, CommandColor>,
     connection_color: Res<'w, ConnectionColor>,
     arrow_handle: Res<'w, ArrowHandle>,
+    connection_mat: Res<'w, ConnectionMat>,
 }
 
 fn post_load(
@@ -399,6 +404,9 @@ fn post_load(
 ) {
     for (scene_id, instance_id) in scenes.iter() {
         if scene_spawner.instance_is_ready(**instance_id) {
+            // update connection material from color resource
+            let mat_id = &more.connection_mat.0;
+            materials.get_mut(mat_id).unwrap().color = more.connection_color.0;
             if let Ok(children) = children_query.get(scene_id) {
                 for child in children {
                     if let Ok((t, c, v)) = main_query.get(*child) {
@@ -435,7 +443,7 @@ fn post_load(
                                         wh.open = true;
                                         let arrow = commands.spawn(( ColorMesh2dBundle {
                                             mesh: more.arrow_handle.0.clone(),
-                                            material: materials.add(ColorMaterial::from(more.connection_color.0)),
+                                            material: more.connection_mat.0.clone(),
                                             transform: Transform::default(),
                                             ..default()
                                         },

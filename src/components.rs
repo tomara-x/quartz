@@ -262,6 +262,9 @@ pub struct ArrowHandle(pub Mesh2dHandle);
 #[derive(Resource, Default)]
 pub struct DacCircles(pub Vec<Entity>);
 
+#[derive(Resource)]
+pub struct ConnectionMat(pub Handle<ColorMaterial>);
+
 // -------------------- events --------------------
 #[derive(Event, Default)]
 pub struct OrderChange;
