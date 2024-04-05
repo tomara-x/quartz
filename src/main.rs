@@ -158,12 +158,7 @@ fn main() {
     #[cfg(feature = "inspector")]
     { app.add_plugins(WorldInspectorPlugin::new()); }
 
-    app.add_systems(Update, print_archetypes);
     app.run();
-}
-
-fn print_archetypes(world: &World) {
-    info!("{}", world.archetypes().len());
 }
 
 fn setup(
