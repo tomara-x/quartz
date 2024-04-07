@@ -118,6 +118,7 @@ pub fn process(
             let mut lt_to_open = 0;
             if let Ok(wh) = white_hole_query.get(*hole) {
                 if !wh.open { continue; }
+                if wh.link_types.0 == -13 && wh.link_types.1 != -13 { continue; }
                 let mut input = 0.;
                 match wh.link_types.0 {
                     -1 => { input = access.num_query.get(wh.bh_parent).unwrap().0; }
