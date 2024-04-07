@@ -328,8 +328,8 @@ pub fn command_parser(
                                                         trans.scale.x = n.max(0.);
                                                         trans.scale.y = n.max(0.);
                                                     } else {
-                                                        trans.scale.x += n.max(0.);
-                                                        trans.scale.y += n.max(0.);
+                                                        trans.scale.x = (trans.scale.x+n).max(0.);
+                                                        trans.scale.y = (trans.scale.y+n).max(0.);
                                                     }
                                                     lt_to_open = (Some(e), Some(-2));
                                                 }
