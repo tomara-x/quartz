@@ -162,7 +162,8 @@ pub fn command_parser(
                 // (entity, lt) if there's a given entity
                 let mut lt_to_open = (None, None);
                 let mut command = line.split_ascii_whitespace();
-                match command.next() {
+                let c0 = command.next();
+                match c0 {
                     // open scene file
                     Some(":e") => {
                         if let Some(s) = command.next() {
@@ -286,7 +287,7 @@ pub fn command_parser(
                             }
                         }
                     }
-                    Some(":set") | Some("set") => {
+                    Some(":set") | Some("set") | Some(":delta") | Some("delta") => {
                         match command.next() {
                             Some("n") => {
                                 if let Some(s) = command.next() {
@@ -294,7 +295,11 @@ pub fn command_parser(
                                         if let Ok(mut num) = access.num_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = parse_with_constants(n) {
-                                                    num.0 = n;
+                                                    if c0 == Some(":set") || c0 == Some("set") {
+                                                        num.0 = n;
+                                                    } else {
+                                                        num.0 += n;
+                                                    }
                                                     lt_to_open = (Some(e), Some(-1));
                                                 }
                                             }
@@ -302,7 +307,11 @@ pub fn command_parser(
                                     } else if let Ok(n) = parse_with_constants(s) {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut num) = access.num_query.get_mut(id) {
-                                                num.0 = n;
+                                                if c0 == Some(":set") || c0 == Some("set") {
+                                                    num.0 = n;
+                                                } else {
+                                                    num.0 += n;
+                                                }
                                             }
                                         }
                                         lt_to_open = (None, Some(-1));
@@ -315,8 +324,13 @@ pub fn command_parser(
                                         if let Ok(mut trans) = access.trans_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = parse_with_constants(n) {
-                                                    trans.scale.x = n.max(0.);
-                                                    trans.scale.y = n.max(0.);
+                                                    if c0 == Some(":set") || c0 == Some("set") {
+                                                        trans.scale.x = n.max(0.);
+                                                        trans.scale.y = n.max(0.);
+                                                    } else {
+                                                        trans.scale.x += n.max(0.);
+                                                        trans.scale.y += n.max(0.);
+                                                    }
                                                     lt_to_open = (Some(e), Some(-2));
                                                 }
                                             }
@@ -324,8 +338,13 @@ pub fn command_parser(
                                     } else if let Ok(n) = parse_with_constants(s) {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut trans) = access.trans_query.get_mut(id) {
-                                                trans.scale.x = n.max(0.);
-                                                trans.scale.y = n.max(0.);
+                                                if c0 == Some(":set") || c0 == Some("set") {
+                                                    trans.scale.x = n.max(0.);
+                                                    trans.scale.y = n.max(0.);
+                                                } else {
+                                                    trans.scale.x = (trans.scale.x+n).max(0.);
+                                                    trans.scale.y = (trans.scale.y+n).max(0.);
+                                                }
                                             }
                                         }
                                         lt_to_open = (None, Some(-2));
@@ -338,7 +357,11 @@ pub fn command_parser(
                                         if let Ok(mut t) = access.trans_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = parse_with_constants(n) {
-                                                    t.translation.x = n;
+                                                    if c0 == Some(":set") || c0 == Some("set") {
+                                                        t.translation.x = n;
+                                                    } else {
+                                                        t.translation.x += n;
+                                                    }
                                                     lt_to_open = (Some(e), Some(-3));
                                                 }
                                             }
@@ -346,7 +369,11 @@ pub fn command_parser(
                                     } else if let Ok(n) = parse_with_constants(s) {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut t) = access.trans_query.get_mut(id) {
-                                                t.translation.x = n;
+                                                if c0 == Some(":set") || c0 == Some("set") {
+                                                    t.translation.x = n;
+                                                } else {
+                                                    t.translation.x += n;
+                                                }
                                             }
                                         }
                                         lt_to_open = (None, Some(-3));
@@ -359,7 +386,11 @@ pub fn command_parser(
                                         if let Ok(mut t) = access.trans_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = parse_with_constants(n) {
-                                                    t.translation.y = n;
+                                                    if c0 == Some(":set") || c0 == Some("set") {
+                                                        t.translation.y = n;
+                                                    } else {
+                                                        t.translation.y += n;
+                                                    }
                                                     lt_to_open = (Some(e), Some(-4));
                                                 }
                                             }
@@ -367,7 +398,11 @@ pub fn command_parser(
                                     } else if let Ok(n) = parse_with_constants(s) {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut t) = access.trans_query.get_mut(id) {
-                                                t.translation.y = n;
+                                                if c0 == Some(":set") || c0 == Some("set") {
+                                                    t.translation.y = n;
+                                                } else {
+                                                    t.translation.y += n;
+                                                }
                                             }
                                         }
                                         lt_to_open = (None, Some(-4));
@@ -380,7 +415,11 @@ pub fn command_parser(
                                         if let Ok(mut t) = access.trans_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = parse_with_constants(n) {
-                                                    t.translation.z = n;
+                                                    if c0 == Some(":set") || c0 == Some("set") {
+                                                        t.translation.z = n;
+                                                    } else {
+                                                        t.translation.z += n;
+                                                    }
                                                     lt_to_open = (Some(e), Some(-5));
                                                 }
                                             }
@@ -388,7 +427,11 @@ pub fn command_parser(
                                     } else if let Ok(n) = parse_with_constants(s) {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut t) = access.trans_query.get_mut(id) {
-                                                t.translation.z = n;
+                                                if c0 == Some(":set") || c0 == Some("set") {
+                                                    t.translation.z = n;
+                                                } else {
+                                                    t.translation.z += n;
+                                                }
                                             }
                                         }
                                         lt_to_open = (None, Some(-5));
@@ -401,7 +444,12 @@ pub fn command_parser(
                                         if let Ok(mut color) = access.col_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = parse_with_constants(n) {
-                                                    color.0.set_h(n);
+                                                    if c0 == Some(":set") || c0 == Some("set") {
+                                                        color.0.set_h(n);
+                                                    } else {
+                                                        let h = color.0.h();
+                                                        color.0.set_h(n+h);
+                                                    }
                                                     lt_to_open = (Some(e), Some(-6));
                                                 }
                                             }
@@ -409,7 +457,12 @@ pub fn command_parser(
                                     } else if let Ok(n) = parse_with_constants(s) {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut color) = access.col_query.get_mut(id) {
-                                                color.0.set_h(n);
+                                                if c0 == Some(":set") || c0 == Some("set") {
+                                                    color.0.set_h(n);
+                                                } else {
+                                                    let h = color.0.h();
+                                                    color.0.set_h(n+h);
+                                                }
                                             }
                                         }
                                         lt_to_open = (None, Some(-6));
@@ -422,7 +475,12 @@ pub fn command_parser(
                                         if let Ok(mut color) = access.col_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = parse_with_constants(n) {
-                                                    color.0.set_s(n);
+                                                    if c0 == Some(":set") || c0 == Some("set") {
+                                                        color.0.set_s(n);
+                                                    } else {
+                                                        let s = color.0.s();
+                                                        color.0.set_s(n+s);
+                                                    }
                                                     lt_to_open = (Some(e), Some(-7));
                                                 }
                                             }
@@ -430,7 +488,12 @@ pub fn command_parser(
                                     } else if let Ok(n) = parse_with_constants(s) {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut color) = access.col_query.get_mut(id) {
-                                                color.0.set_s(n);
+                                                if c0 == Some(":set") || c0 == Some("set") {
+                                                    color.0.set_s(n);
+                                                } else {
+                                                    let s = color.0.s();
+                                                    color.0.set_s(n+s);
+                                                }
                                             }
                                         }
                                         lt_to_open = (None, Some(-7));
@@ -443,7 +506,12 @@ pub fn command_parser(
                                         if let Ok(mut color) = access.col_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = parse_with_constants(n) {
-                                                    color.0.set_l(n);
+                                                    if c0 == Some(":set") || c0 == Some("set") {
+                                                        color.0.set_l(n);
+                                                    } else {
+                                                        let l = color.0.l();
+                                                        color.0.set_l(n+l);
+                                                    }
                                                     lt_to_open = (Some(e), Some(-8));
                                                 }
                                             }
@@ -451,7 +519,12 @@ pub fn command_parser(
                                     } else if let Ok(n) = parse_with_constants(s) {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut color) = access.col_query.get_mut(id) {
-                                                color.0.set_l(n);
+                                                if c0 == Some(":set") || c0 == Some("set") {
+                                                    color.0.set_l(n);
+                                                } else {
+                                                    let l = color.0.l();
+                                                    color.0.set_l(n+l);
+                                                }
                                             }
                                         }
                                         lt_to_open = (None, Some(-8));
@@ -464,7 +537,12 @@ pub fn command_parser(
                                         if let Ok(mut color) = access.col_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = parse_with_constants(n) {
-                                                    color.0.set_a(n);
+                                                    if c0 == Some(":set") || c0 == Some("set") {
+                                                        color.0.set_a(n);
+                                                    } else {
+                                                        let a = color.0.a();
+                                                        color.0.set_a(n+a);
+                                                    }
                                                     lt_to_open = (Some(e), Some(-9));
                                                 }
                                             }
@@ -472,7 +550,12 @@ pub fn command_parser(
                                     } else if let Ok(n) = parse_with_constants(s) {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut color) = access.col_query.get_mut(id) {
-                                                color.0.set_a(n);
+                                                if c0 == Some(":set") || c0 == Some("set") {
+                                                    color.0.set_a(n);
+                                                } else {
+                                                    let a = color.0.a();
+                                                    color.0.set_a(n+a);
+                                                }
                                             }
                                         }
                                         lt_to_open = (None, Some(-9));
@@ -485,7 +568,11 @@ pub fn command_parser(
                                         if let Ok(mut vertices) = access.vertices_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = n.parse::<usize>() {
-                                                    vertices.0 = n.max(3);
+                                                    if c0 == Some(":set") || c0 == Some("set") {
+                                                        vertices.0 = n.max(3);
+                                                    } else {
+                                                        vertices.0 = (vertices.0+n).max(3);
+                                                    }
                                                     lt_to_open = (Some(e), Some(-11));
                                                 }
                                             }
@@ -493,7 +580,11 @@ pub fn command_parser(
                                     } else if let Ok(n) = s.parse::<usize>() {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut vertices) = access.vertices_query.get_mut(id) {
-                                                vertices.0 = n.max(3);
+                                                if c0 == Some(":set") || c0 == Some("set") {
+                                                    vertices.0 = n.max(3);
+                                                } else {
+                                                    vertices.0 = (vertices.0+n).max(3);
+                                                }
                                             }
                                         }
                                         lt_to_open = (None, Some(-11));
@@ -506,7 +597,12 @@ pub fn command_parser(
                                         if let Ok(mut t) = access.trans_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = parse_with_constants(n) {
-                                                    t.rotation = Quat::from_rotation_z(n);
+                                                    if c0 == Some(":set") || c0 == Some("set") {
+                                                        t.rotation = Quat::from_rotation_z(n);
+                                                    } else {
+                                                        let rot = t.rotation.to_euler(EulerRot::XYZ).2;
+                                                        t.rotation = Quat::from_rotation_z(rot + n);
+                                                    }
                                                     lt_to_open = (Some(e), Some(-12));
                                                 }
                                             }
@@ -514,7 +610,12 @@ pub fn command_parser(
                                     } else if let Ok(n) = parse_with_constants(s) {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut t) = access.trans_query.get_mut(id) {
-                                                t.rotation = Quat::from_rotation_z(n);
+                                                if c0 == Some(":set") || c0 == Some("set") {
+                                                    t.rotation = Quat::from_rotation_z(n);
+                                                } else {
+                                                    let rot = t.rotation.to_euler(EulerRot::XYZ).2;
+                                                    t.rotation = Quat::from_rotation_z(rot + n);
+                                                }
                                             }
                                         }
                                         lt_to_open = (None, Some(-12));
@@ -554,16 +655,24 @@ pub fn command_parser(
                                     if let Some(e) = str_to_id(s) {
                                         if let Ok(mut order) = access.order_query.get_mut(e) {
                                             if let Some(n) = command.next() {
-                                                if let Ok(n) = n.parse::<usize>() {
-                                                    order.0 = n;
+                                                if let Ok(n) = n.parse::<f32>() {
+                                                    if c0 == Some(":set") || c0 == Some("set") {
+                                                        order.0 = n as usize;
+                                                    } else {
+                                                        order.0 = (order.0 as f32 + n) as usize;
+                                                    }
                                                     access.order_change.send_default();
                                                 }
                                             }
                                         }
-                                    } else if let Ok(n) = s.parse::<usize>() {
+                                    } else if let Ok(n) = s.parse::<f32>() {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut order) = access.order_query.get_mut(id) {
-                                                order.0 = n;
+                                                if c0 == Some(":set") || c0 == Some("set") {
+                                                    order.0 = n as usize;
+                                                } else {
+                                                    order.0 = (order.0 as f32 + n) as usize;
+                                                }
                                                 access.order_change.send_default();
                                             }
                                         }
