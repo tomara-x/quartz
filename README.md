@@ -322,7 +322,7 @@ combining that with the ability to store any number of targets (and repeated tar
     - inputs: `A -> n/r/x/y/z/r/o/v/h/s/l/a`
     - distribute values from input array among targets
 - `connect_target`
-    - inputs: `n -> 1`, [T -> 2]
+    - inputs: `n -> 1`, [`T -> 2`]
     - remove holes from targets array, then connect each target circle to the next. if array contains 2 numbers they will be used as the connection type (otherwise `0 -> 0`) if second input is provided, the white holes created will be added as targets to that circle
 
 </p>
