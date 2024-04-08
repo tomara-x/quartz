@@ -383,8 +383,6 @@ combining that with the ability to store any number of targets (and repeated tar
     - when vertices change, set the default drawing vertices for future circles
 - `draw_color`
     - when color changes, set the default drawing color
-- `highlight_color`
-    - when color changes, set the highlight color (the outline around selected entities)
 - `selection_color`
     - when color changes, set the color of the selection lasso circle (and draw mode indicator)
 - `connection_color`
