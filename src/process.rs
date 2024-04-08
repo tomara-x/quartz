@@ -280,8 +280,8 @@ pub fn process(
                                         material: access.materials.add(ColorMaterial::from(color)),
                                         transform: Transform {
                                             translation: t.extend(depth),
+                                            rotation: trans.rotation,
                                             scale: Vec3::new(r,r,1.),
-                                            ..default()
                                         },
                                         ..default()
                                     },
