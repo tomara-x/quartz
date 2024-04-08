@@ -94,6 +94,7 @@ pub struct Access<'w, 's> {
     polygon_handles: Res<'w, PolygonHandles>,
     materials: ResMut<'w, Assets<ColorMaterial>>,
     connection_mat: ResMut<'w, ConnectionMat>,
+    connect_command: EventWriter<'w, ConnectCommand>,
 }
 
 pub fn process(
@@ -306,6 +307,18 @@ pub fn process(
                                 )).id();
                                 targets.push(new);
                                 lt_to_open = Some(-14);
+                            }
+                        }
+                    }
+                }
+            }
+            "connect_target" => {
+                for hole in holes {
+                    if let Ok(wh) = white_hole_query.get(*hole) {
+                        if wh.link_types == (-1, 1) && wh.open {
+                            if access.num_query.get(wh.bh_parent).unwrap().0 != 0. {
+                                access.targets_query.get_mut(*id).unwrap().0.retain(|x| holes_query.contains(*x));
+                                access.connect_command.send(ConnectCommand(*id));
                             }
                         }
                     }

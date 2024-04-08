@@ -231,3 +231,128 @@ pub fn draw_connecting_arrow(
         *trans_query.get_mut(id.0).unwrap() = Transform::default();
     }
 }
+
+pub fn connect_targets(
+    mut commands: Commands,
+    query: Query<(Entity, &Transform, &Vertices), With<Order>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+    mut order_query: Query<&mut Order>,
+    mut order_change: EventWriter<OrderChange>,
+    mut holes_query: Query<&mut Holes>,
+    mut gained_wh_query: Query<&mut GainedWH>,
+    polygon_handles: Res<PolygonHandles>,
+    arrow_handle: Res<ArrowHandle>,
+    connection_mat: Res<ConnectionMat>,
+    mut connect_command: EventReader<ConnectCommand>,
+    arr_query: Query<&Arr>,
+    mut targets_query: Query<&mut Targets>,
+    white_hole_query: Query<&WhiteHole>,
+) {
+    for e in connect_command.read() {
+        let targets = &targets_query.get(e.0).unwrap().0;
+        if targets.is_empty() { continue; }
+        let arr = &arr_query.get(e.0).unwrap().0;
+        let lt = if let Some(a) = arr.get(0..2) { (a[0] as i8, a[1] as i8) } else { (0,0) };
+        let mut white_holes = Vec::new();
+        for pair in targets.windows(2) {
+            let (src, snk) = (pair[0], pair[1]);
+            // don't connect entity to itself
+            if src == snk { continue; }
+            // sink has gained a connection
+            gained_wh_query.get_mut(snk).unwrap().0 = true;
+            // increment order of sink
+            let src_order = order_query.get(src).unwrap().0;
+            let snk_order = order_query.get(snk).unwrap().0;
+            if snk_order <= src_order {
+                order_query.get_mut(snk).unwrap().0 = src_order + 1;
+                order_change.send_default();
+            }
+            // get translation, radius, and vertices
+            let src_trans = query.get(src).unwrap().1.translation;
+            let snk_trans = query.get(snk).unwrap().1.translation;
+            let src_radius = query.get(src).unwrap().1.scale.x;
+            let snk_radius = query.get(snk).unwrap().1.scale.x;
+            let src_verts = query.get(src).unwrap().2.0;
+            let snk_verts = query.get(snk).unwrap().2.0;
+            let bh_radius = src_radius * 0.15;
+            let wh_radius = snk_radius * 0.15;
+
+            // spawn connection arrow
+            let arrow = commands.spawn((
+                ColorMesh2dBundle {
+                    mesh: arrow_handle.0.clone(),
+                    material: connection_mat.0.clone(),
+                    transform: Transform::default(),
+                    ..default()
+                },
+                RenderLayers::layer(4),
+            )).id();
+            // spawn circles
+            let bh_depth = 0.001 * (holes_query.get(src).unwrap().0.len() + 1) as f32;
+            let bh_verts = snk_verts;
+            let bh_color = Color::hsl(0., 0., 0.2);
+            let black_hole = commands.spawn(( ColorMesh2dBundle {
+                    mesh: polygon_handles.0[bh_verts].clone().unwrap(),
+                    material: materials.add(ColorMaterial::from(bh_color)),
+                    transform: Transform {
+                        translation: src_trans.xy().extend(bh_depth + src_trans.z),
+                        scale: Vec3::new(bh_radius, bh_radius, 1.),
+                        ..default()
+                    },
+                    ..default()
+                },
+                Visible,
+                Col(bh_color),
+                Vertices(bh_verts),
+                RenderLayers::layer(2),
+                Save,
+            )).id();
+            let wh_depth = 0.001 * (holes_query.get(snk).unwrap().0.len() + 1) as f32;
+            let wh_verts = src_verts;
+            let wh_color = Color::hsl(0., 0., 0.8);
+            let white_hole = commands.spawn(( ColorMesh2dBundle {
+                    mesh: polygon_handles.0[bh_verts].clone().unwrap(),
+                    material: materials.add(ColorMaterial::from(wh_color)),
+                    transform: Transform {
+                        translation: snk_trans.xy().extend(wh_depth + snk_trans.z),
+                        scale: Vec3::new(wh_radius, wh_radius, 1.),
+                        ..default()
+                    },
+                    ..default()
+                },
+                Visible,
+                Col(wh_color),
+                Vertices(wh_verts),
+                WhiteHole {
+                    bh_parent: src,
+                    bh: black_hole,
+                    link_types: lt,
+                    open: true,
+                },
+                RenderLayers::layer(3),
+                Save,
+                ConnectionArrow(arrow),
+            )).id();
+
+            // insert black hole white hole
+            commands.entity(black_hole).insert(
+                BlackHole {
+                    wh: white_hole,
+                    wh_parent: snk,
+                });
+
+            // add to parents
+            holes_query.get_mut(src).unwrap().0.push(black_hole);
+            holes_query.get_mut(snk).unwrap().0.push(white_hole);
+
+            white_holes.push(white_hole);
+        }
+        for hole in &holes_query.get(e.0).unwrap().0 {
+            if let Ok(wh) = white_hole_query.get(*hole) {
+                if wh.link_types == (-14, 2) {
+                    targets_query.get_mut(wh.bh_parent).unwrap().0 = white_holes.clone();
+                }
+            }
+        }
+    }
+}

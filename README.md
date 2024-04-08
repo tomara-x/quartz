@@ -276,7 +276,7 @@ unless...
 ### targets
 
 a circle has an array of "targets" those are just entity id's. so it's like a "pointer" to another circles or hole. think of it as a one-way wireless connection.
-some ops make a circle do things to its targets. like [`process`](#process), `del_targets`, `spin_target`, `distro`, `reorder`, `open_target`, `close_target`, `open_nth` (those 3 work on hole targets)
+some ops make a circle do things to its targets. like [`process`](#process), `del_targets`, `spin_target`, `distro`, `reorder`, `open_target`, `close_target`,...
 
 (they allow some things that aren't easy through normal processing. since circles read their input when they process, while targets are written to when the controller circle is processed instead)
 
@@ -321,6 +321,9 @@ combining that with the ability to store any number of targets (and repeated tar
 - `distro`
     - inputs: `A -> n/r/x/y/z/r/o/v/h/s/l/a`
     - distribute values from input array among targets
+- `connect_target`
+    - inputs: `n -> 1`, [T -> 2]
+    - remove holes from targets array, then connect each target circle to the next. if array contains 2 numbers they will be used as the connection type (otherwise `0 -> 0`) if second input is provided, the white holes created will be added as targets to that circle
 
 </p>
 </details>

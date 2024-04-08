@@ -283,3 +283,6 @@ pub struct DeleteCommand;
 
 #[derive(Event, Default)]
 pub struct DacChange;
+
+#[derive(Event)]
+pub struct ConnectCommand(pub Entity);
