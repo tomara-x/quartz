@@ -324,6 +324,27 @@ pub fn process(
                     }
                 }
             }
+            "isolate_target" => {
+                for hole in holes {
+                    if let Ok(wh) = white_hole_query.get(*hole) {
+                        if wh.link_types == (-1, 1) && wh.open {
+                            if access.num_query.get(wh.bh_parent).unwrap().0 != 0. {
+                                for e in access.selected_query.iter() {
+                                    commands.entity(e).remove::<Selected>();
+                                }
+                                for t in &access.targets_query.get(*id).unwrap().0 {
+                                    if let Ok(holes) = holes_query.get(*t) {
+                                        for hole in &holes.0 {
+                                            commands.entity(*hole).insert(Selected);
+                                        }
+                                    }
+                                }
+                                access.delete_event.send_default();
+                            }
+                        }
+                    }
+                }
+            }
             // distribute input array among targets' values
             "distro" => {
                 let mut target_lt_to_open = None;
