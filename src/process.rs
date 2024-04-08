@@ -345,6 +345,22 @@ pub fn process(
                     }
                 }
             }
+            "target_lt" => {
+                for hole in holes {
+                    if let Ok(wh) = white_hole_query.get(*hole) {
+                        if wh.link_types == (-1, 1) && wh.open {
+                            let n = access.num_query.get(wh.bh_parent).unwrap().0;
+                            for t in &access.targets_query.get(*id).unwrap().0 {
+                                if let Ok(mut wh) = white_hole_query.get_mut(*t) {
+                                    wh.link_types.1 = n as i8;
+                                } else if let Ok(bh) = black_hole_query.get(*t) {
+                                    white_hole_query.get_mut(bh.wh).unwrap().link_types.0 = n as i8;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             // distribute input array among targets' values
             "distro" => {
                 let mut target_lt_to_open = None;
