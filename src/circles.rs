@@ -7,10 +7,7 @@ use bevy::{
 
 use fundsp::net::Net32;
 
-use crate::{
-    components::*,
-    functions::*,
-};
+use crate::components::*;
 
 pub fn spawn_circles(
     mut commands: Commands,
@@ -67,59 +64,6 @@ pub fn spawn_circles(
             Save,
         ));
         *depth += 0.01;
-    }
-}
-
-pub fn highlight_selected(
-    mut commands: Commands,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-    selected: Query<(Entity, &Vertices, &Transform), (With<Selected>, Without<Highlight>)>,
-    deselected: Query<Entity, (With<Highlight>, Without<Selected>)>,
-    highlight_query: Query<&Highlight>,
-    highlight_color: Res<HighlightColor>,
-    polygon_handles: Res<PolygonHandles>,
-) {
-    for (e, v, t) in selected.iter() {
-        let trans = t.translation.xy().extend(t.translation.z - 0.00001);
-        let highlight = commands.spawn(
-            ColorMesh2dBundle {
-                mesh: polygon_handles.0[v.0].clone().unwrap(),
-                material: materials.add(ColorMaterial::from(highlight_color.0)),
-                transform: Transform {
-                    translation: trans,
-                    scale: Vec3::new(t.scale.x + 5., t.scale.y + 5., 1.),
-                    rotation: t.rotation,
-                },
-                ..default()
-            }
-        ).id();
-        commands.entity(e).insert(Highlight(highlight));
-    }
-    for e in deselected.iter() {
-        let highlight = highlight_query.get(e).unwrap();
-        commands.entity(highlight.0).despawn();
-        commands.entity(e).remove::<Highlight>();
-    }
-}
-
-pub fn transform_highlights(
-    moved: Query<(&Transform, &Highlight), Changed<Transform>>,
-    changed_verts: Query<(&Vertices, &Highlight), Changed<Vertices>>,
-    mut trans_query: Query<&mut Transform, Without<Highlight>>,
-    mut handle_query: Query<&mut Mesh2dHandle>,
-    polygon_handles: Res<PolygonHandles>,
-) {
-    for (t, h) in moved.iter() {
-        let trans = t.translation.xy().extend(t.translation.z - 0.00001);
-        trans_query.get_mut(h.0).unwrap().translation = trans;
-        trans_query.get_mut(h.0).unwrap().rotation = t.rotation;
-        trans_query.get_mut(h.0).unwrap().scale.x = t.scale.x + 5.;
-        trans_query.get_mut(h.0).unwrap().scale.y = t.scale.y + 5.;
-    }
-    for (v, h) in changed_verts.iter() {
-        if let Ok(mut handle) = handle_query.get_mut(h.0) {
-            *handle = polygon_handles.0[v.0].clone().unwrap();
-        }
     }
 }
 
@@ -514,54 +458,54 @@ pub fn update_num(
     }
 }
 
-pub fn update_info_text(
-    mut text_query: Query<&mut Text>,
-    mut text_trans: Query<&mut Transform, (Without<Vertices>, Without<InfoText>)>,
-    trans_query: Query<(&Transform, &InfoText), Or<(Changed<Transform>, Added<InfoText>)>>,
-    order_query: Query<(&Order, &InfoText), Or<(Changed<Order>, Added<InfoText>)>>,
-    num_query: Query<(&Number, &InfoText), Or<(Changed<Number>, Added<InfoText>)>>,
-    op_query: Query<(&Op, &InfoText), Or<(Changed<Op>, Added<InfoText>)>>,
-    white_hole_query: Query<(&WhiteHole, &InfoText), Or<(Changed<WhiteHole>, Added<InfoText>)>>,
-    black_hole_query: Query<&InfoText, With<BlackHole>>,
-    color_query: Query<(&Col, &InfoText), Or<(Changed<Col>, Added<InfoText>)>>,
-    // TODO(amy): cleanup!
-    added_bh_query: Query<(&BlackHole, &InfoText), Added<InfoText>>,
-    generic_wh_query: Query<&WhiteHole>,
-) {
-    for (trans, text) in trans_query.iter() {
-        let t = trans.translation;
-        text_trans.get_mut(text.0).unwrap().translation = t.xy().extend(t.z + 0.00001);
-    }
-    for (order, text) in order_query.iter() {
-        text_query.get_mut(text.0).unwrap().sections[1].value = format!("{}\n", order.0);
-    }
-    // this is messy as it changes every time the wh changes (open / lt change)
-    for (wh, text) in white_hole_query.iter() {
-        text_query.get_mut(text.0).unwrap().sections[1].value = lt_to_string(wh.link_types.1);
-        if let Ok(bh_text) = black_hole_query.get(wh.bh) {
-            text_query.get_mut(bh_text.0).unwrap().sections[1].value = lt_to_string(wh.link_types.0);
-        }
-    }
-    // more duck tape
-    for (bh, text) in added_bh_query.iter() {
-        let wh = generic_wh_query.get(bh.wh).unwrap();
-        text_query.get_mut(text.0).unwrap().sections[1].value = lt_to_string(wh.link_types.0);
-    }
-    for (op, text) in op_query.iter() {
-        text_query.get_mut(text.0).unwrap().sections[2].value = format!("{}\n", op.0);
-    }
-    for (n, text) in num_query.iter() {
-        text_query.get_mut(text.0).unwrap().sections[3].value = n.0.to_string();
-    }
-    for (col, text) in color_query.iter() {
-        let l = if col.0.l() < 0.3 {1.} else {0.};
-        let opposite_color = Color::hsl(0., 1.0, l);
-        let t = &mut text_query.get_mut(text.0).unwrap();
-        for section in &mut t.sections {
-            section.style.color = opposite_color;
-        }
-    }
-}
+//pub fn update_info_text(
+//    mut text_query: Query<&mut Text>,
+//    mut text_trans: Query<&mut Transform, (Without<Vertices>, Without<InfoText>)>,
+//    trans_query: Query<(&Transform, &InfoText), Or<(Changed<Transform>, Added<InfoText>)>>,
+//    order_query: Query<(&Order, &InfoText), Or<(Changed<Order>, Added<InfoText>)>>,
+//    num_query: Query<(&Number, &InfoText), Or<(Changed<Number>, Added<InfoText>)>>,
+//    op_query: Query<(&Op, &InfoText), Or<(Changed<Op>, Added<InfoText>)>>,
+//    white_hole_query: Query<(&WhiteHole, &InfoText), Or<(Changed<WhiteHole>, Added<InfoText>)>>,
+//    black_hole_query: Query<&InfoText, With<BlackHole>>,
+//    color_query: Query<(&Col, &InfoText), Or<(Changed<Col>, Added<InfoText>)>>,
+//    // TODO(amy): cleanup!
+//    added_bh_query: Query<(&BlackHole, &InfoText), Added<InfoText>>,
+//    generic_wh_query: Query<&WhiteHole>,
+//) {
+//    for (trans, text) in trans_query.iter() {
+//        let t = trans.translation;
+//        text_trans.get_mut(text.0).unwrap().translation = t.xy().extend(t.z + 0.00001);
+//    }
+//    for (order, text) in order_query.iter() {
+//        text_query.get_mut(text.0).unwrap().sections[1].value = format!("{}\n", order.0);
+//    }
+//    // this is messy as it changes every time the wh changes (open / lt change)
+//    for (wh, text) in white_hole_query.iter() {
+//        text_query.get_mut(text.0).unwrap().sections[1].value = lt_to_string(wh.link_types.1);
+//        if let Ok(bh_text) = black_hole_query.get(wh.bh) {
+//            text_query.get_mut(bh_text.0).unwrap().sections[1].value = lt_to_string(wh.link_types.0);
+//        }
+//    }
+//    // more duck tape
+//    for (bh, text) in added_bh_query.iter() {
+//        let wh = generic_wh_query.get(bh.wh).unwrap();
+//        text_query.get_mut(text.0).unwrap().sections[1].value = lt_to_string(wh.link_types.0);
+//    }
+//    for (op, text) in op_query.iter() {
+//        text_query.get_mut(text.0).unwrap().sections[2].value = format!("{}\n", op.0);
+//    }
+//    for (n, text) in num_query.iter() {
+//        text_query.get_mut(text.0).unwrap().sections[3].value = n.0.to_string();
+//    }
+//    for (col, text) in color_query.iter() {
+//        let l = if col.0.l() < 0.3 {1.} else {0.};
+//        let opposite_color = Color::hsl(0., 1.0, l);
+//        let t = &mut text_query.get_mut(text.0).unwrap();
+//        for section in &mut t.sections {
+//            section.style.color = opposite_color;
+//        }
+//    }
+//}
 
 pub fn delete_selected(
     mut commands: Commands,
@@ -570,8 +514,6 @@ pub fn delete_selected(
     bh_query: Query<&BlackHole>,
     wh_query: Query<&WhiteHole>,
     arrow_query: Query<&ConnectionArrow>,
-    info_text_query: Query<&InfoText>,
-    highlight_query: Query<&Highlight>,
     mut order_change: EventWriter<OrderChange>,
     mut lost_wh_query: Query<&mut LostWH>,
     mut dac_change_event: EventWriter<DacChange>,
@@ -589,18 +531,6 @@ pub fn delete_selected(
                     commands.entity(arrow).despawn();
                     commands.entity(*hole).despawn();
                     commands.entity(bh.wh).despawn();
-                    if let Ok(wh_text) = info_text_query.get(bh.wh) {
-                        commands.entity(wh_text.0).despawn();
-                    }
-                    if let Ok(bh_text) = info_text_query.get(*hole) {
-                        commands.entity(bh_text.0).despawn();
-                    }
-                    if let Ok(highlight) = highlight_query.get(bh.wh) {
-                        commands.entity(highlight.0).despawn();
-                    }
-                    if let Ok(highlight) = highlight_query.get(*hole) {
-                        commands.entity(highlight.0).despawn();
-                    }
                     lost_wh_query.get_mut(bh.wh_parent).unwrap().0 = true;
                     holes_query.get_mut(bh.wh_parent).unwrap().0.retain(|x| *x != bh.wh);
                 } else if let Ok(wh) = wh_query.get(*hole) {
@@ -610,28 +540,10 @@ pub fn delete_selected(
                     commands.entity(arrow).despawn();
                     commands.entity(wh.bh).despawn();
                     commands.entity(*hole).despawn();
-                    if let Ok(wh_text) = info_text_query.get(*hole) {
-                        commands.entity(wh_text.0).despawn();
-                    }
-                    if let Ok(bh_text) = info_text_query.get(wh.bh) {
-                        commands.entity(bh_text.0).despawn();
-                    }
-                    if let Ok(highlight) = highlight_query.get(*hole) {
-                        commands.entity(highlight.0).despawn();
-                    }
-                    if let Ok(highlight) = highlight_query.get(wh.bh) {
-                        commands.entity(highlight.0).despawn();
-                    }
                     holes_query.get_mut(wh.bh_parent).unwrap().0.retain(|x| *x != wh.bh);
                 }
             }
             order = true;
-            if let Ok(text) = info_text_query.get(e) {
-                commands.entity(text.0).despawn();
-            }
-            if let Ok(highlight) = highlight_query.get(e) {
-                commands.entity(highlight.0).despawn();
-            }
             commands.entity(e).despawn();
         } else { // it's a hole
             if let Ok(wh) = wh_query.get(e) {
@@ -648,19 +560,6 @@ pub fn delete_selected(
                 commands.entity(arrow).despawn();
                 commands.entity(e).despawn();
                 commands.entity(wh.bh).despawn();
-                // info texts and highlights
-                if let Ok(wh_text) = info_text_query.get(e) {
-                    commands.entity(wh_text.0).despawn();
-                }
-                if let Ok(bh_text) = info_text_query.get(wh.bh) {
-                    commands.entity(bh_text.0).despawn();
-                }
-                if let Ok(highlight) = highlight_query.get(e) {
-                    commands.entity(highlight.0).despawn();
-                }
-                if let Ok(highlight) = highlight_query.get(wh.bh) {
-                    commands.entity(highlight.0).despawn();
-                }
             } else if let Ok(bh) = bh_query.get(e) {
                 let parent = wh_query.get(bh.wh).unwrap().bh_parent;
                 if selected_query.contains(parent) { continue; }
@@ -673,18 +572,6 @@ pub fn delete_selected(
                 commands.entity(arrow).despawn();
                 commands.entity(e).despawn();
                 commands.entity(bh.wh).despawn();
-                if let Ok(wh_text) = info_text_query.get(e) {
-                    commands.entity(wh_text.0).despawn();
-                }
-                if let Ok(bh_text) = info_text_query.get(bh.wh) {
-                    commands.entity(bh_text.0).despawn();
-                }
-                if let Ok(highlight) = highlight_query.get(e) {
-                    commands.entity(highlight.0).despawn();
-                }
-                if let Ok(highlight) = highlight_query.get(bh.wh) {
-                    commands.entity(highlight.0).despawn();
-                }
             }
         }
     }

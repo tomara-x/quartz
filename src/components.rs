@@ -87,9 +87,6 @@ pub struct LostWH(pub bool);
 #[reflect(Component)]
 pub struct Save;
 
-#[derive(Component)]
-pub struct Highlight(pub Entity);
-
 #[derive(Component, Reflect)]
 #[reflect(Component, MapEntities)]
 pub struct Targets(pub Vec<Entity>);
@@ -157,9 +154,6 @@ impl MapEntities for BlackHole {
 
 #[derive(Component)]
 pub struct CommandText;
-
-#[derive(Component)]
-pub struct InfoText(pub Entity);
 
 // -------------------- states --------------------
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
@@ -230,10 +224,6 @@ pub struct DefaultDrawColor(pub Color);
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
 pub struct DefaultDrawVerts(pub usize);
-
-#[derive(Resource, Reflect, Default)]
-#[reflect(Resource)]
-pub struct HighlightColor(pub Color);
 
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]

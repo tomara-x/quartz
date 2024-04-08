@@ -62,7 +62,6 @@ fn main() {
     .insert_resource(ClearColor(Color::BLACK))
     .insert_resource(DefaultDrawColor(Color::hsl(1.,1.,0.84)))
     .insert_resource(DefaultDrawVerts(4))
-    .insert_resource(HighlightColor(Color::hsl(0.0,1.0,0.5)))
     .insert_resource(ConnectionColor(Color::hsla(0., 1., 1., 0.7)))
     .insert_resource(CommandColor(Color::hsla(0., 0., 0.7, 1.)))
     .insert_resource(DefaultLT((0, 0)))
@@ -98,12 +97,9 @@ fn main() {
     .add_systems(Update, update_vertices.after(update_selection).run_if(in_state(Mode::Edit)))
     .add_systems(Update, update_mesh.after(update_vertices).after(command_parser))
     .add_systems(Update, update_num.after(update_selection).run_if(in_state(Mode::Edit)))
-    .add_systems(Update, highlight_selected.after(delete_selected))
     .add_systems(Update, open_after_drag.run_if(in_state(Mode::Edit)))
-    .add_systems(PreUpdate, transform_highlights)
     .add_systems(Update, rotate_selected.after(update_selection).run_if(in_state(Mode::Edit)))
     .add_systems(Update, delete_selected.run_if(on_event::<DeleteCommand>()))
-    .add_systems(PreUpdate, update_info_text)
     // events
     .add_event::<SaveCommand>()
     .add_event::<CopyCommand>()
@@ -150,7 +146,6 @@ fn main() {
     .register_type::<LostWH>()
     .register_type::<DefaultDrawColor>()
     .register_type::<DefaultDrawVerts>()
-    .register_type::<HighlightColor>()
     .register_type::<ConnectionColor>()
     .register_type::<CommandColor>()
     .register_type::<Version>()
@@ -159,7 +154,6 @@ fn main() {
 
     #[cfg(feature = "inspector")]
     { app.add_plugins(WorldInspectorPlugin::new()); }
-
     app.run();
 }
 
@@ -292,7 +286,6 @@ fn save_scene(world: &mut World) {
             .allow::<Targets>()
             .allow_resource::<DefaultDrawColor>()
             .allow_resource::<DefaultDrawVerts>()
-            .allow_resource::<HighlightColor>()
             .allow_resource::<ConnectionColor>()
             .allow_resource::<ClearColor>()
             .allow_resource::<CommandColor>()

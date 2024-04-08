@@ -33,7 +33,6 @@ pub struct Access<'w, 's> {
     delete_event: EventWriter<'w, DeleteCommand>,
     targets_query: Query<'w, 's, &'static mut Targets>,
     gained_wh_query: Query<'w, 's, &'static mut GainedWH>,
-    text_query: Query<'w, 's, &'static mut Text, Without<CommandText>>,
     render_layers: Query<'w, 's, &'static mut RenderLayers, With<Camera>>,
     net_query: Query<'w, 's, &'static mut Network>,
     op_changed_query: Query<'w, 's, &'static mut OpChanged>,
@@ -56,8 +55,6 @@ pub fn command_parser(
     mode: Res<State<Mode>>,
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    info_text_query: Query<(Entity, &InfoText)>,
-    mut ids_shown: Local<bool>,
     holes_query: Query<&Holes>,
 ) {
     let clt = &mut command_line_text.single_mut();
@@ -921,59 +918,59 @@ pub fn command_parser(
             }
             // insert info texts for selected entities
             Some("II") => {
-                for e in access.selected_query.iter() {
-                    if info_text_query.contains(e) { continue; }
-                    let info_text = commands.spawn(
-                        Text2dBundle {
-                            text: Text::from_sections([
-                                TextSection::new(
-                                    "",
-                                    TextStyle { color: Color::BLACK, ..default() },
-                                ),
-                                TextSection::new(
-                                    "",
-                                    TextStyle { color: Color::BLACK, ..default() },
-                                ),
-                                TextSection::new(
-                                    "",
-                                    TextStyle { color: Color::BLACK, ..default() },
-                                ),
-                                TextSection::new(
-                                    "",
-                                    TextStyle { color: Color::BLACK, ..default() },
-                                ),
-                            ]).with_justify(JustifyText::Center),
-                            transform: Transform::from_translation(Vec3::ZERO),
-                            ..default()
-                        }
-                    ).id();
-                    commands.entity(e).insert(InfoText(info_text));
-                }
-                text.clear();
+                //for e in access.selected_query.iter() {
+                //    if info_text_query.contains(e) { continue; }
+                //    let info_text = commands.spawn(
+                //        Text2dBundle {
+                //            text: Text::from_sections([
+                //                TextSection::new(
+                //                    "",
+                //                    TextStyle { color: Color::BLACK, ..default() },
+                //                ),
+                //                TextSection::new(
+                //                    "",
+                //                    TextStyle { color: Color::BLACK, ..default() },
+                //                ),
+                //                TextSection::new(
+                //                    "",
+                //                    TextStyle { color: Color::BLACK, ..default() },
+                //                ),
+                //                TextSection::new(
+                //                    "",
+                //                    TextStyle { color: Color::BLACK, ..default() },
+                //                ),
+                //            ]).with_justify(JustifyText::Center),
+                //            transform: Transform::from_translation(Vec3::ZERO),
+                //            ..default()
+                //        }
+                //    ).id();
+                //    commands.entity(e).insert(InfoText(info_text));
+                //}
+                //text.clear();
             }
             // despawn selected entities' info texts
             Some("IC") => {
-                for e in access.selected_query.iter() {
-                    if let Ok((_, info_text)) = info_text_query.get(e) {
-                        commands.entity(info_text.0).despawn();
-                        commands.entity(e).remove::<InfoText>();
-                    }
-                }
-                text.clear();
+                //for e in access.selected_query.iter() {
+                //    if let Ok((_, info_text)) = info_text_query.get(e) {
+                //        commands.entity(info_text.0).despawn();
+                //        commands.entity(e).remove::<InfoText>();
+                //    }
+                //}
+                //text.clear();
             }
             // toggle ids in info texts
             Some("ID") => {
-                if *ids_shown {
-                    for (_, t) in info_text_query.iter() {
-                        access.text_query.get_mut(t.0).unwrap().sections[0].value = String::new();
-                    }
-                } else {
-                    for (e, t) in info_text_query.iter() {
-                        access.text_query.get_mut(t.0).unwrap().sections[0].value = format!("{:?}\n", e);
-                    }
-                }
-                *ids_shown = !*ids_shown;
-                text.clear();
+                //if *ids_shown {
+                //    for (_, t) in info_text_query.iter() {
+                //        access.text_query.get_mut(t.0).unwrap().sections[0].value = String::new();
+                //    }
+                //} else {
+                //    for (e, t) in info_text_query.iter() {
+                //        access.text_query.get_mut(t.0).unwrap().sections[0].value = format!("{:?}\n", e);
+                //    }
+                //}
+                //*ids_shown = !*ids_shown;
+                //text.clear();
             }
             // audio node inputs / outputs number / print info
             Some("ni") => {
