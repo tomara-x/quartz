@@ -152,16 +152,6 @@ note: using the [std constants](https://doc.rust-lang.org/std/f32/consts/index.h
 </p>
 </details>
 
-<details><summary>info texts</summary>
-<p>
-
-- `II` spawn info texts for selected entities
-- `IC` clear info texts
-- `ID` show/hide entity id in visible info texts
-
-</p>
-</details>
-
 <details><summary>inspect commands</summary>
 <p>
 

@@ -916,62 +916,6 @@ pub fn command_parser(
                 }
                 text.clear();
             }
-            // insert info texts for selected entities
-            Some("II") => {
-                //for e in access.selected_query.iter() {
-                //    if info_text_query.contains(e) { continue; }
-                //    let info_text = commands.spawn(
-                //        Text2dBundle {
-                //            text: Text::from_sections([
-                //                TextSection::new(
-                //                    "",
-                //                    TextStyle { color: Color::BLACK, ..default() },
-                //                ),
-                //                TextSection::new(
-                //                    "",
-                //                    TextStyle { color: Color::BLACK, ..default() },
-                //                ),
-                //                TextSection::new(
-                //                    "",
-                //                    TextStyle { color: Color::BLACK, ..default() },
-                //                ),
-                //                TextSection::new(
-                //                    "",
-                //                    TextStyle { color: Color::BLACK, ..default() },
-                //                ),
-                //            ]).with_justify(JustifyText::Center),
-                //            transform: Transform::from_translation(Vec3::ZERO),
-                //            ..default()
-                //        }
-                //    ).id();
-                //    commands.entity(e).insert(InfoText(info_text));
-                //}
-                //text.clear();
-            }
-            // despawn selected entities' info texts
-            Some("IC") => {
-                //for e in access.selected_query.iter() {
-                //    if let Ok((_, info_text)) = info_text_query.get(e) {
-                //        commands.entity(info_text.0).despawn();
-                //        commands.entity(e).remove::<InfoText>();
-                //    }
-                //}
-                //text.clear();
-            }
-            // toggle ids in info texts
-            Some("ID") => {
-                //if *ids_shown {
-                //    for (_, t) in info_text_query.iter() {
-                //        access.text_query.get_mut(t.0).unwrap().sections[0].value = String::new();
-                //    }
-                //} else {
-                //    for (e, t) in info_text_query.iter() {
-                //        access.text_query.get_mut(t.0).unwrap().sections[0].value = format!("{:?}\n", e);
-                //    }
-                //}
-                //*ids_shown = !*ids_shown;
-                //text.clear();
-            }
             // audio node inputs / outputs number / print info
             Some("ni") => {
                 let mut t = String::new();
