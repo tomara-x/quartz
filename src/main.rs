@@ -60,7 +60,7 @@ fn main() {
     .add_plugins(PanCamPlugin)
 
     .insert_resource(ClearColor(Color::BLACK))
-    .insert_resource(DefaultDrawColor(Color::hsl(1.,1.,0.84)))
+    .insert_resource(DefaultDrawColor(Color::hsl(270.,1.,0.5)))
     .insert_resource(DefaultDrawVerts(4))
     .insert_resource(ConnectionColor(Color::hsla(0., 1., 1., 0.7)))
     .insert_resource(CommandColor(Color::hsla(0., 0., 0.7, 1.)))
