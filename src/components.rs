@@ -160,6 +160,7 @@ impl MapEntities for BlackHole {
 pub struct CommandText;
 
 #[derive(Component)]
+#[component(storage = "SparseSet")]
 pub struct InfoText(pub Entity);
 
 // -------------------- states --------------------
