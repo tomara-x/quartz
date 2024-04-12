@@ -3,6 +3,7 @@ use bevy::{
     render::view::VisibleEntities,
     sprite::Mesh2dHandle,
     render::view::RenderLayers,
+    text::Text2dBounds,
 };
 
 use fundsp::net::Net32;
@@ -517,6 +518,7 @@ pub fn update_num(
 pub fn update_info_text(
     mut query: Query<(Entity, &mut InfoText)>,
     mut text_query: Query<&mut Text>,
+    mut text_bounds: Query<&mut Text2dBounds>,
     mut trans_query: Query<&mut Transform>,
     mut order_query: Query<&mut Order>,
     mut num_query: Query<&mut Number>,
@@ -528,6 +530,7 @@ pub fn update_info_text(
     for (id, info) in query.iter_mut() {
         let t = trans_query.get_mut(id).unwrap();
         if t.is_changed() || info.is_added() {
+            text_bounds.get_mut(info.0).unwrap().size.x = t.scale.x;
             let t = t.translation;
             trans_query.get_mut(info.0).unwrap().translation = t.xy().extend(t.z + 0.00001);
         }
