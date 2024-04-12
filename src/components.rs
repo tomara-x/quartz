@@ -88,6 +88,7 @@ pub struct LostWH(pub bool);
 pub struct Save;
 
 #[derive(Component)]
+#[component(storage = "SparseSet")]
 pub struct Highlight(pub Entity);
 
 #[derive(Component, Reflect)]
