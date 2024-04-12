@@ -230,9 +230,9 @@ pub fn command_parser(
                         }
                     }
                     Some(":dc") | Some("dc") => {
-                        let mut h = 1.;
+                        let mut h = 270.;
                         let mut s = 1.;
-                        let mut l = 0.84;
+                        let mut l = 0.5;
                         let mut a = 1.;
                         if let Some(n) = command.next() {
                             if let Ok(n) = n.parse::<f32>() { h = n; }
