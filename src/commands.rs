@@ -44,13 +44,14 @@ pub struct Access<'w, 's> {
     default_verts: ResMut<'w, DefaultDrawVerts>,
     default_lt: ResMut<'w, DefaultLT>,
     version: Res<'w, Version>,
+    invisible_query: Query<'w, 's, Entity, (With<Vertices>, Without<Visible>)>,
 }
 
 pub fn command_parser(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut key_event: EventReader<KeyboardInput>,
     mut command_line_text: Query<&mut Text, With<CommandText>>,
-    entity_query: Query<Entity, With<Vertices>>,
+    circle_query: Query<Entity, With<Vertices>>,
     mut access: Access,
     mut next_mode: ResMut<NextState<Mode>>,
     mode: Res<State<Mode>>,
@@ -1166,13 +1167,13 @@ pub fn command_parser(
                 *text = format!(">WH_OPEN: {}", t);
             }
             Some("sa") => {
-                for e in entity_query.iter() {
+                for e in circle_query.iter() {
                     commands.entity(e).insert(Selected);
                 }
                 text.clear();
             }
             Some("sc") => {
-                for e in entity_query.iter() {
+                for e in circle_query.iter() {
                     if access.order_query.contains(e) {
                         commands.entity(e).insert(Selected);
                     }
@@ -1180,7 +1181,7 @@ pub fn command_parser(
                 text.clear();
             }
             Some("sh") => {
-                for e in entity_query.iter() {
+                for e in circle_query.iter() {
                     if !access.order_query.contains(e) {
                         commands.entity(e).insert(Selected);
                     }
@@ -1213,6 +1214,15 @@ pub fn command_parser(
                     if !access.order_query.contains(e) {
                         commands.entity(e).remove::<Selected>();
                     }
+                }
+                text.clear();
+            }
+            Some("si") => {
+                for e in access.selected_query.iter() {
+                    commands.entity(e).remove::<Selected>();
+                }
+                for e in access.invisible_query.iter() {
+                    commands.entity(e).insert(Selected);
                 }
                 text.clear();
             }
