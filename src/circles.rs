@@ -515,50 +515,57 @@ pub fn update_num(
 }
 
 pub fn update_info_text(
+    mut query: Query<(Entity, &mut InfoText)>,
     mut text_query: Query<&mut Text>,
-    mut text_trans: Query<&mut Transform, (Without<Vertices>, Without<InfoText>)>,
-    trans_query: Query<(&Transform, &InfoText), Or<(Changed<Transform>, Added<InfoText>)>>,
-    order_query: Query<(&Order, &InfoText), Or<(Changed<Order>, Added<InfoText>)>>,
-    num_query: Query<(&Number, &InfoText), Or<(Changed<Number>, Added<InfoText>)>>,
-    op_query: Query<(&Op, &InfoText), Or<(Changed<Op>, Added<InfoText>)>>,
-    white_hole_query: Query<(&WhiteHole, &InfoText), Or<(Changed<WhiteHole>, Added<InfoText>)>>,
-    black_hole_query: Query<&InfoText, With<BlackHole>>,
-    color_query: Query<(&Col, &InfoText), Or<(Changed<Col>, Added<InfoText>)>>,
-    // TODO(amy): cleanup!
-    added_bh_query: Query<(&BlackHole, &InfoText), Added<InfoText>>,
-    generic_wh_query: Query<&WhiteHole>,
+    mut trans_query: Query<&mut Transform>,
+    mut order_query: Query<&mut Order>,
+    mut num_query: Query<&mut Number>,
+    mut op_query: Query<&mut Op>,
+    mut white_hole_query: Query<&mut WhiteHole>,
+    black_hole_query: Query<&BlackHole>,
+    mut color_query: Query<&mut Col>,
 ) {
-    for (trans, text) in trans_query.iter() {
-        let t = trans.translation;
-        text_trans.get_mut(text.0).unwrap().translation = t.xy().extend(t.z + 0.00001);
-    }
-    for (order, text) in order_query.iter() {
-        text_query.get_mut(text.0).unwrap().sections[1].value = format!("{}\n", order.0);
-    }
-    // this is messy as it changes every time the wh changes (open / lt change)
-    for (wh, text) in white_hole_query.iter() {
-        text_query.get_mut(text.0).unwrap().sections[1].value = lt_to_string(wh.link_types.1);
-        if let Ok(bh_text) = black_hole_query.get(wh.bh) {
-            text_query.get_mut(bh_text.0).unwrap().sections[1].value = lt_to_string(wh.link_types.0);
+    for (id, info) in query.iter_mut() {
+        let t = trans_query.get_mut(id).unwrap();
+        if t.is_changed() || info.is_added() {
+            let t = t.translation;
+            trans_query.get_mut(info.0).unwrap().translation = t.xy().extend(t.z + 0.00001);
         }
-    }
-    // more duck tape
-    for (bh, text) in added_bh_query.iter() {
-        let wh = generic_wh_query.get(bh.wh).unwrap();
-        text_query.get_mut(text.0).unwrap().sections[1].value = lt_to_string(wh.link_types.0);
-    }
-    for (op, text) in op_query.iter() {
-        text_query.get_mut(text.0).unwrap().sections[2].value = format!("{}\n", op.0);
-    }
-    for (n, text) in num_query.iter() {
-        text_query.get_mut(text.0).unwrap().sections[3].value = n.0.to_string();
-    }
-    for (col, text) in color_query.iter() {
-        let l = if col.0.l() < 0.3 {1.} else {0.};
-        let opposite_color = Color::hsl(0., 1.0, l);
-        let t = &mut text_query.get_mut(text.0).unwrap();
-        for section in &mut t.sections {
-            section.style.color = opposite_color;
+        if let Ok(ord) = order_query.get_mut(id) {
+            if ord.is_changed() || info.is_added() {
+                text_query.get_mut(info.0).unwrap().sections[1].value = format!("{}\n", ord.0);
+            }
+        }
+        if let Ok(n) = num_query.get_mut(id) {
+            if n.is_changed() || info.is_added() {
+                text_query.get_mut(info.0).unwrap().sections[3].value = n.0.to_string();
+            }
+        }
+        if let Ok(op) = op_query.get_mut(id) {
+            if op.is_changed() || info.is_added() {
+                text_query.get_mut(info.0).unwrap().sections[2].value = format!("{}\n", op.0);
+            }
+        }
+        if let Ok(wh) = white_hole_query.get_mut(id) {
+            if wh.is_changed() || info.is_added() {
+                text_query.get_mut(info.0).unwrap().sections[1].value = lt_to_string(wh.link_types.1);
+            }
+        }
+        if let Ok(bh) = black_hole_query.get(id) {
+            if let Ok(wh) = white_hole_query.get_mut(bh.wh) {
+                if wh.is_changed() || info.is_added() {
+                    text_query.get_mut(info.0).unwrap().sections[1].value = lt_to_string(wh.link_types.0);
+                }
+            }
+        }
+        let c = color_query.get_mut(id).unwrap();
+        if c.is_changed() || info.is_added() {
+            let l = if c.0.l() < 0.3 {1.} else {0.};
+            let opposite_color = Color::hsl(0., 1.0, l);
+            let t = &mut text_query.get_mut(info.0).unwrap();
+            for section in &mut t.sections {
+                section.style.color = opposite_color;
+            }
         }
     }
 }
