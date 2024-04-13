@@ -1,7 +1,7 @@
 use bevy::{
     prelude::*,
     ecs::system::SystemParam,
-    render::view::RenderLayers,
+    render::view::{RenderLayers, VisibleEntities},
     app::AppExit,
     input::keyboard::{KeyboardInput, Key},
     window::WindowMode,
@@ -44,7 +44,7 @@ pub struct Access<'w, 's> {
     default_verts: ResMut<'w, DefaultDrawVerts>,
     default_lt: ResMut<'w, DefaultLT>,
     version: Res<'w, Version>,
-    invisible_query: Query<'w, 's, Entity, (With<Vertices>, Without<Visible>)>,
+    visible: Query<'w, 's, &'static VisibleEntities>,
 }
 
 pub fn command_parser(
@@ -1217,12 +1217,20 @@ pub fn command_parser(
                 }
                 text.clear();
             }
-            Some("si") => {
+            Some("sv") => {
                 for e in access.selected_query.iter() {
                     commands.entity(e).remove::<Selected>();
                 }
-                for e in access.invisible_query.iter() {
-                    commands.entity(e).insert(Selected);
+                for e in access.visible.single().iter() {
+                    if circle_query.contains(*e) {
+                        commands.entity(*e).insert(Selected);
+                    }
+                }
+                text.clear();
+            }
+            Some("sV") => {
+                for e in access.visible.single().iter() {
+                    commands.entity(*e).remove::<Selected>();
                 }
                 text.clear();
             }

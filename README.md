@@ -207,11 +207,12 @@ note: using the [std constants](https://doc.rust-lang.org/std/f32/consts/index.h
 - `sC` deselect circles
 - `sh` select all holes
 - `sH` deselect holes
+- `sv` select visible entities (in view)
+- `sV` deselect visible entities
 - `sg` select holes of the selected circles
 - `<delete>` delete selected entities
 - `yy` copy selection to clipboard
 - `p` paste copied
-- `si` select invisible (outside of view)
 
 note: when drag-selecting, holding `alt` will only select circles (ignores holes), holding `ctrl` will only select holes (ignores circles), and holding `shift` will add to the selection
 
