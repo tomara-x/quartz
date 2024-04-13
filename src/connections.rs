@@ -1,6 +1,6 @@
 use bevy::{
     prelude::*,
-    render::view::RenderLayers,
+    render::view::{RenderLayers, VisibleEntities},
 };
 
 use crate::components::*;
@@ -8,7 +8,9 @@ use crate::components::*;
 pub fn connect(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     mut commands: Commands,
-    query: Query<(Entity, &Transform, &Vertices), (With<Visible>, With<Order>)>,
+    trans_query: Query<&Transform>,
+    vertices_query: Query<&Vertices>,
+    visible: Query<&VisibleEntities>,
     cursor: Res<CursorInfo>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
@@ -26,14 +28,17 @@ pub fn connect(
     && !keyboard_input.pressed(KeyCode::Space) {
         let mut source_entity: (Option<Entity>, f32) = (None, f32::MIN);
         let mut sink_entity: (Option<Entity>, f32) = (None, f32::MIN);
-        for (e, t, _) in query.iter() {
-            if cursor.i.distance(t.translation.xy()) < t.scale.x
-                && t.translation.z > source_entity.1 {
-                source_entity = (Some(e), t.translation.z);
-            }
-            if cursor.f.distance(t.translation.xy()) < t.scale.x
-                && t.translation.z > sink_entity.1 {
-                sink_entity = (Some(e), t.translation.z);
+        for e in visible.single().iter() {
+            if holes_query.contains(*e) { // it's a non-hole
+                let t = trans_query.get(*e).unwrap();
+                if cursor.i.distance(t.translation.xy()) < t.scale.x
+                    && t.translation.z > source_entity.1 {
+                    source_entity = (Some(*e), t.translation.z);
+                }
+                if cursor.f.distance(t.translation.xy()) < t.scale.x
+                    && t.translation.z > sink_entity.1 {
+                    sink_entity = (Some(*e), t.translation.z);
+                }
             }
         }
 
@@ -50,12 +55,12 @@ pub fn connect(
                 order_change.send_default();
             }
             // get translation, radius, and vertices
-            let src_trans = query.get(src).unwrap().1.translation;
-            let snk_trans = query.get(snk).unwrap().1.translation;
-            let src_radius = query.get(src).unwrap().1.scale.x;
-            let snk_radius = query.get(snk).unwrap().1.scale.x;
-            let src_verts = query.get(src).unwrap().2.0;
-            let snk_verts = query.get(snk).unwrap().2.0;
+            let src_trans = trans_query.get(src).unwrap().translation;
+            let snk_trans = trans_query.get(snk).unwrap().translation;
+            let src_radius = trans_query.get(src).unwrap().scale.x;
+            let snk_radius = trans_query.get(snk).unwrap().scale.x;
+            let src_verts = vertices_query.get(src).unwrap().0;
+            let snk_verts = vertices_query.get(snk).unwrap().0;
             let bh_radius = src_radius * 0.15;
             let wh_radius = snk_radius * 0.15;
 
@@ -83,7 +88,6 @@ pub fn connect(
                     },
                     ..default()
                 },
-                Visible,
                 Col(bh_color),
                 Vertices(bh_verts),
                 RenderLayers::layer(2),
@@ -102,7 +106,6 @@ pub fn connect(
                     },
                     ..default()
                 },
-                Visible,
                 Col(wh_color),
                 Vertices(wh_verts),
                 WhiteHole {
@@ -132,7 +135,8 @@ pub fn connect(
 
 pub fn target(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
-    query: Query<(Entity, &Transform), With<Visible>>,
+    circle_trans_query: Query<&Transform, With<Vertices>>,
+    visible: Query<&VisibleEntities>,
     cursor: Res<CursorInfo>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut targets_query: Query<&mut Targets>,
@@ -142,14 +146,16 @@ pub fn target(
     && !keyboard_input.pressed(KeyCode::Space) {
         let mut source_entity: (Option<Entity>, f32) = (None, f32::MIN);
         let mut sink_entity: (Option<Entity>, f32) = (None, f32::MIN);
-        for (e, t) in query.iter() {
-            if cursor.i.distance(t.translation.xy()) < t.scale.x
-            && t.translation.z > source_entity.1 {
-                source_entity = (Some(e), t.translation.z);
-            }
-            if cursor.f.distance(t.translation.xy()) < t.scale.x
-            && t.translation.z > sink_entity.1 {
-                sink_entity = (Some(e), t.translation.z);
+        for e in visible.single().iter() {
+            if let Ok(t) = circle_trans_query.get(*e) {
+                if cursor.i.distance(t.translation.xy()) < t.scale.x
+                && t.translation.z > source_entity.1 {
+                    source_entity = (Some(*e), t.translation.z);
+                }
+                if cursor.f.distance(t.translation.xy()) < t.scale.x
+                && t.translation.z > sink_entity.1 {
+                    sink_entity = (Some(*e), t.translation.z);
+                }
             }
         }
         if let (Some(src), Some(snk)) = (source_entity.0, sink_entity.0) {
@@ -301,7 +307,6 @@ pub fn connect_targets(
                     },
                     ..default()
                 },
-                Visible,
                 Col(bh_color),
                 Vertices(bh_verts),
                 RenderLayers::layer(2),
@@ -320,7 +325,6 @@ pub fn connect_targets(
                     },
                     ..default()
                 },
-                Visible,
                 Col(wh_color),
                 Vertices(wh_verts),
                 WhiteHole {

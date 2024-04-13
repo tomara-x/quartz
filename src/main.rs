@@ -88,9 +88,8 @@ fn main() {
     .add_systems(Update, update_cursor_info)
     // circles
     .add_systems(Update, spawn_circles.run_if(in_state(Mode::Draw)))
-    .add_systems(Update, mark_visible_circles.after(update_cursor_info))
     .add_systems(Update, draw_drawing_circle.run_if(in_state(Mode::Draw)))
-    .add_systems(Update, update_selection.after(mark_visible_circles).run_if(in_state(Mode::Edit)))
+    .add_systems(Update, update_selection.after(update_cursor_info).run_if(in_state(Mode::Edit)))
     .add_systems(Update, move_selected.after(update_selection).run_if(in_state(Mode::Edit)))
     .add_systems(Update, update_color.after(update_selection).run_if(in_state(Mode::Edit)))
     .add_systems(Update, update_mat)
@@ -138,7 +137,6 @@ fn main() {
     .register_type::<Arr>()
     .register_type::<Vec<f32>>()
     .register_type::<Selected>()
-    .register_type::<Visible>()
     .register_type::<Save>()
     .register_type::<Order>()
     .register_type::<BlackHole>()
@@ -420,7 +418,6 @@ fn post_load(
                                 transform: *t,
                                 ..default()
                             },
-                            Visible,
                         ));
                         if let Ok(op) = op_query.get_mut(*child) {
                             commands.entity(*child).insert((

@@ -1,8 +1,7 @@
 use bevy::{
     prelude::*,
-    render::view::VisibleEntities,
+    render::view::{RenderLayers, VisibleEntities},
     sprite::Mesh2dHandle,
-    render::view::RenderLayers,
     text::Text2dBounds,
 };
 
@@ -64,7 +63,6 @@ pub fn spawn_circles(
                 LostWH(false),
             ),
             RenderLayers::layer(1),
-            Visible,
             Save,
         ));
         *depth += 0.01;
@@ -124,25 +122,6 @@ pub fn transform_highlights(
     }
 }
 
-pub fn mark_visible_circles(
-    mouse_button_input: Res<ButtonInput<MouseButton>>,
-    mut commands: Commands,
-    marked_circles: Query<Entity, With<Visible>>,
-    circles_query: Query<(), With<Vertices>>,
-    visible: Query<&VisibleEntities>,
-) {
-    if mouse_button_input.just_released(MouseButton::Left) {
-        for e in marked_circles.iter() {
-            commands.entity(e).remove::<Visible>();
-        }
-        for e in visible.single().iter() {
-            if circles_query.contains(*e) {
-                commands.entity(*e).insert(Visible);
-            }
-        }
-    }
-}
-
 pub fn draw_drawing_circle(
     id: Res<SelectionCircle>,
     mut trans_query: Query<&mut Transform>,
@@ -172,9 +151,9 @@ pub fn draw_drawing_circle(
 pub fn update_selection(
     mut commands: Commands,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
-    query: Query<(Entity, &Transform), (Or<(With<Visible>, With<Selected>)>, With<Vertices>)>,
+    circle_trans_query: Query<&Transform, With<Vertices>>,
+    visible: Query<&VisibleEntities>,
     selected: Query<Entity, With<Selected>>,
-    selected_query: Query<&Selected>,
     cursor: Res<CursorInfo>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut top_clicked_circle: Local<Option<(Entity, f32)>>,
@@ -189,20 +168,22 @@ pub fn update_selection(
     let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
     let alt = keyboard_input.any_pressed([KeyCode::AltLeft, KeyCode::AltRight]);
     if mouse_button_input.just_pressed(MouseButton::Left) {
-        for (e, t) in query.iter() {
-            if top_clicked_circle.is_some() {
-                if t.translation.z > top_clicked_circle.unwrap().1 &&
-                    cursor.i.distance(t.translation.xy()) < t.scale.x {
-                    *top_clicked_circle = Some((e, t.translation.z));
-                }
-            } else {
-                if cursor.i.distance(t.translation.xy()) < t.scale.x {
-                    *top_clicked_circle = Some((e, t.translation.z));
+        for e in visible.single().iter() {
+            if let Ok(t) = circle_trans_query.get(*e) {
+                if top_clicked_circle.is_some() {
+                    if t.translation.z > top_clicked_circle.unwrap().1 &&
+                        cursor.i.distance(t.translation.xy()) < t.scale.x {
+                        *top_clicked_circle = Some((*e, t.translation.z));
+                    }
+                } else {
+                    if cursor.i.distance(t.translation.xy()) < t.scale.x {
+                        *top_clicked_circle = Some((*e, t.translation.z));
+                    }
                 }
             }
         }
         if let Some(top) = *top_clicked_circle {
-            if !selected_query.contains(top.0) {
+            if !selected.contains(top.0) {
                 if shift { commands.entity(top.0).insert(Selected); }
                 else {
                     for entity in selected.iter() {
@@ -232,13 +213,15 @@ pub fn update_selection(
                 }
             }
             // select those in the dragged area
-            for (e, t) in query.iter() {
-                if cursor.i.distance(cursor.f) + t.scale.x > cursor.i.distance(t.translation.xy()) {
-                    // only select holes if ctrl is held
-                    if ctrl && order_query.contains(e) { continue; }
-                    // only select non-holes if alt is held
-                    else if alt && !order_query.contains(e) { continue; }
-                    commands.entity(e).insert(Selected);
+            for e in visible.single().iter() {
+                if let Ok(t) = circle_trans_query.get(*e) {
+                    if cursor.i.distance(cursor.f) + t.scale.x > cursor.i.distance(t.translation.xy()) {
+                        // only select holes if ctrl is held
+                        if ctrl && order_query.contains(*e) { continue; }
+                        // only select non-holes if alt is held
+                        else if alt && !order_query.contains(*e) { continue; }
+                        commands.entity(*e).insert(Selected);
+                    }
                 }
             }
         }

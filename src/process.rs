@@ -302,7 +302,6 @@ pub fn process(
                                         LostWH(false),
                                     ),
                                     RenderLayers::layer(1),
-                                    Visible,
                                     Save,
                                 )).id();
                                 targets.push(new);
