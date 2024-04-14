@@ -38,7 +38,6 @@ pub struct Col(pub Color);
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
-#[component(storage = "SparseSet")]
 pub struct Selected;
 
 #[derive(Component, Reflect, Default)]
@@ -83,7 +82,6 @@ pub struct LostWH(pub bool);
 pub struct Save;
 
 #[derive(Component)]
-#[component(storage = "SparseSet")]
 pub struct Highlight(pub Entity);
 
 #[derive(Component, Reflect)]
@@ -155,7 +153,6 @@ impl MapEntities for BlackHole {
 pub struct CommandText;
 
 #[derive(Component)]
-#[component(storage = "SparseSet")]
 pub struct InfoText(pub Entity);
 
 // -------------------- states --------------------
