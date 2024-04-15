@@ -266,47 +266,45 @@ pub fn process(
             "spawn" => {
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
-                        if wh.link_types == (-1, 1) && wh.open {
-                            if access.num_query.get(wh.bh_parent).unwrap().0 != 0. {
-                                let targets = &mut access.targets_query.get_mut(*id).unwrap().0;
-                                let v = access.vertices_query.get(*id).unwrap().0;
-                                let trans = access.trans_query.get(*id).unwrap();
-                                let t = trans.translation.xy();
-                                let r = trans.scale.x;
-                                let depth = trans.translation.z + (targets.len() + 1) as f32 * 0.01;
-                                let color = access.col_query.get(*id).unwrap().0;
-                                let new = commands.spawn((
-                                    ColorMesh2dBundle {
-                                        mesh: access.polygon_handles.0[v].clone().unwrap(),
-                                        material: access.materials.add(ColorMaterial::from(color)),
-                                        transform: Transform {
-                                            translation: t.extend(depth),
-                                            rotation: trans.rotation,
-                                            scale: Vec3::new(r,r,1.),
-                                        },
-                                        ..default()
+                        if wh.link_types == (-1, 1) && access.num_query.get(wh.bh_parent).unwrap().0 != 0. {
+                            let targets = &mut access.targets_query.get_mut(*id).unwrap().0;
+                            let v = access.vertices_query.get(*id).unwrap().0;
+                            let trans = access.trans_query.get(*id).unwrap();
+                            let t = trans.translation.xy();
+                            let r = trans.scale.x;
+                            let depth = trans.translation.z + (targets.len() + 1) as f32 * 0.01;
+                            let color = access.col_query.get(*id).unwrap().0;
+                            let new = commands.spawn((
+                                ColorMesh2dBundle {
+                                    mesh: access.polygon_handles.0[v].clone().unwrap(),
+                                    material: access.materials.add(ColorMaterial::from(color)),
+                                    transform: Transform {
+                                        translation: t.extend(depth),
+                                        rotation: trans.rotation,
+                                        scale: Vec3::new(r,r,1.),
                                     },
-                                    Vertices(v),
-                                    Col(color),
-                                    Number(0.),
-                                    Arr(Vec::new()),
-                                    Op("empty".to_string()),
-                                    Targets(Vec::new()),
-                                    Holes(Vec::new()),
-                                    Order(0),
-                                    (
-                                        Network(Net32::new(0,1)),
-                                        NetIns(Vec::new()),
-                                        OpChanged(false),
-                                        GainedWH(false),
-                                        LostWH(false),
-                                    ),
-                                    RenderLayers::layer(1),
-                                    Save,
-                                )).id();
-                                targets.push(new);
-                                lt_to_open = Some(-14);
-                            }
+                                    ..default()
+                                },
+                                Vertices(v),
+                                Col(color),
+                                Number(0.),
+                                Arr(Vec::new()),
+                                Op("empty".to_string()),
+                                Targets(Vec::new()),
+                                Holes(Vec::new()),
+                                Order(0),
+                                (
+                                    Network(Net32::new(0,1)),
+                                    NetIns(Vec::new()),
+                                    OpChanged(false),
+                                    GainedWH(false),
+                                    LostWH(false),
+                                ),
+                                RenderLayers::layer(1),
+                                Save,
+                            )).id();
+                            targets.push(new);
+                            lt_to_open = Some(-14);
                         }
                     }
                 }
