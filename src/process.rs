@@ -1444,6 +1444,7 @@ pub fn update_slot(
     holes_query: Query<&Holes>,
     white_hole_query: Query<&WhiteHole>,
 ) {
+    // if it's deleted it gets removed from the vec
     dac_circles.0.retain(|x| holes_query.contains(*x));
     let mut nets = Vec::new();
     for e in &dac_circles.0 {
