@@ -1465,5 +1465,5 @@ pub fn update_slot(
             graph = graph + net;
         }
     }
-    slot.0.set(Fade::Smooth, 0.1, Box::new(graph));
+    slot.0.set(Fade::Smooth, 0.01, Box::new(graph));
 }
