@@ -512,7 +512,7 @@ combining that with the ability to store any number of targets (and repeated tar
 <details><summary>audio node management</summary>
 <p>
 
-refer to the fundsp [readme](https://github.com/SamiPerttu/fundsp), and [docs](https://docs.rs/fundsp/latest/fundsp/) for more details
+refer to the fundsp [readme](https://github.com/SamiPerttu/fundsp), and [docs](https://docs.rs/fundsp/latest/fundsp/) for more details (sometimes)
 
 - `var()`
     - node: 0 ins, 1 out
@@ -523,8 +523,12 @@ refer to the fundsp [readme](https://github.com/SamiPerttu/fundsp), and [docs](h
 - `timer()`
     - this one's weird (might delete later) (has to be stacked with another node and sets self's num to the time..
 - `get()`
-    - custom node: 1 in (index), 1 out (value)
+    - node: 1 in (index), 1 out (value)
     - copies this circle's array into node so it can be indexed at audio-rate. input is index, output is the value at that index
+- `quantize()`
+    - inputs: `A -> 1` (array of steps to quantize to. must have at least 2 different values)
+    - node: 1 in, 1 out
+    - quantize input to the nearest value in the given steps
 - `feedback()`
     - inputs: `0 -> 1` (input node), [`n -> 2`] (optional delay)
     - mixes outputs of given node back into its inputs (number of node ins/outs must match)
@@ -591,7 +595,7 @@ refer to the fundsp [readme](https://github.com/SamiPerttu/fundsp), and [docs](h
 <details><summary>audio nodes</summary>
 <p>
 
-refer to the fundsp [readme](https://github.com/SamiPerttu/fundsp), and [docs](https://docs.rs/fundsp/latest/fundsp/) for more details
+refer to the fundsp [readme](https://github.com/SamiPerttu/fundsp), and [docs](https://docs.rs/fundsp/latest/fundsp/) for more details (sometimes)
 
 - `shift_reg()` 2 ins (trigger signal, input signal), 8 outs (outputs of the shift register)
 - `meter(peak/rms, float)`
