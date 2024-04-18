@@ -1103,6 +1103,21 @@ pub fn process(
                     }
                 }
             }
+            "quantize()" => {
+                for hole in holes {
+                    if let Ok(wh) = white_hole_query.get(*hole) {
+                        if wh.link_types == (-13, 1) && wh.open {
+                            let arr = &access.arr_query.get(wh.bh_parent).unwrap().0;
+                            if let (Some(first), Some(last)) = (arr.first(), arr.last()) {
+                                let range = *last - *first;
+                                let net = &mut access.net_query.get_mut(*id).unwrap().0;
+                                *net = Net32::wrap(Box::new(An(Quantizer::new(arr.clone(), range))));
+                                lt_to_open = Some(0);
+                            }
+                        }
+                    }
+                }
+            }
             "feedback()" => {
                 let op_changed = access.op_changed_query.get(*id).unwrap().0;
                 let lost = access.lost_wh_query.get(*id).unwrap().0;

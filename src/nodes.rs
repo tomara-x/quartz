@@ -165,3 +165,45 @@ impl AudioNode for ShiftReg {
         self.reg.into()
     }
 }
+
+/// quantizer
+/// - input 0: value to quantize
+/// - output 0: quantized value
+#[derive(Clone)]
+pub struct Quantizer {
+    arr: Vec<f32>,
+    range: f32,
+}
+
+impl Quantizer {
+    pub fn new(arr: Vec<f32>, range: f32) -> Self { Quantizer { arr, range } }
+}
+
+impl AudioNode for Quantizer {
+    const ID: u64 = 1111;
+    type Sample = f32;
+    type Inputs = U1;
+    type Outputs = U1;
+    type Setting = ();
+
+    #[inline]
+    fn tick(
+        &mut self,
+        input: &Frame<Self::Sample, Self::Inputs>,
+    ) -> Frame<Self::Sample, Self::Outputs> {
+        let mut buffer = [0.];
+        let n = input[0];
+        let wrapped = n - self.range * (n / self.range).floor();
+        let mut nearest = 0.;
+        let mut dist = f32::MAX;
+        for i in &self.arr {
+            let d = (wrapped - i).abs();
+            if d < dist {
+                nearest = *i;
+                dist = d;
+            }
+        }
+        buffer[0] = n + nearest - wrapped;
+        buffer.into()
+    }
+}
