@@ -541,7 +541,7 @@ refer to the fundsp [readme](https://github.com/SamiPerttu/fundsp), and [docs](h
     - inputs: `0 -> {non-negative}` (any number of those)
     - node: 4 ins (trig, node index, delay, duration), 1 out (output from sequenced nodes)
     - sequences the given nodes and mixes their outputs at output (valid input nodes must have no inputs, and only one output). for every sample trig is non-zero, add an event for the node at index with the given delay and duration (in seconds, rounded to nearest sample)
-    - indexes are collected. e.g. if circle has three connections: `0 -> 1` `0 -> 5` `0 -> 8` this is gonna be a sequencer node that accepts indexes 0, 1, and 2. the node at 1 at index 0, the node at 5 at index 2, etc. and only valid nodes are added.
+    - indexes are collected. e.g. if circle has three connections: `0 -> 1` `0 -> 5` `0 -> 8` this is gonna be a sequencer node that accepts indexes 0, 1, and 2. the node at 1 has index 0, node at 5 has index 1, and node at 8 has index 2. and only valid nodes are added.
 - `select()`
     - inputs: `0 -> {non-negative}` (any number of those)
     - node: 1 in (index of selected node), 1 out (output from that node)
