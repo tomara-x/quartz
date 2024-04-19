@@ -1151,7 +1151,7 @@ pub fn process(
                     }
                 }
             }
-            "kr()" => {
+            "kr()" | "reset()" => {
                 let op_changed = access.op_changed_query.get(*id).unwrap().0;
                 let lost = access.lost_wh_query.get(*id).unwrap().0;
                 let num_changed = access.num_query.get_mut(*id).unwrap().is_changed();
@@ -1167,9 +1167,13 @@ pub fn process(
                     if let Some(input) = input {
                         let net = access.net_query.get(input).unwrap().0.clone();
                         if net.inputs() == 0 && net.outputs() == 1 {
-                            let n = access.num_query.get(*id).unwrap().0.max(1.) as usize;
+                            let n = access.num_query.get(*id).unwrap().0;
                             let output = &mut access.net_query.get_mut(*id).unwrap().0;
-                            *output = Net32::wrap(Box::new(An(Kr::new(net, n))));
+                            if op == "kr()" {
+                                *output = Net32::wrap(Box::new(An(Kr::new(net, n.max(1.) as usize))));
+                            } else {
+                                *output = Net32::wrap(Box::new(An(Reset::new(net, n))));
+                            }
                             lt_to_open = Some(0);
                         }
                     }

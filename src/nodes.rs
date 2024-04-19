@@ -247,3 +247,46 @@ impl AudioNode for Kr {
         buffer.into()
     }
 }
+
+
+/// reset network every s seconds
+/// - output 0: output from the net
+#[derive(Default, Clone)]
+pub struct Reset {
+    net: Net32,
+    n: usize,
+    count: usize,
+}
+
+impl Reset {
+    pub fn new(net: Net32, s: f32) -> Self {
+        Reset {
+            net,
+            n: (s * 44100.).round() as usize,
+            count: 0,
+        }
+    }
+}
+
+impl AudioNode for Reset {
+    const ID: u64 = 1113;
+    type Sample = f32;
+    type Inputs = U0;
+    type Outputs = U1;
+    type Setting = ();
+
+    #[inline]
+    fn tick(
+        &mut self,
+        _input: &Frame<Self::Sample, Self::Inputs>,
+    ) -> Frame<Self::Sample, Self::Outputs> {
+        let mut buffer = [0.];
+        if self.count == self.n {
+            self.net.reset();
+            self.count = 0;
+        }
+        self.net.tick(&[], &mut buffer);
+        self.count += 1;
+        buffer.into()
+    }
+}
