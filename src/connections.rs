@@ -190,7 +190,7 @@ pub fn update_connection_arrows(
                 *arrow_trans.get_mut(arrow_id.0).unwrap() = Transform {
                     translation: ((i+f) / 2.).extend(100.),
                     scale: Vec3::new(4., wh_trans.distance(bh_trans) - (bh_radius + wh_radius), 1.),
-                    rotation: Quat::from_rotation_z(perp.y.atan2(perp.x)),
+                    rotation: Quat::from_rotation_z(perp.to_angle()),
                 };
             }
         }
@@ -209,7 +209,7 @@ pub fn update_connection_arrows(
                 *arrow_trans.get_mut(arrow_id.0).unwrap() = Transform {
                     translation: ((i+f) / 2.).extend(100.),
                     scale: Vec3::new(4., wh_trans.distance(bh_trans) - (bh_radius + wh_radius), 1.),
-                    rotation: Quat::from_rotation_z(perp.y.atan2(perp.x)),
+                    rotation: Quat::from_rotation_z(perp.to_angle()),
                 };
             }
         }
@@ -230,7 +230,7 @@ pub fn draw_connecting_arrow(
         *trans_query.get_mut(id.0).unwrap() = Transform {
             translation: ((cursor.i + cursor.f) / 2.).extend(100.),
             scale: Vec3::new(4., cursor.f.distance(cursor.i), 1.),
-            rotation: Quat::from_rotation_z(perp.y.atan2(perp.x)),
+            rotation: Quat::from_rotation_z(perp.to_angle()),
         }
     }
     if mouse_button_input.just_released(MouseButton::Left) {
