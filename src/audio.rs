@@ -15,14 +15,14 @@ pub fn ext_thread(mut commands: Commands) {
         let host = cpal::default_host();
         let device = host
             .default_output_device()
-            .expect("Failed to find a default output device");
+            .expect("failed to find a default output device");
         let config = device.default_output_config().unwrap();
         match config.sample_format() {
             // passing the slot's backend inside
             cpal::SampleFormat::F32 => run::<f32>(&device, &config.into(), slot.1),
             cpal::SampleFormat::I16 => run::<i16>(&device, &config.into(), slot.1),
             cpal::SampleFormat::U16 => run::<u16>(&device, &config.into(), slot.1),
-            _ => panic!("Unsupported format"),
+            _ => panic!("unsupported format"),
         }
     });
 }
