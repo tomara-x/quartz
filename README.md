@@ -613,12 +613,12 @@ sources
 - `soft_saw([float])` (same)
 - `dsf_saw([float])` `dsf_saw()` takes 2 inputs (frequency, and roughness [0...1]), `dsf_saw(0.5)` takes only a freq input.
 - `dsf_square([float])` (same)
-- `pulse()` pulse wave oscillator (take a frequency input)
+- `pulse()` pulse wave oscillator (takes a frequency input)
 - `brown()` brown noise
 - `pink()` pink noise
 - `white()` `noise()` white noise
 - `zero()` silence
-- `impulse()` 1 sample impulse
+- `impulse()` one sample impulse
 - `lorenz()`
 - `rossler()`
 - `constant(float)` `dc(float)`
@@ -636,7 +636,7 @@ filters
 - `bandrez([float], [float])` (same)
 - `bell([float, float], [float])` if 2 params are given, they're (q, gain), if 3 are give, they're (hz, q, gain), if none, the node takes 4 channels (input, hz, q, gain)
 - `biquad(float, float, float, float, float)`
-- `butterpass([float])` e.g. `butterpass()` takes 2 inputs (signal, and hz). `butterpass(1729)` take 1 input
+- `butterpass([float])` e.g. `butterpass()` takes 2 inputs (signal, and hz). `butterpass(1729)` takes 1 input
 - `dc_block([float])` if no param the cutoff is 10Hz
 - `fir(float [float], [float], ...)` (up to 10 weights)
 - `fir3(float)` param is gain at nyquist
@@ -669,7 +669,7 @@ envelopes (all subsampled at ~2 ms)
 - `ar([float, float], [float, float])` if there are no params it takes 4 inputs, if there are 2 params they are the curvature of attack and release and the node takes 2 inputs specifying the times, if there are 4 params they are (attack time, attack curvature, release time, release curvature)
 
 other
-- `tick()`
+- `tick()` one sample delay
 - `shift_reg()` 2 ins (trigger signal, input signal), 8 outs (outputs of the shift register)
 - `meter(peak/rms, float)` e.g. `meter(rms, 0.5)` `rms(peak, 2)`
 - `chorus(float, float, float, float)` (seed, separation, variation, mod frequency)
@@ -692,7 +692,7 @@ math
 - `t()` time sine the node started processing (subsampled every ~2 ms)
 - `rise()` one sample trigger when there's a rise in input
 - `fall()` same but fall
-- `>([float])` e.g. `>()` takes 2 inputs and compares them. `>(3)` takes one input and compares it against 3
+- `>([float])` e.g. `>()` takes 2 inputs and compares them. `>(3)` takes one input and compares against 3
 - `<([float])` (same from this one...)
 - `==([float])`
 - `!=([float])`
