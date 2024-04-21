@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+
+env:
+  binary: quartz
+  CARGO_TERM_COLOR: always
+
+jobs:
+
+  # Build for Linux
+  release-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: olegtarasov/get-tag@v2.1.2
+        id: get_version
+      - uses: actions/checkout@v4
+        with:
+          lfs: ${{ env.use_git_lfs }}
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-unknown-linux-gnu
+      - name: install dependencies
+        run: |
+          sudo apt-get update; sudo apt-get install pkg-config libx11-dev libasound2-dev libudev-dev libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev
+
+      - name: Build
+        run: |
+          cargo build --release --target x86_64-unknown-linux-gnu
+
+      - name: Prepare package
+        run: |
+          mkdir linux
+          cp target/x86_64-unknown-linux-gnu/release/${{ env.binary }} linux/
+          cp -r assets linux/ || true # Try to copy, but ignore if it can't copy if source directory does not exist
+
+      - name: Package as a zip
+        working-directory: ./linux
+        run: |
+          zip --recurse-paths ../${{ env.binary }}.zip .
+
+      - name: Upload binaries to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: ${{ env.binary }}.zip
+          name: linux
+          retention-days: 1

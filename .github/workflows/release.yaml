@@ -1,0 +1,255 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '*'
+
+env:
+  binary: quartz
+  add_binaries_to_github_release: true
+  #itch_target: <itch.io-username>/<game-name>
+
+  # Before enabling LFS, please take a look at GitHub's documentation for costs and quota limits:
+  # https://docs.github.com/en/repositories/working-with-files/managing-large-files/about-storage-and-bandwidth-usage
+  use_git_lfs: false
+
+
+jobs:
+
+  # Build for Linux
+  release-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: olegtarasov/get-tag@v2.1.2
+        id: get_version
+      - uses: actions/checkout@v4
+        with:
+          lfs: ${{ env.use_git_lfs }}
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-unknown-linux-gnu
+      - name: install dependencies
+        run: |
+          sudo apt-get update; sudo apt-get install pkg-config libx11-dev libasound2-dev libudev-dev libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev
+
+      - name: Build
+        run: |
+          cargo build --release --target x86_64-unknown-linux-gnu
+
+      - name: Prepare package
+        run: |
+          mkdir linux
+          cp target/x86_64-unknown-linux-gnu/release/${{ env.binary }} linux/
+          cp -r assets linux/ || true # Try to copy, but ignore if it can't copy if source directory does not exist
+
+      - name: Package as a zip
+        working-directory: ./linux
+        run: |
+          zip --recurse-paths ../${{ env.binary }}.zip .
+
+      - name: Upload binaries to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: ${{ env.binary }}.zip
+          name: linux
+          retention-days: 1
+
+      - name: Upload binaries to release
+        if: ${{ env.add_binaries_to_github_release == 'true' }}
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ env.binary }}.zip
+          asset_name: ${{ env.binary }}-linux-${{ steps.get_version.outputs.tag }}.zip
+          tag: ${{ github.ref }}
+          overwrite: true
+
+  # Build for Windows
+  release-windows:
+    runs-on: windows-latest
+
+    steps:
+      - uses: olegtarasov/get-tag@v2.1.2
+        id: get_version
+      - uses: actions/checkout@v4
+        with:
+          lfs: ${{ env.use_git_lfs }}
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Build
+        run: |
+          cargo build --release --target x86_64-pc-windows-msvc
+
+      - name: Prepare package
+        run: |
+          mkdir windows
+          cp target/x86_64-pc-windows-msvc/release/${{ env.binary }}.exe windows/
+          mkdir assets -ea 0 # create the assets directory if it does not exist, it will get ignored in the zip if empty
+          cp -r assets windows/
+
+      - name: Package as a zip
+        run: |
+          Compress-Archive -Path windows/* -DestinationPath ${{ env.binary }}.zip
+
+      - name: Upload binaries to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: ${{ env.binary }}.zip
+          name: windows
+          retention-days: 1
+
+      - name: Upload binaries to release
+        if: ${{ env.add_binaries_to_github_release == 'true' }}
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ env.binary }}.zip
+          asset_name: ${{ env.binary }}-windows-${{ steps.get_version.outputs.tag }}.zip
+          tag: ${{ github.ref }}
+          overwrite: true
+
+  # Build for MacOS x86_64
+  release-macOS-intel:
+    runs-on: macOS-latest
+
+    steps:
+      - uses: olegtarasov/get-tag@v2.1.2
+        id: get_version
+      - uses: actions/checkout@v4
+        with:
+          lfs: ${{ env.use_git_lfs }}
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-apple-darwin
+      - name: Environment Setup
+        run: |
+          export CFLAGS="-fno-stack-check"
+          export MACOSX_DEPLOYMENT_TARGET="10.9"
+
+      - name: Build
+        run: |
+          cargo build --release --target x86_64-apple-darwin
+
+      - name: Prepare Package
+        run: |
+          mkdir -p ${{ env.binary }}.app/Contents/MacOS
+          cp target/x86_64-apple-darwin/release/${{ env.binary }} ${{ env.binary }}.app/Contents/MacOS/
+          cp -r assets ${{ env.binary }}.app/Contents/MacOS/ || true # Try to copy, but ignore if it can't copy if source directory does not exist
+          hdiutil create -fs HFS+ -volname "${{ env.binary }}" -srcfolder ${{ env.binary }}.app ${{ env.binary }}-macOS-intel.dmg
+
+      - name: Upload binaries to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: ${{ env.binary }}-macOS-intel.dmg
+          name: macOS-intel
+          retention-days: 1
+
+      - name: Upload binaries to release
+        if: ${{ env.add_binaries_to_github_release == 'true' }}
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file:  ${{ env.binary }}-macOS-intel.dmg
+          asset_name: ${{ env.binary }}-macOS-intel-${{ steps.get_version.outputs.tag }}.dmg
+          tag: ${{ github.ref }}
+          overwrite: true
+
+  # Build for MacOS Apple Silicon
+  release-macOS-apple-silicon:
+    runs-on: macOS-latest
+
+    steps:
+      - uses: olegtarasov/get-tag@v2.1.2
+        id: get_version
+      - uses: actions/checkout@v4
+        with:
+          lfs: ${{ env.use_git_lfs }}
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin
+      - name: Environment 
+        # macOS 11 was the first version to support ARM
+        run: |
+          export MACOSX_DEPLOYMENT_TARGET="11"
+
+      - name: Build
+        run: |
+          cargo build --release --target aarch64-apple-darwin
+
+      - name: Prepare Package
+        run: |
+          mkdir -p ${{ env.binary }}.app/Contents/MacOS
+          cp target/aarch64-apple-darwin/release/${{ env.binary }} ${{ env.binary }}.app/Contents/MacOS/
+          cp -r assets ${{ env.binary }}.app/Contents/MacOS/ || true # Try to copy, but ignore if it can't copy if source directory does not exist
+          hdiutil create -fs HFS+ -volname "${{ env.binary }}-macOS-apple-silicon" -srcfolder ${{ env.binary }}.app ${{ env.binary }}-macOS-apple-silicon.dmg
+
+      - name: Upload binaries to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: ${{ env.binary }}-macOS-apple-silicon.dmg
+          name: macOS-apple-silicon
+          retention-days: 1
+
+      - name: Upload binaries to release
+        if: ${{ env.add_binaries_to_github_release == 'true' }}
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ env.binary }}-macOS-apple-silicon.dmg
+          asset_name: ${{ env.binary }}-macOS-apple-silicon-${{ steps.get_version.outputs.tag }}.dmg
+          tag: ${{ github.ref }}
+          overwrite: true
+
+  check-if-upload-to-itch-is-configured:
+    runs-on: ubuntu-latest
+    outputs:
+      should-upload: ${{ steps.check-env.outputs.has-itch-target }}
+    steps:
+      - id: check-env
+        run: |
+          if [[ -z "$itch_target" ]]; then
+            echo "has-itch-target=no" >> $GITHUB_OUTPUT
+          else
+            echo "has-itch-target=yes" >> $GITHUB_OUTPUT
+          fi
+
+  upload-to-itch:
+    runs-on: ubuntu-latest
+    needs:
+      - check-if-upload-to-itch-is-configured
+      - release-wasm
+      - release-linux
+      - release-windows
+      - release-macOS-intel
+      - release-macOS-apple-silicon
+    if: ${{ needs.check-if-upload-to-itch-is-configured.outputs.should-upload == 'yes' }}
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: ./builds
+
+      - name: Install butler
+        run: |
+          curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
+          unzip butler.zip
+          chmod +x butler
+          ./butler -V
+      - uses: olegtarasov/get-tag@v2.1.2
+        id: get_version
+      - name: Upload to itch.io
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_CREDENTIALS }}
+        run: |
+          for channel in $(ls builds); do
+            ./butler push \
+                --fix-permissions \
+                --userversion="${{ steps.get_version.outputs.tag }}" \
+                builds/$channel/* \
+                ${{ env.itch_target }}:$channel
+          done
