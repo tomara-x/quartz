@@ -107,40 +107,7 @@ pub fn str_to_net(op: &str) -> Net32 {
         }
     } else { return Net32::wrap(Box::new(dc(0.))); } // no parentheses
     match args[0] {
-        "shift_reg" => { return Net32::wrap(Box::new(An(ShiftReg::new()))); }
-        "meter" => {
-            if let (Some(arg), Some(p)) = (args.get(1), p.first()) {
-                if arg.starts_with("peak") {
-                    return Net32::wrap(Box::new(meter(Meter::Peak(*p as f64))));
-                } else if arg.starts_with("rms") {
-                    return Net32::wrap(Box::new(meter(Meter::Rms(*p as f64))));
-                }
-            }
-        }
-        "sink" => { return Net32::wrap(Box::new(sink())); }
-        "pass" => { return Net32::wrap(Box::new(pass())); }
-
-        "panner" => { return Net32::wrap(Box::new(panner())); }
-
-        "pulse" => { return Net32::wrap(Box::new(pulse())); }
-        "brown" => { return Net32::wrap(Box::new(brown())); }
-        "pink" => { return Net32::wrap(Box::new(pink())); }
-        "white" | "noise" => { return Net32::wrap(Box::new(white())); }
-
-        "allpole" => { return Net32::wrap(Box::new(allpole())); }
-        "lorenz" => { return Net32::wrap(Box::new(lorenz())); }
-        "mls" => { return Net32::wrap(Box::new(mls())); }
-        "pinkpass" => { return Net32::wrap(Box::new(pinkpass())); }
-        "rossler" => { return Net32::wrap(Box::new(rossler())); }
-        "tick" => { return Net32::wrap(Box::new(tick())); }
-        "zero" => { return Net32::wrap(Box::new(zero())); }
-        "impulse" => { return Net32::wrap(Box::new(impulse::<U1>())); }
-
-        "pan" => {
-            if let Some(p) = p.first() {
-                return Net32::wrap(Box::new(pan(*p)));
-            }
-        }
+        // -------------------- sources --------------------
         "sine" => {
             if let Some(p) = p.first() {
                 return Net32::wrap(Box::new(sine_hz(*p)));
@@ -166,38 +133,63 @@ pub fn str_to_net(op: &str) -> Net32 {
                 return Net32::wrap(Box::new(organ_hz(*p)));
             } else { return Net32::wrap(Box::new(organ())); }
         }
+        "pulse" => { return Net32::wrap(Box::new(pulse())); }
+        "brown" => { return Net32::wrap(Box::new(brown())); }
+        "pink" => { return Net32::wrap(Box::new(pink())); }
+        "white" | "noise" => { return Net32::wrap(Box::new(white())); }
+        "hammond" => {
+            if let Some(p) = p.first() {
+                return Net32::wrap(Box::new(hammond_hz(*p)));
+            } else { return Net32::wrap(Box::new(hammond())); }
+        }
+        "zero" => { return Net32::wrap(Box::new(zero())); }
+        "impulse" => { return Net32::wrap(Box::new(impulse::<U1>())); }
+        "lorenz" => { return Net32::wrap(Box::new(lorenz())); }
+        "rossler" => { return Net32::wrap(Box::new(rossler())); }
+        "constant" | "dc" => {
+            match p[..] {
+                [p0,p1,p2,p3,p4,p5,p6,p7,..] => { return Net32::wrap(Box::new(constant((p0,p1,p2,p3,p4,p5,p6,p7)))); }
+                [p0,p1,p2,p3,p4,p5,p6,..] => { return Net32::wrap(Box::new(constant((p0,p1,p2,p3,p4,p5,p6)))); }
+                [p0,p1,p2,p3,p4,p5,..] => { return Net32::wrap(Box::new(constant((p0,p1,p2,p3,p4,p5)))); }
+                [p0,p1,p2,p3,p4,..] => { return Net32::wrap(Box::new(constant((p0,p1,p2,p3,p4)))); }
+                [p0,p1,p2,p3,..] => { return Net32::wrap(Box::new(constant((p0,p1,p2,p3)))); }
+                [p0,p1,p2,..] => { return Net32::wrap(Box::new(constant((p0,p1,p2)))); }
+                [p0,p1,..] => { return Net32::wrap(Box::new(constant((p0,p1)))); }
+                [p0,..] => { return Net32::wrap(Box::new(constant(p0))); }
+                _ => { return Net32::wrap(Box::new(constant(1.))); }
+            }
+        }
+        "dsf_saw" => {
+            if let Some(p) = p.first() {
+                return Net32::wrap(Box::new(dsf_saw_r(*p)));
+            } else { return Net32::wrap(Box::new(dsf_saw())); }
+        }
+        "dsf_square" => {
+            if let Some(p) = p.first() {
+                return Net32::wrap(Box::new(dsf_square_r(*p)));
+            } else { return Net32::wrap(Box::new(dsf_square())); }
+        }
+        "pluck" => {
+            if let Some(p) = p.get(0..3) {
+                return Net32::wrap(Box::new(pluck(p[0], p[1], p[2])));
+            }
+        }
+        "mls" => {
+            if let Some(p) = p.first() {
+                return Net32::wrap(Box::new(mls_bits(p.clamp(1.,31.) as i64)));
+            } else { return Net32::wrap(Box::new(mls())); }
+        }
+        "soft_saw" => {
+            if let Some(p) = p.first() {
+                return Net32::wrap(Box::new(soft_saw_hz(*p)));
+            } else { return Net32::wrap(Box::new(soft_saw())); }
+        }
+        "ramp" => { return Net32::wrap(Box::new(lfo_in(|t, i: &Frame<f32, U1>| (t*i[0]).rem_euclid(1.)))); }
+        "clock" => { return Net32::wrap(Box::new(sine() >> map(|i: &Frame<f32,U1>| if i[0] > 0. {1.} else {0.}))); }
 
-        "add" => {
-            match p[..] {
-                [p0,p1,p2,p3,p4,p5,p6,p7,..] => { return Net32::wrap(Box::new(add((p0,p1,p2,p3,p4,p5,p6,p7)))); }
-                [p0,p1,p2,p3,p4,p5,p6,..] => { return Net32::wrap(Box::new(add((p0,p1,p2,p3,p4,p5,p6)))); }
-                [p0,p1,p2,p3,p4,p5,..] => { return Net32::wrap(Box::new(add((p0,p1,p2,p3,p4,p5)))); }
-                [p0,p1,p2,p3,p4,..] => { return Net32::wrap(Box::new(add((p0,p1,p2,p3,p4)))); }
-                [p0,p1,p2,p3,..] => { return Net32::wrap(Box::new(add((p0,p1,p2,p3)))); }
-                [p0,p1,p2,..] => { return Net32::wrap(Box::new(add((p0,p1,p2)))); }
-                [p0,p1,..] => { return Net32::wrap(Box::new(add((p0,p1)))); }
-                [p0,..] => { return Net32::wrap(Box::new(add(p0))); }
-                _ => { return Net32::wrap(Box::new(add(1.))); }
-            }
-        }
-        "sub" => {
-            match p[..] {
-                [p0,p1,p2,p3,p4,p5,p6,p7,..] => { return Net32::wrap(Box::new(sub((p0,p1,p2,p3,p4,p5,p6,p7)))); }
-                [p0,p1,p2,p3,p4,p5,p6,..] => { return Net32::wrap(Box::new(sub((p0,p1,p2,p3,p4,p5,p6)))); }
-                [p0,p1,p2,p3,p4,p5,..] => { return Net32::wrap(Box::new(sub((p0,p1,p2,p3,p4,p5)))); }
-                [p0,p1,p2,p3,p4,..] => { return Net32::wrap(Box::new(sub((p0,p1,p2,p3,p4)))); }
-                [p0,p1,p2,p3,..] => { return Net32::wrap(Box::new(sub((p0,p1,p2,p3)))); }
-                [p0,p1,p2,..] => { return Net32::wrap(Box::new(sub((p0,p1,p2)))); }
-                [p0,p1,..] => { return Net32::wrap(Box::new(sub((p0,p1)))); }
-                [p0,..] => { return Net32::wrap(Box::new(sub(p0))); }
-                _ => { return Net32::wrap(Box::new(sub(1.))); }
-            }
-        }
-        "adsr" => {
-            if let Some(p) = p.get(0..4) {
-                return Net32::wrap(Box::new(adsr_live(p[0], p[1], p[2], p[3])));
-            }
-        }
+        // -------------------- filters --------------------
+        "allpole" => { return Net32::wrap(Box::new(allpole())); }
+        "pinkpass" => { return Net32::wrap(Box::new(pinkpass())); }
         "allpass" => {
             if let Some(p) = p.get(0..2) {
                 return Net32::wrap(Box::new(allpass_hz(p[0], p[1])));
@@ -241,57 +233,10 @@ pub fn str_to_net(op: &str) -> Net32 {
                 return Net32::wrap(Box::new(butterpass_hz(*p)));
             } else { return Net32::wrap(Box::new(butterpass())); }
         }
-        "chorus" => {
-            if let Some(p) = p.get(0..4) {
-                return Net32::wrap(Box::new(chorus(p[0] as i64, p[1], p[2], p[3])));
-            }
-        }
-        "clip" => {
-            if let Some(p) = p.get(0..2) {
-                if p[0] < p[1] {
-                    return Net32::wrap(Box::new(clip_to(p[0], p[1])));
-                } else {
-                    return Net32::wrap(Box::new(clip_to(p[1], p[0])));
-                }
-            } else { return Net32::wrap(Box::new(clip())); }
-        }
-        "constant" | "dc" => {
-            match p[..] {
-                [p0,p1,p2,p3,p4,p5,p6,p7,..] => { return Net32::wrap(Box::new(constant((p0,p1,p2,p3,p4,p5,p6,p7)))); }
-                [p0,p1,p2,p3,p4,p5,p6,..] => { return Net32::wrap(Box::new(constant((p0,p1,p2,p3,p4,p5,p6)))); }
-                [p0,p1,p2,p3,p4,p5,..] => { return Net32::wrap(Box::new(constant((p0,p1,p2,p3,p4,p5)))); }
-                [p0,p1,p2,p3,p4,..] => { return Net32::wrap(Box::new(constant((p0,p1,p2,p3,p4)))); }
-                [p0,p1,p2,p3,..] => { return Net32::wrap(Box::new(constant((p0,p1,p2,p3)))); }
-                [p0,p1,p2,..] => { return Net32::wrap(Box::new(constant((p0,p1,p2)))); }
-                [p0,p1,..] => { return Net32::wrap(Box::new(constant((p0,p1)))); }
-                [p0,..] => { return Net32::wrap(Box::new(constant(p0))); }
-                _ => { return Net32::wrap(Box::new(constant(1.))); }
-            }
-        }
         "dcblock" => {
             if let Some(p) = p.first() {
                 return Net32::wrap(Box::new(dcblock_hz(*p)));
             } else { return Net32::wrap(Box::new(dcblock())); }
-        }
-        "declick" => {
-            if let Some(p) = p.first() {
-                return Net32::wrap(Box::new(declick_s(*p)));
-            } else { return Net32::wrap(Box::new(declick())); }
-        }
-        "delay" => {
-            if let Some(p) = p.first() {
-                return Net32::wrap(Box::new(delay(*p)));
-            }
-        }
-        "dsf_saw" => {
-            if let Some(p) = p.first() {
-                return Net32::wrap(Box::new(dsf_saw_r(*p)));
-            } else { return Net32::wrap(Box::new(dsf_saw())); }
-        }
-        "dsf_square" => {
-            if let Some(p) = p.first() {
-                return Net32::wrap(Box::new(dsf_square_r(*p)));
-            } else { return Net32::wrap(Box::new(dsf_square())); }
         }
         "fir" => {
             match p[..] {
@@ -320,11 +265,6 @@ pub fn str_to_net(op: &str) -> Net32 {
                 return Net32::wrap(Box::new(follow(*p)));
             }
         }
-        "hammond" => {
-            if let Some(p) = p.first() {
-                return Net32::wrap(Box::new(hammond_hz(*p)));
-            } else { return Net32::wrap(Box::new(hammond())); }
-        }
         "highpass" => {
             if let Some(p) = p.get(0..2) {
                 return Net32::wrap(Box::new(highpass_hz(p[0], p[1])));
@@ -344,11 +284,71 @@ pub fn str_to_net(op: &str) -> Net32 {
                 return Net32::wrap(Box::new(highshelf_q(p[0], p[1])));
             } else { return Net32::wrap(Box::new(highshelf())); }
         }
-        "hold" => {
+        "lowpass" => {
             if let Some(p) = p.get(0..2) {
-                return Net32::wrap(Box::new(hold_hz(p[0], p[1])));
+                return Net32::wrap(Box::new(lowpass_hz(p[0], p[1])));
             } else if let Some(p) = p.first() {
-                return Net32::wrap(Box::new(hold(*p)));
+                return Net32::wrap(Box::new(lowpass_q(*p)));
+            } else { return Net32::wrap(Box::new(lowpass())); }
+        }
+        "lowpole" => {
+            if let Some(p) = p.first() {
+                return Net32::wrap(Box::new(lowpole_hz(*p)));
+            } else { return Net32::wrap(Box::new(lowpole())); }
+        }
+        "lowrez" => {
+            if let Some(p) = p.get(0..2) {
+                return Net32::wrap(Box::new(lowrez_hz(p[0], p[1])));
+            } else if let Some(p) = p.first() {
+                return Net32::wrap(Box::new(lowrez_q(*p)));
+            } else { return Net32::wrap(Box::new(lowrez())); }
+        }
+        "lowshelf" => {
+            if let Some(p) = p.get(0..3) {
+                return Net32::wrap(Box::new(lowshelf_hz(p[0], p[1], p[2])));
+            } else if let Some(p) = p.get(0..2) {
+                return Net32::wrap(Box::new(lowshelf_q(p[0], p[1])));
+            } else { return Net32::wrap(Box::new(lowshelf())); }
+        }
+        "moog" => {
+            if let Some(p) = p.get(0..2) {
+                return Net32::wrap(Box::new(moog_hz(p[0], p[1])));
+            } else if let Some(p) = p.first() {
+                return Net32::wrap(Box::new(moog_q(*p)));
+            } else { return Net32::wrap(Box::new(moog())); }
+        }
+        "morph" => {
+            if let Some(p) = p.get(0..3) {
+                return Net32::wrap(Box::new(morph_hz(p[0], p[1], p[2])));
+            } else { return Net32::wrap(Box::new(morph())); }
+        }
+        "notch" => {
+            if let Some(p) = p.get(0..2) {
+                return Net32::wrap(Box::new(notch_hz(p[0], p[1])));
+            } else if let Some(p) = p.first() {
+                return Net32::wrap(Box::new(notch_q(*p)));
+            } else { return Net32::wrap(Box::new(notch())); }
+        }
+        "peak" => {
+            if let Some(p) = p.get(0..2) {
+                return Net32::wrap(Box::new(peak_hz(p[0], p[1])));
+            } else if let Some(p) = p.first() {
+                return Net32::wrap(Box::new(peak_q(*p)));
+            } else { return Net32::wrap(Box::new(peak())); }
+        }
+        "resonator" => {
+            if let Some(p) = p.get(0..2) {
+                return Net32::wrap(Box::new(resonator_hz(p[0], p[1])));
+            } else { return Net32::wrap(Box::new(resonator())); }
+        }
+
+        // -------------------- channels --------------------
+        "sink" => { return Net32::wrap(Box::new(sink())); }
+        "pass" => { return Net32::wrap(Box::new(pass())); }
+        "panner" => { return Net32::wrap(Box::new(panner())); }
+        "pan" => {
+            if let Some(p) = p.first() {
+                return Net32::wrap(Box::new(pan(*p)));
             }
         }
         "join" => {
@@ -393,164 +393,13 @@ pub fn str_to_net(op: &str) -> Net32 {
                 }
             }
         }
-        "limiter" => {
-            if let Some(p) = p.get(0..2) {
-                return Net32::wrap(Box::new(limiter((p[0], p[1]))));
-            } else if let Some(p) = p.first() {
-                return Net32::wrap(Box::new(limiter(*p)));
-            }
-        }
-        "limiter_stereo" => {
-            if let Some(p) = p.get(0..2) {
-                return Net32::wrap(Box::new(limiter_stereo((p[0], p[1]))));
-            } else if let Some(p) = p.first() {
-                return Net32::wrap(Box::new(limiter_stereo(*p)));
-            }
-        }
-        "lowpass" => {
-            if let Some(p) = p.get(0..2) {
-                return Net32::wrap(Box::new(lowpass_hz(p[0], p[1])));
-            } else if let Some(p) = p.first() {
-                return Net32::wrap(Box::new(lowpass_q(*p)));
-            } else { return Net32::wrap(Box::new(lowpass())); }
-        }
-        "lowpole" => {
-            if let Some(p) = p.first() {
-                return Net32::wrap(Box::new(lowpole_hz(*p)));
-            } else { return Net32::wrap(Box::new(lowpole())); }
-        }
-        "lowrez" => {
-            if let Some(p) = p.get(0..2) {
-                return Net32::wrap(Box::new(lowrez_hz(p[0], p[1])));
-            } else if let Some(p) = p.first() {
-                return Net32::wrap(Box::new(lowrez_q(*p)));
-            } else { return Net32::wrap(Box::new(lowrez())); }
-        }
-        "lowshelf" => {
-            if let Some(p) = p.get(0..3) {
-                return Net32::wrap(Box::new(lowshelf_hz(p[0], p[1], p[2])));
-            } else if let Some(p) = p.get(0..2) {
-                return Net32::wrap(Box::new(lowshelf_q(p[0], p[1])));
-            } else { return Net32::wrap(Box::new(lowshelf())); }
-        }
-        "mls_bits" => {
-            if let Some(p) = p.first() {
-                return Net32::wrap(Box::new(mls_bits(p.clamp(1.,31.) as i64)));
-            }
-        }
-        "moog" => {
-            if let Some(p) = p.get(0..2) {
-                return Net32::wrap(Box::new(moog_hz(p[0], p[1])));
-            } else if let Some(p) = p.first() {
-                return Net32::wrap(Box::new(moog_q(*p)));
-            } else { return Net32::wrap(Box::new(moog())); }
-        }
-        "morph" => {
-            if let Some(p) = p.get(0..3) {
-                return Net32::wrap(Box::new(morph_hz(p[0], p[1], p[2])));
-            } else { return Net32::wrap(Box::new(morph())); }
-        }
-        "mul" => {
-            match p[..] {
-                [p0,p1,p2,p3,p4,p5,p6,p7,..] => { return Net32::wrap(Box::new(mul((p0,p1,p2,p3,p4,p5,p6,p7)))); }
-                [p0,p1,p2,p3,p4,p5,p6,..] => { return Net32::wrap(Box::new(mul((p0,p1,p2,p3,p4,p5,p6)))); }
-                [p0,p1,p2,p3,p4,p5,..] => { return Net32::wrap(Box::new(mul((p0,p1,p2,p3,p4,p5)))); }
-                [p0,p1,p2,p3,p4,..] => { return Net32::wrap(Box::new(mul((p0,p1,p2,p3,p4)))); }
-                [p0,p1,p2,p3,..] => { return Net32::wrap(Box::new(mul((p0,p1,p2,p3)))); }
-                [p0,p1,p2,..] => { return Net32::wrap(Box::new(mul((p0,p1,p2)))); }
-                [p0,p1,..] => { return Net32::wrap(Box::new(mul((p0,p1)))); }
-                [p0,..] => { return Net32::wrap(Box::new(mul(p0))); }
-                _ => { return Net32::wrap(Box::new(mul(1.))); }
-            }
-        }
-        "div" => {
-            match p[..] {
-                [p0,p1,p2,p3,p4,p5,p6,p7,..] => {
-                    return Net32::wrap(Box::new(mul((1./p0,1./p1,1./p2,1./p3,1./p4,1./p5,1./p6,1./p7))));
-                }
-                [p0,p1,p2,p3,p4,p5,p6,..] => {
-                    return Net32::wrap(Box::new(mul((1./p0,1./p1,1./p2,1./p3,1./p4,1./p5,1./p6))));
-                }
-                [p0,p1,p2,p3,p4,p5,..] => {
-                    return Net32::wrap(Box::new(mul((1./p0,1./p1,1./p2,1./p3,1./p4,1./p5))));
-                }
-                [p0,p1,p2,p3,p4,..] => {
-                    return Net32::wrap(Box::new(mul((1./p0,1./p1,1./p2,1./p3,1./p4))));
-                }
-                [p0,p1,p2,p3,..] => {
-                    return Net32::wrap(Box::new(mul((1./p0,1./p1,1./p2,1./p3))));
-                }
-                [p0,p1,p2,..] => {
-                    return Net32::wrap(Box::new(mul((1./p0,1./p1,1./p2))));
-                }
-                [p0,p1,..] => {
-                    return Net32::wrap(Box::new(mul((1./p0,1./p1))));
-                }
-                [p0,..] => {
-                    return Net32::wrap(Box::new(mul(1./p0)));
-                }
-                _ => { return Net32::wrap(Box::new(mul(1.))); }
-            }
-        }
-        "notch" => {
-            if let Some(p) = p.get(0..2) {
-                return Net32::wrap(Box::new(notch_hz(p[0], p[1])));
-            } else if let Some(p) = p.first() {
-                return Net32::wrap(Box::new(notch_q(*p)));
-            } else { return Net32::wrap(Box::new(notch())); }
-        }
-        "peak" => {
-            if let Some(p) = p.get(0..2) {
-                return Net32::wrap(Box::new(peak_hz(p[0], p[1])));
-            } else if let Some(p) = p.first() {
-                return Net32::wrap(Box::new(peak_q(*p)));
-            } else { return Net32::wrap(Box::new(peak())); }
-        }
-        "pluck" => {
-            if let Some(p) = p.get(0..3) {
-                return Net32::wrap(Box::new(pluck(p[0], p[1], p[2])));
-            }
-        }
-        "resonator" => {
-            if let Some(p) = p.get(0..2) {
-                return Net32::wrap(Box::new(resonator_hz(p[0], p[1])));
-            } else { return Net32::wrap(Box::new(resonator())); }
-        }
-        "reverb_stereo" => {
-            if let Some(p) = p.get(0..3) {
-                return Net32::wrap(Box::new(reverb_stereo(p[0].into(), p[1].into(), p[2].into())));
-            } else if let Some(p) = p.get(0..2) {
-                return Net32::wrap(Box::new(reverb_stereo(p[0].into(), p[1].into(), 1.)));
-            } else if let Some(p) = p.first() {
-                return Net32::wrap(Box::new(reverb_stereo((*p).into(), 5., 1.)));
-            }
-        }
-        "soft_saw" => {
-            if let Some(p) = p.first() {
-                return Net32::wrap(Box::new(soft_saw_hz(*p)));
-            } else { return Net32::wrap(Box::new(soft_saw())); }
-        }
-        "tap" => {
-            if let Some(p) = p.get(0..2) {
-                let p0 = p[0].max(0.);
-                let p1 = p[1].max(0.);
-                return Net32::wrap(Box::new(tap(min(p0,p1), max(p0,p1))));
-            }
-        }
-        "tap_linear" => {
-            if let Some(p) = p.get(0..2) {
-                let p0 = p[0].max(0.);
-                let p1 = p[1].max(0.);
-                return Net32::wrap(Box::new(tap_linear(min(p0,p1), max(p0,p1))));
-            }
-        }
-        "rotate" => {
-            if let Some(p) = p.get(0..2) {
-                return Net32::wrap(Box::new(rotate(p[0], p[1])));
-            }
-        }
 
-        "t" => { return Net32::wrap(Box::new(lfo(|t| t))); }
+        // -------------------- envelopes --------------------
+        "adsr" => {
+            if let Some(p) = p.get(0..4) {
+                return Net32::wrap(Box::new(adsr_live(p[0], p[1], p[2], p[3])));
+            }
+        }
         "xd" => {
             if let Some(p) = p.first() {
                 let p = *p;
@@ -610,8 +459,164 @@ pub fn str_to_net(op: &str) -> Net32 {
                 })));
             }
         }
-        "ramp" => { return Net32::wrap(Box::new(lfo_in(|t, i: &Frame<f32, U1>| (t*i[0]).rem_euclid(1.)))); }
-        "clock" => { return Net32::wrap(Box::new(sine() >> map(|i: &Frame<f32,U1>| if i[0] > 0. {1.} else {0.}))); }
+
+        // -------------------- other --------------------
+        "tick" => { return Net32::wrap(Box::new(tick())); }
+        "shift_reg" => { return Net32::wrap(Box::new(An(ShiftReg::new()))); }
+        "meter" => {
+            if let (Some(arg), Some(p)) = (args.get(1), p.first()) {
+                if arg.starts_with("peak") {
+                    return Net32::wrap(Box::new(meter(Meter::Peak(*p as f64))));
+                } else if arg.starts_with("rms") {
+                    return Net32::wrap(Box::new(meter(Meter::Rms(*p as f64))));
+                }
+            }
+        }
+        "chorus" => {
+            if let Some(p) = p.get(0..4) {
+                return Net32::wrap(Box::new(chorus(p[0] as i64, p[1], p[2], p[3])));
+            }
+        }
+        "clip" => {
+            if let Some(p) = p.get(0..2) {
+                if p[0] < p[1] {
+                    return Net32::wrap(Box::new(clip_to(p[0], p[1])));
+                } else {
+                    return Net32::wrap(Box::new(clip_to(p[1], p[0])));
+                }
+            } else { return Net32::wrap(Box::new(clip())); }
+        }
+        "declick" => {
+            if let Some(p) = p.first() {
+                return Net32::wrap(Box::new(declick_s(*p)));
+            } else { return Net32::wrap(Box::new(declick())); }
+        }
+        "delay" => {
+            if let Some(p) = p.first() {
+                return Net32::wrap(Box::new(delay(*p)));
+            }
+        }
+        "hold" => {
+            if let Some(p) = p.get(0..2) {
+                return Net32::wrap(Box::new(hold_hz(p[0], p[1])));
+            } else if let Some(p) = p.first() {
+                return Net32::wrap(Box::new(hold(*p)));
+            }
+        }
+        "limiter" => {
+            if let Some(p) = p.get(0..2) {
+                return Net32::wrap(Box::new(limiter((p[0], p[1]))));
+            } else if let Some(p) = p.first() {
+                return Net32::wrap(Box::new(limiter(*p)));
+            }
+        }
+        "limiter_stereo" => {
+            if let Some(p) = p.get(0..2) {
+                return Net32::wrap(Box::new(limiter_stereo((p[0], p[1]))));
+            } else if let Some(p) = p.first() {
+                return Net32::wrap(Box::new(limiter_stereo(*p)));
+            }
+        }
+        "reverb_stereo" => {
+            if let Some(p) = p.get(0..3) {
+                return Net32::wrap(Box::new(reverb_stereo(p[0].into(), p[1].into(), p[2].into())));
+            } else if let Some(p) = p.get(0..2) {
+                return Net32::wrap(Box::new(reverb_stereo(p[0].into(), p[1].into(), 1.)));
+            } else if let Some(p) = p.first() {
+                return Net32::wrap(Box::new(reverb_stereo((*p).into(), 5., 1.)));
+            }
+        }
+        "tap" => {
+            if let Some(p) = p.get(0..2) {
+                let p0 = p[0].max(0.);
+                let p1 = p[1].max(0.);
+                return Net32::wrap(Box::new(tap(min(p0,p1), max(p0,p1))));
+            }
+        }
+        "tap_linear" => {
+            if let Some(p) = p.get(0..2) {
+                let p0 = p[0].max(0.);
+                let p1 = p[1].max(0.);
+                return Net32::wrap(Box::new(tap_linear(min(p0,p1), max(p0,p1))));
+            }
+        }
+
+        // -------------------- math --------------------
+        "add" => {
+            match p[..] {
+                [p0,p1,p2,p3,p4,p5,p6,p7,..] => { return Net32::wrap(Box::new(add((p0,p1,p2,p3,p4,p5,p6,p7)))); }
+                [p0,p1,p2,p3,p4,p5,p6,..] => { return Net32::wrap(Box::new(add((p0,p1,p2,p3,p4,p5,p6)))); }
+                [p0,p1,p2,p3,p4,p5,..] => { return Net32::wrap(Box::new(add((p0,p1,p2,p3,p4,p5)))); }
+                [p0,p1,p2,p3,p4,..] => { return Net32::wrap(Box::new(add((p0,p1,p2,p3,p4)))); }
+                [p0,p1,p2,p3,..] => { return Net32::wrap(Box::new(add((p0,p1,p2,p3)))); }
+                [p0,p1,p2,..] => { return Net32::wrap(Box::new(add((p0,p1,p2)))); }
+                [p0,p1,..] => { return Net32::wrap(Box::new(add((p0,p1)))); }
+                [p0,..] => { return Net32::wrap(Box::new(add(p0))); }
+                _ => { return Net32::wrap(Box::new(add(1.))); }
+            }
+        }
+        "sub" => {
+            match p[..] {
+                [p0,p1,p2,p3,p4,p5,p6,p7,..] => { return Net32::wrap(Box::new(sub((p0,p1,p2,p3,p4,p5,p6,p7)))); }
+                [p0,p1,p2,p3,p4,p5,p6,..] => { return Net32::wrap(Box::new(sub((p0,p1,p2,p3,p4,p5,p6)))); }
+                [p0,p1,p2,p3,p4,p5,..] => { return Net32::wrap(Box::new(sub((p0,p1,p2,p3,p4,p5)))); }
+                [p0,p1,p2,p3,p4,..] => { return Net32::wrap(Box::new(sub((p0,p1,p2,p3,p4)))); }
+                [p0,p1,p2,p3,..] => { return Net32::wrap(Box::new(sub((p0,p1,p2,p3)))); }
+                [p0,p1,p2,..] => { return Net32::wrap(Box::new(sub((p0,p1,p2)))); }
+                [p0,p1,..] => { return Net32::wrap(Box::new(sub((p0,p1)))); }
+                [p0,..] => { return Net32::wrap(Box::new(sub(p0))); }
+                _ => { return Net32::wrap(Box::new(sub(1.))); }
+            }
+        }
+        "mul" => {
+            match p[..] {
+                [p0,p1,p2,p3,p4,p5,p6,p7,..] => { return Net32::wrap(Box::new(mul((p0,p1,p2,p3,p4,p5,p6,p7)))); }
+                [p0,p1,p2,p3,p4,p5,p6,..] => { return Net32::wrap(Box::new(mul((p0,p1,p2,p3,p4,p5,p6)))); }
+                [p0,p1,p2,p3,p4,p5,..] => { return Net32::wrap(Box::new(mul((p0,p1,p2,p3,p4,p5)))); }
+                [p0,p1,p2,p3,p4,..] => { return Net32::wrap(Box::new(mul((p0,p1,p2,p3,p4)))); }
+                [p0,p1,p2,p3,..] => { return Net32::wrap(Box::new(mul((p0,p1,p2,p3)))); }
+                [p0,p1,p2,..] => { return Net32::wrap(Box::new(mul((p0,p1,p2)))); }
+                [p0,p1,..] => { return Net32::wrap(Box::new(mul((p0,p1)))); }
+                [p0,..] => { return Net32::wrap(Box::new(mul(p0))); }
+                _ => { return Net32::wrap(Box::new(mul(1.))); }
+            }
+        }
+        "div" => {
+            match p[..] {
+                [p0,p1,p2,p3,p4,p5,p6,p7,..] => {
+                    return Net32::wrap(Box::new(mul((1./p0,1./p1,1./p2,1./p3,1./p4,1./p5,1./p6,1./p7))));
+                }
+                [p0,p1,p2,p3,p4,p5,p6,..] => {
+                    return Net32::wrap(Box::new(mul((1./p0,1./p1,1./p2,1./p3,1./p4,1./p5,1./p6))));
+                }
+                [p0,p1,p2,p3,p4,p5,..] => {
+                    return Net32::wrap(Box::new(mul((1./p0,1./p1,1./p2,1./p3,1./p4,1./p5))));
+                }
+                [p0,p1,p2,p3,p4,..] => {
+                    return Net32::wrap(Box::new(mul((1./p0,1./p1,1./p2,1./p3,1./p4))));
+                }
+                [p0,p1,p2,p3,..] => {
+                    return Net32::wrap(Box::new(mul((1./p0,1./p1,1./p2,1./p3))));
+                }
+                [p0,p1,p2,..] => {
+                    return Net32::wrap(Box::new(mul((1./p0,1./p1,1./p2))));
+                }
+                [p0,p1,..] => {
+                    return Net32::wrap(Box::new(mul((1./p0,1./p1))));
+                }
+                [p0,..] => {
+                    return Net32::wrap(Box::new(mul(1./p0)));
+                }
+                _ => { return Net32::wrap(Box::new(mul(1.))); }
+            }
+        }
+
+        "rotate" => {
+            if let Some(p) = p.get(0..2) {
+                return Net32::wrap(Box::new(rotate(p[0], p[1])));
+            }
+        }
+        "t" => { return Net32::wrap(Box::new(lfo(|t| t))); }
         "rise" => {
             return Net32::wrap(Box::new((pass() ^ tick()) >> map(|i: &Frame<f32,U2>| if i[0]>i[1] {1.} else {0.})));
         }
