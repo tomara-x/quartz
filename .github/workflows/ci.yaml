@@ -9,7 +9,7 @@ env:
 jobs:
 
   # Build for Linux
-  release-linux:
+  build-linux:
     runs-on: ubuntu-latest
 
     steps:
@@ -45,10 +45,10 @@ jobs:
         with:
           path: ${{ env.binary }}.zip
           name: linux
-          retention-days: 1
+          retention-days: 30
 
   # Build for Windows
-  release-windows:
+  build-windows:
     runs-on: windows-latest
 
     steps:
@@ -81,10 +81,10 @@ jobs:
         with:
           path: ${{ env.binary }}.zip
           name: windows
-          retention-days: 1
+          retention-days: 30
 
   # Build for MacOS x86_64
-  release-macOS-intel:
+  build-macOS-intel:
     runs-on: macOS-latest
 
     steps:
@@ -117,10 +117,10 @@ jobs:
         with:
           path: ${{ env.binary }}-macOS-intel.dmg
           name: macOS-intel
-          retention-days: 1
+          retention-days: 30
 
   # Build for MacOS Apple Silicon
-  release-macOS-apple-silicon:
+  build-macOS-apple-silicon:
     runs-on: macOS-latest
 
     steps:
@@ -153,4 +153,4 @@ jobs:
         with:
           path: ${{ env.binary }}-macOS-apple-silicon.dmg
           name: macOS-apple-silicon
-          retention-days: 1
+          retention-days: 30
