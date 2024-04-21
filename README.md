@@ -1,15 +1,13 @@
-# Quartz
-
-⚠️ under construction ⚠️
-
-![Screenshot_2024-02-21_19-39-17](https://github.com/tomara-x/quartz/assets/86204514/0102a8ff-5c56-41f9-be1a-446d4e1a34d4)
-![Screenshot_2024-03-31_04-11-18](https://github.com/tomara-x/quartz/assets/86204514/5b43d686-4e55-4025-b342-502cafaac534)
-![Screenshot_2024-03-31_04-12-09](https://github.com/tomara-x/quartz/assets/86204514/8dca28da-788e-49ca-81aa-1ec9c4dad9fd)
+# quartz
 
 ```
 "you africans, please listen to me as africans
 and you non-africans, listen to me with open mind"
 ```
+![Screenshot_2024-02-21_19-39-17](https://github.com/tomara-x/quartz/assets/86204514/0102a8ff-5c56-41f9-be1a-446d4e1a34d4)
+![Screenshot_2024-03-31_04-11-18](https://github.com/tomara-x/quartz/assets/86204514/5b43d686-4e55-4025-b342-502cafaac534)
+![Screenshot_2024-03-31_04-12-09](https://github.com/tomara-x/quartz/assets/86204514/8dca28da-788e-49ca-81aa-1ec9c4dad9fd)
+
 ## let's play
 
 ### building
@@ -603,7 +601,7 @@ refer to the fundsp [readme](https://github.com/SamiPerttu/fundsp), and [docs](h
 <details><summary>audio nodes</summary>
 <p>
 
-refer to the fundsp [readme](https://github.com/SamiPerttu/fundsp), and [docs](https://docs.rs/fundsp/latest/fundsp/) for more details (sometimes)
+thses lack descriptions, but for most of them you can refer to the fundsp [readme](https://github.com/SamiPerttu/fundsp), and [docs](https://docs.rs/fundsp/latest/fundsp/) for more details
 
 - `shift_reg()` 2 ins (trigger signal, input signal), 8 outs (outputs of the shift register)
 - `meter(peak/rms, float)`
