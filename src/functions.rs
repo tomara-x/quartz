@@ -345,11 +345,10 @@ pub fn str_to_net(op: &str) -> Net32 {
         // -------------------- channels --------------------
         "sink" => { return Net32::wrap(Box::new(sink())); }
         "pass" => { return Net32::wrap(Box::new(pass())); }
-        "panner" => { return Net32::wrap(Box::new(panner())); }
         "pan" => {
             if let Some(p) = p.first() {
                 return Net32::wrap(Box::new(pan(*p)));
-            }
+            } else { return Net32::wrap(Box::new(panner())); }
         }
         "join" => {
             if let Some(p) = p.first() {
