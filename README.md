@@ -601,90 +601,99 @@ refer to the fundsp [readme](https://github.com/SamiPerttu/fundsp), and [docs](h
 <details><summary>audio nodes</summary>
 <p>
 
-thses lack descriptions, but for most of them you can refer to the fundsp [readme](https://github.com/SamiPerttu/fundsp), and [docs](https://docs.rs/fundsp/latest/fundsp/) for more details
+refer to the fundsp [readme](https://github.com/SamiPerttu/fundsp), and [docs](https://docs.rs/fundsp/latest/fundsp/) for more details (in some cases)
 
-- `shift_reg()` 2 ins (trigger signal, input signal), 8 outs (outputs of the shift register)
-- `meter(peak/rms, float)`
-- `sink()`
-- `pass()`
-- `panner()`
-- `pulse()`
-- `brown()`
-- `pink()`
-- `white()` `noise()`
-- `allpole()`
+sources
+- `sine([float])` e.g. `sine(440)` has no inputs, and outputs a sine wave at 440Hz. `sine()` takes 1 input (frequency) and outputs sine wave
+- `saw([float])` (same)
+- `square([float])` (same)
+- `triangle([float])` (same)
+- `organ([float])` (same)
+- `hammond([float])` (same)
+- `soft_saw([float])` (same)
+- `dsf_saw([float])` `dsf_saw()` takes 2 inputs (frequency, and roughness [0...1]), `dsf_saw(0.5)` takes only a freq input.
+- `dsf_square([float])` (same)
+- `pulse()` pulse wave oscillator (take a frequency input)
+- `brown()` brown noise
+- `pink()` pink noise
+- `white()` `noise()` white noise
+- `zero()` silence
+- `impulse()` 1 sample impulse
 - `lorenz()`
-- `mls()`
-- `pinkpass()`
 - `rossler()`
-- `tick()`
-- `zero()`
-- `impulse()`
-- `pan(float)`
-- `sine([float])`
-- `saw([float])`
-- `square([float])`
-- `triangle([float])`
-- `organ([float])`
-- `add(float, [float], [float], ...)` (up to 8 params)
-- `sub(float, [float], [float], ...)` (up to 8)
-- `adsr(float, float, float, float)`
-- `allpass([float], [float])` if 1 param is given, that's the q, and the node takes 2 input channels (signal, and hz) if 2 are given, that's the hz and q and the node only takes input signal.. that's a bit verbose
-- `allpole_delay(float)`
-- `bandpass([float], [float])`
-- `bandrez([float], [float])`
-- `bell([float, float], [float])`
-- `biquad(float, float, float, float, float)`
-- `butterpass([float])`
-- `chorus(float, float, float, float)`
-- `clip([float, float])`
 - `constant(float)` `dc(float)`
-- `dc_block([float])`
-- `declick([float])`
-- `delay(float)`
-- `dsf_saw([float])`
-- `dsf_square([float])`
+- `pluck(float, float, float)` (frequency, gain per sec, high freq damping) input is string excitation signal
+- `mls([float])`
+- `ramp()` ramp from 0 to 1 at input freq (subsampled at ~2 ms)
+- `clock()` simple clock with 50% duty cycle (just a `sine() >> >(0)`)
+
+filters
+- `allpole()`
+- `pinkpass()`
+- `allpass([float], [float])` if 1 param is given, that's the q, and the node takes 2 input channels (signal, and hz) if 2 are given, that's the hz and q and the node only takes input signal
+- `allpole_delay(float)`
+- `bandpass([float], [float])` (same as allpass)
+- `bandrez([float], [float])` (same)
+- `bell([float, float], [float])` if 2 params are given, they're (q, gain), if 3 are give, they're (hz, q, gain), if none, the node takes 4 channels (input, hz, q, gain)
+- `biquad(float, float, float, float, float)`
+- `butterpass([float])` e.g. `butterpass()` takes 2 inputs (signal, and hz). `butterpass(1729)` take 1 input
+- `dc_block([float])` if no param the cutoff is 10Hz
 - `fir(float [float], [float], ...)` (up to 10 weights)
-- `fir3(float)`
-- `follow(float, [float])`
-- `hammond([float])`
-- `highpass([float], [float])`
-- `highpole([float])`
-- `highshelf([float, float], [float])`
-- `hold([float], [float])`
-- `join(float)`
-- `split(float)`
-- `reverse(float)`
-- `limiter(float, [float])`
-- `limiter_stereo(float, [float])`
-- `lowpass([float], [float])`
-- `lowpole([float])`
-- `lowrez([float], [float])`
-- `lowshelf([float, float], [float])`
-- `mls_bits(float)`
-- `moog([float], [float])`
-- `morph([float, float, float])`
-- `mul(float, [float], [float], ...)` (up to 8 params)
-- `div(float, [float], [float], ...)` (up to 8 params)
-- `notch([float], [float])`
-- `peak([float], [float])`
-- `pluck(float, float, float)`
-- `resonator([float, float])`
-- `reverb_stereo(float, [float], [float])`
-- `soft_saw([float])`
-- `tap(float, float)`
-- `tap_linear(float, float)`
+- `fir3(float)` param is gain at nyquist
+- `follow(float, [float])` attack and release response times
+- `highpass([float], [float])` (same as allpass)
+- `highpole([float])` (same as butterpass)
+- `highshelf([float, float], [float])` (same as bell)
+- `lowpass([float], [float])` (same as allpass)
+- `lowpole([float])` (same as butterpass)
+- `lowrez([float], [float])` (same as allpass)
+- `lowshelf([float, float], [float])` (same as bell)
+- `moog([float], [float])` (same as allpass)
+- `morph([float, float, float])` (hz, q, morph [-1...1] (-1 = lowpass, 0 = peak, 1 = highpass)) if not provided, the node takes 4 inputs (signal, hz, q, morph) 
+- `notch([float], [float])` (same as allpass)
+- `peak([float], [float])` (same)
+- `resonator([float, float])` (hz, bandwidth) if not provided the node takes 3 inputs (signal, hz, bandwidth)
+
+channels
+- `sink()` eats an input channel
+- `pass()` takes an input channel and passes it unchanged
+- `pan([float])` e.g. `pan(0)` pan input (mono to stereo) `pan()` takes 2 inputs (signal, and pan [-1...1])
+- `join(float)` float can be [2...8] e.g. `join(8)` takes 8 inputs and averages them into 1 output
+- `split(float)` float can be [2...8] `split(8)` takes 1 input and copies it into 8 outputs
+- `reverse(float)` float can be [2...8] reverse the order of channels
+
+envelopes (all subsampled at ~2 ms)
+- `adsr(float, float, float, float)`
+- `xd([float])` (this is just an `exp(-t*input)`)
+- `xD([float], [float])` e.g. `xD()` takes 2 inputs (time and curvature) `xD(5)` takes 1 input specifying the decay time with a curvature of 5. `xD(10, 0.5)` is a decay over 10 seconds with a curvature of 0.5.
+- `ar([float, float], [float, float])` if there are no params it takes 4 inputs, if there are 2 params they are the curvature of attack and release and the node takes 2 inputs specifying the times, if there are 4 params they are (attack time, attack curvature, release time, release curvature)
+
+other
+- `tick()`
+- `shift_reg()` 2 ins (trigger signal, input signal), 8 outs (outputs of the shift register)
+- `meter(peak/rms, float)` e.g. `meter(rms, 0.5)` `rms(peak, 2)`
+- `chorus(float, float, float, float)` (seed, separation, variation, mod frequency)
+- `clip([float, float])` e.g. `clip()` takes 1 input and clips to [-1...1], `clip(-5, 5)` clips to [-5...5]
+- `declick([float])` e.g. `declick()` 10ms fade in, `declick(2)` 2 second fade in
+- `delay(float)` e.g. `delay(2)` 2 second delay
+- `hold(float, [float])` e.g. `hold(0.5)` takes 2 inputs (signal, and sampling frequency) with variability 0.5, `hold(150, 0)` takes one input and samples it at 150Hz with variability 0
+- `limiter(float, [float])` look ahead limiter. first param is attack time, second is release time (in seconds)
+- `limiter_stereo(float, [float])` (same)
+- `reverb_stereo(float, [float], [float])` (room size, reverberation time, damping) when damping isn't provided it defaults to 1, time defaults to 5
+- `tap(float, float)` (min delay time, max delay time)
+- `tap_linear(float, float)` (same)
+
+math
+- `add(float, [float], [float], ...)` (up to 8 params)
+- `sub(float, [float], [float], ...)` (same)
+- `mul(float, [float], [float], ...)` (same)
+- `div(float, [float], [float], ...)` (same)
 - `rotate(float, float)`
-- `t()`
-- `xd()`
-- `xD()`
-- `ar()`
-- `ramp()`
-- `clock()`
-- `rise()`
-- `fall()`
-- `>([float])`
-- `<([float])`
+- `t()` time sine the node started processing (subsampled every ~2 ms)
+- `rise()` one sample trigger when there's a rise in input
+- `fall()` same but fall
+- `>([float])` e.g. `>()` takes 2 inputs and compares them. `>(3)` takes one input and compares it against 3
+- `<([float])` (same from this one...)
 - `==([float])`
 - `!=([float])`
 - `>=([float])`
@@ -698,15 +707,15 @@ thses lack descriptions, but for most of them you can refer to the fundsp [readm
 - `bitor([float])`
 - `bitxor([float])`
 - `shl([float])`
-- `shr([float])`
-- `lerp([float, float])`
-- `lerp11([float, float])`
+- `shr([float])` (.. all the way to this one)
+- `lerp([float, float])` e.g. `lerp()` takes 3 inputs (a, b, t) `lerp(3,5)` takes one input (t)
+- `lerp11([float, float])` (same..)
 - `delerp([float, float])`
 - `delerp11([float, float])`
 - `xerp([float, float])`
 - `xerp11([float, float])`
 - `dexerp([float, float])`
-- `dexerp11([float, float])`
+- `dexerp11([float, float])` (.. same)
 - `abs()`
 - `signum()`
 - `floor()`
