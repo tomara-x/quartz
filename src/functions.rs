@@ -850,6 +850,16 @@ pub fn str_to_net(op: &str) -> Net32 {
                 fractal_noise(i[0] as i64,i[1].min(1.) as i64,i[2],i[3]) as f32
             })));
         }
+        "wrap" => {
+            if let Some(p) = p.get(0..2) {
+                let (p0, p1) = (min(p[0], p[1]), max(p[0], p[1]));
+                let r = p1 - p0;
+                return Net32::wrap(Box::new(map(move |i: &Frame<f32, U1>| { (((i[0] - p0) % r) + r) % r + p0 })));
+            } else if let Some(p) = p.first() {
+                let x = *p;
+                return Net32::wrap(Box::new(map(move |i: &Frame<f32, U1>| i[0] - x * (i[0] / x).floor())));
+            }
+        }
         _ => {}
     }
     Net32::wrap(Box::new(dc(0.)))

@@ -673,7 +673,6 @@ other
 - `shift_reg()` 2 ins (trigger signal, input signal), 8 outs (outputs of the shift register)
 - `meter(peak/rms, float)` e.g. `meter(rms, 0.5)` `rms(peak, 2)`
 - `chorus(float, float, float, float)` (seed, separation, variation, mod frequency)
-- `clip([float, float])` e.g. `clip()` takes 1 input and clips to [-1...1], `clip(-5, 5)` clips to [-5...5]
 - `declick([float])` e.g. `declick()` 10ms fade in, `declick(2)` 2 second fade in
 - `delay(float)` e.g. `delay(2)` 2 second delay
 - `hold(float, [float])` e.g. `hold(0.5)` takes 2 inputs (signal, and sampling frequency) with variability 0.5, `hold(150, 0)` takes one input and samples it at 150Hz with variability 0
@@ -702,6 +701,8 @@ math
 - `max([float])`
 - `pow([float])`
 - `mod([float])` `rem([float])`
+- `clip([float, float])` e.g. `clip()` takes 1 input and clips to [-1...1], `clip(-5, 5)` clips to [-5...5]
+- `wrap(float, [float])` wrap between 2 numbers (or between 0 and x if only one number is given)
 - `log([float])`
 - `bitand([float])`
 - `bitor([float])`
