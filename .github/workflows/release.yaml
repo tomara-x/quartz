@@ -8,7 +8,6 @@ on:
 env:
   binary: quartz
   add_binaries_to_github_release: true
-  #itch_target: <itch.io-username>/<game-name>
 
   # Before enabling LFS, please take a look at GitHub's documentation for costs and quota limits:
   # https://docs.github.com/en/repositories/working-with-files/managing-large-files/about-storage-and-bandwidth-usage
@@ -20,6 +19,7 @@ jobs:
   # Build for Linux
   release-linux:
     runs-on: ubuntu-latest
+    permissions: write-all
 
     steps:
       - uses: olegtarasov/get-tag@v2.1.3
@@ -69,6 +69,7 @@ jobs:
   # Build for Windows
   release-windows:
     runs-on: windows-latest
+    permissions: write-all
 
     steps:
       - uses: olegtarasov/get-tag@v2.1.3
@@ -115,6 +116,7 @@ jobs:
   # Build for MacOS x86_64
   release-macOS-intel:
     runs-on: macOS-latest
+    permissions: write-all
 
     steps:
       - uses: olegtarasov/get-tag@v2.1.3
@@ -161,6 +163,7 @@ jobs:
   # Build for MacOS Apple Silicon
   release-macOS-apple-silicon:
     runs-on: macOS-latest
+    permissions: write-all
 
     steps:
       - uses: olegtarasov/get-tag@v2.1.3
@@ -204,51 +207,3 @@ jobs:
           tag: ${{ github.ref }}
           overwrite: true
 
-  check-if-upload-to-itch-is-configured:
-    runs-on: ubuntu-latest
-    outputs:
-      should-upload: ${{ steps.check-env.outputs.has-itch-target }}
-    steps:
-      - id: check-env
-        run: |
-          if [[ -z "$itch_target" ]]; then
-            echo "has-itch-target=no" >> $GITHUB_OUTPUT
-          else
-            echo "has-itch-target=yes" >> $GITHUB_OUTPUT
-          fi
-
-  upload-to-itch:
-    runs-on: ubuntu-latest
-    needs:
-      - check-if-upload-to-itch-is-configured
-      - release-linux
-      - release-windows
-      - release-macOS-intel
-      - release-macOS-apple-silicon
-    if: ${{ needs.check-if-upload-to-itch-is-configured.outputs.should-upload == 'yes' }}
-
-    steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
-        with:
-          path: ./builds
-
-      - name: Install butler
-        run: |
-          curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
-          unzip butler.zip
-          chmod +x butler
-          ./butler -V
-      - uses: olegtarasov/get-tag@v2.1.2
-        id: get_version
-      - name: Upload to itch.io
-        env:
-          BUTLER_API_KEY: ${{ secrets.BUTLER_CREDENTIALS }}
-        run: |
-          for channel in $(ls builds); do
-            ./butler push \
-                --fix-permissions \
-                --userversion="${{ steps.get_version.outputs.tag }}" \
-                builds/$channel/* \
-                ${{ env.itch_target }}:$channel
-          done
