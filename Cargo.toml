@@ -1,6 +1,6 @@
 [package]
 name = "quartz"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 authors = ["amy universe <nopenullnilvoid00@gmail.com>"]
 repository = "https://github.com/tomara-x/quartz"
@@ -30,7 +30,7 @@ features = [
 
 [dependencies]
 bevy_pancam = "0.11.1"
-fundsp = "0.17.0"
+fundsp = "0.17.1"
 cpal = "0.15.2"
 copypasta = "0.10.1"
 serde = "1.0.196"

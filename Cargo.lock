@@ -1819,9 +1819,9 @@ dependencies = [
 
 [[package]]
 name = "fundsp"
-version = "0.17.0"
+version = "0.17.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "684d4596d8db679b03aa4334a92b90eaaa762c7a30e6a65f949a3e2e090f4fe6"
+checksum = "384a8ad7f6f81affc39064e6696bd45653e6997cc0c5eaa8e97c25cbf5f9b578"
 dependencies = [
  "duplicate",
  "dyn-clone",
@@ -2895,7 +2895,7 @@ checksum = "43d84d1d7a6ac92673717f9f6d1518374ef257669c24ebc5ac25d5033828be58"
 
 [[package]]
 name = "quartz"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "bevy",
  "bevy-inspector-egui",
