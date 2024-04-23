@@ -1040,18 +1040,15 @@ pub fn process(
                             let input_net = &access.net_query.get(wh.bh_parent).unwrap().0;
                             access.net_query.get_mut(*id).unwrap().0 = input_net.clone();
                         }
-                        if wh.link_types == (-1, 2) {
-                            // interesting thought, using the num as a gate
-                            if access.num_query.get(*id).unwrap().0 != 0. {
-                                let len = access.num_query.get(wh.bh_parent).unwrap().0 / 44100.;
-                                let output = &mut access.arr_query.get_mut(*id).unwrap().0;
-                                let net = &mut access.net_query.get_mut(*id).unwrap().0;
-                                if net.inputs() == 0 && net.outputs() > 0 && len >= 0. {
-                                    let wave = Wave32::render(44100., len.into(), net);
-                                    *output = wave.channel(0).clone();
-                                }
-                                lt_to_open = Some(-13);
+                        if wh.link_types == (-1, 2) && access.num_query.get(wh.bh_parent).unwrap().0 != 0. {
+                            let len = access.num_query.get(*id).unwrap().0 / 44100.;
+                            let output = &mut access.arr_query.get_mut(*id).unwrap().0;
+                            let net = &mut access.net_query.get_mut(*id).unwrap().0;
+                            if net.inputs() == 0 && net.outputs() > 0 && len >= 0. {
+                                let wave = Wave32::render(44100., len.into(), net);
+                                *output = wave.channel(0).clone();
                             }
+                            lt_to_open = Some(-13);
                         }
                     }
                 }

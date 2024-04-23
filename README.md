@@ -481,8 +481,8 @@ combining that with the ability to store any number of targets (and repeated tar
     - inputs: `0 -> 1` (input audio node), `A -> 2` (input array)
     - process the input array as input to the given audio node (array length must match the number of input channels the node has) output of the node is written to this circle's array (process one audio frame)
 - `render`
-    - inputs: `0 -> 1`, `n -> 2`
-    - render n samples from the given audio node into the array (node must have 0 inputs, and only first channel's output is saved)
+    - inputs: `n`, `0 -> 1` (input node), `n -> 2` (trigger)
+    - render n samples from the given audio node into the array when the second input is non-zero (node must have 0 inputs, and only first channel's output is saved)
 - `rise`
     - inputs: `n -> 1`
     - num = 1 when there's a rise in the input num (current input > previous input), 0 otherwise (uses the array to store previous value)
