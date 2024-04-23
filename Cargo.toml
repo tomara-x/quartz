@@ -49,5 +49,5 @@ debug = false
 panic = 'abort'
 strip = true
 codegen-units = 1
-lto = "thin" # try fat :3
+lto = "fat"
 
