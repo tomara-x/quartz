@@ -103,7 +103,6 @@ there are 2 types of commands:
 - `:dc {float} [float] [float] float]` set default color of drawn circles (h s l a)
 - `:ht {id}` toggle open a white hole (by id)
 - `:q` exit (don't combine with other commands using `;`)
-- `F` freeze the command line (press `esc`, `Enter`, or `Backspace` to reactivate it)
 
 </p>
 </details>
@@ -235,6 +234,7 @@ note: when drag-selecting, holding `alt` will only select circles (ignores holes
 
 - `<F11>` toggle fullscreen
 - `ht` toggle white hole open status
+- `F` freeze the command line (press `esc`, `Enter`, or `Backspace` to reactivate it)
 - `quartz` shhh!
 - `awa` [awawawa](https://www.youtube.com/watch?v=LLrIGJEz818)
 
