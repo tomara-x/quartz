@@ -103,6 +103,7 @@ there are 2 types of commands:
 - `:dc {float} [float] [float] float]` set default color of drawn circles (h s l a)
 - `:ht {id}` toggle open a white hole (by id)
 - `:q` exit (don't combine with other commands using `;`)
+- `F` freeze the command line (press `esc`, `Enter`, or `Backspace` to reactivate it)
 
 </p>
 </details>
