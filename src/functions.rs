@@ -93,7 +93,7 @@ pub fn parse_with_constants(s: &str) -> Result<f32, &str> {
 }
 
 pub fn str_to_net(op: &str) -> Net32 {
-    let op = op.replace(" ", "");
+    let op = op.replace(' ', "");
     // "cat()" -> ["cat", "", ""],  "cat(mew, mrp)" -> ["cat", "mew, mrp", ""]
     let args: Vec<&str> = op.split(['(', ')']).collect();
     // parse the parameters (between parentheses)
