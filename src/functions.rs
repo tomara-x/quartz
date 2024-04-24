@@ -801,6 +801,8 @@ pub fn str_to_net(op: &str) -> Net32 {
         "ln" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].ln()))); }
         "log2" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].log2()))); }
         "log10" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].log10()))); }
+        "hypot" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| i[0].hypot(i[1])))); }
+        "atan2" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| i[0].atan2(i[1])))); }
         "sin" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].sin()))); }
         "cos" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].cos()))); }
         "tan" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].tan()))); }
