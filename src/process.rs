@@ -892,23 +892,20 @@ pub fn process(
             }
         } else if op.starts_with("pressed") {
             for key in &key_event {
-                match &key.logical_key {
-                    Key::Character(c) => {
-                        if let Some(c) = c.chars().last() {
-                            if let Some(arg) = op.get(8..) {
-                                if arg.contains(c) {
-                                    if key.state.is_pressed() {
-                                        access.num_query.get_mut(*id).unwrap().0 = 1.;
-                                        lt_to_open = Some(-1);
-                                    } else {
-                                        access.num_query.get_mut(*id).unwrap().0 = 0.;
-                                        lt_to_open = Some(-1);
-                                    }
+                if let Key::Character(c) = &key.logical_key {
+                    if let Some(c) = c.chars().last() {
+                        if let Some(arg) = op.get(8..) {
+                            if arg.contains(c) {
+                                if key.state.is_pressed() {
+                                    access.num_query.get_mut(*id).unwrap().0 = 1.;
+                                    lt_to_open = Some(-1);
+                                } else {
+                                    access.num_query.get_mut(*id).unwrap().0 = 0.;
+                                    lt_to_open = Some(-1);
                                 }
                             }
                         }
                     }
-                    _ => {}
                 }
             }
         }
