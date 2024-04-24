@@ -466,6 +466,8 @@ combining that with the ability to store any number of targets (and repeated tar
         - `Insert`: 140, `ContextMenu`: 141
         - `ArrowUp`: 200, `ArrowDown`: 201, `ArrowLeft`: 202, `ArrowRight`: 203
         - `F1`: -1, `F2`: -2 .. `F12`: -12
+- `pressed <one or more characters>`
+    - e.g. `pressed Hi` this circle's num will be set to 1 when either `H` or `i` is pressed, zero otherwise
 
 </p>
 </details>
