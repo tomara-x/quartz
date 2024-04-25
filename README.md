@@ -706,6 +706,7 @@ math
 - `mod([float])` `rem([float])`
 - `clip([float, float])` e.g. `clip()` takes 1 input and clips to [-1...1], `clip(-5, 5)` clips to [-5...5]
 - `wrap(float, [float])` wrap between 2 numbers (or between 0 and x if only one number is given)
+- `mirror(float, float)` mirror (wave fold) between two values
 - `log([float])`
 - `bitand([float])`
 - `bitor([float])`
