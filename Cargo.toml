@@ -31,10 +31,10 @@ features = [
 [dependencies]
 bevy_pancam = "0.11.1"
 fundsp = "0.17.1"
-cpal = "0.15.2"
+cpal = "0.15.3"
 copypasta = "0.10.1"
-serde = "1.0.196"
-bevy-inspector-egui = {version = "0.23.2",  default-features = false, optional = true}
+serde = "1"
+bevy-inspector-egui = {version = "0.24",  default-features = false, optional = true}
 
 # smol amount of optimization for our stuff
 [profile.dev]
