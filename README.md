@@ -748,6 +748,8 @@ math
 - `asinh()`
 - `acosh()`
 - `atanh()`
+- `atan2()`
+- `hypot()`
 - `squared()`
 - `cubed()`
 - `dissonance()`
