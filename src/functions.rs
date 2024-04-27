@@ -862,17 +862,23 @@ pub fn str_to_net(op: &str) -> Net32 {
                 return Net32::wrap(Box::new(map(move |i: &Frame<f32, U1>| i[0] - x * (i[0] / x).floor())));
             }
         }
-        // thanks to csound's mirror opcode
         "mirror" => {
             if let Some(p) = p.get(0..2) {
                 let (p0, p1) = (min(p[0], p[1]), max(p[0], p[1]));
+                let r = p1 - p0;
                 return Net32::wrap(Box::new(map(move |i: &Frame<f32, U1>| {
-                    let mut n = i[0];
-                    n = if n.is_normal() { n } else { 0. };
-                    while n > p1 || n < p0 {
-                        n = if n > p1 { p1+p1-n } else { p0+p0-n };
+                    let n = if i[0].is_normal() { i[0] } else { 0. };
+                    if n >= p0 && n <= p1 {
+                        n
+                    } else {
+                        let distance = (n - p1).min(p0 - n);
+                        let folds = (distance/r).floor();
+                        if (n > p1 && folds % 2. == 0.) || (n < p0 && folds % 2. != 0.) {
+                            p0 + (distance - folds * r)
+                        } else {
+                            p1 - (distance - folds * r)
+                        }
                     }
-                    n
                 })));
             }
         }
