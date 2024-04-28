@@ -411,7 +411,7 @@ fn post_load(
                             let handle = meshes.add(RegularPolygon::new(1., v.0)).into();
                             polygon_handles.0[v.0] = Some(handle);
                         }
-                        commands.entity(*child).insert((
+                        commands.entity(*child).try_insert((
                             ColorMesh2dBundle {
                                 mesh: polygon_handles.0[v.0].clone().unwrap(),
                                 material: materials.add(ColorMaterial::from(c.0)),
@@ -447,22 +447,20 @@ fn post_load(
                                             RenderLayers::layer(3),
                                         ));
                                         new_holes.push(*hole);
-                                    } else if let Some(mut e) = commands.get_entity(*hole) {
-                                        e.despawn();
+                                        commands.entity(*hole).remove_parent();
                                     }
                                 } else if let Ok(bh) = black_hole_query.get(*hole) {
                                     if white_hole_query.contains(bh.wh) && main_query.contains(bh.wh_parent) {
                                         commands.entity(*hole).insert(RenderLayers::layer(2));
                                         new_holes.push(*hole);
-                                    } else if let Some(mut e) = commands.get_entity(*hole) {
-                                        e.despawn();
+                                        commands.entity(*hole).remove_parent();
                                     }
                                 }
                             }
                             *holes = new_holes;
+                            commands.entity(*child).remove_parent();
                         }
                     }
-                    commands.entity(*child).remove_parent();
                 }
                 order_change.send_default();
             }
@@ -470,7 +468,7 @@ fn post_load(
             let clt = &mut command_line_text.single_mut();
             clt.sections[0].style.color = more.command_color.0;
             // despawn the now empty instance
-            commands.entity(scene_id).despawn();
+            commands.entity(scene_id).despawn_recursive();
         }
     }
 }
