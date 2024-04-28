@@ -616,7 +616,7 @@ sources
 - `soft_saw([float])` (same)
 - `dsf_saw([float])` `dsf_saw()` takes 2 inputs (frequency, and roughness [0...1]), `dsf_saw(0.5)` takes only a freq input.
 - `dsf_square([float])` (same)
-- `pulse()` pulse wave oscillator (takes a frequency input)
+- `pulse()` pulse wave oscillator (frequency, and duty cycle [0...1])
 - `brown()` brown noise
 - `pink()` pink noise
 - `white()` `noise()` white noise
