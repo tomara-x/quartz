@@ -882,6 +882,8 @@ pub fn str_to_net(op: &str) -> Net32 {
                 })));
             }
         }
+        "pol" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| (i[0].hypot(i[1]), i[1].atan2(i[0])) ))); }
+        "car" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U2>| (i[0]*i[1].cos(), i[0]*i[1].sin()) ))); }
         _ => {}
     }
     Net32::wrap(Box::new(dc(0.)))

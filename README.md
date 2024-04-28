@@ -750,6 +750,8 @@ math
 - `atanh()`
 - `atan2()`
 - `hypot()`
+- `pol()`
+- `car()`
 - `squared()`
 - `cubed()`
 - `dissonance()`
