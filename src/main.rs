@@ -429,8 +429,8 @@ fn post_load(
                                 RenderLayers::layer(1),
                             ));
                             let holes = &mut holes_query.get_mut(*child).unwrap().0;
-                            holes.retain(|x| white_hole_query.contains(*x) || black_hole_query.contains(*x));
-                            for hole in holes {
+                            let mut new_holes = Vec::new();
+                            for hole in &mut *holes {
                                 if let Ok(mut wh) = white_hole_query.get_mut(*hole) {
                                     if black_hole_query.contains(wh.bh) && main_query.contains(wh.bh_parent) {
                                         wh.open = true;
@@ -446,17 +446,20 @@ fn post_load(
                                             ConnectionArrow(arrow),
                                             RenderLayers::layer(3),
                                         ));
+                                        new_holes.push(*hole);
                                     } else if let Some(mut e) = commands.get_entity(*hole) {
                                         e.despawn();
                                     }
                                 } else if let Ok(bh) = black_hole_query.get(*hole) {
                                     if white_hole_query.contains(bh.wh) && main_query.contains(bh.wh_parent) {
                                         commands.entity(*hole).insert(RenderLayers::layer(2));
+                                        new_holes.push(*hole);
                                     } else if let Some(mut e) = commands.get_entity(*hole) {
                                         e.despawn();
                                     }
                                 }
                             }
+                            *holes = new_holes;
                         }
                     }
                     commands.entity(*child).remove_parent();
