@@ -10,6 +10,9 @@ and you non-africans, listen to me with open mind"
 
 ## let's play
 
+### tutorial (kinda)
+https://github.com/tomara-x/quartz/discussions/categories/e
+
 ### building
 - install rust: https://www.rust-lang.org/tools/install
 - install bevy dependencies: https://bevyengine.org/learn/quick-start/getting-started/setup/#installing-os-dependencies
