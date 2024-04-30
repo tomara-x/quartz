@@ -755,6 +755,9 @@ math
 - `hypot()`
 - `pol()`
 - `car()`
+- `deg()`
+- `rad()`
+- `recip()`
 - `squared()`
 - `cubed()`
 - `dissonance()`
