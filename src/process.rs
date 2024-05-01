@@ -23,7 +23,7 @@ use crate::{
 };
 
 pub fn sort_by_order(
-    query: Query<(Entity, &Order)>,
+    query: Query<(Entity, &Order), With<Network>>,
     mut queue: ResMut<Queue>,
 ) {
     let mut max_order: usize = 1;
