@@ -5,7 +5,7 @@ use bevy::{
     core_pipeline::{
         bloom::{BloomCompositeMode, BloomSettings},
         tonemapping::Tonemapping,
-        },
+    },
     render::view::{
         screenshot::ScreenshotManager,
         RenderLayers,
@@ -921,15 +921,24 @@ pub fn process(
                         let input = access.num_query.get(wh.bh_parent).unwrap().0;
                         let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
                         if op == "rise" {
-                            if input > arr[0] { access.num_query.get_mut(*id).unwrap().0 = 1.; }
+                            if input > arr[0] {
+                                access.num_query.get_mut(*id).unwrap().0 = 1.;
+                                lt_to_open = Some(-1);
+                            }
                         } else {
-                            if input < arr[0] { access.num_query.get_mut(*id).unwrap().0 = 1.; }
+                            if input < arr[0] {
+                                access.num_query.get_mut(*id).unwrap().0 = 1.;
+                                lt_to_open = Some(-1);
+                            }
                         }
                         if input == arr[0] {
-                            access.num_query.get_mut(*id).unwrap().0 = 0.
+                            let n = &mut access.num_query.get_mut(*id).unwrap().0;
+                            if *n != 0. {
+                                *n = 0.;
+                                lt_to_open = Some(-1);
+                            }
                         }
                         arr[0] = input;
-                        lt_to_open = Some(-1);
                     }
                 }
             }
