@@ -305,31 +305,29 @@ pub fn process(
         } else if op == "connect_target" {
             for hole in holes {
                 if let Ok(wh) = white_hole_query.get(*hole) {
-                    if wh.link_types == (-1, 1) && wh.open {
-                        if access.num_query.get(wh.bh_parent).unwrap().0 != 0. {
-                            access.targets_query.get_mut(*id).unwrap().0.retain(|x| holes_query.contains(*x));
-                            access.connect_command.send(ConnectCommand(*id));
-                        }
+                    if wh.link_types == (-1, 1) && wh.open
+                    && access.num_query.get(wh.bh_parent).unwrap().0 != 0. {
+                        access.targets_query.get_mut(*id).unwrap().0.retain(|x| holes_query.contains(*x));
+                        access.connect_command.send(ConnectCommand(*id));
                     }
                 }
             }
         } else if op == "isolate_target" {
             for hole in holes {
                 if let Ok(wh) = white_hole_query.get(*hole) {
-                    if wh.link_types == (-1, 1) && wh.open {
-                        if access.num_query.get(wh.bh_parent).unwrap().0 != 0. {
-                            for e in access.selected_query.iter() {
-                                commands.entity(e).remove::<Selected>();
-                            }
-                            for t in &access.targets_query.get(*id).unwrap().0 {
-                                if let Ok(holes) = holes_query.get(*t) {
-                                    for hole in &holes.0 {
-                                        commands.entity(*hole).insert(Selected);
-                                    }
+                    if wh.link_types == (-1, 1) && wh.open
+                    && access.num_query.get(wh.bh_parent).unwrap().0 != 0. {
+                        for e in access.selected_query.iter() {
+                            commands.entity(e).remove::<Selected>();
+                        }
+                        for t in &access.targets_query.get(*id).unwrap().0 {
+                            if let Ok(holes) = holes_query.get(*t) {
+                                for hole in &holes.0 {
+                                    commands.entity(*hole).insert(Selected);
                                 }
                             }
-                            access.delete_event.send_default();
                         }
+                        access.delete_event.send_default();
                     }
                 }
             }

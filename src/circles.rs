@@ -175,10 +175,8 @@ pub fn update_selection(
                         cursor.i.distance(t.translation.xy()) < t.scale.x {
                         *top_clicked_circle = Some((*e, t.translation.z));
                     }
-                } else {
-                    if cursor.i.distance(t.translation.xy()) < t.scale.x {
-                        *top_clicked_circle = Some((*e, t.translation.z));
-                    }
+                } else if cursor.i.distance(t.translation.xy()) < t.scale.x {
+                    *top_clicked_circle = Some((*e, t.translation.z));
                 }
             }
         }
