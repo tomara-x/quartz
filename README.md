@@ -10,8 +10,10 @@ and you non-africans, listen to me with open mind"
 
 ## let's play
 
-### tutorial (kinda)
-https://github.com/tomara-x/quartz/discussions/categories/e
+### tutorial
+this readme is like a reference, and there's some exapmles of the basic ideas here: https://github.com/tomara-x/quartz/discussions/categories/e
+
+---
 
 ### building
 - install rust: https://www.rust-lang.org/tools/install
@@ -41,7 +43,7 @@ first, define your terms:
 
 in addition to the shared properties that both circles and holes have (position, color, radius, vertices) a circle holds other things:
 - a number (just a float)
-- an op string: defining what that circle does
+- an [op string](#ops): defining what that circle does
      - for example: `sum`, `toggle`, `screenshot`, `lowpass()`
 - an array of numbers: for different uses (don't worry it's empty by default, thus allocating no memory)
 - an array of [target](#targets) entities that this circle controls in some way (empty by default too)
@@ -280,19 +282,9 @@ unless...
 ### targets
 
 a circle has an array of "targets" those are just entity id's. so it's like a "pointer" to another circles or hole. think of it as a one-way wireless connection.
-some ops make a circle do things to its targets. like [`process`](#process), `del_targets`, `spin_target`, `distro`, `reorder`, `open_target`, `close_target`,...
+some ops make a circle do things to its targets. like `process`, `del_targets`, `spin_target`, `distro`, `reorder`, (see [ops](#ops) for full list)
 
 (they allow some things that aren't easy through normal processing. since circles read their input when they process, while targets are written to when the controller circle is processed instead)
-
----
-### process
-`process` is an op that will process its targets in the order they appear in that targets array. it doesn't care about those targets' order. even if they're at order 0 (it's preferable they are at 0 so you don't cause unexpected things)
-
-so for every frame a circle with a `process` op is processed, it processes all of its targets in order.
-
-combining that with the "reorder" and "rise" ops can allow you to perform things like that in a triggered way.
-
-combining that with the ability to store any number of targets (and repeated targets with the "repeat" op) allows for complex logic-time looping
 
 ---
 ### ops
@@ -301,6 +293,9 @@ combining that with the ability to store any number of targets (and repeated tar
 <details><summary>targets</summary>
 <p>
 
+- `process`
+    - this circle will process its targets in the order they appear in the targets array. it doesn't matter what order those targets are. even if they're at order 0 (it's preferable they are at 0 so you don't cause unexpected things). so for every frame a circle with a `process` op is processed, it processes all of its targets in order.
+    - you can't nest them. so if a process has another process in its targets, that won't process the second one (to avoid blowing up computers)
 - `open_target`
     - inputs: `n -> 1`
     - open target white holes when input is non-zero
@@ -481,8 +476,6 @@ combining that with the ability to store any number of targets (and repeated tar
 <details><summary>data management xD</summary>
 <p>
 
-- `process`
-    - [`process`](#process)
 - `apply`
     - inputs: `0 -> 1` (input audio node), `A -> 2` (input array)
     - process the input array as input to the given audio node (array length must match the number of input channels the node has) output of the node is written to this circle's array (process one audio frame)
