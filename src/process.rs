@@ -227,6 +227,27 @@ pub fn process(
                     }
                 }
             }
+        } else if op == "select_target" {
+            for hole in holes {
+                if let Ok(wh) = white_hole_query.get(*hole) {
+                    if wh.link_types == (-1, 1) && wh.open {
+                        let n = access.num_query.get(wh.bh_parent).unwrap().0;
+                        if n != 0. {
+                            for t in &access.targets_query.get(*id).unwrap().0 {
+                                if access.vertices_query.contains(*t) {
+                                    commands.entity(*t).insert(Selected);
+                                }
+                            }
+                        } else {
+                            for t in &access.targets_query.get(*id).unwrap().0 {
+                                if access.vertices_query.contains(*t) {
+                                    commands.entity(*t).remove::<Selected>();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         } else if op == "spin_target" {
             for hole in holes {
                 if let Ok(wh) = white_hole_query.get(*hole) {

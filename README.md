@@ -296,6 +296,9 @@ some ops make a circle do things to its targets. like `process`, `del_targets`, 
 - `process`
     - this circle will process its targets in the order they appear in the targets array. it doesn't matter what order those targets are. even if they're at order 0 (it's preferable they are at 0 so you don't cause unexpected things). so for every frame a circle with a `process` op is processed, it processes all of its targets in order.
     - you can't nest them. so if a process has another process in its targets, that won't process the second one (to avoid blowing up computers)
+- `select_target`
+    - input: `n -> 1`
+    - select the targets when input is non-zero, deselect them when it's zero
 - `open_target`
     - inputs: `n -> 1`
     - open target white holes when input is non-zero
