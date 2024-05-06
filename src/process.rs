@@ -1426,8 +1426,8 @@ pub fn process(
             let lost = access.lost_wh_query.get(*id).unwrap().0;
             for hole in holes {
                 if let Ok(wh) = white_hole_query.get(*hole) {
-                    if (wh.link_types == (0, 1) && wh.open) || lost || op_changed {
-                        if !access.dac_circles.0.contains(id) {
+                    if wh.open || lost || op_changed {
+                        if wh.link_types == (0, 1) && !access.dac_circles.0.contains(id) {
                             access.dac_circles.0.push(*id);
                         }
                         access.dac_change_event.send_default();
