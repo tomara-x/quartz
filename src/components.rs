@@ -237,6 +237,10 @@ pub struct ConnectionColor(pub Color);
 #[reflect(Resource)]
 pub struct CommandColor(pub Color);
 
+#[derive(Resource, Reflect, Default)]
+#[reflect(Resource)]
+pub struct ConnectionWidth(pub f32);
+
 #[derive(Resource)]
 pub struct DefaultLT(pub (i8, i8));
 

@@ -174,6 +174,7 @@ pub fn update_connection_arrows(
     trans_query: Query<&Transform, With<Vertices>>,
     mut arrow_trans: Query<&mut Transform, Without<Vertices>>,
     arrow_query: Query<&ConnectionArrow>,
+    connection_width: Res<ConnectionWidth>,
 ) {
     for (id, bh) in bh_query.iter() {
         if wh_query.contains(bh.wh) { continue; }
@@ -189,7 +190,7 @@ pub fn update_connection_arrows(
                 let f = bh_trans + bh_radius * norm;
                 *arrow_trans.get_mut(arrow_id.0).unwrap() = Transform {
                     translation: ((i+f) / 2.).extend(100.),
-                    scale: Vec3::new(4., wh_trans.distance(bh_trans) - (bh_radius + wh_radius), 1.),
+                    scale: Vec3::new(connection_width.0, wh_trans.distance(bh_trans) - (bh_radius + wh_radius), 1.),
                     rotation: Quat::from_rotation_z(perp.to_angle()),
                 };
             }
@@ -208,7 +209,7 @@ pub fn update_connection_arrows(
                 let f = bh_trans + bh_radius * norm;
                 *arrow_trans.get_mut(arrow_id.0).unwrap() = Transform {
                     translation: ((i+f) / 2.).extend(100.),
-                    scale: Vec3::new(4., wh_trans.distance(bh_trans) - (bh_radius + wh_radius), 1.),
+                    scale: Vec3::new(connection_width.0, wh_trans.distance(bh_trans) - (bh_radius + wh_radius), 1.),
                     rotation: Quat::from_rotation_z(perp.to_angle()),
                 };
             }

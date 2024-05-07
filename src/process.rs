@@ -83,6 +83,8 @@ pub struct Access<'w, 's> {
     default_verts: ResMut<'w, DefaultDrawVerts>,
     highlight_color: ResMut<'w, HighlightColor>,
     connection_color: ResMut<'w, ConnectionColor>,
+    connection_width: ResMut<'w, ConnectionWidth>,
+    arrow_query: Query<'w, 's, &'static ConnectionArrow>,
     selection_circle: Res<'w, SelectionCircle>,
     connecting_line: Res<'w, ConnectingLine>,
     command_line_text: Query<'w, 's, &'static mut Text, With<CommandText>>,
@@ -706,6 +708,14 @@ pub fn process(
                 access.command_color.0 = color.0;
                 let clt = &mut access.command_line_text.single_mut();
                 clt.sections[0].style.color = color.0;
+            }
+        } else if op == "connection_width" {
+            let n = access.num_query.get_mut(*id).unwrap();
+            if n.is_changed() {
+                access.connection_width.0 = n.0;
+                for e in access.arrow_query.iter() {
+                    access.trans_query.get_mut(e.0).unwrap().scale.x = n.0;
+                }
             }
         } else if op == "tonemapping" {
             let mut tm = access.tonemapping.single_mut();

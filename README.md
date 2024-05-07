@@ -401,6 +401,8 @@ some ops make a circle do things to its targets. like `process`, `del_targets`, 
     - when color changes, set the color of the selection lasso circle (and draw mode indicator)
 - `connection_color`
     - when color changes, set the color of connection arrows
+- `connection_width`
+    - when this circle's num changes, set the width of the connection arrows
 - `connecting_line_color`
     - when color changes, set the connect mode indicator
 - `command_color`
