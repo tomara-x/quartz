@@ -511,7 +511,7 @@ pub fn update_info_text(
     for (id, info) in query.iter_mut() {
         let t = trans_query.get_mut(id).unwrap();
         if t.is_changed() || info.is_added() {
-            text_bounds.get_mut(info.0).unwrap().size.x = t.scale.x;
+            text_bounds.get_mut(info.0).unwrap().size.x = t.scale.x * 10.;
             let t = t.translation;
             trans_query.get_mut(info.0).unwrap().translation = t.xy().extend(t.z + 0.00001);
         }
