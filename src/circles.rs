@@ -507,11 +507,12 @@ pub fn update_info_text(
     mut white_hole_query: Query<&mut WhiteHole>,
     black_hole_query: Query<&BlackHole>,
     mut color_query: Query<&mut Col>,
+    text_size: Res<TextSize>,
 ) {
     for (id, info) in query.iter_mut() {
         let t = trans_query.get_mut(id).unwrap();
-        if t.is_changed() || info.is_added() {
-            text_bounds.get_mut(info.0).unwrap().size.x = t.scale.x * 10.;
+        if t.is_changed() || info.is_added() || text_size.is_changed() {
+            text_bounds.get_mut(info.0).unwrap().size.x = t.scale.x * (1.2/text_size.0);
             let t = t.translation;
             trans_query.get_mut(info.0).unwrap().translation = t.xy().extend(t.z + 0.00001);
         }
