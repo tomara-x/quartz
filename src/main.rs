@@ -67,6 +67,7 @@ fn main() {
     .insert_resource(ConnectionWidth(4.))
     .insert_resource(CommandColor(Color::hsla(0., 0., 0.7, 1.)))
     .insert_resource(DefaultLT((0, 0)))
+    .insert_resource(TextSize(0.1))
     .insert_resource(SystemClipboard(ClipboardContext::new().unwrap()))
     .insert_resource(Msaa::Sample4)
     .insert_resource(Version(format!("{} {}", env!("CARGO_PKG_VERSION"), env!("COMMIT_HASH"))))
@@ -153,6 +154,7 @@ fn main() {
     .register_type::<ConnectionColor>()
     .register_type::<ConnectionWidth>()
     .register_type::<CommandColor>()
+    .register_type::<TextSize>()
     .register_type::<Version>()
     .register_type::<Holes>()
     ;
@@ -297,6 +299,7 @@ fn save_scene(world: &mut World) {
             .allow_resource::<ConnectionWidth>()
             .allow_resource::<ClearColor>()
             .allow_resource::<CommandColor>()
+            .allow_resource::<TextSize>()
             .allow_resource::<Version>()
             .extract_entities(query.iter(world))
             .extract_resources()

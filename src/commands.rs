@@ -45,6 +45,7 @@ pub struct Access<'w, 's> {
     default_lt: ResMut<'w, DefaultLT>,
     version: Res<'w, Version>,
     visible: Query<'w, 's, &'static VisibleEntities>,
+    text_size: Res<'w, TextSize>,
 }
 
 pub fn command_parser(
@@ -929,22 +930,22 @@ pub fn command_parser(
                             text: Text::from_sections([
                                 TextSection::new(
                                     "",
-                                    TextStyle { color: Color::BLACK, ..default() },
+                                    TextStyle { color: Color::BLACK, font_size: 120., ..default() },
                                 ),
                                 TextSection::new(
                                     "",
-                                    TextStyle { color: Color::BLACK, ..default() },
+                                    TextStyle { color: Color::BLACK, font_size: 120., ..default() },
                                 ),
                                 TextSection::new(
                                     "",
-                                    TextStyle { color: Color::BLACK, ..default() },
+                                    TextStyle { color: Color::BLACK, font_size: 120., ..default() },
                                 ),
                                 TextSection::new(
                                     "",
-                                    TextStyle { color: Color::BLACK, ..default() },
+                                    TextStyle { color: Color::BLACK, font_size: 120., ..default() },
                                 ),
                             ]).with_justify(JustifyText::Center),
-                            transform: Transform::from_translation(Vec3::ZERO),
+                            transform: Transform::from_scale(Vec3::new(access.text_size.0, access.text_size.0, 1.)),
                             ..default()
                         }
                     ).id();

@@ -97,6 +97,8 @@ pub struct Access<'w, 's> {
     materials: ResMut<'w, Assets<ColorMaterial>>,
     connection_mat: ResMut<'w, ConnectionMat>,
     connect_command: EventWriter<'w, ConnectCommand>,
+    info_text_query: Query<'w, 's, &'static InfoText>,
+    text_size: ResMut<'w, TextSize>,
 }
 
 pub fn process(
@@ -715,6 +717,17 @@ pub fn process(
                 access.connection_width.0 = n.0;
                 for e in access.arrow_query.iter() {
                     access.trans_query.get_mut(e.0).unwrap().scale.x = n.0;
+                }
+            }
+        } else if op == "text_size" {
+            let n = access.num_query.get_mut(*id).unwrap();
+            if n.is_changed() {
+                let size = n.0.max(0.1) / 120.;
+                access.text_size.0 = size;
+                for e in access.info_text_query.iter() {
+                    let scale = &mut access.trans_query.get_mut(e.0).unwrap().scale;
+                    scale.x = size;
+                    scale.y = size;
                 }
             }
         } else if op == "tonemapping" {
