@@ -407,6 +407,8 @@ some ops make a circle do things to its targets. like `process`, `del_targets`, 
     - when color changes, set the connect mode indicator
 - `command_color`
     - when color changes, set color of the command line text
+- `text_size`
+    - when this circle's num changes, set the font size of info texts
 - `tonemapping`
     - inputs: `n -> 1`
     - input num sets the tonemapping mode. 0 = `None`, 1 = `Reinhard`, 2 = `ReinhardLuminance`, 3 = `AcesFitted`, 4 = `AgX`, 5 = `SomewhatBoringDisplayTransform`, 6 = `TonyMcMapface`, 7 = `BlenderFilmic`
