@@ -803,6 +803,8 @@ i hope that everyone will become friends
     - cpal https://github.com/rustaudio/cpal
     - copypasta https://github.com/alacritty/copypasta
     - serde https://github.com/serde-rs/serde
+    - bevy_mod_osc https://github.com/funatsufumiya/bevy_mod_osc
+    - rosc https://github.com/klingtnet/rosc
     - bevy_github_ci_template https://github.com/bevyengine/bevy_github_ci_template
     - tracy https://github.com/wolfpld/tracy
     - vim https://github.com/vim/vim

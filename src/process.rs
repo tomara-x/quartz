@@ -16,6 +16,8 @@ use bevy::{
 
 use fundsp::hacker32::*;
 
+use bevy_mod_osc::osc_receiver::OscMessageEvent;
+
 use crate::{
     components::*,
     nodes::*,
@@ -99,6 +101,7 @@ pub struct Access<'w, 's> {
     connect_command: EventWriter<'w, ConnectCommand>,
     info_text_query: Query<'w, 's, &'static InfoText>,
     text_size: ResMut<'w, TextSize>,
+    osc_message: EventReader<'w, 's, OscMessageEvent>,
 }
 
 pub fn process(
@@ -110,6 +113,7 @@ pub fn process(
     mut access: Access,
     cursor: Res<CursorInfo>,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
+    // TODO(amy): move in access
     mut key_event: EventReader<KeyboardInput>,
     camera_query: Query<(Entity, &Camera, &GlobalTransform)>,
     windows: Query<(Entity, &Window)>,
@@ -117,6 +121,7 @@ pub fn process(
     mut commands: Commands,
 ) {
     let key_event = key_event.read().collect::<Vec<_>>();
+    let osc_event = access.osc_message.read().collect::<Vec<_>>();
     for id in queue.0.iter().flatten().chain(loopq.0.iter()) {
         let holes = &holes_query.get(*id).unwrap().0;
         for hole in holes {
@@ -818,6 +823,17 @@ pub fn process(
                             access.screensot_manager.save_screenshot_to_disk(win, path).unwrap();
                         }
                     }
+                }
+            }
+        } else if op.starts_with("osc r") {
+            for event in &osc_event {
+                if op.contains(&event.message.addr) {
+                    let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
+                    arr.clear();
+                    for arg in event.message.args.clone() {
+                        if let rosc::OscType::Float(f) = arg { arr.push(f); }
+                    }
+                    lt_to_open = Some(-13);
                 }
             }
         }

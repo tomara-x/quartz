@@ -21,6 +21,7 @@ use bevy_pancam::{PanCam, PanCamPlugin};
 use std::{fs::File, io::Write};
 use copypasta::{ClipboardContext, ClipboardProvider};
 use serde::de::DeserializeSeed;
+use bevy_mod_osc::osc_receiver::OscReceiverPlugin;
 
 #[cfg(feature = "inspector")]
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
@@ -58,6 +59,12 @@ fn main() {
     })
 
     .add_plugins(PanCamPlugin)
+    .add_plugins(OscReceiverPlugin {
+        port: 1729,
+        use_thread: true,
+        use_ipv6: false,
+        debug_print: false,
+    })
 
     .insert_resource(ClearColor(Color::BLACK))
     .insert_resource(DefaultDrawColor(Color::hsl(270.,1.,0.5)))
