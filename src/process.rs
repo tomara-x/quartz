@@ -11,6 +11,7 @@ use bevy::{
         RenderLayers,
     },
     input::keyboard::{KeyboardInput, Key},
+    tasks::{block_on, futures_lite::future, AsyncComputeTaskPool},
     prelude::*
 };
 
@@ -21,6 +22,15 @@ use crate::{
     nodes::*,
     functions::*,
 };
+
+use rosc::{
+    OscPacket,
+    OscMessage,
+    OscType::Float,
+};
+
+use std::net::{SocketAddrV4, UdpSocket};
+use std::str::FromStr;
 
 pub fn sort_by_order(
     query: Query<(Entity, &Order), With<Network>>,
@@ -99,6 +109,7 @@ pub struct Access<'w, 's> {
     connect_command: EventWriter<'w, ConnectCommand>,
     info_text_query: Query<'w, 's, &'static InfoText>,
     text_size: ResMut<'w, TextSize>,
+    receiver_tasks: Query<'w, 's, &'static mut ReceiverTask>,
 }
 
 pub fn process(
@@ -818,6 +829,47 @@ pub fn process(
                             access.screensot_manager.save_screenshot_to_disk(win, path).unwrap();
                         }
                     }
+                }
+            }
+        } else if op.starts_with("osc r") {
+            let mut received = false;
+            if let Ok(mut task) = access.receiver_tasks.get_mut(*id) {
+                if let Some(packet) = block_on(future::poll_once(&mut task.0)) {
+                    if let OscPacket::Message(msg) = packet {
+                        for hole in holes {
+                            if let Ok(wh) = white_hole_query.get(*hole) {
+                                if wh.link_types.0 == 0
+                                && access.op_query.get(wh.bh_parent).unwrap().0 == msg.addr {
+                                    let arr = &mut access.arr_query.get_mut(wh.bh_parent).unwrap().0;
+                                    arr.clear();
+                                    for arg in msg.args.clone() {
+                                        if let Float(f) = arg { arr.push(f); }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    received = true;
+                }
+            }
+            if received || access.op_changed_query.get(*id).unwrap().0 {
+                if let Some(port) = op.split_ascii_whitespace().nth(2) {
+                    let address = SocketAddrV4::from_str(&format!("0.0.0.0:{}", port)).unwrap();
+                    let thread_pool = AsyncComputeTaskPool::get();
+                    let task = thread_pool.spawn(async move {
+                        let sock = UdpSocket::bind(address).unwrap();
+                        let mut buf = [0u8; rosc::decoder::MTU];
+                        if let Ok((size, _)) = sock.recv_from(&mut buf) {
+                            let (_, packet) = rosc::decoder::decode_udp(&buf[..size]).unwrap();
+                            packet
+                        } else {
+                            OscPacket::Message(OscMessage {
+                                addr: String::new(),
+                                args: Vec::new(),
+                            })
+                        }
+                    });
+                    commands.entity(*id).insert(ReceiverTask(task));
                 }
             }
         }

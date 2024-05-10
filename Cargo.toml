@@ -34,6 +34,7 @@ fundsp = {version = "0.17.1", default-features = false}
 cpal = "0.15.3"
 copypasta = "0.10.1"
 serde = "1"
+rosc = "0.10.1"
 bevy-inspector-egui = {version = "0.24",  default-features = false, optional = true}
 
 # smol amount of optimization for our stuff

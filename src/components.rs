@@ -5,6 +5,7 @@ use bevy::{
         entity::MapEntities,
         reflect::{ReflectComponent, ReflectMapEntities},
     },
+    tasks::Task,
 };
 
 use fundsp::{
@@ -14,6 +15,8 @@ use fundsp::{
 };
 
 use copypasta::ClipboardContext;
+
+use rosc::OscPacket;
 
 // -------------------- components --------------------
 #[derive(Component, Reflect, Default)]
@@ -154,6 +157,9 @@ pub struct CommandText;
 
 #[derive(Component)]
 pub struct InfoText(pub Entity);
+
+#[derive(Component)]
+pub struct ReceiverTask(pub Task<OscPacket>);
 
 // -------------------- states --------------------
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
