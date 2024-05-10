@@ -21,7 +21,10 @@ use bevy_pancam::{PanCam, PanCamPlugin};
 use std::{fs::File, io::Write};
 use copypasta::{ClipboardContext, ClipboardProvider};
 use serde::de::DeserializeSeed;
-use bevy_mod_osc::osc_receiver::OscReceiverPlugin;
+use bevy_mod_osc::{
+    osc_receiver::OscReceiverPlugin,
+    osc_sender::OscSender,
+};
 
 #[cfg(feature = "inspector")]
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
@@ -65,6 +68,7 @@ fn main() {
         use_ipv6: false,
         debug_print: false,
     })
+    .insert_resource(OscSender::new("127.0.0.1", 1729))
 
     .insert_resource(ClearColor(Color::BLACK))
     .insert_resource(DefaultDrawColor(Color::hsl(270.,1.,0.5)))

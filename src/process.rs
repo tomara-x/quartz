@@ -14,9 +14,14 @@ use bevy::{
     prelude::*
 };
 
+use std::str::FromStr;
+
 use fundsp::hacker32::*;
 
-use bevy_mod_osc::osc_receiver::OscMessageEvent;
+use bevy_mod_osc::{
+    osc_receiver::OscMessageEvent,
+    osc_sender::OscSender,
+};
 
 use crate::{
     components::*,
@@ -102,6 +107,7 @@ pub struct Access<'w, 's> {
     info_text_query: Query<'w, 's, &'static InfoText>,
     text_size: ResMut<'w, TextSize>,
     osc_message: EventReader<'w, 's, OscMessageEvent>,
+    osc_sender: ResMut<'w, OscSender>,
 }
 
 pub fn process(
@@ -825,7 +831,7 @@ pub fn process(
                     }
                 }
             }
-        } else if op.starts_with("osc r") {
+        } else if op.starts_with("osc_r") {
             for event in &osc_event {
                 if op.contains(&event.message.addr) {
                     let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
@@ -834,6 +840,47 @@ pub fn process(
                         if let rosc::OscType::Float(f) = arg { arr.push(f); }
                     }
                     lt_to_open = Some(-13);
+                }
+            }
+        } else if op.starts_with("osc_s") {
+            let op = op.to_owned();
+            // yeet invalid address
+            if access.op_changed_query.get(*id).unwrap().0 {
+                if let Some(address) = op.split_ascii_whitespace().nth(1) {
+                    if rosc::address::verify_address(address).is_err() {
+                        access.op_query.get_mut(*id).unwrap().0 = "osc s".to_string();
+                        continue;
+                    }
+                }
+            }
+            for hole in holes {
+                if let Ok(wh) = white_hole_query.get(*hole) {
+                    if wh.link_types == (-13, 1) && wh.open {
+                        if let Some(address) = op.split_ascii_whitespace().nth(1) {
+                            let arr = access.arr_query.get(wh.bh_parent).unwrap().0.clone();
+                            access.osc_sender.send(address, arr);
+                        }
+                    }
+                }
+            }
+        } else if op == "osc_ip" {
+            for hole in holes {
+                if let Ok(wh) = white_hole_query.get(*hole) {
+                    if wh.link_types == (0, 1) && wh.open {
+                        let ip = access.op_query.get(wh.bh_parent).unwrap().0.clone();
+                        if std::net::Ipv4Addr::from_str(&ip).is_ok() {
+                            access.osc_sender.host = ip;
+                        }
+                    }
+                }
+            }
+        } else if op == "osc_port" {
+            for hole in holes {
+                if let Ok(wh) = white_hole_query.get(*hole) {
+                    if wh.link_types == (-1, 1) && wh.open {
+                        let port = access.num_query.get(wh.bh_parent).unwrap().0.max(1.) as u16;
+                        access.osc_sender.port = port;
+                    }
                 }
             }
         }
