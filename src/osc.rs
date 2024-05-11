@@ -46,18 +46,6 @@ impl OscReceiver {
             self.socket = None;
         }
     }
-    pub fn receive(&self) -> Option<OscPacket> {
-        let mut buf = [0u8; MTU];
-        if let Some(socket) = &self.socket {
-            let result = socket.recv(&mut buf);
-            if let Ok(num_bytes) = result {
-                if let Ok((_, packet)) = decode_udp(&buf[0..num_bytes]) {
-                    return Some(packet);
-                }
-            }
-        }
-        None
-    }
 }
 
 pub fn unpacket(packet: OscPacket, buffer: &mut Vec<OscMessage>) {
@@ -71,4 +59,14 @@ pub fn unpacket(packet: OscPacket, buffer: &mut Vec<OscMessage>) {
             });
         }
     }
+}
+
+pub fn receive_packet(socket: &UdpSocket) -> Option<OscPacket> {
+    let mut buf = [0u8; MTU];
+    if let Ok(num_bytes) = socket.recv(&mut buf) {
+        if let Ok((_, packet)) = decode_udp(&buf[0..num_bytes]) {
+            return Some(packet);
+        }
+    }
+    None
 }

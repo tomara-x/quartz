@@ -104,6 +104,7 @@ pub struct Access<'w, 's> {
     text_size: ResMut<'w, TextSize>,
     osc_sender: ResMut<'w, OscSender>,
     osc_receiver: ResMut<'w, OscReceiver>,
+    osc_messages: Local<'s, Vec<rosc::OscMessage>>,
 }
 
 pub fn process(
@@ -826,22 +827,42 @@ pub fn process(
                     }
                 }
             }
-        } else if op == "osc_init" {
+        } else if op == "osc" {
             for hole in holes {
                 if let Ok(wh) = white_hole_query.get(*hole) {
                     if wh.link_types == (-1, 1) && wh.open {
                         let port = access.num_query.get(wh.bh_parent).unwrap().0.max(1.) as u16;
                         access.osc_receiver.init(port);
+                    } else if wh.link_types == (0, 2) && wh.open {
+                        let ip = access.op_query.get(wh.bh_parent).unwrap().0.clone();
+                        if std::net::Ipv4Addr::from_str(&ip).is_ok() {
+                            access.osc_sender.host = ip;
+                        }
+                    } else if wh.link_types == (-1, 3) && wh.open {
+                        let port = access.num_query.get(wh.bh_parent).unwrap().0 as u16;
+                        access.osc_sender.port = port;
+                    }
+                }
+            }
+            access.osc_messages.clear();
+            if let Some(socket) = &access.osc_receiver.socket {
+                for _ in 0..10 {
+                    if let Some(packet) = receive_packet(socket) {
+                        let mut buffer = Vec::new();
+                        unpacket(packet, &mut buffer);
+                        access.osc_messages.append(&mut buffer);
                     }
                 }
             }
         } else if op.starts_with("osc_r") {
-            // reveice 10 at a time
-            for _ in 0..10 {
-                if let Some(packet) = access.osc_receiver.receive() {
-                    let mut buffer = Vec::new();
-                    unpacket(packet, &mut buffer);
-                    info!("{:?}", buffer);
+            for message in &access.osc_messages {
+                if op.contains(&message.addr) {
+                    let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
+                    arr.clear();
+                    for arg in message.args.clone() {
+                        if let rosc::OscType::Float(f) = arg { arr.push(f); }
+                    }
+                    lt_to_open = Some(-13);
                 }
             }
         } else if op.starts_with("osc_s") {
@@ -862,26 +883,6 @@ pub fn process(
                             let arr = access.arr_query.get(wh.bh_parent).unwrap().0.clone();
                             access.osc_sender.send(address, arr);
                         }
-                    }
-                }
-            }
-        } else if op == "osc_ip" {
-            for hole in holes {
-                if let Ok(wh) = white_hole_query.get(*hole) {
-                    if wh.link_types == (0, 1) && wh.open {
-                        let ip = access.op_query.get(wh.bh_parent).unwrap().0.clone();
-                        if std::net::Ipv4Addr::from_str(&ip).is_ok() {
-                            access.osc_sender.host = ip;
-                        }
-                    }
-                }
-            }
-        } else if op == "osc_port" {
-            for hole in holes {
-                if let Ok(wh) = white_hole_query.get(*hole) {
-                    if wh.link_types == (-1, 1) && wh.open {
-                        let port = access.num_query.get(wh.bh_parent).unwrap().0 as u16;
-                        access.osc_sender.port = port;
                     }
                 }
             }
