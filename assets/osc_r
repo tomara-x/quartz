@@ -36,7 +36,7 @@
     "quartz::components::Version": ("0.3.0 e00d787"),
   },
   entities: {
-    4294967302: (
+    4294967303: (
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
@@ -65,7 +65,7 @@
         "quartz::components::Vertices": (4),
         "quartz::components::Order": (1),
         "quartz::components::Number": (0.0),
-        "quartz::components::Op": ("osc r /touch1"),
+        "quartz::components::Op": ("osc_r /touch1"),
         "quartz::components::Holes": ([
           4294967308,
         ]),
@@ -77,7 +77,7 @@
         "quartz::components::Save": (),
       },
     ),
-    4294967303: (
+    4294967304: (
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
@@ -113,7 +113,7 @@
         "quartz::components::Save": (),
       },
     ),
-    4294967304: (
+    4294967305: (
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
@@ -149,7 +149,7 @@
         "quartz::components::Save": (),
       },
     ),
-    4294967305: (
+    4294967306: (
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
@@ -185,7 +185,7 @@
         "quartz::components::Save": (),
       },
     ),
-    4294967306: (
+    4294967307: (
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
@@ -220,9 +220,9 @@
         ]),
         "quartz::components::Arr": ([]),
         "quartz::components::Targets": ([
-          4294967303,
           4294967304,
           4294967305,
+          4294967306,
         ]),
         "quartz::components::Save": (),
       },
@@ -256,7 +256,7 @@
         "quartz::components::Vertices": (4),
         "quartz::components::BlackHole": (
           wh: 4294967309,
-          wh_parent: 4294967306,
+          wh_parent: 4294967307,
         ),
         "quartz::components::Save": (),
       },
@@ -290,14 +290,14 @@
         "quartz::components::Vertices": (4),
         "quartz::components::WhiteHole": (
           bh: 4294967308,
-          bh_parent: 4294967302,
+          bh_parent: 4294967303,
           link_types: (-13, -8),
           open: false,
         ),
         "quartz::components::Save": (),
       },
     ),
-    4294967325: (
+    4294967310: (
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
@@ -326,9 +326,9 @@
         "quartz::components::Vertices": (4),
         "quartz::components::Order": (1),
         "quartz::components::Number": (0.0),
-        "quartz::components::Op": ("osc r /touch2"),
+        "quartz::components::Op": ("osc_r /touch2"),
         "quartz::components::Holes": ([
-          4294967330,
+          4294967315,
         ]),
         "quartz::components::Arr": ([
           -1.0,
@@ -338,7 +338,7 @@
         "quartz::components::Save": (),
       },
     ),
-    4294967326: (
+    4294967311: (
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
@@ -374,7 +374,7 @@
         "quartz::components::Save": (),
       },
     ),
-    4294967327: (
+    4294967312: (
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
@@ -410,7 +410,7 @@
         "quartz::components::Save": (),
       },
     ),
-    4294967328: (
+    4294967313: (
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
@@ -446,7 +446,7 @@
         "quartz::components::Save": (),
       },
     ),
-    4294967329: (
+    4294967314: (
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
@@ -477,18 +477,18 @@
         "quartz::components::Number": (0.0),
         "quartz::components::Op": ("distro"),
         "quartz::components::Holes": ([
-          4294967331,
+          4294967316,
         ]),
         "quartz::components::Arr": ([]),
         "quartz::components::Targets": ([
-          4294967326,
-          4294967327,
-          4294967328,
+          4294967311,
+          4294967312,
+          4294967313,
         ]),
         "quartz::components::Save": (),
       },
     ),
-    4294967330: (
+    4294967315: (
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
@@ -516,13 +516,13 @@
         )),
         "quartz::components::Vertices": (4),
         "quartz::components::BlackHole": (
-          wh: 4294967331,
-          wh_parent: 4294967329,
+          wh: 4294967316,
+          wh_parent: 4294967314,
         ),
         "quartz::components::Save": (),
       },
     ),
-    4294967331: (
+    4294967316: (
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
@@ -550,11 +550,157 @@
         )),
         "quartz::components::Vertices": (4),
         "quartz::components::WhiteHole": (
-          bh: 4294967330,
-          bh_parent: 4294967325,
+          bh: 4294967315,
+          bh_parent: 4294967310,
           link_types: (-13, -8),
           open: false,
         ),
+        "quartz::components::Save": (),
+      },
+    ),
+    8589934623: (
+      components: {
+        "bevy_transform::components::transform::Transform": (
+          translation: (
+            x: -127.86449,
+            y: 235.52486,
+            z: 0.001,
+          ),
+          rotation: (
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+            w: 1.0,
+          ),
+          scale: (
+            x: 11.972679,
+            y: 11.972679,
+            z: 1.0,
+          ),
+        ),
+        "quartz::components::Col": (Hsla(
+          hue: 0.0,
+          saturation: 0.0,
+          lightness: 0.8,
+          alpha: 1.0,
+        )),
+        "quartz::components::Vertices": (4),
+        "quartz::components::WhiteHole": (
+          bh: 8589934624,
+          bh_parent: 8589934626,
+          link_types: (-1, 1),
+          open: false,
+        ),
+        "quartz::components::Save": (),
+      },
+    ),
+    8589934624: (
+      components: {
+        "bevy_transform::components::transform::Transform": (
+          translation: (
+            x: -56.50261,
+            y: 287.9692,
+            z: 0.011,
+          ),
+          rotation: (
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+            w: 1.0,
+          ),
+          scale: (
+            x: 12.193375,
+            y: 12.193375,
+            z: 1.0,
+          ),
+        ),
+        "quartz::components::Col": (Hsla(
+          hue: 0.0,
+          saturation: 0.0,
+          lightness: 0.2,
+          alpha: 1.0,
+        )),
+        "quartz::components::Vertices": (4),
+        "quartz::components::BlackHole": (
+          wh: 8589934623,
+          wh_parent: 8589934627,
+        ),
+        "quartz::components::Save": (),
+      },
+    ),
+    8589934626: (
+      components: {
+        "bevy_transform::components::transform::Transform": (
+          translation: (
+            x: -31.476608,
+            y: 323.09995,
+            z: 0.01,
+          ),
+          rotation: (
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+            w: 1.0,
+          ),
+          scale: (
+            x: 81.28916,
+            y: 81.28916,
+            z: 1.0,
+          ),
+        ),
+        "quartz::components::Col": (Hsla(
+          hue: 270.0,
+          saturation: 1.0,
+          lightness: 0.5,
+          alpha: 1.0,
+        )),
+        "quartz::components::Vertices": (4),
+        "quartz::components::Order": (0),
+        "quartz::components::Number": (1729.0),
+        "quartz::components::Op": ("empty"),
+        "quartz::components::Holes": ([
+          8589934624,
+        ]),
+        "quartz::components::Arr": ([]),
+        "quartz::components::Targets": ([]),
+        "quartz::components::Save": (),
+      },
+    ),
+    8589934627: (
+      components: {
+        "bevy_transform::components::transform::Transform": (
+          translation: (
+            x: -151.7106,
+            y: 215.07098,
+            z: 0.0,
+          ),
+          rotation: (
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+            w: 1.0,
+          ),
+          scale: (
+            x: 79.817856,
+            y: 79.817856,
+            z: 1.0,
+          ),
+        ),
+        "quartz::components::Col": (Hsla(
+          hue: 270.0,
+          saturation: 1.0,
+          lightness: 0.5,
+          alpha: 1.0,
+        )),
+        "quartz::components::Vertices": (4),
+        "quartz::components::Order": (1),
+        "quartz::components::Number": (0.0),
+        "quartz::components::Op": ("osc"),
+        "quartz::components::Holes": ([
+          8589934623,
+        ]),
+        "quartz::components::Arr": ([]),
+        "quartz::components::Targets": ([]),
         "quartz::components::Save": (),
       },
     ),
