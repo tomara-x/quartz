@@ -21,10 +21,6 @@ use bevy_pancam::{PanCam, PanCamPlugin};
 use std::{fs::File, io::Write};
 use copypasta::{ClipboardContext, ClipboardProvider};
 use serde::de::DeserializeSeed;
-use bevy_mod_osc::{
-    osc_receiver::OscReceiverPlugin,
-    osc_sender::OscSender,
-};
 
 #[cfg(feature = "inspector")]
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
@@ -38,8 +34,9 @@ mod audio;
 mod commands;
 mod nodes;
 mod functions;
+mod osc;
 use {components::*, process::*, cursor::*, connections::*,
-     circles::*, audio::*, commands::*, functions::*};
+     circles::*, audio::*, commands::*, functions::*, osc::*};
 
 fn main() {
     let mut app = App::new();
@@ -62,13 +59,11 @@ fn main() {
     })
 
     .add_plugins(PanCamPlugin)
-    .add_plugins(OscReceiverPlugin {
-        port: 1729,
-        use_thread: true,
-        use_ipv6: false,
-        debug_print: false,
+    .insert_resource(OscSender {
+        host: "127.0.0.1".to_string(),
+        port: 1729
     })
-    .insert_resource(OscSender::new("127.0.0.1", 1729))
+    .insert_resource(OscReceiver { socket: None })
 
     .insert_resource(ClearColor(Color::BLACK))
     .insert_resource(DefaultDrawColor(Color::hsl(270.,1.,0.5)))

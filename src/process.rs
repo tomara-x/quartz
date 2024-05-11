@@ -18,15 +18,11 @@ use std::str::FromStr;
 
 use fundsp::hacker32::*;
 
-use bevy_mod_osc::{
-    osc_receiver::OscMessageEvent,
-    osc_sender::OscSender,
-};
-
 use crate::{
     components::*,
     nodes::*,
     functions::*,
+    osc::*,
 };
 
 pub fn sort_by_order(
@@ -106,8 +102,8 @@ pub struct Access<'w, 's> {
     connect_command: EventWriter<'w, ConnectCommand>,
     info_text_query: Query<'w, 's, &'static InfoText>,
     text_size: ResMut<'w, TextSize>,
-    osc_message: EventReader<'w, 's, OscMessageEvent>,
     osc_sender: ResMut<'w, OscSender>,
+    osc_receiver: ResMut<'w, OscReceiver>,
 }
 
 pub fn process(
@@ -127,7 +123,6 @@ pub fn process(
     mut commands: Commands,
 ) {
     let key_event = key_event.read().collect::<Vec<_>>();
-    let osc_event = access.osc_message.read().collect::<Vec<_>>();
     for id in queue.0.iter().flatten().chain(loopq.0.iter()) {
         let holes = &holes_query.get(*id).unwrap().0;
         for hole in holes {
@@ -831,15 +826,22 @@ pub fn process(
                     }
                 }
             }
-        } else if op.starts_with("osc_r") {
-            for event in &osc_event {
-                if op.contains(&event.message.addr) {
-                    let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
-                    arr.clear();
-                    for arg in event.message.args.clone() {
-                        if let rosc::OscType::Float(f) = arg { arr.push(f); }
+        } else if op == "osc_init" {
+            for hole in holes {
+                if let Ok(wh) = white_hole_query.get(*hole) {
+                    if wh.link_types == (-1, 1) && wh.open {
+                        let port = access.num_query.get(wh.bh_parent).unwrap().0.max(1.) as u16;
+                        access.osc_receiver.init(port);
                     }
-                    lt_to_open = Some(-13);
+                }
+            }
+        } else if op.starts_with("osc_r") {
+            // reveice 10 at a time
+            for _ in 0..10 {
+                if let Some(packet) = access.osc_receiver.receive() {
+                    let mut buffer = Vec::new();
+                    unpacket(packet, &mut buffer);
+                    info!("{:?}", buffer);
                 }
             }
         } else if op.starts_with("osc_s") {
@@ -878,7 +880,7 @@ pub fn process(
             for hole in holes {
                 if let Ok(wh) = white_hole_query.get(*hole) {
                     if wh.link_types == (-1, 1) && wh.open {
-                        let port = access.num_query.get(wh.bh_parent).unwrap().0.max(1.) as u16;
+                        let port = access.num_query.get(wh.bh_parent).unwrap().0 as u16;
                         access.osc_sender.port = port;
                     }
                 }

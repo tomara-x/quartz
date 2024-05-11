@@ -803,7 +803,6 @@ i hope that everyone will become friends
     - cpal https://github.com/rustaudio/cpal
     - copypasta https://github.com/alacritty/copypasta
     - serde https://github.com/serde-rs/serde
-    - bevy_mod_osc https://github.com/funatsufumiya/bevy_mod_osc
     - rosc https://github.com/klingtnet/rosc
     - bevy_github_ci_template https://github.com/bevyengine/bevy_github_ci_template
     - tracy https://github.com/wolfpld/tracy
@@ -827,6 +826,7 @@ i hope that everyone will become friends
     - bevy_vector_shapes https://github.com/james-j-obrien/bevy_vector_shapes
     - anyhow https://github.com/dtolnay/anyhow
     - assert_no_alloc https://github.com/Windfisch/rust-assert-no-alloc
+    - bevy_mod_osc https://github.com/funatsufumiya/bevy_mod_osc
 
 ## license
 
