@@ -443,6 +443,20 @@ some ops make a circle do things to its targets. like `process`, `del_targets`, 
 - `screenshot`
     - inputs: `n -> 1`
     - when input num is non-zero, take a screenshot and save it as screenshots/{time in ms since 1970}.png (make sure that folder exists)
+- `osc`
+    - set the settings of osc sender and receiver
+    - `n -> 1` receiver port
+    - `0 -> 2` op string of the input sets the host ip (ip to send to)
+    - `n -> 3` sender port
+- `osc_r {osc address}`
+    - receive osc messages into the array of this circle. the `osc` op must be present in this patch and is processing for this to work. the osc messages must be sent to the given osc address and contain floats. you can receive from multiple addresses (space separated)
+    - e.g. `osc_r /gyroscope`, `osc_r /touch1 /touch3`
+- `osc_s {osc address}`
+    - inputs: `A -> 1`
+    - send the input array as an osc message with the given address (to the host and port set by the `osc` op)
+    - e.g. `osc_s /space`
+
+for more info about osc: https://opensoundcontrol.stanford.edu/spec-1_0.html
 
 </p>
 </details>

@@ -839,7 +839,7 @@ pub fn process(
                             access.osc_sender.host = ip;
                         }
                     } else if wh.link_types == (-1, 3) && wh.open {
-                        let port = access.num_query.get(wh.bh_parent).unwrap().0 as u16;
+                        let port = access.num_query.get(wh.bh_parent).unwrap().0.max(1.) as u16;
                         access.osc_sender.port = port;
                     }
                 }
@@ -866,16 +866,6 @@ pub fn process(
                 }
             }
         } else if op.starts_with("osc_s") {
-            let op = op.to_owned();
-            // yeet invalid address
-            if access.op_changed_query.get(*id).unwrap().0 {
-                if let Some(address) = op.split_ascii_whitespace().nth(1) {
-                    if rosc::address::verify_address(address).is_err() {
-                        access.op_query.get_mut(*id).unwrap().0 = "osc s".to_string();
-                        continue;
-                    }
-                }
-            }
             for hole in holes {
                 if let Ok(wh) = white_hole_query.get(*hole) {
                     if wh.link_types == (-13, 1) && wh.open {
