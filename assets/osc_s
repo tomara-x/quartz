@@ -65,7 +65,7 @@
         "quartz::components::Vertices": (4),
         "quartz::components::Order": (2),
         "quartz::components::Number": (0.0),
-        "quartz::components::Op": ("osc_s /hi"),
+        "quartz::components::Op": ("osc_s_/hi"),
         "quartz::components::Holes": ([
           4294967308,
         ]),
@@ -144,7 +144,7 @@
         "quartz::components::Op": ("osc"),
         "quartz::components::Holes": ([
           4294967310,
-          8589934626,
+          4294967312,
         ]),
         "quartz::components::Arr": ([]),
         "quartz::components::Targets": ([]),
@@ -339,7 +339,7 @@
         "quartz::components::Save": (),
       },
     ),
-    4294967312: (
+    4294967311: (
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
@@ -370,14 +370,14 @@
         "quartz::components::Number": (0.0),
         "quartz::components::Op": ("127.0.0.1"),
         "quartz::components::Holes": ([
-          21474836534,
+          4294967313,
         ]),
         "quartz::components::Arr": ([]),
         "quartz::components::Targets": ([]),
         "quartz::components::Save": (),
       },
     ),
-    8589934626: (
+    4294967312: (
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
@@ -405,15 +405,15 @@
         )),
         "quartz::components::Vertices": (4),
         "quartz::components::WhiteHole": (
-          bh: 21474836534,
-          bh_parent: 4294967312,
+          bh: 4294967313,
+          bh_parent: 4294967311,
           link_types: (0, 2),
           open: false,
         ),
         "quartz::components::Save": (),
       },
     ),
-    21474836534: (
+    4294967313: (
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
@@ -441,7 +441,7 @@
         )),
         "quartz::components::Vertices": (4),
         "quartz::components::BlackHole": (
-          wh: 8589934626,
+          wh: 4294967312,
           wh_parent: 4294967305,
         ),
         "quartz::components::Save": (),

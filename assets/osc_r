@@ -65,7 +65,7 @@
         "quartz::components::Vertices": (4),
         "quartz::components::Order": (1),
         "quartz::components::Number": (0.0),
-        "quartz::components::Op": ("osc_r /touch1"),
+        "quartz::components::Op": ("osc_r_/touch1"),
         "quartz::components::Holes": ([
           4294967308,
         ]),
@@ -326,7 +326,7 @@
         "quartz::components::Vertices": (4),
         "quartz::components::Order": (1),
         "quartz::components::Number": (0.0),
-        "quartz::components::Op": ("osc_r /touch2"),
+        "quartz::components::Op": ("osc_r_/touch2"),
         "quartz::components::Holes": ([
           4294967315,
         ]),
@@ -558,7 +558,7 @@
         "quartz::components::Save": (),
       },
     ),
-    8589934623: (
+    4294967317: (
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
@@ -586,15 +586,15 @@
         )),
         "quartz::components::Vertices": (4),
         "quartz::components::WhiteHole": (
-          bh: 8589934624,
-          bh_parent: 8589934626,
+          bh: 4294967318,
+          bh_parent: 4294967319,
           link_types: (-1, 1),
           open: false,
         ),
         "quartz::components::Save": (),
       },
     ),
-    8589934624: (
+    4294967318: (
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
@@ -622,13 +622,13 @@
         )),
         "quartz::components::Vertices": (4),
         "quartz::components::BlackHole": (
-          wh: 8589934623,
-          wh_parent: 8589934627,
+          wh: 4294967317,
+          wh_parent: 4294967320,
         ),
         "quartz::components::Save": (),
       },
     ),
-    8589934626: (
+    4294967319: (
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
@@ -659,14 +659,14 @@
         "quartz::components::Number": (1729.0),
         "quartz::components::Op": ("empty"),
         "quartz::components::Holes": ([
-          8589934624,
+          4294967318,
         ]),
         "quartz::components::Arr": ([]),
         "quartz::components::Targets": ([]),
         "quartz::components::Save": (),
       },
     ),
-    8589934627: (
+    4294967320: (
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
@@ -697,7 +697,7 @@
         "quartz::components::Number": (0.0),
         "quartz::components::Op": ("osc"),
         "quartz::components::Holes": ([
-          8589934623,
+          4294967317,
         ]),
         "quartz::components::Arr": ([]),
         "quartz::components::Targets": ([]),

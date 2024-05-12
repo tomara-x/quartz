@@ -869,7 +869,7 @@ pub fn process(
             for hole in holes {
                 if let Ok(wh) = white_hole_query.get(*hole) {
                     if wh.link_types == (-13, 1) && wh.open {
-                        if let Some(address) = op.split_ascii_whitespace().nth(1) {
+                        if let Some(address) = op.get(6..) {
                             let arr = access.arr_query.get(wh.bh_parent).unwrap().0.clone();
                             access.osc_sender.send(address, arr);
                         }
