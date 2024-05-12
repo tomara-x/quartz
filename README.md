@@ -319,7 +319,7 @@ some ops make a circle do things to its targets. like `process`, `del_targets`, 
     - set target circles' order to input `n`
 - `spawn`
     - inputs: `n -> 1`
-    - spawn a new circle similar to self when input is non-zero
+    - spawn a new circle similar to self when input is non-zero. the new circle is added to this circle's targets. only the color, vertices, and transform (ish) are copied (z depth is increased with each one)
 - `distro`
     - inputs: `A -> n/r/x/y/z/r/o/v/h/s/l/a`
     - distribute values from input array among targets
@@ -448,10 +448,10 @@ some ops make a circle do things to its targets. like `process`, `del_targets`, 
     - `n -> 1` receiver port
     - `0 -> 2` op string of the input sets the host ip (ip to send to)
     - `n -> 3` sender port
-- `osc_r {osc address}`
+- `osc_r_{osc address}`
     - receive osc messages into the array of this circle. the `osc` op must be present in this patch and is processing for this to work. the osc messages must be sent to the given osc address and contain floats. you can receive from multiple addresses (space separated)
     - e.g. `osc_r /gyroscope`, `osc_r /touch1 /touch3`
-- `osc_s {osc address}`
+- `osc_s_{osc address}`
     - inputs: `A -> 1`
     - send the input array as an osc message with the given address (to the host and port set by the `osc` op)
     - e.g. `osc_s /space`
@@ -486,7 +486,7 @@ for more info about osc: https://opensoundcontrol.stanford.edu/spec-1_0.html
         - `Insert`: 140, `ContextMenu`: 141
         - `ArrowUp`: 200, `ArrowDown`: 201, `ArrowLeft`: 202, `ArrowRight`: 203
         - `F1`: -1, `F2`: -2 .. `F12`: -12
-- `pressed <one or more characters>`
+- `pressed_{one or more characters}`
     - e.g. `pressed Hi` this circle's num will be set to 1 when either `H` or `i` is pressed, zero otherwise
 
 </p>
