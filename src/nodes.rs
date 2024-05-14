@@ -304,7 +304,7 @@ impl TrigReset {
 }
 
 impl AudioNode for TrigReset {
-    const ID: u64 = 1113;
+    const ID: u64 = 1114;
     type Sample = f32;
     type Inputs = U1;
     type Outputs = U1;
