@@ -1249,6 +1249,27 @@ pub fn process(
                     }
                 }
             }
+        } else if op == "trig_reset()" {
+            let op_changed = access.op_changed_query.get(*id).unwrap().0;
+            let lost = access.lost_wh_query.get(*id).unwrap().0;
+            let mut changed = false;
+            let mut input = None;
+            for hole in holes {
+                if let Ok(wh) = white_hole_query.get(*hole) {
+                    if wh.link_types == (0, 1) { input = Some(wh.bh_parent); }
+                    if wh.open { changed = true; }
+                }
+            }
+            if changed || lost || op_changed {
+                if let Some(input) = input {
+                    let net = access.net_query.get(input).unwrap().0.clone();
+                    if net.inputs() == 0 && net.outputs() == 1 {
+                        let output = &mut access.net_query.get_mut(*id).unwrap().0;
+                        *output = Net32::wrap(Box::new(An(TrigReset::new(net))));
+                        lt_to_open = Some(0);
+                    }
+                }
+            }
         } else if op == "seq()" || op == "select()" {
             let op_changed = access.op_changed_query.get(*id).unwrap().0;
             let lost = access.lost_wh_query.get(*id).unwrap().0;

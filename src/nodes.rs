@@ -290,3 +290,36 @@ impl AudioNode for Reset {
         buffer.into()
     }
 }
+
+/// reset network when triggered
+/// - input 0: reset the net when non-zero
+/// - output 0: output from the net
+#[derive(Default, Clone)]
+pub struct TrigReset { net: Net32 }
+
+impl TrigReset {
+    pub fn new(net: Net32) -> Self {
+        TrigReset { net }
+    }
+}
+
+impl AudioNode for TrigReset {
+    const ID: u64 = 1113;
+    type Sample = f32;
+    type Inputs = U1;
+    type Outputs = U1;
+    type Setting = ();
+
+    #[inline]
+    fn tick(
+        &mut self,
+        input: &Frame<Self::Sample, Self::Inputs>,
+    ) -> Frame<Self::Sample, Self::Outputs> {
+        let mut buffer = [0.];
+        if input[0] != 0. {
+            self.net.reset();
+        }
+        self.net.tick(&[], &mut buffer);
+        buffer.into()
+    }
+}
