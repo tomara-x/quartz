@@ -559,6 +559,10 @@ refer to the fundsp [readme](https://github.com/SamiPerttu/fundsp), and [docs](h
     - inputs: `n`, `0 -> 1` (input node (must have 0 ins, and 1 out))
     - node: 0 ins, 1 out
     - process the input node, but reset it every n seconds (rounded to nearest sample)
+- `trig_reset()`
+    - inputs: `0 -> 1` (input node (must have 0 ins, and 1 out))
+    - node: 1 in, 1 out
+    - reset the given node whenever the input is non-zero
 - `seq()`
     - inputs: `0 -> {non-negative}` (any number of those)
     - node: 4 ins (trig, node index, delay, duration), 1 out (output from sequenced nodes)
