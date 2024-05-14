@@ -379,7 +379,6 @@ pub fn process(
                 }
             }
         } else if op == "distro" { // distribute input array among targets' values
-            let mut target_lt_to_open = None;
             for hole in holes {
                 if let Ok(wh) = white_hole_query.get(*hole) {
                     if wh.link_types.0 == -13 && wh.open {
@@ -412,19 +411,17 @@ pub fn process(
                                 }
                                 _ => {}
                             }
-                            target_lt_to_open = Some(wh.link_types.1);
                         }
-                    }
-                }
-            }
-            if let Some(lt) = target_lt_to_open {
-                for t in &access.targets_query.get(*id).unwrap().0 {
-                    if let Ok(holes) = &holes_query.get(*t) {
-                        for hole in &holes.0 {
-                            if let Ok(bh) = black_hole_query.get(*hole) {
-                                if let Ok(wh) = white_hole_query.get_mut(bh.wh) {
-                                    if wh.link_types.0 == lt {
-                                        white_hole_query.get_mut(bh.wh).unwrap().open = true;
+                        let lt = wh.link_types.1;
+                        for t in &access.targets_query.get(*id).unwrap().0 {
+                            if let Ok(holes) = &holes_query.get(*t) {
+                                for hole in &holes.0 {
+                                    if let Ok(bh) = black_hole_query.get(*hole) {
+                                        if let Ok(wh) = white_hole_query.get_mut(bh.wh) {
+                                            if wh.link_types.0 == lt {
+                                                white_hole_query.get_mut(bh.wh).unwrap().open = true;
+                                            }
+                                        }
                                     }
                                 }
                             }
