@@ -534,12 +534,12 @@ refer to the fundsp [readme](https://github.com/SamiPerttu/fundsp), and [docs](h
 
 - `var()`
     - node: 0 ins, 1 out
-    - create a shared variable audio node. its output is the value of this circle's num
+    - create a shared variable audio node. its output is the value of this circle's num. must have an order >= 1
 - `monitor()`
     - node: 1 in, 1 out (it passes audio through)
-    - create a monitor node. sets the value of this circle's num to the latest sample that passed through this node
+    - create a monitor node. sets the value of this circle's num to the latest sample that passed through this node. must have an order >= 1
 - `timer()`
-    - when stacked with another node, this will maintain the current time of that node in this circle's number
+    - when stacked with another node, this will maintain the current time of that node in this circle's number. must have an order >= 1
 - `get()`
     - node: 1 in (index), 1 out (value)
     - copies this circle's array into node so it can be indexed at audio-rate. input is index, output is the value at that index
