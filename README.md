@@ -712,7 +712,7 @@ math
 - `mul(float, [float], [float], ...)` (same)
 - `div(float, [float], [float], ...)` (same)
 - `rotate(float, float)`
-- `t()` time sine the node started processing (subsampled every ~2 ms)
+- `t()` time since the node started processing (subsampled every ~2 ms)
 - `rise()` one sample trigger when there's a rise in input
 - `fall()` same but fall
 - `>([float])` e.g. `>()` takes 2 inputs and compares them. `>(3)` takes one input and compares against 3
