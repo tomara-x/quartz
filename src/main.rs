@@ -386,11 +386,12 @@ fn file_drag_and_drop(
 
 
 #[derive(SystemParam)]
-struct MoreParams<'w> {
+struct MoreParams<'w, 's> {
     command_color: Res<'w, CommandColor>,
     connection_color: Res<'w, ConnectionColor>,
     arrow_handle: Res<'w, ArrowHandle>,
     connection_mat: Res<'w, ConnectionMat>,
+    selected_query: Query<'w, 's, Entity, With<Selected>>,
 }
 
 fn post_load(
@@ -412,6 +413,9 @@ fn post_load(
 ) {
     for (scene_id, instance_id) in scenes.iter() {
         if scene_spawner.instance_is_ready(**instance_id) {
+            for e in more.selected_query.iter() {
+                commands.entity(e).remove::<Selected>();
+            }
             // update connection material from color resource
             let mat_id = &more.connection_mat.0;
             materials.get_mut(mat_id).unwrap().color = more.connection_color.0;
@@ -432,6 +436,7 @@ fn post_load(
                                 transform: *t,
                                 ..default()
                             },
+                            Selected,
                         ));
                         if let Ok(op) = op_query.get_mut(*child) {
                             commands.entity(*child).insert((
