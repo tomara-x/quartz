@@ -1,3 +1,5 @@
+#![allow(clippy::type_complexity, clippy::too_many_arguments)]
+
 use bevy::{
     core_pipeline::{
         bloom::{BloomCompositeMode, BloomSettings},
