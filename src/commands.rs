@@ -1173,6 +1173,12 @@ pub fn command_parser(
                 }
                 text.clear();
             }
+            Some("sA") => {
+                for e in access.selected_query.iter() {
+                    commands.entity(e).remove::<Selected>();
+                }
+                text.clear();
+            }
             Some("sc") => {
                 for e in circle_query.iter() {
                     if access.order_query.contains(e) {
@@ -1213,6 +1219,17 @@ pub fn command_parser(
             Some("sH") => {
                 for e in access.selected_query.iter() {
                     if !access.order_query.contains(e) {
+                        commands.entity(e).remove::<Selected>();
+                    }
+                }
+                text.clear();
+            }
+            Some("st") => {
+                for e in access.selected_query.iter() {
+                    if let Ok(targets) = access.targets_query.get(e) {
+                        for t in &targets.0 {
+                            commands.entity(*t).insert(Selected);
+                        }
                         commands.entity(e).remove::<Selected>();
                     }
                 }
