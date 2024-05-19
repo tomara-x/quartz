@@ -67,6 +67,13 @@ impl AudioNode for Seq {
     ) -> Frame<Self::Sample, Self::Outputs> {
         // triggered, add an event
         if input[0] != 0. {
+            // remove existing events for that index
+            self.events.retain(|&x| x.0 != input[1] as usize);
+            // reset the net
+            if let Some(network) = self.nets.get_mut(input[1] as usize) {
+                network.reset();
+            }
+            // push the new event
             self.events.push((
                 input[1] as usize,
                 (input[2] * 44100.).round() as usize,
@@ -83,7 +90,6 @@ impl AudioNode for Seq {
                 if let Some(network) = self.nets.get_mut(i.0) {
                     network.tick(&[], &mut buffer);
                     out[0] += buffer[0];
-                    if i.2 == 1 { network.reset(); }
                 }
                 i.2 -= 1;
             } else {
