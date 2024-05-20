@@ -1246,7 +1246,7 @@ pub fn process(
                     }
                 }
             }
-        } else if op == "trig_reset()" {
+        } else if op == "trig_reset()" || op == "reset_v()" {
             let op_changed = access.op_changed_query.get(*id).unwrap().0;
             let lost = access.lost_wh_query.get(*id).unwrap().0;
             let mut changed = false;
@@ -1262,7 +1262,11 @@ pub fn process(
                     let net = access.net_query.get(input).unwrap().0.clone();
                     if net.inputs() == 0 && net.outputs() == 1 {
                         let output = &mut access.net_query.get_mut(*id).unwrap().0;
-                        *output = Net32::wrap(Box::new(An(TrigReset::new(net))));
+                        if op == "trig_reset()" {
+                            *output = Net32::wrap(Box::new(An(TrigReset::new(net))));
+                        } else {
+                            *output = Net32::wrap(Box::new(An(ResetV::new(net))));
+                        }
                         lt_to_open = Some(0);
                     }
                 }

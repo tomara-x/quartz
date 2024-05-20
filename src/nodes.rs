@@ -329,3 +329,44 @@ impl AudioNode for TrigReset {
         buffer.into()
     }
 }
+
+/// reset network every s seconds (duration as input)
+/// - input 0: reset interval
+/// - output 0: output from the net
+#[derive(Default, Clone)]
+pub struct ResetV {
+    net: Net32,
+    count: usize,
+}
+
+impl ResetV {
+    pub fn new(net: Net32) -> Self {
+        ResetV {
+            net,
+            count: 0,
+        }
+    }
+}
+
+impl AudioNode for ResetV {
+    const ID: u64 = 1115;
+    type Sample = f32;
+    type Inputs = U1;
+    type Outputs = U1;
+    type Setting = ();
+
+    #[inline]
+    fn tick(
+        &mut self,
+        input: &Frame<Self::Sample, Self::Inputs>,
+    ) -> Frame<Self::Sample, Self::Outputs> {
+        let mut buffer = [0.];
+        if self.count >= (input[0] * 44100.).round() as usize {
+            self.net.reset();
+            self.count = 0;
+        }
+        self.net.tick(&[], &mut buffer);
+        self.count += 1;
+        buffer.into()
+    }
+}
