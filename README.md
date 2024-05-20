@@ -534,50 +534,6 @@ for more info about osc: https://opensoundcontrol.stanford.edu/spec-1_0.html
 
 refer to the fundsp [readme](https://github.com/SamiPerttu/fundsp), and [docs](https://docs.rs/fundsp/latest/fundsp/) for more details (sometimes)
 
-- `var()`
-    - node: 0 ins, 1 out
-    - create a shared variable audio node. its output is the value of this circle's num. must have an order >= 1
-- `monitor()`
-    - node: 1 in, 1 out (it passes audio through)
-    - create a monitor node. sets the value of this circle's num to the latest sample that passed through this node. must have an order >= 1
-- `timer()`
-    - when stacked with another node, this will maintain the current time of that node in this circle's number. must have an order >= 1
-- `get()`
-    - node: 1 in (index), 1 out (value)
-    - copies this circle's array into node so it can be indexed at audio-rate. input is index, output is the value at that index
-- `quantize()`
-    - inputs: `A -> 1` (array of steps to quantize to. must have at least 2 different values)
-    - node: 1 in, 1 out
-    - quantize input to the nearest value in the given steps
-- `feedback()`
-    - inputs: `0 -> 1` (input node), [`n -> 2`] (optional delay)
-    - mixes outputs of given node back into its inputs (number of node ins/outs must match)
-    - node: ins and outs are the same as the input node
-- `kr()`
-    - inputs: `n`, `0 -> 1` (input node)
-    - node: 0 ins, 1 out
-    - tick the input node once every n samples (input node must have 0 ins and 1 out)
-- `reset()`
-    - inputs: `n`, `0 -> 1` (input node (must have 0 ins, and 1 out))
-    - node: 0 ins, 1 out
-    - process the input node, but reset it every n seconds (rounded to nearest sample)
-- `trig_reset()`
-    - inputs: `0 -> 1` (input node (must have 0 ins, and 1 out))
-    - node: 1 in, 1 out
-    - reset the given node whenever the input is non-zero
-- `seq()`
-    - inputs: `0 -> {non-negative}` (any number of those)
-    - node: 4 ins (trig, node index, delay, duration), 1 out (output from sequenced nodes)
-    - sequences the given nodes and mixes their outputs at output (valid input nodes must have no inputs, and only one output). for every sample trig is non-zero, add an event for the node at index with the given delay and duration (in seconds, rounded to nearest sample)
-    - indexes are collected. e.g. if circle has three connections: `0 -> 1` `0 -> 5` `0 -> 8` this is gonna be a sequencer node that accepts indexes 0, 1, and 2. the node at 1 has index 0, node at 5 has index 1, and node at 8 has index 2. and only valid nodes are added.
-- `select()`
-    - inputs: `0 -> {non-negative}` (any number of those)
-    - node: 1 in (index of selected node), 1 out (output from that node)
-    - create a node that switches between input nodes based on index
-- `wave()`
-    - inputs: `A -> 1`
-    - node: 0 ins, 1 out
-    - create a wave player from the input array
 - `+` `SUM`
     - inputs: `0 -> {non-negative}` (any number of those), `n` (repetitions)
     - sum given nodes together. their number of outputs must match, their inputs are stacked together in the order they appear in connections
@@ -618,6 +574,54 @@ refer to the fundsp [readme](https://github.com/SamiPerttu/fundsp), and [docs](h
 - `out()` `dac()`
     - inputs: `0 -> 1`
     - output given node to speakers (node must have 1 or 2 outputs)
+- `var()`
+    - node: 0 ins, 1 out
+    - create a shared variable audio node. its output is the value of this circle's num. must have an order >= 1
+- `monitor()`
+    - node: 1 in, 1 out (it passes audio through)
+    - create a monitor node. sets the value of this circle's num to the latest sample that passed through this node. must have an order >= 1
+- `timer()`
+    - when stacked with another node, this will maintain the current time of that node in this circle's number. must have an order >= 1
+- `get()`
+    - node: 1 in (index), 1 out (value)
+    - copies this circle's array into node so it can be indexed at audio-rate. input is index, output is the value at that index
+- `quantize()`
+    - inputs: `A -> 1` (array of steps to quantize to. must have at least 2 different values)
+    - node: 1 in, 1 out
+    - quantize input to the nearest value in the given steps
+- `feedback()`
+    - inputs: `0 -> 1` (input node), [`n -> 2`] (optional delay)
+    - mixes outputs of given node back into its inputs (number of node ins/outs must match)
+    - node: ins and outs are the same as the input node
+- `kr()`
+    - inputs: `n`, `0 -> 1` (input node)
+    - node: 0 ins, 1 out
+    - tick the input node once every n samples (input node must have 0 ins and 1 out)
+- `reset()`
+    - inputs: `n`, `0 -> 1` (input node (must have 0 ins, and 1 out))
+    - node: 0 ins, 1 out
+    - process the input node, but reset it every n seconds (rounded to nearest sample)
+- `reset_v()`
+    - inputs: `0 -> 1` (input node (must have 0 ins, and 1 out))
+    - node: 1 in, 1 out
+    - process the input node but reset it every n seconds. n is specified by the input to this node
+- `trig_reset()`
+    - inputs: `0 -> 1` (input node (must have 0 ins, and 1 out))
+    - node: 1 in, 1 out
+    - reset the given node whenever the input is non-zero
+- `seq()`
+    - inputs: `0 -> {non-negative}` (any number of those)
+    - node: 4 ins (trig, node index, delay, duration), 1 out (output from sequenced nodes)
+    - sequences the given nodes and mixes their outputs at output (valid input nodes must have no inputs, and only one output). for every sample trig is non-zero, add an event for the node at index with the given delay and duration (in seconds, rounded to nearest sample)
+    - indexes are collected. e.g. if circle has three connections: `0 -> 1` `0 -> 5` `0 -> 8` this is gonna be a sequencer node that accepts indexes 0, 1, and 2. the node at 1 has index 0, node at 5 has index 1, and node at 8 has index 2. and only valid nodes are added.
+- `select()`
+    - inputs: `0 -> {non-negative}` (any number of those)
+    - node: 1 in (index of selected node), 1 out (output from that node)
+    - create a node that switches between input nodes based on index
+- `wave()`
+    - inputs: `A -> 1`
+    - node: 0 ins, 1 out
+    - create a wave player from the input array
 
 </p>
 </details>
