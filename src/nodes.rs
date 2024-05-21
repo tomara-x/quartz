@@ -370,3 +370,34 @@ impl AudioNode for ResetV {
         buffer.into()
     }
 }
+
+/// phasor (ramp from 0..1)
+/// - input 0: frequency
+/// - output 0: ramp output
+#[derive(Default, Clone)]
+pub struct Ramp { val: f32 }
+
+impl Ramp {
+    pub fn new() -> Self {
+        Ramp { val: 0. }
+    }
+}
+
+impl AudioNode for Ramp {
+    const ID: u64 = 1116;
+    type Sample = f32;
+    type Inputs = U1;
+    type Outputs = U1;
+    type Setting = ();
+
+    #[inline]
+    fn tick(
+        &mut self,
+        input: &Frame<Self::Sample, Self::Inputs>,
+    ) -> Frame<Self::Sample, Self::Outputs> {
+        let buffer = [self.val];
+        self.val += input[0] / 44100.;
+        if self.val >= 1. { self.val -= 1.; }
+        buffer.into()
+    }
+}
