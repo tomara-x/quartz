@@ -400,4 +400,8 @@ impl AudioNode for Ramp {
         if self.val >= 1. { self.val -= 1.; }
         buffer.into()
     }
+
+    fn reset(&mut self) {
+        self.val = 0.;
+    }
 }
