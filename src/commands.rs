@@ -999,7 +999,7 @@ pub fn command_parser(
             Some("np") => {
                 text.clear();
                 for e in access.selected_query.iter() {
-                    if let Ok(e) = access.op_query.get(e) { *text = format!("> {}\n", e.0); }
+                    if let Ok(e) = access.op_query.get(e) { *text += &format!("> {}\n", e.0); }
                     if let Ok(e) = access.net_query.get(e) { *text += &e.0.clone().display(); }
                 }
             }
