@@ -1321,6 +1321,7 @@ pub fn command_parser(
             }
             _ => {}
         }
+        text.truncate(12060);
     }
 }
 
