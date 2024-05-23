@@ -539,6 +539,8 @@ pub fn str_to_net(op: &str) -> Net32 {
                 return Net32::wrap(Box::new(tap_linear(min(p0,p1), max(p0,p1))));
             }
         }
+        // thanks to the pdhalf csound opcode
+        // https://github.com/csound/csound/blob/master/Opcodes/shape.c#L299
         "pdhalf_bi" => {
             return Net32::wrap(Box::new(map(|i: &Frame<f32,U2>| {
                 let midpoint = i[1].clamp(-1.,1.);
