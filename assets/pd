@@ -2687,7 +2687,7 @@
         "quartz::components::WhiteHole": (
           bh: 4294967362,
           bh_parent: 4294967377,
-          link_types: (0, 0),
+          link_types: (0, 1),
           open: false,
         ),
         "quartz::components::Save": (),
@@ -2951,7 +2951,7 @@
         "quartz::components::WhiteHole": (
           bh: 4294967381,
           bh_parent: 4294967359,
-          link_types: (0, 0),
+          link_types: (0, 1),
           open: false,
         ),
         "quartz::components::Save": (),
@@ -3774,7 +3774,7 @@
         "quartz::components::WhiteHole": (
           bh: 4294967394,
           bh_parent: 4294967396,
-          link_types: (0, 0),
+          link_types: (0, 1),
           open: false,
         ),
         "quartz::components::Save": (),

@@ -1387,7 +1387,13 @@ pub fn process(
                         let input_ord = access.order_query.get(wh.bh_parent).unwrap().0;
                         let self_ord = access.order_query.get(*id).unwrap().0;
                         if input_ord >= self_ord { continue; }
-                        inputs.push(wh.bh_parent);
+                        // order matters because if inputs have inputs of their own
+                        // these inputs will be stacked based on this order
+                        let index = Ord::max(wh.link_types.1, 0) as usize;
+                        if index >= inputs.len() {
+                            inputs.resize(index+1, None);
+                        }
+                        inputs[index] = Some(wh.bh_parent);
                     }
                     if wh.open {
                         changed = true;
@@ -1399,7 +1405,7 @@ pub fn process(
                 let mut empty = true;
                 let n = access.num_query.get(*id).unwrap().0.max(1.) as i32;
                 for _ in 0..n {
-                    for i in &inputs {
+                    for i in inputs.iter().flatten() {
                         let net = access.net_query.get(*i).unwrap().0.clone();
                         if empty {
                             graph = net;
