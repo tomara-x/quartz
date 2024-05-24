@@ -109,6 +109,8 @@ pub fn transform_highlights(
     polygon_handles: Res<PolygonHandles>,
 ) {
     for (t, h) in moved.iter() {
+        // FIXME(amy): next_up/down would make offsets like this accurate
+        // avoiding the funky behavior with bigger z values here
         let trans = t.translation.xy().extend(t.translation.z - 0.00001);
         trans_query.get_mut(h.0).unwrap().translation = trans;
         trans_query.get_mut(h.0).unwrap().rotation = t.rotation;
