@@ -514,6 +514,9 @@ for more info about osc: https://opensoundcontrol.stanford.edu/spec-1_0.html
 - `store`
     - inputs: `n -> 1`
     - store the input num into self's num, but doesn't open the white holes reading nums like usual
+- `push_num`
+    - inputs: `n -> 1`
+    - output this circle's num (open all white holes reading it) when the input num in non-zero
 - `sum`
     - inputs: `n -> 1` (any number of those)
     - convenience op for adding numbers together

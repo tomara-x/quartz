@@ -1047,6 +1047,15 @@ pub fn process(
                     }
                 }
             }
+        } else if op == "num_push" {
+            for hole in holes {
+                if let Ok(wh) = white_hole_query.get(*hole) {
+                    if wh.link_types == (-1, 1) && wh.open
+                    && access.num_query.get(wh.bh_parent).unwrap().0 != 0. {
+                        lt_to_open = Some(-1);
+                    }
+                }
+            }
         } else if op == "sum" {
             let mut out = 0.;
             for hole in holes {
