@@ -925,8 +925,8 @@ pub fn process(
                 let t = access.trans_query.get(*id).unwrap().translation.xy();
                 let r = access.trans_query.get(*id).unwrap().scale.x;
                 if cursor.i.distance_squared(t) < r*r {
-                    let n = access.num_query.get(*id).unwrap().0;
-                    access.num_query.get_mut(*id).unwrap().0 = 1. - n;
+                    let n = &mut access.num_query.get_mut(*id).unwrap().0;
+                    *n = if *n == 0. { 1. } else { 0. };
                     lt_to_open = Some(-1);
                 }
             }
