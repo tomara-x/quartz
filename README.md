@@ -103,7 +103,7 @@ there are 2 types of commands:
 <details><summary>other</summary>
 <p>
 
-- `:lt {link type}` set [link type](#link-types) of selected holes (use shortcut `l`)
+- `:lt [id] {link type}` set [link type](#link-types) of selected holes (use shortcut `l`)
 - `:dv {float}` set default number of vertices of drawn circles
 - `:dc {float} [float] [float] float]` set default color of drawn circles (h s l a)
 - `:ht {id}` toggle open a white hole (by id)
@@ -267,6 +267,9 @@ any connection links 2 circles together in some way. the black hole is taking so
 - positive numbers: used to denote "input number x"
 - `0` usually means audio node (or nothing)
 a `0 -> 0` connection does nothing (except for specific ops), but when connecting audio nodes, the connection is usually `0 -> x` (x is positive)
+
+use `}`/`{` to increment/decrement link types. or use `l` with selected holes to set a specific link type
+
 ---
 ### order
 every circle has an order (0 or higher). things in order 0 do nothing.

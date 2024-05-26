@@ -186,7 +186,6 @@ pub fn command_parser(
                     }
                     // white hole / black hole link type
                     // TODO(amy): set-both-ends version
-                    // can be moved to :set
                     Some(":lt") | Some("lt") => {
                         if let Some(s) = command.next() {
                             if let Some(e) = str_to_id(s) {
@@ -788,7 +787,8 @@ pub fn command_parser(
         }
         // key commands
         let mut command = text.as_str().split_ascii_whitespace();
-        match command.next() {
+        let c0 = command.next();
+        match c0 {
             Some("d") => {
                 next_mode.set(Mode::Draw);
                 *text = "-- DRAW --".to_string();
@@ -901,22 +901,43 @@ pub fn command_parser(
                 *text = ":lt ".to_string();
             }
             // increment/decrement order
-            Some("]") => {
+            Some("]") | Some("[") => {
                 for id in access.selected_query.iter() {
                     if let Ok(mut order) = access.order_query.get_mut(id) {
-                        order.0 += 1;
+                        if c0 == Some("]") {
+                            order.0 += 1;
+                        } else {
+                            if order.0 > 0 {
+                                order.0 -= 1;
+                            }
+                        }
                         access.order_change.send_default();
                     }
                 }
                 text.clear();
             }
-            Some("[") => {
+            // increment/decrement link type
+            Some("}") | Some("{") => {
                 for id in access.selected_query.iter() {
-                    if let Ok(mut order) = access.order_query.get_mut(id) {
-                        if order.0 > 0 {
-                            order.0 -= 1;
-                            access.order_change.send_default();
+                    if let Ok(mut wh) = access.white_hole_query.get_mut(id) {
+                        if c0 == Some("}") {
+                            wh.link_types.1 = wh.link_types.1.saturating_add(1);
+                        } else {
+                            wh.link_types.1 = wh.link_types.1.saturating_sub(1);
                         }
+                        wh.open = true;
+                        let parent = access.black_hole_query.get(wh.bh).unwrap().wh_parent;
+                        access.gained_wh_query.get_mut(parent).unwrap().0 = true;
+                    } else if let Ok(bh) = access.black_hole_query.get(id) {
+                        let wh = &mut access.white_hole_query.get_mut(bh.wh).unwrap();
+                        if c0 == Some("}") {
+                            wh.link_types.0 = wh.link_types.0.saturating_add(1);
+                        } else {
+                            wh.link_types.0 = wh.link_types.0.saturating_sub(1);
+                        }
+                        wh.open = true;
+                        let parent = access.white_hole_query.get(bh.wh).unwrap().bh_parent;
+                        access.gained_wh_query.get_mut(parent).unwrap().0 = true;
                     }
                 }
                 text.clear();
