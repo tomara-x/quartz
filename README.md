@@ -75,7 +75,7 @@ there are 2 types of commands:
 <p>
 
 - `:set n [id] {float}` set num value
-- `:set r [id] {float}` set radius
+- `:set r [id] {float}` set radius (use rx or ry to set those independently)
 - `:set x [id] {float}` set x position
 - `:set y [id] {float}` set y position
 - `:set z [id] {float}` set z position (this controls depth. what's in front of what)
