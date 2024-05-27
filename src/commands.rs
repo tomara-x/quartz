@@ -289,7 +289,8 @@ pub fn command_parser(
                         }
                     }
                     Some(":set") | Some("set") | Some(":delta") | Some("delta") => {
-                        match command.next() {
+                        let c1 = command.next();
+                        match c1 {
                             Some("n") => {
                                 if let Some(s) = command.next() {
                                     if let Some(e) = str_to_id(s) {
@@ -319,18 +320,30 @@ pub fn command_parser(
                                     }
                                 }
                             }
-                            Some("r") => {
+                            Some("r") | Some("rx") | Some("ry") => {
                                 if let Some(s) = command.next() {
                                     if let Some(e) = str_to_id(s) {
                                         if let Ok(mut trans) = access.trans_query.get_mut(e) {
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = parse_with_constants(n) {
                                                     if c0 == Some(":set") || c0 == Some("set") {
-                                                        trans.scale.x = n.max(0.);
-                                                        trans.scale.y = n.max(0.);
+                                                        if c1 == Some("r") {
+                                                            trans.scale.x = n.max(0.);
+                                                            trans.scale.y = n.max(0.);
+                                                        } else if c1 == Some("rx") {
+                                                            trans.scale.x = n.max(0.);
+                                                        } else {
+                                                            trans.scale.y = n.max(0.);
+                                                        }
                                                     } else {
-                                                        trans.scale.x = (trans.scale.x+n).max(0.);
-                                                        trans.scale.y = (trans.scale.y+n).max(0.);
+                                                        if c1 == Some("r") {
+                                                            trans.scale.x = (trans.scale.x+n).max(0.);
+                                                            trans.scale.y = (trans.scale.y+n).max(0.);
+                                                        } else if c1 == Some("rx") {
+                                                            trans.scale.x = (trans.scale.x+n).max(0.);
+                                                        } else {
+                                                            trans.scale.y = (trans.scale.y+n).max(0.);
+                                                        }
                                                     }
                                                     lt_to_open = (Some(e), Some(-2));
                                                 }
@@ -340,11 +353,23 @@ pub fn command_parser(
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut trans) = access.trans_query.get_mut(id) {
                                                 if c0 == Some(":set") || c0 == Some("set") {
-                                                    trans.scale.x = n.max(0.);
-                                                    trans.scale.y = n.max(0.);
+                                                    if c1 == Some("r") {
+                                                        trans.scale.x = n.max(0.);
+                                                        trans.scale.y = n.max(0.);
+                                                    } else if c1 == Some("rx") {
+                                                        trans.scale.x = n.max(0.);
+                                                    } else {
+                                                        trans.scale.y = n.max(0.);
+                                                    }
                                                 } else {
-                                                    trans.scale.x = (trans.scale.x+n).max(0.);
-                                                    trans.scale.y = (trans.scale.y+n).max(0.);
+                                                    if c1 == Some("r") {
+                                                        trans.scale.x = (trans.scale.x+n).max(0.);
+                                                        trans.scale.y = (trans.scale.y+n).max(0.);
+                                                    } else if c1 == Some("rx") {
+                                                        trans.scale.x = (trans.scale.x+n).max(0.);
+                                                    } else {
+                                                        trans.scale.y = (trans.scale.y+n).max(0.);
+                                                    }
                                                 }
                                             }
                                         }
