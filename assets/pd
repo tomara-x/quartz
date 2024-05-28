@@ -247,7 +247,7 @@
         )),
         "quartz::components::Vertices": (4),
         "quartz::components::Order": (1),
-        "quartz::components::Number": (201.85916),
+        "quartz::components::Number": (185.40651),
         "quartz::components::Op": ("var()"),
         "quartz::components::Holes": ([
           4294967303,
@@ -645,7 +645,7 @@
         )),
         "quartz::components::Vertices": (4),
         "quartz::components::Order": (1),
-        "quartz::components::Number": (525.06494),
+        "quartz::components::Number": (522.3681),
         "quartz::components::Op": ("var()"),
         "quartz::components::Holes": ([
           4294967310,
@@ -2761,7 +2761,7 @@
         )),
         "quartz::components::Vertices": (4),
         "quartz::components::Order": (1),
-        "quartz::components::Number": (0.81135255),
+        "quartz::components::Number": (0.58464384),
         "quartz::components::Op": ("var()"),
         "quartz::components::Holes": ([
           4294967362,
@@ -3240,7 +3240,7 @@
         "quartz::components::WhiteHole": (
           bh: 4294967389,
           bh_parent: 4294967402,
-          link_types: (0, 0),
+          link_types: (0, 1),
           open: false,
         ),
         "quartz::components::Save": (),
@@ -3664,7 +3664,7 @@
         )),
         "quartz::components::Vertices": (4),
         "quartz::components::Order": (1),
-        "quartz::components::Number": (5.210524),
+        "quartz::components::Number": (1.1471941),
         "quartz::components::Op": ("var()"),
         "quartz::components::Holes": ([
           4294967389,
