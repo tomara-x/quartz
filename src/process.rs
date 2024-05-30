@@ -1392,10 +1392,6 @@ pub fn process(
             for hole in holes {
                 if let Ok(wh) = white_hole_query.get(*hole) {
                     if wh.link_types.0 == 0 {
-                        // prevent cycles. i like dags!
-                        let input_ord = access.order_query.get(wh.bh_parent).unwrap().0;
-                        let self_ord = access.order_query.get(*id).unwrap().0;
-                        if input_ord >= self_ord { continue; }
                         // order matters because if inputs have inputs of their own
                         // these inputs will be stacked based on this order
                         let index = Ord::max(wh.link_types.1, 0) as usize;
@@ -1440,9 +1436,6 @@ pub fn process(
             let mut rhs = None;
             for hole in holes {
                 if let Ok(wh) = white_hole_query.get(*hole) {
-                    let input_ord = access.order_query.get(wh.bh_parent).unwrap().0;
-                    let self_ord = access.order_query.get(*id).unwrap().0;
-                    if input_ord >= self_ord { continue; }
                     if wh.link_types == (0, 1) { lhs = Some(wh.bh_parent); }
                     if wh.link_types == (0, 2) { rhs = Some(wh.bh_parent); }
                     if wh.open {
@@ -1469,9 +1462,6 @@ pub fn process(
             for hole in holes {
                 if let Ok(wh) = white_hole_query.get(*hole) {
                     if wh.link_types.0 == 0 {
-                        let input_ord = access.order_query.get(wh.bh_parent).unwrap().0;
-                        let self_ord = access.order_query.get(*id).unwrap().0;
-                        if input_ord >= self_ord { continue; }
                         let index = Ord::max(wh.link_types.1, 0) as usize;
                         if index >= inputs.len() {
                             inputs.resize(index+1, None);

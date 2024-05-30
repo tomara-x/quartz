@@ -14,8 +14,6 @@ pub fn connect(
     cursor: Res<CursorInfo>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut order_query: Query<&mut Order>,
-    mut order_change: EventWriter<OrderChange>,
     mut holes_query: Query<&mut Holes>,
     mut gained_wh_query: Query<&mut GainedWH>,
     default_lt: Res<DefaultLT>,
@@ -47,13 +45,6 @@ pub fn connect(
             if source_entity.0 == sink_entity.0 { return; }
             // sink has gained a connection
             gained_wh_query.get_mut(snk).unwrap().0 = true;
-            // increment order of sink
-            let src_order = order_query.get(src).unwrap().0;
-            let snk_order = order_query.get(snk).unwrap().0;
-            if snk_order <= src_order {
-                order_query.get_mut(snk).unwrap().0 = src_order + 1;
-                order_change.send_default();
-            }
             // get translation, radius, and vertices
             let src_trans = trans_query.get(src).unwrap().translation;
             let snk_trans = trans_query.get(snk).unwrap().translation;
@@ -243,8 +234,6 @@ pub fn connect_targets(
     mut commands: Commands,
     query: Query<(Entity, &Transform, &Vertices), With<Order>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
-    mut order_query: Query<&mut Order>,
-    mut order_change: EventWriter<OrderChange>,
     mut holes_query: Query<&mut Holes>,
     mut gained_wh_query: Query<&mut GainedWH>,
     polygon_handles: Res<PolygonHandles>,
@@ -267,13 +256,6 @@ pub fn connect_targets(
             if src == snk { continue; }
             // sink has gained a connection
             gained_wh_query.get_mut(snk).unwrap().0 = true;
-            // increment order of sink
-            let src_order = order_query.get(src).unwrap().0;
-            let snk_order = order_query.get(snk).unwrap().0;
-            if snk_order <= src_order {
-                order_query.get_mut(snk).unwrap().0 = src_order + 1;
-                order_change.send_default();
-            }
             // get translation, radius, and vertices
             let src_trans = query.get(src).unwrap().1.translation;
             let snk_trans = query.get(snk).unwrap().1.translation;
