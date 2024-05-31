@@ -1049,7 +1049,7 @@ pub fn command_parser(
                     if let Ok(e) = access.net_query.get(e) {
                         let mut net = e.0.clone();
                         *text += &net.display();
-                        *text += &format!("Nodes          : {}", net.size());
+                        *text += &format!("Nodes          : {}\n", net.size());
                     }
                 }
             }
