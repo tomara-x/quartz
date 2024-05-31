@@ -1424,8 +1424,7 @@ pub fn process(
                         }
                     }
                 }
-                let output = &mut access.net_query.get_mut(*id).unwrap().0;
-                *output = Net32::wrap(Box::new(graph));
+                access.net_query.get_mut(*id).unwrap().0 = graph;
                 lt_to_open = Some(0);
             }
         } else if op == "-" || op == "SUB" {
@@ -1448,7 +1447,7 @@ pub fn process(
                     let lhs = access.net_query.get(lhs).unwrap().0.clone();
                     let rhs = access.net_query.get(rhs).unwrap().0.clone();
                     if lhs.outputs() == rhs.outputs() {
-                        access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(lhs - rhs));
+                        access.net_query.get_mut(*id).unwrap().0 = lhs - rhs;
                     }
                 }
                 lt_to_open = Some(0);
@@ -1505,7 +1504,7 @@ pub fn process(
                         }
                     }
                 }
-                access.net_query.get_mut(*id).unwrap().0 = Net32::wrap(Box::new(graph));
+                access.net_query.get_mut(*id).unwrap().0 = graph;
                 lt_to_open = Some(0);
             }
         } else if op == "!" || op == "THR" {
