@@ -1412,11 +1412,11 @@ pub fn process(
                 for _ in 0..n {
                     for i in inputs.iter().flatten() {
                         let net = access.net_query.get(*i).unwrap().0.clone();
-                        if net.size() > 500 { continue; }
                         if empty {
                             graph = net;
                             empty = false;
                         } else if graph.outputs() == net.outputs() {
+                            if graph.size() > 500 { continue; }
                             if op == "+" || op == "SUM" {
                                 graph = graph + net;
                             } else {
@@ -1480,12 +1480,12 @@ pub fn process(
                 for _ in 0..n {
                     for i in inputs.iter().flatten() {
                         let net = access.net_query.get(*i).unwrap().0.clone();
-                        if net.size() > 500 { continue; }
                         if empty {
                             graph = net;
                             empty = false;
                         }
                         else {
+                            if graph.size() > 500 { continue; }
                             let (gi, go) = (graph.inputs(), graph.outputs());
                             let (ni, no) = (net.inputs(), net.outputs());
                             match op {
