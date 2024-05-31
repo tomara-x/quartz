@@ -1412,6 +1412,7 @@ pub fn process(
                 for _ in 0..n {
                     for i in inputs.iter().flatten() {
                         let net = access.net_query.get(*i).unwrap().0.clone();
+                        if net.size() > 500 { continue; }
                         if empty {
                             graph = net;
                             empty = false;
@@ -1479,6 +1480,7 @@ pub fn process(
                 for _ in 0..n {
                     for i in inputs.iter().flatten() {
                         let net = access.net_query.get(*i).unwrap().0.clone();
+                        if net.size() > 500 { continue; }
                         if empty {
                             graph = net;
                             empty = false;
