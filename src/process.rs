@@ -1448,7 +1448,10 @@ pub fn process(
                     let lhs = access.net_query.get(lhs).unwrap().0.clone();
                     let rhs = access.net_query.get(rhs).unwrap().0.clone();
                     if lhs.outputs() == rhs.outputs() {
-                        access.net_query.get_mut(*id).unwrap().0 = lhs - rhs;
+                        let graph = lhs - rhs;
+                        if graph.size() < 500 {
+                            access.net_query.get_mut(*id).unwrap().0 = graph;
+                        }
                     }
                 }
                 lt_to_open = Some(0);
