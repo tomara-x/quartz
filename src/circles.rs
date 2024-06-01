@@ -212,10 +212,8 @@ pub fn update_selection(
                 }
             }
             // select those in the dragged area
-            let min_x = cursor.i.x.min(cursor.f.x);
-            let max_x = cursor.i.x.max(cursor.f.x);
-            let min_y = cursor.i.y.min(cursor.f.y);
-            let max_y = cursor.i.y.max(cursor.f.y);
+            let (min_x, max_x) = if cursor.i.x < cursor.f.x {(cursor.i.x, cursor.f.x)} else {(cursor.f.x, cursor.i.x)};
+            let (min_y, max_y) = if cursor.i.y < cursor.f.y {(cursor.i.y, cursor.f.y)} else {(cursor.f.y, cursor.i.y)};
             for e in visible.single().iter() {
                 if let Ok(t) = circle_trans_query.get(*e) {
                     if (min_x < t.translation.x && t.translation.x < max_x)
