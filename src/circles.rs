@@ -149,7 +149,6 @@ pub fn draw_drawing_circle(
     }
 }
 
-//optimize all those distance calls, use a distance squared instead
 pub fn update_selection(
     mut commands: Commands,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
@@ -174,10 +173,10 @@ pub fn update_selection(
             if let Ok(t) = circle_trans_query.get(*e) {
                 if top_clicked_circle.is_some() {
                     if t.translation.z > top_clicked_circle.unwrap().1 &&
-                        cursor.i.distance(t.translation.xy()) < t.scale.x {
+                        cursor.i.distance_squared(t.translation.xy()) < t.scale.x * t.scale.x {
                         *top_clicked_circle = Some((*e, t.translation.z));
                     }
-                } else if cursor.i.distance(t.translation.xy()) < t.scale.x {
+                } else if cursor.i.distance_squared(t.translation.xy()) < t.scale.x * t.scale.x {
                     *top_clicked_circle = Some((*e, t.translation.z));
                 }
             }
@@ -196,10 +195,10 @@ pub fn update_selection(
             }
         }
     } else if mouse_button_input.pressed(MouseButton::Left) && top_clicked_circle.is_none() {
-        trans_query.get_mut(id.0).unwrap().translation = cursor.i.extend(100.);
+        trans_query.get_mut(id.0).unwrap().translation = ((cursor.i+cursor.f)/2.).extend(100.);
         let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
         let mesh = meshes.get_mut(mesh_id).unwrap();
-        *mesh = RegularPolygon::new(cursor.i.distance(cursor.f).max(0.1), 8).into();
+        *mesh = Rectangle::from_corners(cursor.f, cursor.i).into();
     }
     if mouse_button_input.just_released(MouseButton::Left) {
         trans_query.get_mut(id.0).unwrap().translation = Vec3::Z;
@@ -213,9 +212,14 @@ pub fn update_selection(
                 }
             }
             // select those in the dragged area
+            let min_x = cursor.i.x.min(cursor.f.x);
+            let max_x = cursor.i.x.max(cursor.f.x);
+            let min_y = cursor.i.y.min(cursor.f.y);
+            let max_y = cursor.i.y.max(cursor.f.y);
             for e in visible.single().iter() {
                 if let Ok(t) = circle_trans_query.get(*e) {
-                    if cursor.i.distance(cursor.f) + t.scale.x > cursor.i.distance(t.translation.xy()) {
+                    if (min_x < t.translation.x && t.translation.x < max_x)
+                    && (min_y < t.translation.y && t.translation.y < max_y) {
                         // only select holes if ctrl is held
                         if ctrl && order_query.contains(*e) { continue; }
                         // only select non-holes if alt is held
