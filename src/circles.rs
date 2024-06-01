@@ -236,6 +236,7 @@ pub fn move_selected(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     drag_modes: Res<DragModes>,
 ) {
+    if keyboard_input.pressed(KeyCode::Space) { return; }
     if drag_modes.t {
         if mouse_button_input.pressed(MouseButton::Left) &&
         !mouse_button_input.just_pressed(MouseButton::Left) {
@@ -274,6 +275,7 @@ pub fn rotate_selected(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     drag_modes: Res<DragModes>,
 ) {
+    if keyboard_input.pressed(KeyCode::Space) { return; }
     if drag_modes.o {
         if mouse_button_input.pressed(MouseButton::Left)
         && !mouse_button_input.just_pressed(MouseButton::Left) {
@@ -301,6 +303,7 @@ pub fn update_color(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     drag_modes: Res<DragModes>,
 ) {
+    if keyboard_input.pressed(KeyCode::Space) { return; }
     if mouse_button_input.pressed(MouseButton::Left)
     && !mouse_button_input.just_pressed(MouseButton::Left) {
         if drag_modes.h {
@@ -390,6 +393,7 @@ pub fn update_radius(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     drag_modes: Res<DragModes>,
 ) {
+    if keyboard_input.pressed(KeyCode::Space) { return; }
     if drag_modes.r {
         if mouse_button_input.pressed(MouseButton::Left)
         && !mouse_button_input.just_pressed(MouseButton::Left) {
@@ -421,6 +425,7 @@ pub fn update_vertices(
     cursor: Res<CursorInfo>,
     mut delta: Local<f32>,
 ) {
+    if keyboard_input.pressed(KeyCode::Space) { return; }
     if drag_modes.v {
         if mouse_button_input.pressed(MouseButton::Left) &&
         !mouse_button_input.just_pressed(MouseButton::Left) {
@@ -478,6 +483,7 @@ pub fn update_num(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     drag_modes: Res<DragModes>,
 ) {
+    if keyboard_input.pressed(KeyCode::Space) { return; }
     if drag_modes.n {
         if mouse_button_input.pressed(MouseButton::Left) &&
         !mouse_button_input.just_pressed(MouseButton::Left) {
