@@ -214,6 +214,7 @@ pub fn draw_connecting_arrow(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     id: Res<ConnectingLine>,
     mut trans_query: Query<&mut Transform>,
+    connection_width: Res<ConnectionWidth>,
 ) {
     if mouse_button_input.pressed(MouseButton::Left)
     && !mouse_button_input.just_pressed(MouseButton::Left)
@@ -221,7 +222,7 @@ pub fn draw_connecting_arrow(
         let perp = (cursor.i - cursor.f).perp();
         *trans_query.get_mut(id.0).unwrap() = Transform {
             translation: ((cursor.i + cursor.f) / 2.).extend(100.),
-            scale: Vec3::new(4., cursor.f.distance(cursor.i), 1.),
+            scale: Vec3::new(connection_width.0, cursor.f.distance(cursor.i), 1.),
             rotation: Quat::from_rotation_z(perp.to_angle()),
         }
     }
