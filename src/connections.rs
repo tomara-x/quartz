@@ -208,29 +208,6 @@ pub fn update_connection_arrows(
     }
 }
 
-pub fn draw_connecting_arrow(
-    mouse_button_input: Res<ButtonInput<MouseButton>>,
-    cursor: Res<CursorInfo>,
-    keyboard_input: Res<ButtonInput<KeyCode>>,
-    id: Res<ConnectingLine>,
-    mut trans_query: Query<&mut Transform>,
-    connection_width: Res<ConnectionWidth>,
-) {
-    if mouse_button_input.pressed(MouseButton::Left)
-    && !mouse_button_input.just_pressed(MouseButton::Left)
-    && !keyboard_input.pressed(KeyCode::Space) {
-        let perp = (cursor.i - cursor.f).perp();
-        *trans_query.get_mut(id.0).unwrap() = Transform {
-            translation: ((cursor.i + cursor.f) / 2.).extend(100.),
-            scale: Vec3::new(connection_width.0, cursor.f.distance(cursor.i), 1.),
-            rotation: Quat::from_rotation_z(perp.to_angle()),
-        }
-    }
-    if mouse_button_input.just_released(MouseButton::Left) {
-        *trans_query.get_mut(id.0).unwrap() = Transform::default();
-    }
-}
-
 pub fn connect_targets(
     mut commands: Commands,
     query: Query<(Entity, &Transform, &Vertices), With<Order>>,

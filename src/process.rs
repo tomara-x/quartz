@@ -88,8 +88,8 @@ pub struct Access<'w, 's> {
     connection_color: ResMut<'w, ConnectionColor>,
     connection_width: ResMut<'w, ConnectionWidth>,
     arrow_query: Query<'w, 's, &'static ConnectionArrow>,
-    selection_circle: Res<'w, SelectionCircle>,
-    connecting_line: Res<'w, ConnectingLine>,
+    indicator: Res<'w, Indicator>,
+    indicator_color: ResMut<'w, IndicatorColor>,
     command_line_text: Query<'w, 's, &'static mut Text, With<CommandText>>,
     command_color: ResMut<'w, CommandColor>,
     dac_change_event: EventWriter<'w, DacChange>,
@@ -689,10 +689,11 @@ pub fn process(
             if color.is_changed() {
                 access.highlight_color.0 = color.0;
             }
-        } else if op == "selection_color" {
+        } else if op == "indicator_color" {
             let color = access.col_query.get_mut(*id).unwrap();
             if color.is_changed() {
-                let id = access.selection_circle.0;
+                access.indicator_color.0 = color.0;
+                let id = access.indicator.0;
                 access.col_query.get_mut(id).unwrap().0 = color.0;
             }
         } else if op == "connection_color" {
@@ -701,12 +702,6 @@ pub fn process(
                 access.connection_color.0 = color.0;
                 let mat_id = &access.connection_mat.0;
                 access.materials.get_mut(mat_id).unwrap().color = color.0;
-            }
-        } else if op == "connecting_line_color" {
-            let color = access.col_query.get_mut(*id).unwrap();
-            if color.is_changed() {
-                let id = access.connecting_line.0;
-                access.col_query.get_mut(id).unwrap().0 = color.0;
             }
         } else if op == "command_color" {
             let color = access.col_query.get_mut(*id).unwrap();

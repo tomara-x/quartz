@@ -16,6 +16,7 @@ use bevy::{
     render::view::RenderLayers,
     window::FileDragAndDrop::DroppedFile,
     ecs::system::SystemParam,
+    sprite::Mesh2dHandle,
     prelude::*
 };
 
@@ -74,8 +75,10 @@ fn main() {
     .insert_resource(ConnectionColor(Color::hsla(0., 1., 1., 0.7)))
     .insert_resource(ConnectionWidth(4.))
     .insert_resource(CommandColor(Color::hsla(0., 0., 0.7, 1.)))
+    .insert_resource(IndicatorColor(Color::hsla(0., 1., 0.5, 0.3)))
     .insert_resource(DefaultLT((0, 0)))
     .insert_resource(TextSize(0.1))
+    .insert_resource(ClickedOnSpace(true))
     .insert_resource(SystemClipboard(ClipboardContext::new().unwrap()))
     .insert_resource(Msaa::Sample4)
     .insert_resource(Version(format!("{} {}", env!("CARGO_PKG_VERSION"), env!("COMMIT_HASH"))))
@@ -92,13 +95,13 @@ fn main() {
     .add_systems(Update, paste_scene.run_if(on_event::<PasteCommand>()))
     .add_systems(Update, post_load)
     .add_systems(Update, file_drag_and_drop)
+    .add_systems(Update, update_indicator)
     .init_resource::<DragModes>()
     // cursor
     .insert_resource(CursorInfo::default())
     .add_systems(Update, update_cursor_info)
     // circles
     .add_systems(Update, spawn_circles.run_if(in_state(Mode::Draw)))
-    .add_systems(Update, draw_drawing_circle.run_if(in_state(Mode::Draw)))
     .add_systems(Update, update_selection.after(update_cursor_info).run_if(in_state(Mode::Edit)))
     .add_systems(Update, move_selected.after(update_selection).run_if(in_state(Mode::Edit)))
     .add_systems(Update, update_color.after(update_selection).run_if(in_state(Mode::Edit)))
@@ -125,7 +128,6 @@ fn main() {
     .add_systems(Update, connect_targets)
     .add_systems(Update, target.run_if(in_state(Mode::Connect)))
     .add_systems(PreUpdate, update_connection_arrows)
-    .add_systems(Update, draw_connecting_arrow.run_if(in_state(Mode::Connect)))
     // order
     .init_resource::<Queue>()
     .init_resource::<LoopQueue>()
@@ -162,6 +164,7 @@ fn main() {
     .register_type::<ConnectionColor>()
     .register_type::<ConnectionWidth>()
     .register_type::<CommandColor>()
+    .register_type::<IndicatorColor>()
     .register_type::<TextSize>()
     .register_type::<Version>()
     .register_type::<Holes>()
@@ -179,6 +182,7 @@ fn setup(
     mut materials: ResMut<Assets<ColorMaterial>>,
     command_color: Res<CommandColor>,
     connection_color: Res<ConnectionColor>,
+    indicator_color: Res<IndicatorColor>,
 ) {
     // camera
     commands.spawn((
@@ -236,29 +240,17 @@ fn setup(
             ));
         });
 
-    // selection / drawing circle
+    // selecting / drawing / connecting indicator
     let id = commands.spawn((
         ColorMesh2dBundle {
             mesh: meshes.add(Triangle2d::default()).into(),
-            material: materials.add(ColorMaterial::from(Color::hsla(0., 1., 0.5, 0.3))),
+            material: materials.add(ColorMaterial::from(indicator_color.0)),
             transform: Transform::from_translation(Vec3::Z),
             ..default()
         },
-        Col(Color::hsla(0., 1., 0.5, 0.3)),
+        Col(indicator_color.0),
     )).id();
-    commands.insert_resource(SelectionCircle(id));
-
-    // connecting line
-    let id = commands.spawn((
-        ColorMesh2dBundle {
-            mesh: meshes.add(Triangle2d::default()).into(),
-            material: materials.add(ColorMaterial::from(Color::hsla(0., 1., 0.5, 0.3))),
-            transform: Transform::default(),
-            ..default()
-        },
-        Col(Color::hsla(0., 1., 0.5, 0.3)),
-    )).id();
-    commands.insert_resource(ConnectingLine(id));
+    commands.insert_resource(Indicator(id));
 
     // arrow mesh
     commands.insert_resource(ArrowHandle(meshes.add(Triangle2d::default()).into()));
@@ -278,6 +270,59 @@ fn toggle_pan(
     if keyboard_input.just_released(KeyCode::Space) {
         let mut pancam = query.single_mut();
         pancam.enabled = false;
+    }
+}
+
+fn update_indicator(
+    mode: Res<State<Mode>>,
+    id: Res<Indicator>,
+    mut trans_query: Query<&mut Transform>,
+    mouse_button_input: Res<ButtonInput<MouseButton>>,
+    cursor: Res<CursorInfo>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
+    connection_width: Res<ConnectionWidth>,
+    default_verts: Res<DefaultDrawVerts>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mesh_ids: Query<&Mesh2dHandle>,
+    clicked_on_space: Res<ClickedOnSpace>,
+) {
+    if mouse_button_input.pressed(MouseButton::Left)
+    && !mouse_button_input.just_pressed(MouseButton::Left)
+    && !keyboard_input.pressed(KeyCode::Space) {
+        if *mode.get() == Mode::Edit && clicked_on_space.0 {
+            let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
+            let mesh = meshes.get_mut(mesh_id).unwrap();
+            *mesh = Rectangle::from_corners(cursor.f, cursor.i).into();
+            *trans_query.get_mut(id.0).unwrap() = Transform {
+                translation: ((cursor.i+cursor.f)/2.).extend(100.),
+                ..default()
+            };
+        } else if *mode.get() == Mode::Draw {
+            let v = default_verts.0;
+            let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
+            let mesh = meshes.get_mut(mesh_id).unwrap();
+            *mesh = RegularPolygon::new(cursor.i.distance(cursor.f).max(0.1), v).into();
+            *trans_query.get_mut(id.0).unwrap() = Transform {
+                translation: cursor.i.extend(100.),
+                ..default()
+            };
+        } else if *mode.get() == Mode::Connect {
+            let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
+            let mesh = meshes.get_mut(mesh_id).unwrap();
+            *mesh = Triangle2d::default().into();
+            let perp = (cursor.i - cursor.f).perp();
+            *trans_query.get_mut(id.0).unwrap() = Transform {
+                translation: ((cursor.i + cursor.f) / 2.).extend(100.),
+                scale: Vec3::new(connection_width.0, cursor.f.distance(cursor.i), 1.),
+                rotation: Quat::from_rotation_z(perp.to_angle()),
+            }
+        }
+    }
+    if mouse_button_input.just_released(MouseButton::Left) {
+        *trans_query.get_mut(id.0).unwrap() = Transform::default();
+        let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
+        let mesh = meshes.get_mut(mesh_id).unwrap();
+        *mesh = Triangle2d::default().into();
     }
 }
 
@@ -307,6 +352,7 @@ fn save_scene(world: &mut World) {
             .allow_resource::<ConnectionWidth>()
             .allow_resource::<ClearColor>()
             .allow_resource::<CommandColor>()
+            .allow_resource::<IndicatorColor>()
             .allow_resource::<TextSize>()
             .allow_resource::<Version>()
             .extract_entities(query.iter(world))
@@ -392,6 +438,8 @@ struct MoreParams<'w, 's> {
     arrow_handle: Res<'w, ArrowHandle>,
     connection_mat: Res<'w, ConnectionMat>,
     selected_query: Query<'w, 's, Entity, With<Selected>>,
+    indicator_color: Res<'w, IndicatorColor>,
+    indicator_id: Res<'w, Indicator>,
 }
 
 fn post_load(
@@ -410,12 +458,16 @@ fn post_load(
     scene_spawner: Res<SceneSpawner>,
     mut polygon_handles: ResMut<PolygonHandles>,
     more: MoreParams,
+    mut indicator_color_query: Query<&mut Col, Without<Vertices>>,
 ) {
     for (scene_id, instance_id) in scenes.iter() {
         if scene_spawner.instance_is_ready(**instance_id) {
             for e in more.selected_query.iter() {
                 commands.entity(e).remove::<Selected>();
             }
+            // update indicator color
+            let indicator_color = more.indicator_color.0;
+            indicator_color_query.get_mut(more.indicator_id.0).unwrap().0 = indicator_color;
             // update connection material from color resource
             let mat_id = &more.connection_mat.0;
             materials.get_mut(mat_id).unwrap().color = more.connection_color.0;

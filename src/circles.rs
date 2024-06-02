@@ -124,31 +124,6 @@ pub fn transform_highlights(
     }
 }
 
-pub fn draw_drawing_circle(
-    id: Res<SelectionCircle>,
-    mut trans_query: Query<&mut Transform>,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mesh_ids: Query<&Mesh2dHandle>,
-    mouse_button_input: Res<ButtonInput<MouseButton>>,
-    cursor: Res<CursorInfo>,
-    default_verts: Res<DefaultDrawVerts>,
-) {
-    if mouse_button_input.pressed(MouseButton::Left) 
-    && !mouse_button_input.just_pressed(MouseButton::Left) {
-        let v = default_verts.0;
-        trans_query.get_mut(id.0).unwrap().translation = cursor.i.extend(1.);
-        let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
-        let mesh = meshes.get_mut(mesh_id).unwrap();
-        *mesh = RegularPolygon::new(cursor.i.distance(cursor.f).max(0.1), v).into();
-    }
-    if mouse_button_input.just_released(MouseButton::Left) {
-        trans_query.get_mut(id.0).unwrap().translation = Vec3::Z;
-        let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
-        let mesh = meshes.get_mut(mesh_id).unwrap();
-        *mesh = Triangle2d::default().into();
-    }
-}
-
 pub fn update_selection(
     mut commands: Commands,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
@@ -158,11 +133,8 @@ pub fn update_selection(
     cursor: Res<CursorInfo>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut top_clicked_circle: Local<Option<(Entity, f32)>>,
-    id: Res<SelectionCircle>,
-    mut trans_query: Query<&mut Transform, Without<Vertices>>,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mesh_ids: Query<&Mesh2dHandle>,
     order_query: Query<(), With<Order>>, // non-hole circle
+    mut clicked_on_space: ResMut<ClickedOnSpace>,
 ) {
     if keyboard_input.pressed(KeyCode::Space) { return; }
     let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
@@ -182,6 +154,7 @@ pub fn update_selection(
             }
         }
         if let Some(top) = *top_clicked_circle {
+            clicked_on_space.0 = false;
             if !selected.contains(top.0) {
                 if shift { commands.entity(top.0).insert(Selected); }
                 else {
@@ -194,17 +167,7 @@ pub fn update_selection(
                 commands.entity(top.0).remove::<Selected>();
             }
         }
-    } else if mouse_button_input.pressed(MouseButton::Left) && top_clicked_circle.is_none() {
-        trans_query.get_mut(id.0).unwrap().translation = ((cursor.i+cursor.f)/2.).extend(100.);
-        let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
-        let mesh = meshes.get_mut(mesh_id).unwrap();
-        *mesh = Rectangle::from_corners(cursor.f, cursor.i).into();
-    }
-    if mouse_button_input.just_released(MouseButton::Left) {
-        trans_query.get_mut(id.0).unwrap().translation = Vec3::Z;
-        let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
-        let mesh = meshes.get_mut(mesh_id).unwrap();
-        *mesh = Triangle2d::default().into();
+    } else if mouse_button_input.just_released(MouseButton::Left) {
         if top_clicked_circle.is_none() {
             if !shift {
                 for entity in selected.iter() {
@@ -227,6 +190,7 @@ pub fn update_selection(
                 }
             }
         }
+        clicked_on_space.0 = true;
         *top_clicked_circle = None;
     }
 }

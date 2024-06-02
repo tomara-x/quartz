@@ -403,14 +403,12 @@ some ops make a circle do things to its targets. like `process`, `del_targets`, 
     - when color changes, set the default drawing color
 - `highlight_color`
     - when color changes, set the highlight color (the outline around selected entities)
-- `selection_color`
-    - when color changes, set the color of the selection lasso circle (and draw mode indicator)
+- `indicator_color`
+    - when color changes, set the color of the selecting/drawing/connecting indicator
 - `connection_color`
     - when color changes, set the color of connection arrows
 - `connection_width`
     - when this circle's num changes, set the width of the connection arrows
-- `connecting_line_color`
-    - when color changes, set the connect mode indicator
 - `command_color`
     - when color changes, set color of the command line text
 - `text_size`
@@ -428,6 +426,9 @@ some ops make a circle do things to its targets. like `process`, `del_targets`, 
         - `n -> 5` : composite mode (if n > 0 `Additive` else `EnergyConserving`) (default: additive)
         - `n -> 6` : prefilter threshold (default: 0)
         - `n -> 7` : prefilter threshold softness (default: 0)
+
+all of these except for the tonemapping and bloom settings are saved inside the scene file (so deleting the circle after changing that setting is fine)
+but for persistent change to bloom/tonemapping you have to leave the circles with the input values attached to them in the scene
 
 </p>
 </details>

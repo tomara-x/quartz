@@ -212,10 +212,7 @@ impl DragModes {
 }
 
 #[derive(Resource)]
-pub struct SelectionCircle(pub Entity);
-
-#[derive(Resource)]
-pub struct ConnectingLine(pub Entity);
+pub struct Indicator(pub Entity);
 
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
@@ -255,6 +252,10 @@ pub struct SystemClipboard(pub ClipboardContext);
 #[reflect(Resource)]
 pub struct Version(pub String);
 
+#[derive(Resource, Reflect, Default)]
+#[reflect(Resource)]
+pub struct IndicatorColor(pub Color);
+
 #[derive(Resource, Default)]
 pub struct PolygonHandles(pub Vec<Option<Mesh2dHandle>>);
 
@@ -266,6 +267,9 @@ pub struct DacCircles(pub Vec<Entity>);
 
 #[derive(Resource)]
 pub struct ConnectionMat(pub Handle<ColorMaterial>);
+
+#[derive(Resource)]
+pub struct ClickedOnSpace(pub bool);
 
 // -------------------- events --------------------
 #[derive(Event, Default)]
