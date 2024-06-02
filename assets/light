@@ -32,6 +32,12 @@
       lightness: 0.21045731,
       alpha: 1.0,
     )),
+    "quartz::components::IndicatorColor": (Hsla(
+      hue: 302.00833,
+      saturation: 1.0,
+      lightness: 0.0,
+      alpha: 0.91930693,
+    )),
     "quartz::components::TextSize": (0.1),
     "quartz::components::Version": ("0.5.0 800f39c"),
   },
