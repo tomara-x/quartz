@@ -294,7 +294,7 @@ fn update_indicator(
             let mesh = meshes.get_mut(mesh_id).unwrap();
             *mesh = Rectangle::from_corners(cursor.f, cursor.i).into();
             *trans_query.get_mut(id.0).unwrap() = Transform {
-                translation: ((cursor.i+cursor.f)/2.).extend(100.),
+                translation: ((cursor.i+cursor.f)/2.).extend(400.),
                 ..default()
             };
         } else if *mode.get() == Mode::Draw {
@@ -303,7 +303,7 @@ fn update_indicator(
             let mesh = meshes.get_mut(mesh_id).unwrap();
             *mesh = RegularPolygon::new(cursor.i.distance(cursor.f).max(0.1), v).into();
             *trans_query.get_mut(id.0).unwrap() = Transform {
-                translation: cursor.i.extend(100.),
+                translation: cursor.i.extend(400.),
                 ..default()
             };
         } else if *mode.get() == Mode::Connect {
@@ -312,7 +312,7 @@ fn update_indicator(
             *mesh = Triangle2d::default().into();
             let perp = (cursor.i - cursor.f).perp();
             *trans_query.get_mut(id.0).unwrap() = Transform {
-                translation: ((cursor.i + cursor.f) / 2.).extend(100.),
+                translation: ((cursor.i + cursor.f) / 2.).extend(400.),
                 scale: Vec3::new(connection_width.0, cursor.f.distance(cursor.i), 1.),
                 rotation: Quat::from_rotation_z(perp.to_angle()),
             }
