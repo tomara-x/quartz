@@ -266,8 +266,7 @@ fn toggle_pan(
     if keyboard_input.just_pressed(KeyCode::Space) {
         let mut pancam = query.single_mut();
         pancam.enabled = true;
-    }
-    if keyboard_input.just_released(KeyCode::Space) {
+    } else if keyboard_input.just_released(KeyCode::Space) {
         let mut pancam = query.single_mut();
         pancam.enabled = false;
     }
