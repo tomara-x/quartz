@@ -417,17 +417,17 @@ some ops make a circle do things to its targets. like `process`, `del_targets`, 
     - when this circle's num changes, set the font size of info texts
 - `tonemapping`
     - inputs: `n -> 1`
-    - input num sets the tonemapping mode. 0 = `None`, 1 = `Reinhard`, 2 = `ReinhardLuminance`, 3 = `AcesFitted`, 4 = `AgX`, 5 = `SomewhatBoringDisplayTransform`, 6 = `TonyMcMapface`, 7 = `BlenderFilmic`
+    - input num sets the tonemapping mode. 0 = `None`, 1 = `Reinhard`, 2 = `ReinhardLuminance`, 3 = `AcesFitted`, 4 = `AgX`, 5 = `SomewhatBoringDisplayTransform`, 6 = `TonyMcMapface`, 7 = `BlenderFilmic` (default: 6 tony)
 - `bloom`
     - control bloom parameters
     - inputs:
-        - `n -> 1` : intensity
-        - `n -> 2` : low frequency boost
-        - `n -> 3` : low frequency boost curvature
-        - `n -> 4` : high pass frequency
-        - `n -> 5` : composite mode (if n > 0 `Additive` else `EnergyConserving`)
-        - `n -> 6` : prefilter threshold
-        - `n -> 7` : prefilter threshold softness
+        - `n -> 1` : intensity (default: 0.5)
+        - `n -> 2` : low frequency boost (default: 0.6)
+        - `n -> 3` : low frequency boost curvature (default: 0.4)
+        - `n -> 4` : high pass frequency (default: 1)
+        - `n -> 5` : composite mode (if n > 0 `Additive` else `EnergyConserving`) (default: additive)
+        - `n -> 6` : prefilter threshold (default: 0)
+        - `n -> 7` : prefilter threshold softness (default: 0)
 
 </p>
 </details>
