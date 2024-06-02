@@ -226,7 +226,7 @@ pub fn command_parser(
                     Some(":dv") | Some("dv") => {
                         if let Some(s) = command.next() {
                             if let Ok(n) = s.parse::<usize>() {
-                                if n >= 3 { access.default_verts.0 = n; }
+                                access.default_verts.0 = n.clamp(3,64);
                             }
                         }
                     }
