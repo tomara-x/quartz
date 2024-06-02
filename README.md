@@ -451,11 +451,11 @@ some ops make a circle do things to its targets. like `process`, `del_targets`, 
     - when input num is non-zero, take a screenshot and save it as screenshots/{time in ms since 1970}.png (make sure that folder exists)
 - `osc`
     - set the settings of osc sender and receiver
-    - `n -> 1` receiver port
-    - `0 -> 2` op string of the input sets the host ip (ip to send to)
-    - `n -> 3` sender port
+    - `n -> 1` receiver port (needs to be specified for receiving to work)
+    - `0 -> 2` op string of the input sets the host ip (ip to send to) (defaults to 127.0.0.1 (the machine itself))
+    - `n -> 3` sender port (defaults to 1729)
 - `osc_r_{osc address}`
-    - receive osc messages into the array of this circle. the `osc` op must be present in this patch and is processing for this to work. the osc messages must be sent to the given osc address and contain floats. you can receive from multiple addresses (space separated)
+    - receive osc messages into the array of this circle. the `osc` op must be present in this patch and is processing for this to work. the osc messages must be sent to the given osc address and contain floats. you can receive from multiple addresses
     - e.g. `osc_r /gyroscope`, `osc_r /touch1 /touch3`
 - `osc_s_{osc address}`
     - inputs: `A -> 1`
