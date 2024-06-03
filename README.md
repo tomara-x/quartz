@@ -876,7 +876,3 @@ unless you explicitly state otherwise, any contribution intentionally submitted 
 ## devlog
 
 https://www.youtube.com/playlist?list=PLW3qKRjtGsGZC7V4eKU_tNwszVZAYvKow
-
-## donate if you can
-
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/auaudio)
