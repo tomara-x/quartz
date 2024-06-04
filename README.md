@@ -663,7 +663,6 @@ sources
 - `pluck(float, float, float)` (frequency, gain per sec, high freq damping) input is string excitation signal
 - `mls([float])`
 - `ramp()` ramp from 0 to 1 at input freq (phasor)
-- `clock()` simple clock with 50% duty cycle (just a `sine() >> >(0)`)
 
 filters
 - `allpole()`

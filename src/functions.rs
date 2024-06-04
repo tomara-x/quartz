@@ -185,7 +185,6 @@ pub fn str_to_net(op: &str) -> Net32 {
             } else { return Net32::wrap(Box::new(soft_saw())); }
         }
         "ramp" => { return Net32::wrap(Box::new(An(Ramp::new()))); }
-        "clock" => { return Net32::wrap(Box::new(sine() >> map(|i: &Frame<f32,U1>| if i[0] > 0. {1.} else {0.}))); }
 
         // -------------------- filters --------------------
         "allpole" => { return Net32::wrap(Box::new(allpole())); }
