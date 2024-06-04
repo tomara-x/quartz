@@ -291,18 +291,21 @@ fn update_indicator(
         if *mode.get() == Mode::Edit && clicked_on_space.0 {
             let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
             let mesh = meshes.get_mut(mesh_id).unwrap();
-            *mesh = Rectangle::from_corners(cursor.f, cursor.i).into();
+            *mesh = Rectangle::default().into();
             *trans_query.get_mut(id.0).unwrap() = Transform {
                 translation: ((cursor.i+cursor.f)/2.).extend(400.),
+                scale: (cursor.f - cursor.i).abs().extend(1.),
                 ..default()
             };
         } else if *mode.get() == Mode::Draw {
             let v = default_verts.0;
             let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
             let mesh = meshes.get_mut(mesh_id).unwrap();
-            *mesh = RegularPolygon::new(cursor.i.distance(cursor.f).max(0.1), v).into();
+            *mesh = RegularPolygon::new(1., v).into();
+            let dist = cursor.i.distance(cursor.f);
             *trans_query.get_mut(id.0).unwrap() = Transform {
                 translation: cursor.i.extend(400.),
+                scale: Vec3::new(dist, dist, 1.),
                 ..default()
             };
         } else if *mode.get() == Mode::Connect {
