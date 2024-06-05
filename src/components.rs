@@ -272,12 +272,6 @@ pub struct ConnectionMat(pub Handle<ColorMaterial>);
 pub struct ClickedOnSpace(pub bool);
 
 #[derive(Resource)]
-pub struct Host(pub cpal::Host);
-
-#[derive(Resource)]
-pub struct OutDevice(pub cpal::Device);
-
-#[derive(Resource)]
 pub struct OutStream(pub cpal::platform::StreamInner);
 
 // -------------------- events --------------------
