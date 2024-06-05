@@ -16,20 +16,21 @@ pub fn ext_thread(mut commands: Commands) {
         .default_output_device()
         .expect("failed to find a default output device");
     let config = device.default_output_config().unwrap();
-    match config.sample_format() {
+    let stream = match config.sample_format() {
         // passing the slot's backend inside
         cpal::SampleFormat::F32 => run::<f32>(&device, &config.into(), slot.1),
         cpal::SampleFormat::I16 => run::<i16>(&device, &config.into(), slot.1),
         cpal::SampleFormat::U16 => run::<u16>(&device, &config.into(), slot.1),
         _ => panic!("unsupported format"),
-    }
+    };
+    commands.insert_resource(OutStream(stream.into_inner()));
 }
 
 fn run<T>(
     device: &cpal::Device,
     config: &cpal::StreamConfig,
     mut slot: SlotBackend32,
-) where
+) -> cpal::Stream where
     T: SizedSample + FromSample<f32>,
 {
     let sample_rate = config.sample_rate.0 as f64;
@@ -56,9 +57,10 @@ fn run<T>(
     );
     if let Ok(stream) = stream {
         if let Ok(()) = stream.play() {
-            std::mem::forget(stream);
+            return stream;
         }
     }
+    panic!("couldn't play stream");
 }
 
 fn write_data<T>(output: &mut [T], channels: usize, next_sample: &mut dyn FnMut() -> (f32, f32))
