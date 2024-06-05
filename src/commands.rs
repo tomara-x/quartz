@@ -14,6 +14,8 @@ use crate::{
 
 use fundsp::audiounit::AudioUnit32;
 
+use cpal::traits::{HostTrait, DeviceTrait};
+
 #[derive(SystemParam)]
 pub struct Access<'w, 's> {
     op_query: Query<'w, 's, &'static mut Op>,
@@ -1050,6 +1052,20 @@ pub fn command_parser(
                         let mut net = e.0.clone();
                         *text += &net.display();
                         *text += &format!("Nodes          : {}\n", net.size());
+                    }
+                }
+            }
+            Some("nh") => {
+                let hosts = cpal::platform::ALL_HOSTS;
+                *text = format!(">HOSTS: {:?}", hosts);
+            }
+            Some("nd") => {
+                let hosts = cpal::platform::ALL_HOSTS;
+                *text = format!(">DEVICES:\n");
+                for host in hosts {
+                    let devices = cpal::platform::host_from_id(*host).unwrap().devices().unwrap();
+                    for device in devices {
+                        *text += &format!("{:?} : {:?}\n", host, device.name());
                     }
                 }
             }

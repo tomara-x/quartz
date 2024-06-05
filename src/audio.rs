@@ -11,20 +11,18 @@ pub fn ext_thread(mut commands: Commands) {
     let slot = Slot32::new(Box::new(dc(0.) | dc(0.)));
     // save its frontend in a bevy resource
     commands.insert_resource(Slot(slot.0));
-    std::thread::spawn(move || {
-        let host = cpal::default_host();
-        let device = host
-            .default_output_device()
-            .expect("failed to find a default output device");
-        let config = device.default_output_config().unwrap();
-        match config.sample_format() {
-            // passing the slot's backend inside
-            cpal::SampleFormat::F32 => run::<f32>(&device, &config.into(), slot.1),
-            cpal::SampleFormat::I16 => run::<i16>(&device, &config.into(), slot.1),
-            cpal::SampleFormat::U16 => run::<u16>(&device, &config.into(), slot.1),
-            _ => panic!("unsupported format"),
-        }
-    });
+    let host = cpal::default_host();
+    let device = host
+        .default_output_device()
+        .expect("failed to find a default output device");
+    let config = device.default_output_config().unwrap();
+    match config.sample_format() {
+        // passing the slot's backend inside
+        cpal::SampleFormat::F32 => run::<f32>(&device, &config.into(), slot.1),
+        cpal::SampleFormat::I16 => run::<i16>(&device, &config.into(), slot.1),
+        cpal::SampleFormat::U16 => run::<u16>(&device, &config.into(), slot.1),
+        _ => panic!("unsupported format"),
+    }
 }
 
 fn run<T>(
@@ -58,7 +56,7 @@ fn run<T>(
     );
     if let Ok(stream) = stream {
         if let Ok(()) = stream.play() {
-            std::thread::sleep(std::time::Duration::from_secs(u64::MAX));
+            std::mem::forget(stream);
         }
     }
 }
