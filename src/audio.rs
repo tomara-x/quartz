@@ -6,25 +6,50 @@ use fundsp::hacker32::*;
 
 use crate::components::*;
 
-pub fn ext_thread(mut commands: Commands) {
-    // create slot for output
+pub fn default_out_device(mut commands: Commands) {
     let slot = Slot32::new(Box::new(dc(0.) | dc(0.)));
-    // save its frontend in a bevy resource
     commands.insert_resource(Slot(slot.0));
     let host = cpal::default_host();
-    let device = host
-        .default_output_device()
-        .expect("failed to find a default output device");
-    let config = device.default_output_config().unwrap();
-    let stream = match config.sample_format() {
-        // passing the slot's backend inside
-        cpal::SampleFormat::F32 => run::<f32>(&device, &config.into(), slot.1),
-        cpal::SampleFormat::I16 => run::<i16>(&device, &config.into(), slot.1),
-        cpal::SampleFormat::U16 => run::<u16>(&device, &config.into(), slot.1),
-        _ => panic!("unsupported format"),
-    };
-    if let Some(stream) = stream {
-        commands.insert_resource(OutStream(stream.into_inner()));
+    if let Some(device) = host.default_output_device() {
+        let config = device.default_output_config().unwrap();
+        let stream = match config.sample_format() {
+            cpal::SampleFormat::F32 => run::<f32>(&device, &config.into(), slot.1),
+            cpal::SampleFormat::I16 => run::<i16>(&device, &config.into(), slot.1),
+            cpal::SampleFormat::U16 => run::<u16>(&device, &config.into(), slot.1),
+            _ => panic!("unsupported format"),
+        };
+        if let Some(stream) = stream {
+            commands.insert_resource(OutStream(stream.into_inner()));
+        }
+    }
+}
+
+pub fn set_out_device(
+    mut commands: Commands,
+    mut out_device_event: EventReader<OutDeviceCommand>,
+) {
+    for e in out_device_event.read() {
+        let slot = Slot32::new(Box::new(dc(0.) | dc(0.)));
+        commands.insert_resource(Slot(slot.0));
+        let (h, d) = e.0;
+        if let Some(host_id) = cpal::platform::ALL_HOSTS.get(h) {
+            if let Ok(host) = cpal::platform::host_from_id(*host_id) {
+                if let Ok(mut devices) = host.output_devices() {
+                    if let Some(device) = devices.nth(d) {
+                        let config = device.default_output_config().unwrap();
+                        let stream = match config.sample_format() {
+                            cpal::SampleFormat::F32 => run::<f32>(&device, &config.into(), slot.1),
+                            cpal::SampleFormat::I16 => run::<i16>(&device, &config.into(), slot.1),
+                            cpal::SampleFormat::U16 => run::<u16>(&device, &config.into(), slot.1),
+                            _ => panic!("unsupported format"),
+                        };
+                        if let Some(stream) = stream {
+                            commands.insert_resource(OutStream(stream.into_inner()));
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

@@ -295,3 +295,6 @@ pub struct DacChange;
 
 #[derive(Event)]
 pub struct ConnectCommand(pub Entity);
+
+#[derive(Event)]
+pub struct OutDeviceCommand(pub (usize, usize));

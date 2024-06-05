@@ -86,7 +86,10 @@ fn main() {
     .init_resource::<DacCircles>()
 
     .add_systems(Startup, setup)
-    .add_systems(Startup, ext_thread)
+
+    // audio
+    .add_systems(Startup, default_out_device)
+    .add_systems(Update, set_out_device)
 
     .add_systems(Update, toggle_pan)
     .init_state::<Mode>()
@@ -123,6 +126,7 @@ fn main() {
     .add_event::<DeleteCommand>()
     .add_event::<DacChange>()
     .add_event::<ConnectCommand>()
+    .add_event::<OutDeviceCommand>()
     // connections
     .add_systems(Update, connect.run_if(in_state(Mode::Connect)))
     .add_systems(Update, connect_targets)
