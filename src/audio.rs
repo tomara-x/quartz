@@ -23,14 +23,16 @@ pub fn ext_thread(mut commands: Commands) {
         cpal::SampleFormat::U16 => run::<u16>(&device, &config.into(), slot.1),
         _ => panic!("unsupported format"),
     };
-    commands.insert_resource(OutStream(stream.into_inner()));
+    if let Some(stream) = stream {
+        commands.insert_resource(OutStream(stream.into_inner()));
+    }
 }
 
 fn run<T>(
     device: &cpal::Device,
     config: &cpal::StreamConfig,
     mut slot: SlotBackend32,
-) -> cpal::Stream where
+) -> Option<cpal::Stream> where
     T: SizedSample + FromSample<f32>,
 {
     let sample_rate = config.sample_rate.0 as f64;
@@ -57,10 +59,10 @@ fn run<T>(
     );
     if let Ok(stream) = stream {
         if let Ok(()) = stream.play() {
-            return stream;
+            return Some(stream);
         }
     }
-    panic!("couldn't play stream");
+    None
 }
 
 fn write_data<T>(output: &mut [T], channels: usize, next_sample: &mut dyn FnMut() -> (f32, f32))
