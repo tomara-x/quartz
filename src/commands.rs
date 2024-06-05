@@ -1056,16 +1056,20 @@ pub fn command_parser(
                 }
             }
             Some("nh") => {
+                *text = format!(">HOSTS:\n");
                 let hosts = cpal::platform::ALL_HOSTS;
-                *text = format!(">HOSTS: {:?}", hosts);
+                for (i, host) in hosts.iter().enumerate() {
+                    *text += &format!("{}: {:?}\n", i, host);
+                }
             }
             Some("nd") => {
                 let hosts = cpal::platform::ALL_HOSTS;
                 *text = format!(">DEVICES:\n");
                 for host in hosts {
+                    *text += &format!("{:?}:\n", host);
                     let devices = cpal::platform::host_from_id(*host).unwrap().devices().unwrap();
-                    for device in devices {
-                        *text += &format!("{:?} : {:?}\n", host, device.name());
+                    for (i, device) in devices.enumerate() {
+                        *text += &format!("{}: {:?}\n", i, device.name());
                     }
                 }
             }
