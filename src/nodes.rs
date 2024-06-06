@@ -45,11 +45,12 @@ pub struct Seq {
     nets: Vec<Net32>,
     // index, delay, duration (times in samples)
     events: Vec<(usize, usize, usize)>,
+    sr: f32,
 }
 
 impl Seq {
     pub fn new(nets: Vec<Net32>) -> Self {
-        Seq { nets, events: Vec::new() }
+        Seq { nets, events: Vec::new(), sr: 44100. }
     }
 }
 
@@ -76,8 +77,8 @@ impl AudioNode for Seq {
             // push the new event
             self.events.push((
                 input[1] as usize,
-                (input[2] * 44100.).round() as usize,
-                (input[3] * 44100.).round() as usize
+                (input[2] * self.sr).round() as usize,
+                (input[3] * self.sr).round() as usize
             ));
         }
         // remove finished events
@@ -97,6 +98,10 @@ impl AudioNode for Seq {
             }
         }
         out.into()
+    }
+
+    fn set_sample_rate(&mut self, sample_rate: f64) {
+        self.sr = sample_rate as f32;
     }
 }
 
@@ -260,6 +265,7 @@ impl AudioNode for Kr {
 #[derive(Default, Clone)]
 pub struct Reset {
     net: Net32,
+    dur: f32,
     n: usize,
     count: usize,
 }
@@ -268,6 +274,7 @@ impl Reset {
     pub fn new(net: Net32, s: f32) -> Self {
         Reset {
             net,
+            dur: s,
             n: (s * 44100.).round() as usize,
             count: 0,
         }
@@ -287,13 +294,17 @@ impl AudioNode for Reset {
         _input: &Frame<Self::Sample, Self::Inputs>,
     ) -> Frame<Self::Sample, Self::Outputs> {
         let mut buffer = [0.];
-        if self.count == self.n {
+        if self.count >= self.n {
             self.net.reset();
             self.count = 0;
         }
         self.net.tick(&[], &mut buffer);
         self.count += 1;
         buffer.into()
+    }
+
+    fn set_sample_rate(&mut self, sample_rate: f64) {
+        self.n = (self.dur * sample_rate as f32).round() as usize;
     }
 }
 
@@ -337,14 +348,12 @@ impl AudioNode for TrigReset {
 pub struct ResetV {
     net: Net32,
     count: usize,
+    sr: f32,
 }
 
 impl ResetV {
     pub fn new(net: Net32) -> Self {
-        ResetV {
-            net,
-            count: 0,
-        }
+        ResetV { net, count: 0, sr: 44100. }
     }
 }
 
@@ -361,7 +370,7 @@ impl AudioNode for ResetV {
         input: &Frame<Self::Sample, Self::Inputs>,
     ) -> Frame<Self::Sample, Self::Outputs> {
         let mut buffer = [0.];
-        if self.count >= (input[0] * 44100.).round() as usize {
+        if self.count >= (input[0] * self.sr).round() as usize {
             self.net.reset();
             self.count = 0;
         }
@@ -369,17 +378,24 @@ impl AudioNode for ResetV {
         self.count += 1;
         buffer.into()
     }
+
+    fn set_sample_rate(&mut self, sample_rate: f64) {
+        self.sr = sample_rate as f32;
+    }
 }
 
 /// phasor (ramp from 0..1)
 /// - input 0: frequency
 /// - output 0: ramp output
 #[derive(Default, Clone)]
-pub struct Ramp { val: f32 }
+pub struct Ramp {
+    val: f32,
+    sr: f32,
+}
 
 impl Ramp {
     pub fn new() -> Self {
-        Ramp { val: 0. }
+        Ramp { val: 0., sr: 44100. }
     }
 }
 
@@ -396,12 +412,16 @@ impl AudioNode for Ramp {
         input: &Frame<Self::Sample, Self::Inputs>,
     ) -> Frame<Self::Sample, Self::Outputs> {
         let buffer = [self.val];
-        self.val += input[0] / 44100.;
+        self.val += input[0] / self.sr;
         if self.val >= 1. { self.val -= 1.; }
         buffer.into()
     }
 
     fn reset(&mut self) {
         self.val = 0.;
+    }
+
+    fn set_sample_rate(&mut self, sample_rate: f64) {
+        self.sr = sample_rate as f32;
     }
 }
