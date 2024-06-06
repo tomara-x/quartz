@@ -104,7 +104,7 @@ there are 2 types of commands:
 <details><summary>other</summary>
 <p>
 
-- `:od {index} {index}` set the output audio device first index is the host, second is the device index (use the commands `ah` and `ao` to get those)
+- `:od {index} {index}` set the output audio device. first index is the host, second is the device index (use the commands `ah` and `ao` to get those)
 - `:lt [id] {link type}` set [link type](#link-types) of selected holes (use shortcut `l`)
 - `:dv {float}` set default number of vertices of drawn circles
 - `:dc {float} [float] [float] float]` set default color of drawn circles (h s l a)
@@ -616,6 +616,9 @@ refer to the fundsp [readme](https://github.com/SamiPerttu/fundsp), and [docs](h
     - inputs: `n`, `0 -> 1` (input node)
     - node: 0 ins, 1 out
     - tick the input node once every n samples (input node must have 0 ins and 1 out)
+- `sr()`
+    - inputs: `n`, `0 -> 1` (input node)
+    - set the sample rate for the input node (this is only for things like `apply` and `render`)
 - `reset()`
     - inputs: `n`, `0 -> 1` (input node (must have 0 ins, and 1 out))
     - node: 0 ins, 1 out

@@ -1223,7 +1223,7 @@ pub fn process(
                     }
                 }
             }
-        } else if op == "kr()" || op == "reset()" {
+        } else if op == "kr()" || op == "reset()" || op == "sr()" {
             let op_changed = access.op_changed_query.get(*id).unwrap().0;
             let lost = access.lost_wh_query.get(*id).unwrap().0;
             let num_changed = access.num_query.get_mut(*id).unwrap().is_changed();
@@ -1237,14 +1237,17 @@ pub fn process(
             }
             if changed || lost || op_changed || num_changed {
                 if let Some(input) = input {
-                    let net = access.net_query.get(input).unwrap().0.clone();
+                    let mut net = access.net_query.get(input).unwrap().0.clone();
                     if net.inputs() == 0 && net.outputs() == 1 {
                         let n = access.num_query.get(*id).unwrap().0;
                         let output = &mut access.net_query.get_mut(*id).unwrap().0;
                         if op == "kr()" {
                             *output = Net32::wrap(Box::new(An(Kr::new(net, n.max(1.) as usize))));
-                        } else {
+                        } else if op == "reset()" {
                             *output = Net32::wrap(Box::new(An(Reset::new(net, n))));
+                        } else {
+                            net.set_sample_rate(n as f64);
+                            *output = net;
                         }
                         lt_to_open = Some(0);
                     }
