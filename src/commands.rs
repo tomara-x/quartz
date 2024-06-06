@@ -14,6 +14,8 @@ use crate::{
 
 use fundsp::audiounit::AudioUnit32;
 
+use cpal::traits::{HostTrait, DeviceTrait};
+
 #[derive(SystemParam)]
 pub struct Access<'w, 's> {
     op_query: Query<'w, 's, &'static mut Op>,
@@ -46,6 +48,7 @@ pub struct Access<'w, 's> {
     version: Res<'w, Version>,
     visible: Query<'w, 's, &'static VisibleEntities>,
     text_size: Res<'w, TextSize>,
+    out_device_event: EventWriter<'w, OutDeviceCommand>,
 }
 
 pub fn command_parser(
@@ -183,6 +186,17 @@ pub fn command_parser(
                     }
                     Some(":q") => {
                         access.exit_event.send_default();
+                    }
+                    Some(":od") => {
+                        let h = command.next();
+                        let d = command.next();
+                        if let (Some(h), Some(d)) = (h, d) {
+                            let h = h.parse::<usize>();
+                            let d = d.parse::<usize>();
+                            if let (Ok(h), Ok(d)) = (h, d) {
+                                access.out_device_event.send(OutDeviceCommand((h, d)));
+                            }
+                        }
                     }
                     // white hole / black hole link type
                     // TODO(amy): set-both-ends version
@@ -1050,6 +1064,35 @@ pub fn command_parser(
                         let mut net = e.0.clone();
                         *text += &net.display();
                         *text += &format!("Nodes          : {}\n", net.size());
+                    }
+                }
+            }
+            Some("ah") => {
+                *text = format!(">HOSTS:\n");
+                let hosts = cpal::platform::ALL_HOSTS;
+                for (i, host) in hosts.iter().enumerate() {
+                    *text += &format!("{}: {:?}\n", i, host);
+                }
+            }
+            Some("ao") => {
+                let hosts = cpal::platform::ALL_HOSTS;
+                *text = format!(">OUTPUT DEVICES:\n");
+                for (i, host) in hosts.iter().enumerate() {
+                    *text += &format!("{}: {:?}:\n", i, host);
+                    let devices = cpal::platform::host_from_id(*host).unwrap().output_devices().unwrap();
+                    for (j, device) in devices.enumerate() {
+                        *text += &format!("    {}: {:?}\n", j, device.name());
+                    }
+                }
+            }
+            Some("ai") => {
+                let hosts = cpal::platform::ALL_HOSTS;
+                *text = format!(">INPUT DEVICES:\n");
+                for (i, host) in hosts.iter().enumerate() {
+                    *text += &format!("{}: {:?}:\n", i, host);
+                    let devices = cpal::platform::host_from_id(*host).unwrap().input_devices().unwrap();
+                    for (j, device) in devices.enumerate() {
+                        *text += &format!("    {}: {:?}\n", j, device.name());
                     }
                 }
             }

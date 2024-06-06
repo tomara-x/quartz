@@ -6,32 +6,58 @@ use fundsp::hacker32::*;
 
 use crate::components::*;
 
-pub fn ext_thread(mut commands: Commands) {
-    // create slot for output
+pub fn default_out_device(mut commands: Commands) {
     let slot = Slot32::new(Box::new(dc(0.) | dc(0.)));
-    // save its frontend in a bevy resource
     commands.insert_resource(Slot(slot.0));
-    std::thread::spawn(move || {
-        let host = cpal::default_host();
-        let device = host
-            .default_output_device()
-            .expect("failed to find a default output device");
+    let host = cpal::default_host();
+    if let Some(device) = host.default_output_device() {
         let config = device.default_output_config().unwrap();
-        match config.sample_format() {
-            // passing the slot's backend inside
+        let stream = match config.sample_format() {
             cpal::SampleFormat::F32 => run::<f32>(&device, &config.into(), slot.1),
             cpal::SampleFormat::I16 => run::<i16>(&device, &config.into(), slot.1),
             cpal::SampleFormat::U16 => run::<u16>(&device, &config.into(), slot.1),
             _ => panic!("unsupported format"),
+        };
+        if let Some(stream) = stream {
+            commands.insert_resource(OutStream(stream.into_inner()));
         }
-    });
+    }
+}
+
+pub fn set_out_device(
+    mut commands: Commands,
+    mut out_device_event: EventReader<OutDeviceCommand>,
+) {
+    for e in out_device_event.read() {
+        let slot = Slot32::new(Box::new(dc(0.) | dc(0.)));
+        commands.insert_resource(Slot(slot.0));
+        let (h, d) = e.0;
+        if let Some(host_id) = cpal::platform::ALL_HOSTS.get(h) {
+            if let Ok(host) = cpal::platform::host_from_id(*host_id) {
+                if let Ok(mut devices) = host.output_devices() {
+                    if let Some(device) = devices.nth(d) {
+                        let config = device.default_output_config().unwrap();
+                        let stream = match config.sample_format() {
+                            cpal::SampleFormat::F32 => run::<f32>(&device, &config.into(), slot.1),
+                            cpal::SampleFormat::I16 => run::<i16>(&device, &config.into(), slot.1),
+                            cpal::SampleFormat::U16 => run::<u16>(&device, &config.into(), slot.1),
+                            _ => panic!("unsupported format"),
+                        };
+                        if let Some(stream) = stream {
+                            commands.insert_resource(OutStream(stream.into_inner()));
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 fn run<T>(
     device: &cpal::Device,
     config: &cpal::StreamConfig,
     mut slot: SlotBackend32,
-) where
+) -> Option<cpal::Stream> where
     T: SizedSample + FromSample<f32>,
 {
     let sample_rate = config.sample_rate.0 as f64;
@@ -58,9 +84,10 @@ fn run<T>(
     );
     if let Ok(stream) = stream {
         if let Ok(()) = stream.play() {
-            std::thread::sleep(std::time::Duration::from_secs(u64::MAX));
+            return Some(stream);
         }
     }
+    None
 }
 
 fn write_data<T>(output: &mut [T], channels: usize, next_sample: &mut dyn FnMut() -> (f32, f32))

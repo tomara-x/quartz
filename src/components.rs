@@ -271,6 +271,9 @@ pub struct ConnectionMat(pub Handle<ColorMaterial>);
 #[derive(Resource)]
 pub struct ClickedOnSpace(pub bool);
 
+#[derive(Resource)]
+pub struct OutStream(pub cpal::platform::StreamInner);
+
 // -------------------- events --------------------
 #[derive(Event, Default)]
 pub struct OrderChange;
@@ -292,3 +295,6 @@ pub struct DacChange;
 
 #[derive(Event)]
 pub struct ConnectCommand(pub Entity);
+
+#[derive(Event)]
+pub struct OutDeviceCommand(pub (usize, usize));

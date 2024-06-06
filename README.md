@@ -104,6 +104,7 @@ there are 2 types of commands:
 <details><summary>other</summary>
 <p>
 
+- `:od {index} {index}` set the output audio device first index is the host, second is the device index (use the commands `ah` and `ao` to get those)
 - `:lt [id] {link type}` set [link type](#link-types) of selected holes (use shortcut `l`)
 - `:dv {float}` set default number of vertices of drawn circles
 - `:dc {float} [float] [float] float]` set default color of drawn circles (h s l a)
@@ -199,6 +200,16 @@ note: using the [std constants](https://doc.rust-lang.org/std/f32/consts/index.h
 - `ni` number of inputs
 - `no` number of outputs
 - `np` info about the node
+
+</p>
+</details>
+
+<details><summary>audio hosts/devices</summary>
+<p>
+
+- `ah` list available audio hosts
+- `ao` list output devices
+- `ai` list input devices
 
 </p>
 </details>
