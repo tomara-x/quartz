@@ -306,6 +306,10 @@ impl AudioNode for Reset {
     fn set_sample_rate(&mut self, sample_rate: f64) {
         self.n = (self.dur * sample_rate as f32).round() as usize;
     }
+
+    fn reset(&mut self) {
+        self.count = 0;
+    }
 }
 
 /// reset network when triggered
@@ -381,6 +385,10 @@ impl AudioNode for ResetV {
 
     fn set_sample_rate(&mut self, sample_rate: f64) {
         self.sr = sample_rate as f32;
+    }
+
+    fn reset(&mut self) {
+        self.count = 0;
     }
 }
 
