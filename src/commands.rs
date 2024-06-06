@@ -1077,22 +1077,22 @@ pub fn command_parser(
             Some("ao") => {
                 let hosts = cpal::platform::ALL_HOSTS;
                 *text = format!(">OUTPUT DEVICES:\n");
-                for host in hosts {
-                    *text += &format!("{:?}:\n", host);
+                for (i, host) in hosts.iter().enumerate() {
+                    *text += &format!("{}: {:?}:\n", i, host);
                     let devices = cpal::platform::host_from_id(*host).unwrap().output_devices().unwrap();
-                    for (i, device) in devices.enumerate() {
-                        *text += &format!("{}: {:?}\n", i, device.name());
+                    for (j, device) in devices.enumerate() {
+                        *text += &format!("    {}: {:?}\n", j, device.name());
                     }
                 }
             }
             Some("ai") => {
                 let hosts = cpal::platform::ALL_HOSTS;
                 *text = format!(">INPUT DEVICES:\n");
-                for host in hosts {
-                    *text += &format!("{:?}:\n", host);
+                for (i, host) in hosts.iter().enumerate() {
+                    *text += &format!("{}: {:?}:\n", i, host);
                     let devices = cpal::platform::host_from_id(*host).unwrap().input_devices().unwrap();
-                    for (i, device) in devices.enumerate() {
-                        *text += &format!("{}: {:?}\n", i, device.name());
+                    for (j, device) in devices.enumerate() {
+                        *text += &format!("    {}: {:?}\n", j, device.name());
                     }
                 }
             }
