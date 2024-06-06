@@ -56,14 +56,10 @@ pub fn set_out_device(
 fn run<T>(
     device: &cpal::Device,
     config: &cpal::StreamConfig,
-    mut slot: SlotBackend32,
+    slot: SlotBackend32,
 ) -> Option<cpal::Stream> where
     T: SizedSample + FromSample<f32>,
 {
-    let sample_rate = config.sample_rate.0 as f64;
-    let channels = config.channels as usize;
-
-    slot.set_sample_rate(sample_rate);
     let mut slot = BlockRateAdapter32::new(Box::new(slot));
 
     let mut next_value = move || {
@@ -77,7 +73,7 @@ fn run<T>(
     let stream = device.build_output_stream(
         config,
         move |data: &mut [T], _: &cpal::OutputCallbackInfo| {
-            write_data(data, channels, &mut next_value)
+            write_data(data, &mut next_value)
         },
         err_fn,
         None,
@@ -90,11 +86,11 @@ fn run<T>(
     None
 }
 
-fn write_data<T>(output: &mut [T], channels: usize, next_sample: &mut dyn FnMut() -> (f32, f32))
+fn write_data<T>(output: &mut [T], next_sample: &mut dyn FnMut() -> (f32, f32))
 where
     T: SizedSample + FromSample<f32>,
 {
-    for frame in output.chunks_mut(channels) {
+    for frame in output.chunks_mut(2) {
         let sample = next_sample();
         let left = T::from_sample(sample.0);
         let right = T::from_sample(sample.1);
