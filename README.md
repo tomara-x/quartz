@@ -5,7 +5,7 @@
 and you non-africans, listen to me with open mind"
 ```
 ![Screenshot_2024-04-28_19-32-55](https://github.com/tomara-x/quartz/assets/86204514/a69b9a7c-396a-44ad-9c40-1702df524a68)
-![Screenshot_2024-05-31_06-28-48](https://github.com/tomara-x/quartz/assets/86204514/3aebd832-0510-48db-82b7-e26a929fdbfa)
+![Screenshot_2024-06-07_09-43-35](https://github.com/tomara-x/quartz/assets/86204514/cf9ca485-6e82-42ae-af60-4dbd54df2133)
 ![Screenshot_2024-03-31_04-11-18](https://github.com/tomara-x/quartz/assets/86204514/5b43d686-4e55-4025-b342-502cafaac534)
 ![Screenshot_2024-03-31_04-12-09](https://github.com/tomara-x/quartz/assets/86204514/8dca28da-788e-49ca-81aa-1ec9c4dad9fd)
 
