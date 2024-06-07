@@ -16,7 +16,10 @@ pub fn default_out_device(mut commands: Commands) {
             cpal::SampleFormat::F32 => run::<f32>(&device, &config.into(), slot.1),
             cpal::SampleFormat::I16 => run::<i16>(&device, &config.into(), slot.1),
             cpal::SampleFormat::U16 => run::<u16>(&device, &config.into(), slot.1),
-            _ => { error!("unsupported sample format"); None },
+            format => {
+                error!("unsupported sample format: {}", format);
+                None
+            },
         };
         if let Some(stream) = stream {
             commands.insert_resource(OutStream(stream.into_inner()));
@@ -41,7 +44,10 @@ pub fn set_out_device(
                             cpal::SampleFormat::F32 => run::<f32>(&device, &config.into(), slot.1),
                             cpal::SampleFormat::I16 => run::<i16>(&device, &config.into(), slot.1),
                             cpal::SampleFormat::U16 => run::<u16>(&device, &config.into(), slot.1),
-                            _ => { error!("unsupported sample format"); None },
+                            format => {
+                                error!("unsupported sample format: {}", format);
+                                None
+                            },
                         };
                         if let Some(stream) = stream {
                             commands.insert_resource(OutStream(stream.into_inner()));
