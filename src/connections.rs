@@ -20,6 +20,8 @@ pub fn connect(
     polygon_handles: Res<PolygonHandles>,
     arrow_handle: Res<ArrowHandle>,
     connection_mat: Res<ConnectionMat>,
+    mut order_query: Query<&mut Order>,
+    mut order_change: EventWriter<OrderChange>,
 ) {
     if mouse_button_input.just_released(MouseButton::Left)
     && !keyboard_input.pressed(KeyCode::KeyT)
@@ -45,6 +47,13 @@ pub fn connect(
             if source_entity.0 == sink_entity.0 { return; }
             // sink has gained a connection
             gained_wh_query.get_mut(snk).unwrap().0 = true;
+            // increment order of sink
+            let src_order = order_query.get(src).unwrap().0;
+            let snk_order = order_query.get(snk).unwrap().0;
+            if snk_order <= src_order {
+                order_query.get_mut(snk).unwrap().0 = src_order + 1;
+                order_change.send_default();
+            }
             // get translation, radius, and vertices
             let src_trans = trans_query.get(src).unwrap().translation;
             let snk_trans = trans_query.get(snk).unwrap().translation;
