@@ -105,6 +105,7 @@ pub struct Access<'w, 's> {
     osc_sender: ResMut<'w, OscSender>,
     osc_receiver: ResMut<'w, OscReceiver>,
     osc_messages: Local<'s, Vec<rosc::OscMessage>>,
+    node_limit: Res<'w, NodeLimit>,
 }
 
 pub fn process(
@@ -1413,7 +1414,7 @@ pub fn process(
                             graph = net;
                             empty = false;
                         } else if graph.outputs() == net.outputs() {
-                            if graph.size() > 500 { continue; }
+                            if graph.size() >= access.node_limit.0 { continue; }
                             if op == "+" || op == "SUM" {
                                 graph = graph + net;
                             } else {
@@ -1446,7 +1447,7 @@ pub fn process(
                     let rhs = access.net_query.get(rhs).unwrap().0.clone();
                     if lhs.outputs() == rhs.outputs() {
                         let graph = lhs - rhs;
-                        if graph.size() < 500 {
+                        if graph.size() < access.node_limit.0 {
                             access.net_query.get_mut(*id).unwrap().0 = graph;
                         }
                     }
@@ -1485,7 +1486,7 @@ pub fn process(
                             empty = false;
                         }
                         else {
-                            if graph.size() > 500 { continue; }
+                            if graph.size() >= access.node_limit.0 { continue; }
                             let (gi, go) = (graph.inputs(), graph.outputs());
                             let (ni, no) = (net.inputs(), net.outputs());
                             match op {

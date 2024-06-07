@@ -79,6 +79,7 @@ fn main() {
     .insert_resource(DefaultLT((0, 0)))
     .insert_resource(TextSize(0.1))
     .insert_resource(ClickedOnSpace(true))
+    .insert_resource(NodeLimit(500))
     .insert_resource(SystemClipboard(ClipboardContext::new().unwrap()))
     .insert_resource(Msaa::Sample4)
     .insert_resource(Version(format!("{} {}", env!("CARGO_PKG_VERSION"), env!("COMMIT_HASH"))))
@@ -172,6 +173,7 @@ fn main() {
     .register_type::<TextSize>()
     .register_type::<Version>()
     .register_type::<Holes>()
+    .register_type::<NodeLimit>()
     ;
 
     #[cfg(feature = "inspector")]
@@ -361,6 +363,7 @@ fn save_scene(world: &mut World) {
             .allow_resource::<IndicatorColor>()
             .allow_resource::<TextSize>()
             .allow_resource::<Version>()
+            .allow_resource::<NodeLimit>()
             .extract_entities(query.iter(world))
             .extract_resources()
             .build();

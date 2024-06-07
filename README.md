@@ -105,6 +105,7 @@ there are 2 types of commands:
 <p>
 
 - `:od {index} {index}` set the output audio device. first index is the host, second is the device index (use the commands `ah` and `ao` to get those)
+- `:nl` set the maximum number of nodes a connective op (`+`, `*`, `>>`, etc) will allow (default 500) (saved in scene file)
 - `:lt [id] {link type}` set [link type](#link-types) of selected holes (use shortcut `l`)
 - `:dv {float}` set default number of vertices of drawn circles
 - `:dc {float} [float] [float] float]` set default color of drawn circles (h s l a)

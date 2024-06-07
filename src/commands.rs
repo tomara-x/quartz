@@ -49,6 +49,7 @@ pub struct Access<'w, 's> {
     visible: Query<'w, 's, &'static VisibleEntities>,
     text_size: Res<'w, TextSize>,
     out_device_event: EventWriter<'w, OutDeviceCommand>,
+    node_limit: ResMut<'w, NodeLimit>,
 }
 
 pub fn command_parser(
@@ -195,6 +196,13 @@ pub fn command_parser(
                             let d = d.parse::<usize>();
                             if let (Ok(h), Ok(d)) = (h, d) {
                                 access.out_device_event.send(OutDeviceCommand((h, d)));
+                            }
+                        }
+                    }
+                    Some(":nl") => {
+                        if let Some(s) = command.next() {
+                            if let Ok(n) = s.parse::<usize>() {
+                                access.node_limit.0 = n;
                             }
                         }
                     }

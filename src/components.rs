@@ -274,6 +274,10 @@ pub struct ClickedOnSpace(pub bool);
 #[derive(Resource)]
 pub struct OutStream(pub cpal::platform::StreamInner);
 
+#[derive(Resource, Reflect, Default)]
+#[reflect(Resource)]
+pub struct NodeLimit(pub usize);
+
 // -------------------- events --------------------
 #[derive(Event, Default)]
 pub struct OrderChange;
