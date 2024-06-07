@@ -1237,7 +1237,7 @@ pub fn process(
             }
             if changed || lost || op_changed || num_changed {
                 if let Some(input) = input {
-                    let mut net = access.net_query.get(input).unwrap().0.clone();
+                    let net = access.net_query.get(input).unwrap().0.clone();
                     let n = access.num_query.get(*id).unwrap().0;
                     let output = &mut access.net_query.get_mut(*id).unwrap().0;
                     if op == "kr()" && net.inputs() == 0 && net.outputs() == 1 {
@@ -1245,8 +1245,8 @@ pub fn process(
                     } else if op == "reset()" && net.inputs() == 0 && net.outputs() == 1 {
                         *output = Net32::wrap(Box::new(An(Reset::new(net, n))));
                     } else {
-                        net.set_sample_rate(n as f64);
                         *output = net;
+                        output.set_sample_rate(n as f64);
                     }
                     lt_to_open = Some(0);
                 }
