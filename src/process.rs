@@ -1225,6 +1225,7 @@ pub fn process(
             }
         } else if op == "kr()" || op == "reset()" || op == "sr()" {
             let op_changed = access.op_changed_query.get(*id).unwrap().0;
+            // FIXME(amy): this has no effect
             let lost = access.lost_wh_query.get(*id).unwrap().0;
             let num_changed = access.num_query.get_mut(*id).unwrap().is_changed();
             let mut changed = false;

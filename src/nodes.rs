@@ -31,6 +31,18 @@ impl AudioNode for Select {
         }
         buffer.into()
     }
+
+    fn set_sample_rate(&mut self, sample_rate: f64) {
+        for net in &mut self.nets {
+            net.set_sample_rate(sample_rate);
+        }
+    }
+
+    fn reset(&mut self) {
+        for net in &mut self.nets {
+            net.reset();
+        }
+    }
 }
 
 
@@ -102,6 +114,15 @@ impl AudioNode for Seq {
 
     fn set_sample_rate(&mut self, sample_rate: f64) {
         self.sr = sample_rate as f32;
+        for net in &mut self.nets {
+            net.set_sample_rate(sample_rate);
+        }
+    }
+
+    fn reset(&mut self) {
+        for net in &mut self.nets {
+            net.reset();
+        }
     }
 }
 
@@ -174,6 +195,10 @@ impl AudioNode for ShiftReg {
             self.reg[0] = input[1];
         }
         self.reg.into()
+    }
+
+    fn reset(&mut self) {
+        self.reg = [0., 0., 0., 0., 0., 0., 0., 0.];
     }
 }
 
@@ -257,6 +282,16 @@ impl AudioNode for Kr {
         self.count -= 1;
         buffer.into()
     }
+
+    fn set_sample_rate(&mut self, sample_rate: f64) {
+        self.net.set_sample_rate(sample_rate);
+    }
+
+    fn reset(&mut self) {
+        self.count = 0;
+        self.val = 0.;
+        self.net.reset();
+    }
 }
 
 
@@ -305,10 +340,12 @@ impl AudioNode for Reset {
 
     fn set_sample_rate(&mut self, sample_rate: f64) {
         self.n = (self.dur * sample_rate as f32).round() as usize;
+        self.net.set_sample_rate(sample_rate);
     }
 
     fn reset(&mut self) {
         self.count = 0;
+        self.net.reset();
     }
 }
 
@@ -342,6 +379,14 @@ impl AudioNode for TrigReset {
         }
         self.net.tick(&[], &mut buffer);
         buffer.into()
+    }
+
+    fn set_sample_rate(&mut self, sample_rate: f64) {
+        self.net.set_sample_rate(sample_rate);
+    }
+
+    fn reset(&mut self) {
+        self.net.reset();
     }
 }
 
@@ -385,10 +430,12 @@ impl AudioNode for ResetV {
 
     fn set_sample_rate(&mut self, sample_rate: f64) {
         self.sr = sample_rate as f32;
+        self.net.set_sample_rate(sample_rate);
     }
 
     fn reset(&mut self) {
         self.count = 0;
+        self.net.reset();
     }
 }
 
