@@ -1245,7 +1245,7 @@ pub fn process(
                         *output = Net32::wrap(Box::new(An(Kr::new(net, n.max(1.) as usize))));
                     } else if op == "reset()" && net.inputs() == 0 && net.outputs() == 1 {
                         *output = Net32::wrap(Box::new(An(Reset::new(net, n))));
-                    } else {
+                    } else if op == "sr()" {
                         *output = net;
                         output.set_sample_rate(n as f64);
                     }
