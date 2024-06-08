@@ -49,6 +49,7 @@ pub struct Access<'w, 's> {
     visible: Query<'w, 's, &'static VisibleEntities>,
     text_size: Res<'w, TextSize>,
     out_device_event: EventWriter<'w, OutDeviceCommand>,
+    in_device_event: EventWriter<'w, InDeviceCommand>,
     node_limit: ResMut<'w, NodeLimit>,
 }
 
@@ -188,14 +189,18 @@ pub fn command_parser(
                     Some(":q") => {
                         access.exit_event.send_default();
                     }
-                    Some(":od") => {
+                    Some(":od") | Some(":id") => {
                         let h = command.next();
                         let d = command.next();
                         if let (Some(h), Some(d)) = (h, d) {
                             let h = h.parse::<usize>();
                             let d = d.parse::<usize>();
                             if let (Ok(h), Ok(d)) = (h, d) {
-                                access.out_device_event.send(OutDeviceCommand((h, d)));
+                                if c0 == Some(":od") {
+                                    access.out_device_event.send(OutDeviceCommand((h, d)));
+                                } else {
+                                    access.in_device_event.send(InDeviceCommand((h, d)));
+                                }
                             }
                         }
                     }

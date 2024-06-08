@@ -92,6 +92,7 @@ fn main() {
     .add_systems(Startup, default_out_device)
     .add_systems(Update, set_out_device)
     .add_systems(Startup, default_in_device)
+    .add_systems(Update, set_in_device)
 
     .add_systems(Update, toggle_pan)
     .init_state::<Mode>()
@@ -129,6 +130,7 @@ fn main() {
     .add_event::<DacChange>()
     .add_event::<ConnectCommand>()
     .add_event::<OutDeviceCommand>()
+    .add_event::<InDeviceCommand>()
     // connections
     .add_systems(Update, connect.run_if(in_state(Mode::Connect)))
     .add_systems(Update, connect_targets)

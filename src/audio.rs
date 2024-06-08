@@ -130,7 +130,6 @@ pub fn default_in_device(mut commands: Commands) {
     let host = cpal::default_host();
     if let Some(device) = host.default_input_device() {
         let config = device.default_input_config().unwrap();
-        info!("{:?}", config);
         let stream = match config.sample_format() {
             cpal::SampleFormat::F32 => run_in::<f32>(&device, &config.into(), ls, rs),
             cpal::SampleFormat::I16 => run_in::<i16>(&device, &config.into(), ls, rs),
@@ -144,6 +143,41 @@ pub fn default_in_device(mut commands: Commands) {
             commands.insert_resource(InStream(stream.into_inner()));
         } else {
             error!("couldn't build stream");
+        }
+    }
+}
+
+pub fn set_in_device(
+    mut commands: Commands,
+    mut in_device_event: EventReader<InDeviceCommand>,
+) {
+    for e in in_device_event.read() {
+        let (ls, lr) = bounded(64);
+        let (rs, rr) = bounded(64);
+        commands.insert_resource(InputReceivers(lr, rr));
+        let (h, d) = e.0;
+        if let Some(host_id) = cpal::platform::ALL_HOSTS.get(h) {
+            if let Ok(host) = cpal::platform::host_from_id(*host_id) {
+                if let Ok(mut devices) = host.input_devices() {
+                    if let Some(device) = devices.nth(d) {
+                        let config = device.default_input_config().unwrap();
+                        let stream = match config.sample_format() {
+                            cpal::SampleFormat::F32 => run_in::<f32>(&device, &config.into(), ls, rs),
+                            cpal::SampleFormat::I16 => run_in::<i16>(&device, &config.into(), ls, rs),
+                            cpal::SampleFormat::U16 => run_in::<u16>(&device, &config.into(), ls, rs),
+                            format => {
+                                error!("unsupported sample format: {}", format);
+                                None
+                            },
+                        };
+                        if let Some(stream) = stream {
+                            commands.insert_resource(InStream(stream.into_inner()));
+                        } else {
+                            error!("couldn't build stream");
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -178,7 +212,7 @@ where
     T: SizedSample, f32: FromSample<T>
 {
     for frame in input.chunks(2) {
-        ls.send(frame[0].to_sample::<f32>()).unwrap();
-        rs.send(frame[1].to_sample::<f32>()).unwrap();
+        let _ = ls.send(frame[0].to_sample::<f32>());
+        let _ = rs.send(frame[1].to_sample::<f32>());
     }
 }

@@ -510,8 +510,8 @@ impl AudioNode for InputNode {
         &mut self,
         _input: &Frame<Self::Sample, Self::Inputs>,
     ) -> Frame<Self::Sample, Self::Outputs> {
-        let l = self.lr.recv().unwrap();
-        let r = self.rr.recv().unwrap();
+        let l = self.lr.recv().unwrap_or(0.);
+        let r = self.rr.recv().unwrap_or(0.);
         [l, r].into()
     }
 

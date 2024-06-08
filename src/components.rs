@@ -310,3 +310,6 @@ pub struct ConnectCommand(pub Entity);
 
 #[derive(Event)]
 pub struct OutDeviceCommand(pub (usize, usize));
+
+#[derive(Event)]
+pub struct InDeviceCommand(pub (usize, usize));
