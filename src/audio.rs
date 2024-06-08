@@ -108,16 +108,8 @@ where
 {
     for frame in output.chunks_mut(2) {
         let sample = next_sample();
-        let left = T::from_sample(sample.0);
-        let right = T::from_sample(sample.1);
-
-        for (channel, sample) in frame.iter_mut().enumerate() {
-            if channel & 1 == 0 {
-                *sample = left;
-            } else {
-                *sample = right;
-            }
-        }
+        frame[0] = T::from_sample(sample.0);
+        frame[1] = T::from_sample(sample.1);
     }
 }
 
@@ -190,11 +182,12 @@ fn run_in<T>(
 ) -> Option<cpal::Stream> where
     T: SizedSample, f32: FromSample<T>
 {
+    let channels = config.channels as usize;
     let err_fn = |err| eprintln!("an error occurred on stream: {}", err);
     let stream = device.build_input_stream(
         config,
         move |data: &[T], _: &cpal::InputCallbackInfo| {
-            read_data(data, ls.clone(), rs.clone())
+            read_data(data, channels, ls.clone(), rs.clone())
         },
         err_fn,
         None,
@@ -207,12 +200,17 @@ fn run_in<T>(
     None
 }
 
-fn read_data<T>(input: &[T], ls: Sender<f32>, rs: Sender<f32>)
+fn read_data<T>(input: &[T], channels: usize, ls: Sender<f32>, rs: Sender<f32>)
 where
     T: SizedSample, f32: FromSample<T>
 {
-    for frame in input.chunks(2) {
-        let _ = ls.send(frame[0].to_sample::<f32>());
-        let _ = rs.send(frame[1].to_sample::<f32>());
+    for frame in input.chunks(channels) {
+        for (channel, sample) in frame.iter().enumerate() {
+            if channel & 1 == 0 {
+                let _ = ls.send(sample.to_sample::<f32>());
+            } else {
+                let _ = rs.send(sample.to_sample::<f32>());
+            }
+        }
     }
 }
