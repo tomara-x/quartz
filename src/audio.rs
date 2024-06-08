@@ -11,8 +11,10 @@ pub fn default_out_device(mut commands: Commands) {
     commands.insert_resource(Slot(slot.0));
     let host = cpal::default_host();
     if let Some(device) = host.default_output_device() {
-        let config = device.default_output_config().unwrap();
-        let stream = match config.sample_format() {
+        let default_config = device.default_output_config().unwrap();
+        let mut config = default_config.config();
+        config.channels = 2;
+        let stream = match default_config.sample_format() {
             cpal::SampleFormat::F32 => run::<f32>(&device, &config.into(), slot.1),
             cpal::SampleFormat::I16 => run::<i16>(&device, &config.into(), slot.1),
             cpal::SampleFormat::U16 => run::<u16>(&device, &config.into(), slot.1),
@@ -23,6 +25,8 @@ pub fn default_out_device(mut commands: Commands) {
         };
         if let Some(stream) = stream {
             commands.insert_resource(OutStream(stream.into_inner()));
+        } else {
+            error!("couldn't build stream");
         }
     }
 }
@@ -39,8 +43,10 @@ pub fn set_out_device(
             if let Ok(host) = cpal::platform::host_from_id(*host_id) {
                 if let Ok(mut devices) = host.output_devices() {
                     if let Some(device) = devices.nth(d) {
-                        let config = device.default_output_config().unwrap();
-                        let stream = match config.sample_format() {
+                        let default_config = device.default_output_config().unwrap();
+                        let mut config = default_config.config();
+                        config.channels = 2;
+                        let stream = match default_config.sample_format() {
                             cpal::SampleFormat::F32 => run::<f32>(&device, &config.into(), slot.1),
                             cpal::SampleFormat::I16 => run::<i16>(&device, &config.into(), slot.1),
                             cpal::SampleFormat::U16 => run::<u16>(&device, &config.into(), slot.1),
@@ -51,6 +57,8 @@ pub fn set_out_device(
                         };
                         if let Some(stream) = stream {
                             commands.insert_resource(OutStream(stream.into_inner()));
+                        } else {
+                            error!("couldn't build stream");
                         }
                     }
                 }
