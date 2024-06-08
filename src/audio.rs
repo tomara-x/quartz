@@ -4,6 +4,8 @@ use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
 use cpal::{FromSample, SizedSample};
 use fundsp::hacker32::*;
 
+use crossbeam_channel::{bounded, Sender};
+
 use crate::components::*;
 
 pub fn default_out_device(mut commands: Commands) {
@@ -116,5 +118,67 @@ where
                 *sample = right;
             }
         }
+    }
+}
+
+
+
+pub fn default_in_device(mut commands: Commands) {
+    let (ls, lr) = bounded(64);
+    let (rs, rr) = bounded(64);
+    commands.insert_resource(InputReceivers(lr, rr));
+    let host = cpal::default_host();
+    if let Some(device) = host.default_input_device() {
+        let config = device.default_input_config().unwrap();
+        info!("{:?}", config);
+        let stream = match config.sample_format() {
+            cpal::SampleFormat::F32 => run_in::<f32>(&device, &config.into(), ls, rs),
+            cpal::SampleFormat::I16 => run_in::<i16>(&device, &config.into(), ls, rs),
+            cpal::SampleFormat::U16 => run_in::<u16>(&device, &config.into(), ls, rs),
+            format => {
+                error!("unsupported sample format: {}", format);
+                None
+            },
+        };
+        if let Some(stream) = stream {
+            commands.insert_resource(InStream(stream.into_inner()));
+        } else {
+            error!("couldn't build stream");
+        }
+    }
+}
+
+fn run_in<T>(
+    device: &cpal::Device,
+    config: &cpal::StreamConfig,
+    ls: Sender<f32>,
+    rs: Sender<f32>,
+) -> Option<cpal::Stream> where
+    T: SizedSample, f32: FromSample<T>
+{
+    let err_fn = |err| eprintln!("an error occurred on stream: {}", err);
+    let stream = device.build_input_stream(
+        config,
+        move |data: &[T], _: &cpal::InputCallbackInfo| {
+            read_data(data, ls.clone(), rs.clone())
+        },
+        err_fn,
+        None,
+    );
+    if let Ok(stream) = stream {
+        if let Ok(()) = stream.play() {
+            return Some(stream);
+        }
+    }
+    None
+}
+
+fn read_data<T>(input: &[T], ls: Sender<f32>, rs: Sender<f32>)
+where
+    T: SizedSample, f32: FromSample<T>
+{
+    for frame in input.chunks(2) {
+        ls.send(frame[0].to_sample::<f32>()).unwrap();
+        rs.send(frame[1].to_sample::<f32>()).unwrap();
     }
 }

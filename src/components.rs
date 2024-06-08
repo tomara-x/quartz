@@ -13,6 +13,8 @@ use fundsp::{
     slot::Slot32,
 };
 
+use crossbeam_channel::Receiver;
+
 use copypasta::ClipboardContext;
 
 // -------------------- components --------------------
@@ -274,9 +276,15 @@ pub struct ClickedOnSpace(pub bool);
 #[derive(Resource)]
 pub struct OutStream(pub cpal::platform::StreamInner);
 
+#[derive(Resource)]
+pub struct InStream(pub cpal::platform::StreamInner);
+
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
 pub struct NodeLimit(pub usize);
+
+#[derive(Resource)]
+pub struct InputReceivers(pub Receiver<f32>, pub Receiver<f32>);
 
 // -------------------- events --------------------
 #[derive(Event, Default)]

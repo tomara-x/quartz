@@ -3018,6 +3018,7 @@ dependencies = [
  "bevy_pancam",
  "copypasta",
  "cpal",
+ "crossbeam-channel",
  "fundsp",
  "rosc",
  "serde",

@@ -106,6 +106,7 @@ pub struct Access<'w, 's> {
     osc_receiver: ResMut<'w, OscReceiver>,
     osc_messages: Local<'s, Vec<rosc::OscMessage>>,
     node_limit: Res<'w, NodeLimit>,
+    input_receivers: Res<'w, InputReceivers>,
 }
 
 pub fn process(
@@ -1150,6 +1151,14 @@ pub fn process(
                     var.set_value(num.0);
                 }
             //}
+        } else if op == "in()" || op == "adc()" {
+            if access.op_changed_query.get(*id).unwrap().0 {
+                let net = &mut access.net_query.get_mut(*id).unwrap().0;
+                let lr = access.input_receivers.0.clone();
+                let rr = access.input_receivers.1.clone();
+                *net = Net32::wrap(Box::new(An(InputNode::new(lr, rr))));
+                lt_to_open = Some(0);
+            }
         } else if op == "monitor()" || op == "timer()" {
             if access.op_changed_query.get(*id).unwrap().0 {
                 let net = &mut access.net_query.get_mut(*id).unwrap().0;

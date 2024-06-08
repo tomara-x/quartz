@@ -35,6 +35,7 @@ cpal = {version = "0.15.3", features = ["jack"]}
 copypasta = "0.10.1"
 serde = "1"
 rosc = "0.10.1"
+crossbeam-channel = "0.5"
 bevy-inspector-egui = {version = "0.24",  default-features = false, optional = true}
 
 # smol amount of optimization for our stuff

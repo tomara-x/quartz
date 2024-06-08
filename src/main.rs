@@ -91,6 +91,7 @@ fn main() {
     // audio
     .add_systems(Startup, default_out_device)
     .add_systems(Update, set_out_device)
+    .add_systems(Startup, default_in_device)
 
     .add_systems(Update, toggle_pan)
     .init_state::<Mode>()

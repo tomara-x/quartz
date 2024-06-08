@@ -1,4 +1,5 @@
 use fundsp::hacker32::*;
+use crossbeam_channel::Receiver;
 
 /// switch between nets based on index
 /// - input 0: index
@@ -480,3 +481,44 @@ impl AudioNode for Ramp {
         self.sr = sample_rate as f32;
     }
 }
+
+
+/// node that receives samples from crossbeam channels
+/// - output 0: left
+/// - output 1: right
+#[derive(Clone)]
+pub struct InputNode {
+    lr: Receiver<f32>,
+    rr: Receiver<f32>,
+}
+
+impl InputNode {
+    pub fn new(lr: Receiver<f32>, rr: Receiver<f32>) -> Self {
+        InputNode { lr, rr }
+    }
+}
+
+impl AudioNode for InputNode {
+    const ID: u64 = 1117;
+    type Sample = f32;
+    type Inputs = U0;
+    type Outputs = U2;
+    type Setting = ();
+
+    #[inline]
+    fn tick(
+        &mut self,
+        _input: &Frame<Self::Sample, Self::Inputs>,
+    ) -> Frame<Self::Sample, Self::Outputs> {
+        let l = self.lr.recv().unwrap();
+        let r = self.rr.recv().unwrap();
+        [l, r].into()
+    }
+
+    //fn reset(&mut self) {
+    //}
+
+    //fn set_sample_rate(&mut self, sample_rate: f64) {
+    //}
+}
+

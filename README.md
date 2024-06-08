@@ -594,6 +594,8 @@ refer to the fundsp [readme](https://github.com/SamiPerttu/fundsp), and [docs](h
 - `out()` `dac()`
     - inputs: `0 -> 1`
     - output given node to speakers (node must have 1 or 2 outputs)
+- `in()` `adc()`
+    - node with 2 outputs corresponding to the quartz input device (mic input and the like)
 - `var()`
     - node: 0 ins, 1 out
     - create a shared variable audio node. its output is the value of this circle's num. must have an order >= 1
@@ -850,6 +852,7 @@ i hope that everyone will become friends
     - copypasta https://github.com/alacritty/copypasta
     - serde https://github.com/serde-rs/serde
     - rosc https://github.com/klingtnet/rosc
+    - crossbeam https://github.com/crossbeam-rs/crossbeam
     - bevy_github_ci_template https://github.com/bevyengine/bevy_github_ci_template
     - tracy https://github.com/wolfpld/tracy
     - vim https://github.com/vim/vim
@@ -867,7 +870,6 @@ i hope that everyone will become friends
     - rust-ants-colony-simulation https://github.com/bones-ai/rust-ants-colony-simulation
     - bevy_fundsp https://github.com/harudagondi/bevy_fundsp
     - bevy_kira_audio https://github.com/NiklasEi/bevy_kira_audio
-    - crossbeam https://github.com/crossbeam-rs/crossbeam
     - bevy_mod_picking https://github.com/aevyrie/bevy_mod_picking/
     - bevy_vector_shapes https://github.com/james-j-obrien/bevy_vector_shapes
     - anyhow https://github.com/dtolnay/anyhow
