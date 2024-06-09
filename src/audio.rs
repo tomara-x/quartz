@@ -8,9 +8,9 @@ use crossbeam_channel::{bounded, Sender};
 
 use crate::components::*;
 
-pub fn default_out_device(mut commands: Commands) {
+pub fn default_out_device(world: &mut World) {
     let slot = Slot32::new(Box::new(dc(0.) | dc(0.)));
-    commands.insert_resource(Slot(slot.0));
+    world.insert_resource(Slot(slot.0));
     let host = cpal::default_host();
     if let Some(device) = host.default_output_device() {
         let default_config = device.default_output_config().unwrap();
@@ -26,20 +26,19 @@ pub fn default_out_device(mut commands: Commands) {
             },
         };
         if let Some(stream) = stream {
-            commands.insert_resource(OutStream(stream.into_inner()));
+            world.insert_non_send_resource(OutStream(stream));
         } else {
             error!("couldn't build stream");
         }
     }
 }
 
-pub fn set_out_device(
-    mut commands: Commands,
-    mut out_device_event: EventReader<OutDeviceCommand>,
-) {
-    for e in out_device_event.read() {
+pub fn set_out_device(world: &mut World) {
+    let mut out_events = world.resource_mut::<Events<OutDeviceCommand>>();
+    let events: Vec<OutDeviceCommand> = out_events.drain().collect();
+    for e in events {
         let slot = Slot32::new(Box::new(dc(0.) | dc(0.)));
-        commands.insert_resource(Slot(slot.0));
+        world.insert_resource(Slot(slot.0));
         let (h, d) = e.0;
         if let Some(host_id) = cpal::platform::ALL_HOSTS.get(h) {
             if let Ok(host) = cpal::platform::host_from_id(*host_id) {
@@ -58,7 +57,7 @@ pub fn set_out_device(
                             },
                         };
                         if let Some(stream) = stream {
-                            commands.insert_resource(OutStream(stream.into_inner()));
+                            world.insert_non_send_resource(OutStream(stream));
                         } else {
                             error!("couldn't build stream");
                         }
@@ -115,10 +114,10 @@ where
 
 
 
-pub fn default_in_device(mut commands: Commands) {
+pub fn default_in_device(world: &mut World) {
     let (ls, lr) = bounded(64);
     let (rs, rr) = bounded(64);
-    commands.insert_resource(InputReceivers(lr, rr));
+    world.insert_resource(InputReceivers(lr, rr));
     let host = cpal::default_host();
     if let Some(device) = host.default_input_device() {
         let config = device.default_input_config().unwrap();
@@ -132,21 +131,20 @@ pub fn default_in_device(mut commands: Commands) {
             },
         };
         if let Some(stream) = stream {
-            commands.insert_resource(InStream(stream.into_inner()));
+            world.insert_non_send_resource(InStream(stream));
         } else {
             error!("couldn't build stream");
         }
     }
 }
 
-pub fn set_in_device(
-    mut commands: Commands,
-    mut in_device_event: EventReader<InDeviceCommand>,
-) {
-    for e in in_device_event.read() {
+pub fn set_in_device(world: &mut World) {
+    let mut out_events = world.resource_mut::<Events<InDeviceCommand>>();
+    let events: Vec<InDeviceCommand> = out_events.drain().collect();
+    for e in events {
         let (ls, lr) = bounded(64);
         let (rs, rr) = bounded(64);
-        commands.insert_resource(InputReceivers(lr, rr));
+        world.insert_resource(InputReceivers(lr, rr));
         let (h, d) = e.0;
         if let Some(host_id) = cpal::platform::ALL_HOSTS.get(h) {
             if let Ok(host) = cpal::platform::host_from_id(*host_id) {
@@ -163,7 +161,7 @@ pub fn set_in_device(
                             },
                         };
                         if let Some(stream) = stream {
-                            commands.insert_resource(InStream(stream.into_inner()));
+                            world.insert_non_send_resource(InStream(stream));
                         } else {
                             error!("couldn't build stream");
                         }

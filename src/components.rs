@@ -15,6 +15,8 @@ use fundsp::{
 
 use crossbeam_channel::Receiver;
 
+use cpal::Stream;
+
 use copypasta::ClipboardContext;
 
 // -------------------- components --------------------
@@ -273,11 +275,9 @@ pub struct ConnectionMat(pub Handle<ColorMaterial>);
 #[derive(Resource)]
 pub struct ClickedOnSpace(pub bool);
 
-#[derive(Resource)]
-pub struct OutStream(pub cpal::platform::StreamInner);
+pub struct OutStream(pub Stream);
 
-#[derive(Resource)]
-pub struct InStream(pub cpal::platform::StreamInner);
+pub struct InStream(pub Stream);
 
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
