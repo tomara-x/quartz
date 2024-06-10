@@ -49,7 +49,7 @@ in addition to the shared properties that both circles and holes have (position,
 - an array of numbers: for different uses (don't worry it's empty by default, thus allocating no memory)
 - an array of [target](#targets) entities that this circle controls in some way (empty by default too)
 - an [order](#order) number: defining if/when that circle is processed
-- an audio node (defined by the op string) (`dc(0)` by default)
+- an audio node (defined by the op string) (empty by default)
 ---
 ### commands
 there are 2 types of commands:
