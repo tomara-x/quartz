@@ -460,6 +460,9 @@ but for persistent change to bloom/tonemapping you have to leave the circles wit
 - `update_rate`
     - inputs: `n -> 1`, `n -> 2`
     - by default quartz will respond (as fast as possible) to any mouse input/movement, or keyboard input, or if the refresh duration has elapsed. that duration is by default 1/60 of a second (60fps) when the window is in focus, and 30fps when out of focus. first input is the refresh rate (in hz) for focused mode, second input is unfocused rate
+- `command`
+    - inputs: `0 -> 1` (op string to first input)
+    - when the white hole is open set the command line text to the string of the input circle
 - `screenshot`
     - inputs: `n -> 1`
     - when input num is non-zero, take a screenshot and save it as screenshots/{time in ms since 1970}.png (make sure that folder exists)

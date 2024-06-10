@@ -806,6 +806,15 @@ pub fn process(
                     }
                 }
             }
+        } else if op == "command" {
+            for hole in holes {
+                if let Ok(wh) = white_hole_query.get(*hole) {
+                    if wh.link_types == (0, 1) && wh.open {
+                        let input = access.op_query.get(wh.bh_parent).unwrap().0.clone();
+                        access.command_line_text.single_mut().sections[0].value = input;  
+                    }
+                }
+            }
         } else if op == "screenshot" {
             for hole in holes {
                 if let Ok(wh) = white_hole_query.get(*hole) {
