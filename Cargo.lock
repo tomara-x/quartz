@@ -3011,7 +3011,7 @@ checksum = "43d84d1d7a6ac92673717f9f6d1518374ef257669c24ebc5ac25d5033828be58"
 
 [[package]]
 name = "quartz"
-version = "0.5.0"
+version = "0.6.0"
 dependencies = [
  "bevy",
  "bevy-inspector-egui",

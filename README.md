@@ -274,6 +274,7 @@ any connection links 2 circles together in some way. the black hole is taking so
 - `s` or `-7` : saturation
 - `l` or `-8` : lightness
 - `a` or `-9` : alpha
+- `-10` : order (only with `distro`)
 - `v` or `-11` : vertices
 - `o` or `-12` : rotation
 - `A` or `-13` : array

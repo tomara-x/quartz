@@ -403,6 +403,10 @@ pub fn process(
                                 -7 => { access.col_query.get_mut(targets[i]).unwrap().0.set_s(arr[i]); }
                                 -8 => { access.col_query.get_mut(targets[i]).unwrap().0.set_l(arr[i]); }
                                 -9 => { access.col_query.get_mut(targets[i]).unwrap().0.set_a(arr[i]); }
+                                -10 => {
+                                    access.order_query.get_mut(targets[i]).unwrap().0 = arr[i] as usize;
+                                    access.order_change.send_default();
+                                }
                                 -11 => {
                                     let v = arr[i].max(3.) as usize;
                                     access.vertices_query.get_mut(targets[i]).unwrap().0 = v;
