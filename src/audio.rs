@@ -39,7 +39,7 @@ pub fn set_out_device(world: &mut World) {
     for e in events {
         let slot = Slot32::new(Box::new(dc(0.) | dc(0.)));
         world.insert_resource(Slot(slot.0));
-        let (h, d) = e.0;
+        let OutDeviceCommand(h, d, sr, b) = e;
         if let Some(host_id) = cpal::platform::ALL_HOSTS.get(h) {
             if let Ok(host) = cpal::platform::host_from_id(*host_id) {
                 if let Ok(mut devices) = host.output_devices() {
@@ -47,6 +47,8 @@ pub fn set_out_device(world: &mut World) {
                         let default_config = device.default_output_config().unwrap();
                         let mut config = default_config.config();
                         config.channels = 2;
+                        if let Some(sr) = sr { config.sample_rate = cpal::SampleRate(sr); }
+                        if let Some(b) = b { config.buffer_size = cpal::BufferSize::Fixed(b); }
                         let stream = match default_config.sample_format() {
                             cpal::SampleFormat::F32 => run::<f32>(&device, &config.into(), slot.1),
                             cpal::SampleFormat::I16 => run::<i16>(&device, &config.into(), slot.1),
@@ -145,13 +147,16 @@ pub fn set_in_device(world: &mut World) {
         let (ls, lr) = bounded(64);
         let (rs, rr) = bounded(64);
         world.insert_resource(InputReceivers(lr, rr));
-        let (h, d) = e.0;
+        let InDeviceCommand(h, d, sr, b) = e;
         if let Some(host_id) = cpal::platform::ALL_HOSTS.get(h) {
             if let Ok(host) = cpal::platform::host_from_id(*host_id) {
                 if let Ok(mut devices) = host.input_devices() {
                     if let Some(device) = devices.nth(d) {
-                        let config = device.default_input_config().unwrap();
-                        let stream = match config.sample_format() {
+                        let default_config = device.default_input_config().unwrap();
+                        let mut config = default_config.config();
+                        if let Some(sr) = sr { config.sample_rate = cpal::SampleRate(sr); }
+                        if let Some(b) = b { config.buffer_size = cpal::BufferSize::Fixed(b); }
+                        let stream = match default_config.sample_format() {
                             cpal::SampleFormat::F32 => run_in::<f32>(&device, &config.into(), ls, rs),
                             cpal::SampleFormat::I16 => run_in::<i16>(&device, &config.into(), ls, rs),
                             cpal::SampleFormat::U16 => run_in::<u16>(&device, &config.into(), ls, rs),

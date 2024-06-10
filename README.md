@@ -104,8 +104,8 @@ there are 2 types of commands:
 <details><summary>other</summary>
 <p>
 
-- `:od {index} {index}` set the output audio device. first index is the host, second is the device index (use the commands `ah` and `ao` to get those)
-- `:id {index} {index}` set the input audio device
+- `:od {index} {index} [sample rate] [buffer size]` set the output audio device. first index is the host, second is the device index (use the commands `ah` and `ao` to get those) if sample rate and buffer size aren't given, the device defaults will be used
+- `:id {index} {index} [sample rate] [buffer size]` set the input audio device
 - `:nl` set the maximum number of nodes a connective op (`+`, `*`, `>>`, etc) will allow (default 500) (saved in scene file)
 - `:lt [id] {link type}` set [link type](#link-types) of selected holes (use shortcut `l`)
 - `:dv {float}` set default number of vertices of drawn circles

@@ -192,14 +192,28 @@ pub fn command_parser(
                     Some(":od") | Some(":id") => {
                         let h = command.next();
                         let d = command.next();
+                        let mut sr = None;
+                        let mut b = None;
                         if let (Some(h), Some(d)) = (h, d) {
                             let h = h.parse::<usize>();
                             let d = d.parse::<usize>();
                             if let (Ok(h), Ok(d)) = (h, d) {
+                                let samplerate = command.next();
+                                let block = command.next();
+                                if let Some(samplerate) = samplerate {
+                                    if let Ok(samplerate) = samplerate.parse::<u32>() {
+                                        sr = Some(samplerate);
+                                    }
+                                }
+                                if let Some(block) = block {
+                                    if let Ok(block) = block.parse::<u32>() {
+                                        b = Some(block);
+                                    }
+                                }
                                 if c0 == Some(":od") {
-                                    access.out_device_event.send(OutDeviceCommand((h, d)));
+                                    access.out_device_event.send(OutDeviceCommand(h, d, sr, b));
                                 } else {
-                                    access.in_device_event.send(InDeviceCommand((h, d)));
+                                    access.in_device_event.send(InDeviceCommand(h, d, sr, b));
                                 }
                             }
                         }

@@ -309,7 +309,7 @@ pub struct DacChange;
 pub struct ConnectCommand(pub Entity);
 
 #[derive(Event)]
-pub struct OutDeviceCommand(pub (usize, usize));
+pub struct OutDeviceCommand(pub usize, pub usize, pub Option<u32>, pub Option<u32>);
 
 #[derive(Event)]
-pub struct InDeviceCommand(pub (usize, usize));
+pub struct InDeviceCommand(pub usize, pub usize, pub Option<u32>, pub Option<u32>);
