@@ -56,7 +56,7 @@ pub fn spawn_circles(
             Holes(Vec::new()),
             Order(0),
             (
-                Network(Net32::new(0,1)),
+                Network(Net32::new(0,0)),
                 NetIns(Vec::new()),
                 OpChanged(false),
                 GainedWH(false),

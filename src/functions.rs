@@ -105,7 +105,7 @@ pub fn str_to_net(op: &str) -> Net32 {
                 p.push(n);
             }
         }
-    } else { return Net32::wrap(Box::new(dc(0.))); } // no parentheses
+    } else { return Net32::new(0,0); } // no parentheses
     match args[0] {
         // -------------------- sources --------------------
         "sine" => {
@@ -914,5 +914,5 @@ pub fn str_to_net(op: &str) -> Net32 {
         "recip" => { return Net32::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].recip()))); }
         _ => {}
     }
-    Net32::wrap(Box::new(dc(0.)))
+    Net32::new(0,0)
 }
