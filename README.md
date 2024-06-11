@@ -11,14 +11,20 @@ and you non-africans, listen to me with open mind"
 
 ## let's play
 
-### tutorial
-this readme is like a reference, and there's some exapmles of the basic ideas here: https://github.com/tomara-x/quartz/discussions/categories/e
+### learning
+- read this readme
+- there's some exapmles of the basic ideas here: https://github.com/tomara-x/quartz/discussions/categories/e
+- drag and drop examples from the assets folder into a quartz window (type `sa` then `II` to display info)
+- if anything is confusing, please start a discussion: https://github.com/tomara-x/quartz/discussions
 
 ---
 
 ### building
+
+to build from source:
 - install rust: https://www.rust-lang.org/tools/install
 - install bevy dependencies: https://bevyengine.org/learn/quick-start/getting-started/setup/#installing-os-dependencies
+- on linux also install libjack-dev
 - clone quartz
 ```
 git clone https://github.com/tomara-x/quartz.git
@@ -28,6 +34,10 @@ git clone https://github.com/tomara-x/quartz.git
 cd quartz
 cargo run --release
 ```
+development happens on the `main` branch
+
+alternatively you can download stable releases from: https://github.com/tomara-x/quartz/releases
+
 ---
 ### modes
 when you open quartz, it will be an empty window. there's 3 modes:
