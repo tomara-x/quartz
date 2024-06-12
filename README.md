@@ -38,6 +38,8 @@ development happens on the `main` branch
 
 alternatively you can download stable releases from: https://github.com/tomara-x/quartz/releases
 
+there's an experimental wasm build here: https://tomara-x.github.io/quartz/
+
 ---
 ### modes
 when you open quartz, it will be an empty window. there's 3 modes:
