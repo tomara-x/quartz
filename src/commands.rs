@@ -1108,12 +1108,15 @@ pub fn command_parser(
                     *text += &format!("{}: {:?}:\n", i, host);
                     let devices = cpal::platform::host_from_id(*host).unwrap().output_devices().unwrap();
                     for (j, device) in devices.enumerate() {
-                        let config = device.default_input_config().unwrap();
-                        let sr = config.sample_rate().0;
-                        let b = config.buffer_size();
-                        let b = if let cpal::SupportedBufferSize::Range {min,max} = b {
-                            format!("min:{} max:{}", min, max) } else { String::from("unknown") };
-                        *text += &format!("    {}: {:?}  sr:{:?} b:[{}]\n", j, device.name(), sr, b);
+                        if let Ok(config) = device.default_input_config() {
+                            let sr = config.sample_rate().0;
+                            let b = config.buffer_size();
+                            let b = if let cpal::SupportedBufferSize::Range {min,max} = b {
+                                format!("min:{} max:{}", min, max) } else { String::from("unknown") };
+                            *text += &format!("    {}: {:?}  sr:{:?} b:[{}]\n", j, device.name(), sr, b);
+                        } else {
+                            *text += &format!("    {}: {:?}\n", j, device.name());
+                        }
                     }
                 }
             }
@@ -1124,12 +1127,15 @@ pub fn command_parser(
                     *text += &format!("{}: {:?}:\n", i, host);
                     let devices = cpal::platform::host_from_id(*host).unwrap().input_devices().unwrap();
                     for (j, device) in devices.enumerate() {
-                        let config = device.default_input_config().unwrap();
-                        let sr = config.sample_rate().0;
-                        let b = config.buffer_size();
-                        let b = if let cpal::SupportedBufferSize::Range {min,max} = b {
-                            format!("min:{} max:{}", min, max) } else { String::from("unknown") };
-                        *text += &format!("    {}: {:?}  sr:{:?} b:[{}]\n", j, device.name(), sr, b);
+                        if let Ok(config) = device.default_input_config() {
+                            let sr = config.sample_rate().0;
+                            let b = config.buffer_size();
+                            let b = if let cpal::SupportedBufferSize::Range {min,max} = b {
+                                format!("min:{} max:{}", min, max) } else { String::from("unknown") };
+                            *text += &format!("    {}: {:?}  sr:{:?} b:[{}]\n", j, device.name(), sr, b);
+                        } else {
+                            *text += &format!("    {}: {:?}\n", j, device.name());
+                        }
                     }
                 }
             }
