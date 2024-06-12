@@ -354,7 +354,7 @@ some ops make a circle do things to its targets. like `process`, `del_targets`, 
     - inputs: `n -> 1`
     - spawn a new circle similar to self when input is non-zero. the new circle is added to this circle's targets. only the color, vertices, and transform (ish) are copied (z depth is increased with each one)
 - `distro`
-    - inputs: `A -> n/r/x/y/z/r/o/v/h/s/l/a`
+    - inputs: `A -> n/r/x/y/z/r/o/v/h/s/l/a/-10` (any number of those)
     - distribute values from input array among targets
 - `connect_target`
     - inputs: `n -> 1`, [`T -> 2`]
