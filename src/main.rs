@@ -504,6 +504,7 @@ fn post_load(
                         ));
                         if let Ok(op) = op_query.get_mut(*child) {
                             commands.entity(*child).insert((
+                                OpNum(str_to_op_num(&op.0)),
                                 Network(str_to_net(&op.0)),
                                 NetIns(Vec::new()),
                                 OpChanged(true),

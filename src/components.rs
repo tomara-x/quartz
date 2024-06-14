@@ -159,6 +159,9 @@ pub struct CommandText;
 #[derive(Component)]
 pub struct InfoText(pub Entity);
 
+#[derive(Component)]
+pub struct OpNum(pub u16);
+
 // -------------------- states --------------------
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 pub enum Mode {

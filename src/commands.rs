@@ -51,6 +51,7 @@ pub struct Access<'w, 's> {
     out_device_event: EventWriter<'w, OutDeviceCommand>,
     in_device_event: EventWriter<'w, InDeviceCommand>,
     node_limit: ResMut<'w, NodeLimit>,
+    op_num_query: Query<'w, 's, &'static mut OpNum>,
 }
 
 pub fn command_parser(
@@ -703,6 +704,7 @@ pub fn command_parser(
                                             op.0 = op_str.into();
                                             access.op_changed_query.get_mut(e).unwrap().0 = true;
                                             access.net_query.get_mut(e).unwrap().0 = str_to_net(op_str);
+                                            access.op_num_query.get_mut(e).unwrap().0 = str_to_op_num(op_str);
                                             lt_to_open = (Some(e), Some(0));
                                         }
                                     } else {
@@ -711,6 +713,7 @@ pub fn command_parser(
                                                 op.0 = op_str.into();
                                                 access.op_changed_query.get_mut(id).unwrap().0 = true;
                                                 access.net_query.get_mut(id).unwrap().0 = str_to_net(op_str);
+                                                access.op_num_query.get_mut(id).unwrap().0 = str_to_op_num(op_str);
                                             }
                                         }
                                         lt_to_open = (None, Some(0));
