@@ -8,9 +8,9 @@ use bevy::{
 };
 
 use fundsp::{
-    net::Net32,
+    net::Net,
     shared::Shared,
-    slot::Slot32,
+    slot::Slot,
 };
 
 use crossbeam_channel::Receiver;
@@ -52,10 +52,10 @@ pub struct Order(pub usize);
 pub struct OpChanged(pub bool);
 
 #[derive(Component)]
-pub struct Network(pub Net32);
+pub struct Network(pub Net);
 
 #[derive(Component)]
-pub struct NetIns(pub Vec<Shared<f32>>);
+pub struct NetIns(pub Vec<Shared>);
 
 #[derive(Component, Reflect)]
 #[reflect(Component, MapEntities)]
@@ -186,7 +186,7 @@ pub struct CursorInfo {
 }
 
 #[derive(Resource)]
-pub struct Slot(pub Slot32);
+pub struct SlotRes(pub Slot);
 
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]

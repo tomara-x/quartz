@@ -322,7 +322,7 @@ pub fn process(
                             Holes(Vec::new()),
                             Order(0),
                             (
-                                Network(Net32::new(0,0)),
+                                Network(Net::new(0,0)),
                                 NetIns(Vec::new()),
                                 OpChanged(false),
                                 GainedWH(false),
@@ -1140,7 +1140,7 @@ pub fn process(
                         let output = &mut access.arr_query.get_mut(*id).unwrap().0;
                         let net = &mut access.net_query.get_mut(*id).unwrap().0;
                         if net.inputs() == 0 && net.outputs() > 0 && len >= 0. {
-                            let wave = Wave32::render(44100., len.into(), net);
+                            let wave = Wave::render(44100., len.into(), net);
                             *output = wave.channel(0).clone();
                         }
                         lt_to_open = Some(-13);
@@ -1154,7 +1154,7 @@ pub fn process(
                 let net = &mut access.net_query.get_mut(*id).unwrap().0;
                 let inputs = &mut access.net_ins_query.get_mut(*id).unwrap().0;
                 let input = shared(0.);
-                *net = Net32::wrap(Box::new(var(&input)));
+                *net = Net::wrap(Box::new(var(&input)));
                 inputs.push(input);
                 lt_to_open = Some(0);
             }
@@ -1169,7 +1169,7 @@ pub fn process(
                 let net = &mut access.net_query.get_mut(*id).unwrap().0;
                 let lr = access.input_receivers.0.clone();
                 let rr = access.input_receivers.1.clone();
-                *net = Net32::wrap(Box::new(An(InputNode::new(lr, rr))));
+                *net = Net::wrap(Box::new(An(InputNode::new(lr, rr))));
                 lt_to_open = Some(0);
             }
         } else if op == "monitor()" || op == "timer()" {
@@ -1178,9 +1178,9 @@ pub fn process(
                 let inputs = &mut access.net_ins_query.get_mut(*id).unwrap().0;
                 let s = shared(0.);
                 if op == "monitor()" {
-                    *net = Net32::wrap(Box::new(monitor(&s, Meter::Sample)));
+                    *net = Net::wrap(Box::new(monitor(&s, Meter::Sample)));
                 } else {
-                    *net = Net32::wrap(Box::new(timer(&s)));
+                    *net = Net::wrap(Box::new(timer(&s)));
                 }
                 inputs.push(s);
                 lt_to_open = Some(0);
@@ -1195,7 +1195,7 @@ pub fn process(
                     if wh.link_types == (-13, 1) && wh.open {
                         let arr = access.arr_query.get(wh.bh_parent).unwrap().0.clone();
                         let net = &mut access.net_query.get_mut(*id).unwrap().0;
-                        *net = Net32::wrap(Box::new(An(ArrGet::new(arr))));
+                        *net = Net::wrap(Box::new(An(ArrGet::new(arr))));
                         lt_to_open = Some(0);
                     }
                 }
@@ -1208,7 +1208,7 @@ pub fn process(
                         if let (Some(first), Some(last)) = (arr.first(), arr.last()) {
                             let range = *last - *first;
                             let net = &mut access.net_query.get_mut(*id).unwrap().0;
-                            *net = Net32::wrap(Box::new(An(Quantizer::new(arr.clone(), range))));
+                            *net = Net::wrap(Box::new(An(Quantizer::new(arr.clone(), range))));
                             lt_to_open = Some(0);
                         }
                     }
@@ -1236,10 +1236,10 @@ pub fn process(
                 if let Some(net) = net {
                     if net.outputs() == net.inputs() {
                         if let Some(del) = del {
-                            let feedback = Net32::wrap(Box::new(Feedback32::new(del, net)));
+                            let feedback = Net::wrap(Box::new(FeedbackUnit::new(del.into(), net)));
                             access.net_query.get_mut(*id).unwrap().0 = feedback;
                         } else {
-                            let feedback = Net32::wrap(Box::new(Feedback32::new(0., net)));
+                            let feedback = Net::wrap(Box::new(FeedbackUnit::new(0., net)));
                             access.net_query.get_mut(*id).unwrap().0 = feedback;
                         }
                         lt_to_open = Some(0);
@@ -1265,9 +1265,9 @@ pub fn process(
                     let n = access.num_query.get(*id).unwrap().0;
                     let output = &mut access.net_query.get_mut(*id).unwrap().0;
                     if op == "kr()" && net.inputs() == 0 && net.outputs() == 1 {
-                        *output = Net32::wrap(Box::new(An(Kr::new(net, n.max(1.) as usize))));
+                        *output = Net::wrap(Box::new(An(Kr::new(net, n.max(1.) as usize))));
                     } else if op == "reset()" && net.inputs() == 0 && net.outputs() == 1 {
-                        *output = Net32::wrap(Box::new(An(Reset::new(net, n))));
+                        *output = Net::wrap(Box::new(An(Reset::new(net, n))));
                     } else if op == "sr()" {
                         *output = net;
                         output.set_sample_rate(n as f64);
@@ -1292,9 +1292,9 @@ pub fn process(
                     if net.inputs() == 0 && net.outputs() == 1 {
                         let output = &mut access.net_query.get_mut(*id).unwrap().0;
                         if op == "trig_reset()" {
-                            *output = Net32::wrap(Box::new(An(TrigReset::new(net))));
+                            *output = Net::wrap(Box::new(An(TrigReset::new(net))));
                         } else {
-                            *output = Net32::wrap(Box::new(An(ResetV::new(net))));
+                            *output = Net::wrap(Box::new(An(ResetV::new(net))));
                         }
                         lt_to_open = Some(0);
                     }
@@ -1329,9 +1329,9 @@ pub fn process(
                 }
                 let n = &mut access.net_query.get_mut(*id).unwrap().0;
                 if op == "select()" {
-                    *n = Net32::wrap(Box::new(An(Select::new(nets))));
+                    *n = Net::wrap(Box::new(An(Select::new(nets))));
                 } else {
-                    *n = Net32::wrap(Box::new(An(Seq::new(nets))));
+                    *n = Net::wrap(Box::new(An(Seq::new(nets))));
                 }
                 lt_to_open = Some(0);
             }
@@ -1341,8 +1341,8 @@ pub fn process(
                     if wh.link_types == (-13, 1) && wh.open {
                         let arr = &access.arr_query.get(wh.bh_parent).unwrap().0;
                         let net = &mut access.net_query.get_mut(*id).unwrap().0;
-                        *net = Net32::wrap(Box::new(
-                            wave32(&std::sync::Arc::new(Wave32::from_samples(44100., arr)), 0, Some(0))
+                        *net = Net::wrap(Box::new(
+                            wavech(&std::sync::Arc::new(Wave::from_samples(44100., arr)), 0, Some(0))
                         ));
                         lt_to_open = Some(0);
                     }
@@ -1362,7 +1362,7 @@ pub fn process(
                 }
             }
             if changed || lost || op_changed {
-                let mut graph = Net32::new(0,0);
+                let mut graph = Net::new(0,0);
                 let mut empty = true;
                 if let (Some(arr), Some(op_str)) = (arr, op_str) {
                     let arr = &access.arr_query.get(arr).unwrap().0;
@@ -1400,7 +1400,7 @@ pub fn process(
                     }
                 }
                 let output = &mut access.net_query.get_mut(*id).unwrap().0;
-                *output = Net32::wrap(Box::new(graph));
+                *output = Net::wrap(Box::new(graph));
                 lt_to_open = Some(0);
             }
         } else if matches!(op, "SUM" | "+" | "PRO" | "*") {
@@ -1426,7 +1426,7 @@ pub fn process(
                 }
             }
             if changed || lost || op_changed || num_changed {
-                let mut graph = Net32::new(0,0);
+                let mut graph = Net::new(0,0);
                 let mut empty = true;
                 let n = access.num_query.get(*id).unwrap().0.max(1.) as i32;
                 for _ in 0..n {
@@ -1497,7 +1497,7 @@ pub fn process(
                 }
             }
             if changed || lost || op_changed || num_changed {
-                let mut graph = Net32::new(0,0);
+                let mut graph = Net::new(0,0);
                 let mut empty = true;
                 let n = access.num_query.get(*id).unwrap().0.max(1.) as i32;
                 for _ in 0..n {
@@ -1544,7 +1544,7 @@ pub fn process(
                 }
             }
             if changed || lost || op_changed {
-                let mut graph = Net32::new(0,0);
+                let mut graph = Net::new(0,0);
                 if let Some(input) = input {
                     graph = access.net_query.get(input).unwrap().0.clone();
                 }
@@ -1593,7 +1593,7 @@ pub fn process(
 }
 
 pub fn update_slot(
-    mut slot: ResMut<Slot>,
+    mut slot: ResMut<SlotRes>,
     mut dac_circles: ResMut<DacCircles>,
     net_query: Query<&Network>,
     holes_query: Query<&Holes>,
@@ -1611,7 +1611,7 @@ pub fn update_slot(
             }
         }
     }
-    let mut graph = Net32::wrap(Box::new(dc((0., 0.))));
+    let mut graph = Net::wrap(Box::new(dc((0., 0.))));
     for n in nets {
         let net = net_query.get(n).unwrap().0.clone();
         if net.inputs() != 0 { continue; }

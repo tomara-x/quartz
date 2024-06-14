@@ -12,7 +12,7 @@ use crate::{
     functions::*,
 };
 
-use fundsp::audiounit::AudioUnit32;
+use fundsp::audiounit::AudioUnit;
 
 use cpal::traits::{HostTrait, DeviceTrait};
 

@@ -748,8 +748,8 @@ other
 - `declick([float])` e.g. `declick()` 10ms fade in, `declick(2)` 2 second fade in
 - `delay(float)` e.g. `delay(2)` 2 second delay
 - `hold(float, [float])` e.g. `hold(0.5)` takes 2 inputs (signal, and sampling frequency) with variability 0.5, `hold(150, 0)` takes one input and samples it at 150Hz with variability 0
-- `limiter(float, [float])` look ahead limiter. first param is attack time, second is release time (in seconds)
-- `limiter_stereo(float, [float])` (same)
+- `limiter(float, float)` look ahead limiter. first param is attack time, second is release time (in seconds)
+- `limiter_stereo(float, float)` (same)
 - `reverb_stereo(float, [float], [float])` (room size, reverberation time, damping) when damping isn't provided it defaults to 1, time defaults to 5
 - `tap(float, float)` (min delay time, max delay time)
 - `tap_linear(float, float)` (same)

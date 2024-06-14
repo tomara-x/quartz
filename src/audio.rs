@@ -9,8 +9,8 @@ use crossbeam_channel::{bounded, Sender};
 use crate::components::*;
 
 pub fn default_out_device(world: &mut World) {
-    let slot = Slot32::new(Box::new(dc(0.) | dc(0.)));
-    world.insert_resource(Slot(slot.0));
+    let slot = Slot::new(Box::new(dc(0.) | dc(0.)));
+    world.insert_resource(SlotRes(slot.0));
     let host = cpal::default_host();
     if let Some(device) = host.default_output_device() {
         let default_config = device.default_output_config().unwrap();
@@ -37,8 +37,8 @@ pub fn set_out_device(world: &mut World) {
     let mut out_events = world.resource_mut::<Events<OutDeviceCommand>>();
     let events: Vec<OutDeviceCommand> = out_events.drain().collect();
     for e in events {
-        let slot = Slot32::new(Box::new(dc(0.) | dc(0.)));
-        world.insert_resource(Slot(slot.0));
+        let slot = Slot::new(Box::new(dc(0.) | dc(0.)));
+        world.insert_resource(SlotRes(slot.0));
         let OutDeviceCommand(h, d, sr, b) = e;
         if let Some(host_id) = cpal::platform::ALL_HOSTS.get(h) {
             if let Ok(host) = cpal::platform::host_from_id(*host_id) {
@@ -73,11 +73,11 @@ pub fn set_out_device(world: &mut World) {
 fn run<T>(
     device: &cpal::Device,
     config: &cpal::StreamConfig,
-    slot: SlotBackend32,
+    slot: SlotBackend,
 ) -> Option<cpal::Stream> where
     T: SizedSample + FromSample<f32>,
 {
-    let mut slot = BlockRateAdapter32::new(Box::new(slot));
+    let mut slot = BlockRateAdapter::new(Box::new(slot));
 
     let mut next_value = move || {
         let (l, r) = slot.get_stereo();

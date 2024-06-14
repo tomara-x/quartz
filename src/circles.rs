@@ -5,7 +5,7 @@ use bevy::{
     text::Text2dBounds,
 };
 
-use fundsp::net::Net32;
+use fundsp::net::Net;
 
 use crate::{
     components::*,
@@ -56,7 +56,7 @@ pub fn spawn_circles(
             Holes(Vec::new()),
             Order(0),
             (
-                Network(Net32::new(0,0)),
+                Network(Net::new(0,0)),
                 NetIns(Vec::new()),
                 OpChanged(false),
                 GainedWH(false),
