@@ -548,9 +548,8 @@ impl AudioNode for InputNode {
     //fn set_sample_rate(&mut self, sample_rate: f64) {
     //}
 
-    // TODO
     fn route(&mut self, input: &SignalFrame, _frequency: f64) -> SignalFrame {
-        input.clone()
+        signal::Routing::Generator(0.0).route(input, self.outputs())
     }
 }
 
