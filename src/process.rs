@@ -1447,24 +1447,12 @@ pub fn process(
                                 let (gi, go) = (graph.inputs(), graph.outputs());
                                 let (ni, no) = (net.inputs(), net.outputs());
                                 match op_num {
-                                    76 => {
-                                        if go == ni { graph = graph >> net; }
-                                    }
-                                    77 => {
-                                        graph = graph | net;
-                                    }
-                                    78 => {
-                                        if gi == ni && go == no { graph = graph & net; }
-                                    }
-                                    79 => {
-                                        if gi == ni { graph = graph ^ net; }
-                                    }
-                                    80 => {
-                                        if go == no { graph = graph + net; }
-                                    }
-                                    81 => {
-                                        if go == no { graph = graph * net; }
-                                    }
+                                    76 if go == ni => { graph = graph >> net; }
+                                    77 => { graph = graph | net; }
+                                    78 if gi == ni && go == no => { graph = graph & net; }
+                                    79 if gi == ni => { graph = graph ^ net; }
+                                    80 if go == no => { graph = graph + net; }
+                                    81 if go == no => { graph = graph * net; }
                                     _ => {}
                                 }
                             }
@@ -1586,18 +1574,10 @@ pub fn process(
                                 let (gi, go) = (graph.inputs(), graph.outputs());
                                 let (ni, no) = (net.inputs(), net.outputs());
                                 match op_num {
-                                    85 => {
-                                        if go == ni { graph = graph >> net; }
-                                    }
-                                    86 => {
-                                        graph = graph | net;
-                                    }
-                                    87 => {
-                                        if gi == ni && go == no { graph = graph & net; }
-                                    }
-                                    88 => {
-                                        if gi == ni { graph = graph ^ net; }
-                                    }
+                                    85 if go == ni => { graph = graph >> net; }
+                                    86 => { graph = graph | net; }
+                                    87 if gi == ni && go == no => { graph = graph & net; }
+                                    88 if gi == ni => { graph = graph ^ net; }
                                     _ => {}
                                 }
                             }
