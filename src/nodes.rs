@@ -307,9 +307,8 @@ impl AudioNode for Kr {
         self.net.reset();
     }
 
-    // TODO
     fn route(&mut self, input: &SignalFrame, _frequency: f64) -> SignalFrame {
-        input.clone()
+        signal::Routing::Generator(0.0).route(input, self.outputs())
     }
 }
 
@@ -365,9 +364,8 @@ impl AudioNode for Reset {
         self.net.reset();
     }
 
-    // TODO
     fn route(&mut self, input: &SignalFrame, _frequency: f64) -> SignalFrame {
-        input.clone()
+        signal::Routing::Generator(0.0).route(input, self.outputs())
     }
 }
 
