@@ -108,6 +108,8 @@ pub struct Access<'w, 's> {
     node_limit: Res<'w, NodeLimit>,
     input_receivers: Res<'w, InputReceivers>,
     op_num_query: Query<'w, 's, &'static OpNum>,
+    key_event: EventReader<'w, 's, KeyboardInput>,
+    ortho: Query<'w, 's, &'static mut OrthographicProjection>,
 }
 
 pub fn process(
@@ -119,14 +121,11 @@ pub fn process(
     mut access: Access,
     cursor: Res<CursorInfo>,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
-    // TODO(amy): move in access
-    mut key_event: EventReader<KeyboardInput>,
     camera_query: Query<(Entity, &Camera, &GlobalTransform)>,
     windows: Query<(Entity, &Window)>,
-    mut ortho: Query<&mut OrthographicProjection>,
     mut commands: Commands,
 ) {
-    let key_event = key_event.read().collect::<Vec<_>>();
+    let key_event = access.key_event.read().collect::<Vec<_>>();
     for id in queue.0.iter().flatten().chain(loopq.0.iter()) {
         let holes = &holes_query.get(*id).unwrap().0;
         for hole in holes {
@@ -825,7 +824,7 @@ pub fn process(
                                 2 => { t.translation.y = n; }
                                 3 => { t.translation.z = n; }
                                 4 => { t.rotation = Quat::from_euler(EulerRot::XYZ,0.,0.,n); }
-                                5 => { ortho.single_mut().scale = n.clamp(0.1, 4.); }
+                                5 => { access.ortho.single_mut().scale = n.clamp(0.1, 4.); }
                                 _ => {}
                             }
                         }
