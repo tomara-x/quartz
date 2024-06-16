@@ -1458,8 +1458,7 @@ pub fn process(
                             }
                         }
                     }
-                    let output = &mut access.net_query.get_mut(*id).unwrap().0;
-                    *output = Net::wrap(Box::new(graph));
+                    access.net_query.get_mut(*id).unwrap().0 = graph;
                     lt_to_open = Some(0);
                 }
             }
