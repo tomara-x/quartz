@@ -269,9 +269,6 @@ pub struct PolygonHandles(pub Vec<Option<Mesh2dHandle>>);
 #[derive(Resource)]
 pub struct ArrowHandle(pub Mesh2dHandle);
 
-#[derive(Resource, Default)]
-pub struct DacCircles(pub Vec<Entity>);
-
 #[derive(Resource)]
 pub struct ConnectionMat(pub Handle<ColorMaterial>);
 

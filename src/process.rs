@@ -92,8 +92,6 @@ pub struct Access<'w, 's> {
     indicator_color: ResMut<'w, IndicatorColor>,
     command_line_text: Query<'w, 's, &'static mut Text, With<CommandText>>,
     command_color: ResMut<'w, CommandColor>,
-    dac_change_event: EventWriter<'w, DacChange>,
-    dac_circles: ResMut<'w, DacCircles>,
     selected_query: Query<'w, 's, Entity, With<Selected>>,
     delete_event: EventWriter<'w, DeleteCommand>,
     polygon_handles: Res<'w, PolygonHandles>,
@@ -124,6 +122,7 @@ pub fn process(
     camera_query: Query<(Entity, &Camera, &GlobalTransform)>,
     windows: Query<(Entity, &Window)>,
     mut commands: Commands,
+    mut slot: ResMut<SlotRes>,
 ) {
     let key_event = access.key_event.read().collect::<Vec<_>>();
     for id in queue.0.iter().flatten().chain(loopq.0.iter()) {
@@ -1609,19 +1608,26 @@ pub fn process(
             90 => { // out() | dac()
                 let op_changed = access.op_changed_query.get(*id).unwrap().0;
                 let lost = access.lost_wh_query.get(*id).unwrap().0;
+                let mut input = None;
+                let mut changed = false;
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
-                        if wh.open || lost || op_changed {
-                            if wh.link_types == (0, 1) && !access.dac_circles.0.contains(id) {
-                                access.dac_circles.0.push(*id);
-                            }
-                            access.dac_change_event.send_default();
-                        }
+                        if wh.link_types == (0, 1) { input = Some(wh.bh_parent); }
+                        if wh.open { changed = true; }
                     }
                 }
-                if holes.is_empty() && lost {
-                    access.dac_circles.0.retain(|x| x != id);
-                    access.dac_change_event.send_default();
+                if changed || lost || op_changed {
+                    if let Some(input) = input {
+                        let net = access.net_query.get(input).unwrap().0.clone();
+                        if net.inputs() != 0 { continue; }
+                        if net.outputs() == 1 {
+                            slot.0.set(Fade::Smooth, 0.01, Box::new(net | dc(0.)));
+                        } else if net.outputs() == 2 {
+                            slot.0.set(Fade::Smooth, 0.01, Box::new(net));
+                        }
+                    } else {
+                        slot.0.set(Fade::Smooth, 0.01, Box::new(dc(0.) | dc(0.)));
+                    }
                 }
             }
             _ => {}
@@ -1647,36 +1653,4 @@ pub fn process(
             }
         }
     }
-}
-
-pub fn update_slot(
-    mut slot: ResMut<SlotRes>,
-    mut dac_circles: ResMut<DacCircles>,
-    net_query: Query<&Network>,
-    holes_query: Query<&Holes>,
-    white_hole_query: Query<&WhiteHole>,
-) {
-    // if it's deleted it gets removed from the vec
-    dac_circles.0.retain(|x| holes_query.contains(*x));
-    let mut nets = Vec::new();
-    for e in &dac_circles.0 {
-        for hole in &holes_query.get(*e).unwrap().0 {
-            if let Ok(wh) = white_hole_query.get(*hole) {
-                if wh.link_types == (0, 1) {
-                    nets.push(wh.bh_parent);
-                }
-            }
-        }
-    }
-    let mut graph = Net::wrap(Box::new(dc((0., 0.))));
-    for n in nets {
-        let net = net_query.get(n).unwrap().0.clone();
-        if net.inputs() != 0 { continue; }
-        if net.outputs() == 1 {
-            graph = graph + (net | dc(0.));
-        } else if net.outputs() == 2 {
-            graph = graph + net;
-        }
-    }
-    slot.0.set(Fade::Smooth, 0.01, Box::new(graph));
 }

@@ -84,7 +84,6 @@ fn main() {
     .insert_resource(Msaa::Sample4)
     .insert_resource(Version(format!("{} {}", env!("CARGO_PKG_VERSION"), env!("COMMIT_HASH"))))
     .init_resource::<PolygonHandles>()
-    .init_resource::<DacCircles>()
 
     .add_systems(Startup, setup)
 
@@ -127,7 +126,6 @@ fn main() {
     .add_event::<CopyCommand>()
     .add_event::<PasteCommand>()
     .add_event::<DeleteCommand>()
-    .add_event::<DacChange>()
     .add_event::<ConnectCommand>()
     .add_event::<OutDeviceCommand>()
     .add_event::<InDeviceCommand>()
@@ -144,7 +142,6 @@ fn main() {
     .add_systems(PostUpdate, prepare_loop_queue.after(sort_by_order).before(process))
     // process
     .add_systems(PostUpdate, process)
-    .add_systems(Update, update_slot.run_if(on_event::<DacChange>()))
     // commands
     .add_systems(Update, command_parser)
 
