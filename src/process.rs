@@ -824,7 +824,7 @@ pub fn process(
                                 2 => { t.translation.y = n; }
                                 3 => { t.translation.z = n; }
                                 4 => { t.rotation = Quat::from_euler(EulerRot::XYZ,0.,0.,n); }
-                                5 => { access.ortho.single_mut().scale = n.clamp(0.1, 4.); }
+                                5 => { access.ortho.single_mut().scale = n.clamp(0.005, 80.); }
                                 _ => {}
                             }
                         }
