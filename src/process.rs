@@ -1305,12 +1305,13 @@ pub fn process(
                             }
                             lt_to_open = Some(0);
                         }
+                    } else {
+                        access.net_query.get_mut(*id).unwrap().0 = Net::new(0,0);
                     }
                 }
             }
             68 | 69 | 70 => { // kr() | reset() | sr()
                 let op_changed = access.op_changed_query.get(*id).unwrap().0;
-                // FIXME(amy): this has no effect
                 let lost = access.lost_wh_query.get(*id).unwrap().0;
                 let num_changed = access.num_query.get_mut(*id).unwrap().is_changed();
                 let mut changed = false;
@@ -1335,6 +1336,8 @@ pub fn process(
                             output.set_sample_rate(n as f64);
                         }
                         lt_to_open = Some(0);
+                    } else {
+                        access.net_query.get_mut(*id).unwrap().0 = Net::new(0,0);
                     }
                 }
             }
@@ -1361,6 +1364,8 @@ pub fn process(
                             }
                             lt_to_open = Some(0);
                         }
+                    } else {
+                        access.net_query.get_mut(*id).unwrap().0 = Net::new(0,0);
                     }
                 }
             }
