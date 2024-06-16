@@ -338,7 +338,7 @@ fn save_scene(world: &mut World) {
     let mut save_events = world.resource_mut::<Events<SaveCommand>>();
     let events: Vec<SaveCommand> = save_events.drain().collect();
     for event in events {
-        let name = event.0.to_string();
+        let name = event.0;
         let mut query = world.query_filtered::<Entity, With<Save>>();
         let scene = DynamicSceneBuilder::from_world(world)
             .allow::<Col>()
