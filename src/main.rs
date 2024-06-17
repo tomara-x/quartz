@@ -17,6 +17,7 @@ use bevy::{
     window::FileDragAndDrop::DroppedFile,
     ecs::system::SystemParam,
     sprite::Mesh2dHandle,
+    color::Hsla,
     prelude::*
 };
 
@@ -53,12 +54,8 @@ fn main() {
         ..default()
     }))
     .insert_resource(WinitSettings {
-        focused_mode: UpdateMode::ReactiveLowPower {
-            wait: Duration::from_secs_f64(1.0 / 60.0),
-        },
-        unfocused_mode: UpdateMode::ReactiveLowPower {
-            wait: Duration::from_secs_f64(1.0 / 30.0),
-        },
+        focused_mode: UpdateMode::reactive_low_power(Duration::from_secs_f64(1.0 / 60.0)),
+        unfocused_mode: UpdateMode::reactive_low_power(Duration::from_secs_f64(1.0 / 30.0)),
     })
 
     .add_plugins(PanCamPlugin)
@@ -68,14 +65,14 @@ fn main() {
     })
     .insert_resource(OscReceiver { socket: None })
 
-    .insert_resource(ClearColor(Color::BLACK))
-    .insert_resource(DefaultDrawColor(Color::hsl(270.,1.,0.5)))
+    .insert_resource(ClearColor(Color::hsla(0.,0.,0.,1.)))
+    .insert_resource(DefaultDrawColor(Hsla::new(270.,1.,0.5,1.)))
     .insert_resource(DefaultDrawVerts(4))
-    .insert_resource(HighlightColor(Color::hsl(0.0,1.0,0.5)))
-    .insert_resource(ConnectionColor(Color::hsla(0., 1., 1., 0.7)))
+    .insert_resource(HighlightColor(Hsla::new(0.0,1.0,0.5,1.)))
+    .insert_resource(ConnectionColor(Hsla::new(0., 1., 1., 0.7)))
     .insert_resource(ConnectionWidth(4.))
-    .insert_resource(CommandColor(Color::hsla(0., 0., 0.7, 1.)))
-    .insert_resource(IndicatorColor(Color::hsla(0., 1., 0.5, 0.3)))
+    .insert_resource(CommandColor(Hsla::new(0., 0., 0.7, 1.)))
+    .insert_resource(IndicatorColor(Hsla::new(0., 1., 0.5, 0.3)))
     .insert_resource(DefaultLT((0, 0)))
     .insert_resource(TextSize(0.1))
     .insert_resource(ClickedOnSpace(true))
@@ -214,7 +211,7 @@ fn setup(
             min_scale: 0.005,
             ..default()
         },
-        RenderLayers::all(),
+        RenderLayers::from_layers(&[0, 1, 2, 3, 4]),
     ));
 
     // command line
@@ -233,7 +230,7 @@ fn setup(
                     "",
                     TextStyle {
                         font_size: 13.0,
-                        color: command_color.0,
+                        color: command_color.0.into(),
                         ..default()
                     },
                 )
@@ -250,7 +247,7 @@ fn setup(
     let id = commands.spawn((
         ColorMesh2dBundle {
             mesh: meshes.add(Triangle2d::default()).into(),
-            material: materials.add(ColorMaterial::from(indicator_color.0)),
+            material: materials.add(ColorMaterial::from_color(indicator_color.0)),
             transform: Transform::from_translation(Vec3::Z),
             ..default()
         },
@@ -262,7 +259,7 @@ fn setup(
     commands.insert_resource(ArrowHandle(meshes.add(Triangle2d::default()).into()));
 
     // connection material
-    commands.insert_resource(ConnectionMat(materials.add(ColorMaterial::from(connection_color.0))));
+    commands.insert_resource(ConnectionMat(materials.add(ColorMaterial::from_color(connection_color.0))));
 }
 
 fn toggle_pan(
@@ -368,7 +365,8 @@ fn save_scene(world: &mut World) {
             .extract_resources()
             .build();
         let type_registry = world.resource::<AppTypeRegistry>();
-        let serialized_scene = scene.serialize_ron(type_registry).unwrap();
+        let type_registry = type_registry.read();
+        let serialized_scene = scene.serialize(&type_registry).unwrap();
 
         #[cfg(not(target_arch = "wasm32"))]
         IoTaskPool::get()
@@ -398,8 +396,10 @@ fn copy_scene(world: &mut World) {
         .allow::<Targets>()
         .extract_entities(query.iter(world))
         .build();
-    let type_registry = world.resource::<AppTypeRegistry>();
-    let serialized_scene = scene.serialize_ron(type_registry).unwrap();
+    // FIXME(amy): can we not clone it?
+    let type_registry = world.resource::<AppTypeRegistry>().clone();
+    let type_registry = type_registry.read();
+    let serialized_scene = scene.serialize(&type_registry).unwrap();
     let mut ctx = world.resource_mut::<SystemClipboard>();
     ctx.0.set_contents(serialized_scene).unwrap();
 }
@@ -479,7 +479,7 @@ fn post_load(
             indicator_color_query.get_mut(more.indicator_id.0).unwrap().0 = indicator_color;
             // update connection material from color resource
             let mat_id = &more.connection_mat.0;
-            materials.get_mut(mat_id).unwrap().color = more.connection_color.0;
+            materials.get_mut(mat_id).unwrap().color = more.connection_color.0.into();
             if let Ok(children) = children_query.get(scene_id) {
                 for child in children {
                     if let Ok((t, c, v)) = main_query.get(*child) {
@@ -493,7 +493,7 @@ fn post_load(
                         commands.entity(*child).try_insert((
                             ColorMesh2dBundle {
                                 mesh: polygon_handles.0[v.0].clone().unwrap(),
-                                material: materials.add(ColorMaterial::from(c.0)),
+                                material: materials.add(ColorMaterial::from_color(c.0)),
                                 transform: *t,
                                 ..default()
                             },
@@ -547,7 +547,7 @@ fn post_load(
             }
             // update the command line color from resource
             let clt = &mut command_line_text.single_mut();
-            clt.sections[0].style.color = more.command_color.0;
+            clt.sections[0].style.color = more.command_color.0.into();
             // despawn the now empty instance
             commands.entity(scene_id).despawn_recursive();
         }

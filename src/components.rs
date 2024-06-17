@@ -5,6 +5,7 @@ use bevy::{
         entity::MapEntities,
         reflect::{ReflectComponent, ReflectMapEntities},
     },
+    color::Hsla,
 };
 
 use fundsp::{
@@ -38,7 +39,7 @@ pub struct Vertices(pub usize);
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
-pub struct Col(pub Color);
+pub struct Col(pub Hsla);
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
@@ -223,7 +224,7 @@ pub struct Indicator(pub Entity);
 
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
-pub struct DefaultDrawColor(pub Color);
+pub struct DefaultDrawColor(pub Hsla);
 
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
@@ -231,15 +232,15 @@ pub struct DefaultDrawVerts(pub usize);
 
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
-pub struct HighlightColor(pub Color);
+pub struct HighlightColor(pub Hsla);
 
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
-pub struct ConnectionColor(pub Color);
+pub struct ConnectionColor(pub Hsla);
 
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
-pub struct CommandColor(pub Color);
+pub struct CommandColor(pub Hsla);
 
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
@@ -261,7 +262,7 @@ pub struct Version(pub String);
 
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
-pub struct IndicatorColor(pub Color);
+pub struct IndicatorColor(pub Hsla);
 
 #[derive(Resource, Default)]
 pub struct PolygonHandles(pub Vec<Option<Mesh2dHandle>>);

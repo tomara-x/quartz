@@ -5,6 +5,7 @@ use bevy::{
     app::AppExit,
     input::keyboard::{KeyboardInput, Key},
     window::WindowMode,
+    sprite::WithMesh2d,
 };
 
 use crate::{
@@ -289,7 +290,7 @@ pub fn command_parser(
                         if let Some(n) = command.next() {
                             if let Ok(n) = n.parse::<f32>() { a = n; }
                         }
-                        access.default_color.0 = Color::hsla(h,s,l,a);
+                        access.default_color.0 = Hsla::new(h,s,l,a);
                     }
                     // toggle open a white hole (by id)
                     Some(":ht") | Some("ht") => {
@@ -513,10 +514,9 @@ pub fn command_parser(
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = parse_with_constants(n) {
                                                     if c0 == Some(":set") || c0 == Some("set") {
-                                                        color.0.set_h(n);
+                                                        color.0.hue = n;
                                                     } else {
-                                                        let h = color.0.h();
-                                                        color.0.set_h(n+h);
+                                                        color.0.hue += n;
                                                     }
                                                     lt_to_open = (Some(e), Some(-6));
                                                 }
@@ -526,10 +526,9 @@ pub fn command_parser(
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut color) = access.col_query.get_mut(id) {
                                                 if c0 == Some(":set") || c0 == Some("set") {
-                                                    color.0.set_h(n);
+                                                    color.0.hue = n;
                                                 } else {
-                                                    let h = color.0.h();
-                                                    color.0.set_h(n+h);
+                                                    color.0.hue += n;
                                                 }
                                             }
                                         }
@@ -544,10 +543,9 @@ pub fn command_parser(
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = parse_with_constants(n) {
                                                     if c0 == Some(":set") || c0 == Some("set") {
-                                                        color.0.set_s(n);
+                                                        color.0.saturation = n;
                                                     } else {
-                                                        let s = color.0.s();
-                                                        color.0.set_s(n+s);
+                                                        color.0.saturation += n;
                                                     }
                                                     lt_to_open = (Some(e), Some(-7));
                                                 }
@@ -557,10 +555,9 @@ pub fn command_parser(
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut color) = access.col_query.get_mut(id) {
                                                 if c0 == Some(":set") || c0 == Some("set") {
-                                                    color.0.set_s(n);
+                                                    color.0.saturation = n;
                                                 } else {
-                                                    let s = color.0.s();
-                                                    color.0.set_s(n+s);
+                                                    color.0.saturation += n;
                                                 }
                                             }
                                         }
@@ -575,10 +572,9 @@ pub fn command_parser(
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = parse_with_constants(n) {
                                                     if c0 == Some(":set") || c0 == Some("set") {
-                                                        color.0.set_l(n);
+                                                        color.0.lightness = n;
                                                     } else {
-                                                        let l = color.0.l();
-                                                        color.0.set_l(n+l);
+                                                        color.0.lightness += n;
                                                     }
                                                     lt_to_open = (Some(e), Some(-8));
                                                 }
@@ -588,10 +584,9 @@ pub fn command_parser(
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut color) = access.col_query.get_mut(id) {
                                                 if c0 == Some(":set") || c0 == Some("set") {
-                                                    color.0.set_l(n);
+                                                    color.0.lightness = n;
                                                 } else {
-                                                    let l = color.0.l();
-                                                    color.0.set_l(n+l);
+                                                    color.0.lightness += n;
                                                 }
                                             }
                                         }
@@ -606,10 +601,9 @@ pub fn command_parser(
                                             if let Some(n) = command.next() {
                                                 if let Ok(n) = parse_with_constants(n) {
                                                     if c0 == Some(":set") || c0 == Some("set") {
-                                                        color.0.set_a(n);
+                                                        color.0.alpha = n;
                                                     } else {
-                                                        let a = color.0.a();
-                                                        color.0.set_a(n+a);
+                                                        color.0.alpha += n;
                                                     }
                                                     lt_to_open = (Some(e), Some(-9));
                                                 }
@@ -619,10 +613,9 @@ pub fn command_parser(
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut color) = access.col_query.get_mut(id) {
                                                 if c0 == Some(":set") || c0 == Some("set") {
-                                                    color.0.set_a(n);
+                                                    color.0.alpha = n;
                                                 } else {
-                                                    let a = color.0.a();
-                                                    color.0.set_a(n+a);
+                                                    color.0.alpha += n;
                                                 }
                                             }
                                         }
@@ -1011,6 +1004,7 @@ pub fn command_parser(
                 }
                 text.clear();
             }
+            // FIXME(amy): entity ids
             // insert info texts for selected entities
             Some("II") => {
                 for e in access.selected_query.iter() {
@@ -1034,7 +1028,7 @@ pub fn command_parser(
                                     "",
                                     TextStyle { color: Color::BLACK, font_size: 120., ..default() },
                                 ),
-                            ]).with_justify(JustifyText::Center),
+                            ]),
                             transform: Transform::from_scale(Vec3::new(access.text_size.0, access.text_size.0, 1.)),
                             ..default()
                         }
@@ -1061,7 +1055,7 @@ pub fn command_parser(
                     }
                 } else {
                     for (e, t) in info_text_query.iter() {
-                        access.text_query.get_mut(t.0).unwrap().sections[0].value = format!("{:?}\n", e);
+                        access.text_query.get_mut(t.0).unwrap().sections[0].value = format!("{}\n", e);
                     }
                 }
                 *ids_shown = !*ids_shown;
@@ -1146,7 +1140,7 @@ pub fn command_parser(
             Some("ii") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
-                    t = t + &format!("{:?}  ", e);
+                    t = t + &format!("{}  ", e);
                 }
                 *text = format!(">ID: {}", t);
             }
@@ -1194,7 +1188,7 @@ pub fn command_parser(
             Some("ihu") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
-                    let h = access.col_query.get(e).unwrap().0.h();
+                    let h = access.col_query.get(e).unwrap().0.hue;
                     t = t + &format!("[{:?}]{}  ", e, h);
                 }
                 *text = format!(">HUE: {}", t);
@@ -1202,7 +1196,7 @@ pub fn command_parser(
             Some("is") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
-                    let s = access.col_query.get(e).unwrap().0.s();
+                    let s = access.col_query.get(e).unwrap().0.saturation;
                     t = t + &format!("[{:?}]{}  ", e, s);
                 }
                 *text = format!(">SATURATION: {}", t);
@@ -1210,7 +1204,7 @@ pub fn command_parser(
             Some("il") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
-                    let l = access.col_query.get(e).unwrap().0.l();
+                    let l = access.col_query.get(e).unwrap().0.lightness;
                     t = t + &format!("[{:?}]{}  ", e, l);
                 }
                 *text = format!(">LIGHTNESS: {}", t);
@@ -1218,7 +1212,7 @@ pub fn command_parser(
             Some("ial") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
-                    let a = access.col_query.get(e).unwrap().0.a();
+                    let a = access.col_query.get(e).unwrap().0.alpha;
                     t = t + &format!("[{:?}]{}  ", e, a);
                 }
                 *text = format!(">ALPHA: {}", t);
@@ -1378,7 +1372,7 @@ pub fn command_parser(
                 for e in access.selected_query.iter() {
                     commands.entity(e).remove::<Selected>();
                 }
-                for e in access.visible.single().iter() {
+                for e in access.visible.single().get::<WithMesh2d>() {
                     if circle_query.contains(*e) {
                         commands.entity(*e).insert(Selected);
                     }
@@ -1386,50 +1380,50 @@ pub fn command_parser(
                 text.clear();
             }
             Some("sV") => {
-                for e in access.visible.single().iter() {
+                for e in access.visible.single().get::<WithMesh2d>() {
                     commands.entity(*e).remove::<Selected>();
                 }
                 text.clear();
             }
             // render layers
             Some("vv") => {
-                *access.render_layers.single_mut() = RenderLayers::all();
+                *access.render_layers.single_mut() = RenderLayers::from_layers(&[0, 1, 2, 3, 4]);
                 text.clear();
             }
             Some("vc") => {
                 let mut rl = access.render_layers.single_mut();
-                if rl.intersects(&RenderLayers::layer(1)) {
-                    *rl = rl.without(1);
+                *rl = if rl.intersects(&RenderLayers::layer(1)) {
+                    rl.clone().without(1)
                 } else {
-                    *rl = rl.with(1);
-                }
+                    rl.clone().with(1)
+                };
                 text.clear();
             }
             Some("vb") => {
                 let mut rl = access.render_layers.single_mut();
-                if rl.intersects(&RenderLayers::layer(2)) {
-                    *rl = rl.without(2);
+                *rl = if rl.intersects(&RenderLayers::layer(2)) {
+                    rl.clone().without(2)
                 } else {
-                    *rl = rl.with(2);
-                }
+                    rl.clone().with(2)
+                };
                 text.clear();
             }
             Some("vw") => {
                 let mut rl = access.render_layers.single_mut();
-                if rl.intersects(&RenderLayers::layer(3)) {
-                    *rl = rl.without(3);
+                *rl = if rl.intersects(&RenderLayers::layer(3)) {
+                    rl.clone().without(3)
                 } else {
-                    *rl = rl.with(3);
-                }
+                    rl.clone().with(3)
+                };
                 text.clear();
             }
             Some("va") => {
                 let mut rl = access.render_layers.single_mut();
-                if rl.intersects(&RenderLayers::layer(4)) {
-                    *rl = rl.without(4);
+                *rl = if rl.intersects(&RenderLayers::layer(4)) {
+                    rl.clone().without(4)
                 } else {
-                    *rl = rl.with(4);
-                }
+                    rl.clone().with(4)
+                };
                 text.clear();
             }
             Some("yy") | Some("\"+y") => {
@@ -1451,7 +1445,12 @@ pub fn command_parser(
                 *text = format!(">quartz version: {}", &access.version.0);
             }
             Some("quartz") => {
-                *text = String::from(">drink some water!");
+                *text = String::from("> never gonna give you up
+never gonna let you down
+never gonna run around and desert you
+never gonna make you cry
+never gonna say goodbye
+never gonna tell a lie and hurt you");
             }
             Some("awa") => {
                 let mut aw = "aw".repeat(100);

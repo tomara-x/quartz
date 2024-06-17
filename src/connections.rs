@@ -1,6 +1,7 @@
 use bevy::{
     prelude::*,
     render::view::{RenderLayers, VisibleEntities},
+    sprite::WithMesh2d,
 };
 
 use crate::components::*;
@@ -28,7 +29,7 @@ pub fn connect(
     && !keyboard_input.pressed(KeyCode::Space) {
         let mut source_entity: (Option<Entity>, f32) = (None, f32::MIN);
         let mut sink_entity: (Option<Entity>, f32) = (None, f32::MIN);
-        for e in visible.single().iter() {
+        for e in visible.single().get::<WithMesh2d>() {
             if holes_query.contains(*e) { // it's a non-hole
                 let t = trans_query.get(*e).unwrap();
                 if cursor.i.distance(t.translation.xy()) < t.scale.x
@@ -77,10 +78,10 @@ pub fn connect(
             // spawn circles
             let bh_depth = 0.001 * (holes_query.get(src).unwrap().0.len() + 1) as f32;
             let bh_verts = snk_verts;
-            let bh_color = Color::hsl(0., 0., 0.2);
+            let bh_color = Hsla::new(0., 0., 0.2, 1.);
             let black_hole = commands.spawn(( ColorMesh2dBundle {
                     mesh: polygon_handles.0[bh_verts].clone().unwrap(),
-                    material: materials.add(ColorMaterial::from(bh_color)),
+                    material: materials.add(ColorMaterial::from_color(bh_color)),
                     transform: Transform {
                         translation: cursor.i.extend(bh_depth + src_trans.z),
                         scale: Vec3::new(bh_radius, bh_radius, 1.),
@@ -95,10 +96,10 @@ pub fn connect(
             )).id();
             let wh_depth = 0.001 * (holes_query.get(snk).unwrap().0.len() + 1) as f32;
             let wh_verts = src_verts;
-            let wh_color = Color::hsl(0., 0., 0.8);
+            let wh_color = Hsla::new(0., 0., 0.8, 1.);
             let white_hole = commands.spawn(( ColorMesh2dBundle {
                     mesh: polygon_handles.0[bh_verts].clone().unwrap(),
-                    material: materials.add(ColorMaterial::from(wh_color)),
+                    material: materials.add(ColorMaterial::from_color(wh_color)),
                     transform: Transform {
                         translation: cursor.f.extend(wh_depth + snk_trans.z),
                         scale: Vec3::new(wh_radius, wh_radius, 1.),
@@ -146,7 +147,7 @@ pub fn target(
     && !keyboard_input.pressed(KeyCode::Space) {
         let mut source_entity: (Option<Entity>, f32) = (None, f32::MIN);
         let mut sink_entity: (Option<Entity>, f32) = (None, f32::MIN);
-        for e in visible.single().iter() {
+        for e in visible.single().get::<WithMesh2d>() {
             if let Ok(t) = circle_trans_query.get(*e) {
                 if cursor.i.distance(t.translation.xy()) < t.scale.x
                 && t.translation.z > source_entity.1 {
@@ -266,10 +267,10 @@ pub fn connect_targets(
             // spawn circles
             let bh_depth = 0.001 * (holes_query.get(src).unwrap().0.len() + 1) as f32;
             let bh_verts = snk_verts;
-            let bh_color = Color::hsl(0., 0., 0.2);
+            let bh_color = Hsla::new(0., 0., 0.2, 1.);
             let black_hole = commands.spawn(( ColorMesh2dBundle {
                     mesh: polygon_handles.0[bh_verts].clone().unwrap(),
-                    material: materials.add(ColorMaterial::from(bh_color)),
+                    material: materials.add(ColorMaterial::from_color(bh_color)),
                     transform: Transform {
                         translation: src_trans.xy().extend(bh_depth + src_trans.z),
                         scale: Vec3::new(bh_radius, bh_radius, 1.),
@@ -284,10 +285,10 @@ pub fn connect_targets(
             )).id();
             let wh_depth = 0.001 * (holes_query.get(snk).unwrap().0.len() + 1) as f32;
             let wh_verts = src_verts;
-            let wh_color = Color::hsl(0., 0., 0.8);
+            let wh_color = Hsla::new(0., 0., 0.8, 1.);
             let white_hole = commands.spawn(( ColorMesh2dBundle {
                     mesh: polygon_handles.0[bh_verts].clone().unwrap(),
-                    material: materials.add(ColorMaterial::from(wh_color)),
+                    material: materials.add(ColorMaterial::from_color(wh_color)),
                     transform: Transform {
                         translation: snk_trans.xy().extend(wh_depth + snk_trans.z),
                         scale: Vec3::new(wh_radius, wh_radius, 1.),

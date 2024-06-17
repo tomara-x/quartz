@@ -139,10 +139,10 @@ pub fn process(
                     -3 => { input = access.trans_query.get(wh.bh_parent).unwrap().translation.x; }
                     -4 => { input = access.trans_query.get(wh.bh_parent).unwrap().translation.y; }
                     -5 => { input = access.trans_query.get(wh.bh_parent).unwrap().translation.z; }
-                    -6 => { input = access.col_query.get(wh.bh_parent).unwrap().0.h(); }
-                    -7 => { input = access.col_query.get(wh.bh_parent).unwrap().0.s(); }
-                    -8 => { input = access.col_query.get(wh.bh_parent).unwrap().0.l(); }
-                    -9 => { input = access.col_query.get(wh.bh_parent).unwrap().0.a(); }
+                    -6 => { input = access.col_query.get(wh.bh_parent).unwrap().0.hue; }
+                    -7 => { input = access.col_query.get(wh.bh_parent).unwrap().0.saturation; }
+                    -8 => { input = access.col_query.get(wh.bh_parent).unwrap().0.lightness; }
+                    -9 => { input = access.col_query.get(wh.bh_parent).unwrap().0.alpha; }
                     -11 => { input = access.vertices_query.get(wh.bh_parent).unwrap().0 as f32; }
                     -12 => {
                         input = access.trans_query.get(wh.bh_parent).unwrap().rotation.to_euler(EulerRot::XYZ).2;
@@ -158,10 +158,10 @@ pub fn process(
                     -3 => { access.trans_query.get_mut(*id).unwrap().translation.x = input; }
                     -4 => { access.trans_query.get_mut(*id).unwrap().translation.y = input; }
                     -5 => { access.trans_query.get_mut(*id).unwrap().translation.z = input; }
-                    -6 => { access.col_query.get_mut(*id).unwrap().0.set_h(input); }
-                    -7 => { access.col_query.get_mut(*id).unwrap().0.set_s(input); }
-                    -8 => { access.col_query.get_mut(*id).unwrap().0.set_l(input); }
-                    -9 => { access.col_query.get_mut(*id).unwrap().0.set_a(input); }
+                    -6 => { access.col_query.get_mut(*id).unwrap().0.hue = input; }
+                    -7 => { access.col_query.get_mut(*id).unwrap().0.saturation = input; }
+                    -8 => { access.col_query.get_mut(*id).unwrap().0.lightness = input; }
+                    -9 => { access.col_query.get_mut(*id).unwrap().0.alpha = input; }
                     -11 => { access.vertices_query.get_mut(*id).unwrap().0 = (input as usize).clamp(3,64); }
                     -12 => {
                         let q = Quat::from_euler(EulerRot::XYZ, 0., 0., input);
@@ -313,7 +313,7 @@ pub fn process(
                             let new = commands.spawn((
                                 ColorMesh2dBundle {
                                     mesh: access.polygon_handles.0[v].clone().unwrap(),
-                                    material: access.materials.add(ColorMaterial::from(color)),
+                                    material: access.materials.add(ColorMaterial::from_color(color)),
                                     transform: Transform {
                                         translation: t.extend(depth),
                                         rotation: trans.rotation,
@@ -412,10 +412,10 @@ pub fn process(
                                     -3 => { access.trans_query.get_mut(targets[i]).unwrap().translation.x = arr[i]; }
                                     -4 => { access.trans_query.get_mut(targets[i]).unwrap().translation.y = arr[i]; }
                                     -5 => { access.trans_query.get_mut(targets[i]).unwrap().translation.z = arr[i]; }
-                                    -6 => { access.col_query.get_mut(targets[i]).unwrap().0.set_h(arr[i]); }
-                                    -7 => { access.col_query.get_mut(targets[i]).unwrap().0.set_s(arr[i]); }
-                                    -8 => { access.col_query.get_mut(targets[i]).unwrap().0.set_l(arr[i]); }
-                                    -9 => { access.col_query.get_mut(targets[i]).unwrap().0.set_a(arr[i]); }
+                                    -6 => { access.col_query.get_mut(targets[i]).unwrap().0.hue = arr[i]; }
+                                    -7 => { access.col_query.get_mut(targets[i]).unwrap().0.saturation = arr[i]; }
+                                    -8 => { access.col_query.get_mut(targets[i]).unwrap().0.lightness = arr[i]; }
+                                    -9 => { access.col_query.get_mut(targets[i]).unwrap().0.alpha = arr[i]; }
                                     -10 => {
                                         access.order_query.get_mut(targets[i]).unwrap().0 = arr[i] as usize;
                                         access.order_change.send_default();
@@ -703,7 +703,7 @@ pub fn process(
             26 => { // clear_color
                 let color = access.col_query.get_mut(*id).unwrap();
                 if color.is_changed() {
-                    access.clear_color.0 = color.0;
+                    access.clear_color.0 = color.0.into();
                 }
             }
             27 => { // draw_verts
@@ -737,7 +737,7 @@ pub fn process(
                 if color.is_changed() {
                     access.connection_color.0 = color.0;
                     let mat_id = &access.connection_mat.0;
-                    access.materials.get_mut(mat_id).unwrap().color = color.0;
+                    access.materials.get_mut(mat_id).unwrap().color = color.0.into();
                 }
             }
             32 => { // command_color
@@ -745,7 +745,7 @@ pub fn process(
                 if color.is_changed() {
                     access.command_color.0 = color.0;
                     let clt = &mut access.command_line_text.single_mut();
-                    clt.sections[0].style.color = color.0;
+                    clt.sections[0].style.color = color.0.into();
                 }
             }
             33 => { // connection_width
@@ -835,14 +835,14 @@ pub fn process(
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (-1, 1) && wh.open {
                             let n = access.num_query.get(wh.bh_parent).unwrap().0;
-                            access.winit_settings.focused_mode = UpdateMode::ReactiveLowPower {
-                                wait: Duration::from_secs_f64((1.0 / n.max(0.01)).into()),
-                            }
+                            access.winit_settings.focused_mode = UpdateMode::reactive_low_power(
+                                Duration::from_secs_f64((1.0 / n.max(0.01)).into())
+                            );
                         } else if wh.link_types == (-1, 2) && wh.open {
                             let n = access.num_query.get(wh.bh_parent).unwrap().0;
-                            access.winit_settings.unfocused_mode = UpdateMode::ReactiveLowPower {
-                                wait: Duration::from_secs_f64((1.0 / n.max(0.01)).into()),
-                            }
+                            access.winit_settings.unfocused_mode = UpdateMode::reactive_low_power(
+                                Duration::from_secs_f64((1.0 / n.max(0.01)).into())
+                            );
                         }
                     }
                 }
