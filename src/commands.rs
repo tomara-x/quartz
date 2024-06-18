@@ -1004,7 +1004,6 @@ pub fn command_parser(
                 }
                 text.clear();
             }
-            // FIXME(amy): entity ids
             // insert info texts for selected entities
             Some("II") => {
                 for e in access.selected_query.iter() {
@@ -1028,7 +1027,7 @@ pub fn command_parser(
                                     "",
                                     TextStyle { color: Color::BLACK, font_size: 120., ..default() },
                                 ),
-                            ]),
+                            ]).with_justify(JustifyText::Center),
                             transform: Transform::from_scale(Vec3::new(access.text_size.0, access.text_size.0, 1.)),
                             ..default()
                         }
@@ -1066,7 +1065,7 @@ pub fn command_parser(
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
                     if let Ok(n) = access.net_query.get(e) {
-                        t = t + &format!("[{:?}]{}  ", e, n.0.inputs());
+                        t = t + &format!("[{}]{}  ", e, n.0.inputs());
                     }
                 }
                 *text = format!(">INPUTS: {}", t);
@@ -1075,7 +1074,7 @@ pub fn command_parser(
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
                     if let Ok(n) = access.net_query.get(e) {
-                        t = t + &format!("[{:?}]{}  ", e, n.0.outputs());
+                        t = t + &format!("[{}]{}  ", e, n.0.outputs());
                     }
                 }
                 *text = format!(">OUTPUTS: {}", t);
@@ -1148,7 +1147,7 @@ pub fn command_parser(
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
                     if let Ok(n) = access.num_query.get(e) {
-                        t = t + &format!("[{:?}]{}  ", e, n.0);
+                        t = t + &format!("[{}]{}  ", e, n.0);
                     }
                 }
                 *text = format!(">NUM: {}", t);
@@ -1157,7 +1156,7 @@ pub fn command_parser(
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
                     let ra = access.trans_query.get(e).unwrap().scale.x;
-                    t = t + &format!("[{:?}]{}  ", e, ra);
+                    t = t + &format!("[{}]{}  ", e, ra);
                 }
                 *text = format!(">RADIUS: {}", t);
             }
@@ -1165,7 +1164,7 @@ pub fn command_parser(
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
                     let x = access.trans_query.get(e).unwrap().translation.x;
-                    t = t + &format!("[{:?}]{}  ", e, x);
+                    t = t + &format!("[{}]{}  ", e, x);
                 }
                 *text = format!(">X: {}", t);
             }
@@ -1173,7 +1172,7 @@ pub fn command_parser(
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
                     let y = access.trans_query.get(e).unwrap().translation.y;
-                    t = t + &format!("[{:?}]{}  ", e, y);
+                    t = t + &format!("[{}]{}  ", e, y);
                 }
                 *text = format!(">Y: {}", t);
             }
@@ -1181,7 +1180,7 @@ pub fn command_parser(
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
                     let z = access.trans_query.get(e).unwrap().translation.z;
-                    t = t + &format!("[{:?}]{}  ", e, z);
+                    t = t + &format!("[{}]{}  ", e, z);
                 }
                 *text = format!(">Z: {}", t);
             }
@@ -1189,7 +1188,7 @@ pub fn command_parser(
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
                     let h = access.col_query.get(e).unwrap().0.hue;
-                    t = t + &format!("[{:?}]{}  ", e, h);
+                    t = t + &format!("[{}]{}  ", e, h);
                 }
                 *text = format!(">HUE: {}", t);
             }
@@ -1197,7 +1196,7 @@ pub fn command_parser(
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
                     let s = access.col_query.get(e).unwrap().0.saturation;
-                    t = t + &format!("[{:?}]{}  ", e, s);
+                    t = t + &format!("[{}]{}  ", e, s);
                 }
                 *text = format!(">SATURATION: {}", t);
             }
@@ -1205,7 +1204,7 @@ pub fn command_parser(
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
                     let l = access.col_query.get(e).unwrap().0.lightness;
-                    t = t + &format!("[{:?}]{}  ", e, l);
+                    t = t + &format!("[{}]{}  ", e, l);
                 }
                 *text = format!(">LIGHTNESS: {}", t);
             }
@@ -1213,7 +1212,7 @@ pub fn command_parser(
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
                     let a = access.col_query.get(e).unwrap().0.alpha;
-                    t = t + &format!("[{:?}]{}  ", e, a);
+                    t = t + &format!("[{}]{}  ", e, a);
                 }
                 *text = format!(">ALPHA: {}", t);
             }
@@ -1221,7 +1220,7 @@ pub fn command_parser(
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
                     let v = access.vertices_query.get(e).unwrap().0;
-                    t = t + &format!("[{:?}]{}  ", e, v);
+                    t = t + &format!("[{}]{}  ", e, v);
                 }
                 *text = format!(">VERTICES: {}", t);
             }
@@ -1229,7 +1228,7 @@ pub fn command_parser(
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
                     let ro = access.trans_query.get(e).unwrap().rotation.to_euler(EulerRot::XYZ).2;
-                    t = t + &format!("[{:?}]{}  ", e, ro);
+                    t = t + &format!("[{}]{}  ", e, ro);
                 }
                 *text = format!(">ROTATION: {}", t);
             }
@@ -1237,7 +1236,7 @@ pub fn command_parser(
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
                     if let Ok(or) = access.order_query.get(e) {
-                        t = t + &format!("[{:?}]{}  ", e, or.0);
+                        t = t + &format!("[{}]{}  ", e, or.0);
                     }
                 }
                 *text = format!(">ORDER: {}", t);
@@ -1246,7 +1245,7 @@ pub fn command_parser(
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
                     if let Ok(op) = &access.op_query.get(e) {
-                        t = t + &format!("[{:?}]{}  ", e, op.0);
+                        t = t + &format!("[{}]{}  ", e, op.0);
                     }
                 }
                 *text = format!(">OP: {}", t);
@@ -1255,7 +1254,7 @@ pub fn command_parser(
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
                     if let Ok(arr) = access.arr_query.get(e) {
-                        t = t + &format!("[{:?}]{:?}  ", e, arr.0);
+                        t = t + &format!("[{}]{:?}  ", e, arr.0);
                     }
                 }
                 *text = format!(">ARRAY: {}", t);
@@ -1264,29 +1263,37 @@ pub fn command_parser(
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
                     if let Ok(holes) = holes_query.get(e) {
-                        t = t + &format!("[{:?}]{:?}  ", e, holes.0);
+                        let mut a = String::new();
+                        for h in &holes.0 {
+                            a = a + &format!("    {}\n", h);
+                        }
+                        t = t + &format!("[{}]\n{}\n", e, a);
                     }
                 }
-                *text = format!(">HOLES: {}", t);
+                *text = format!(">HOLES:\n{}", t);
             }
             Some("it") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
                     if let Ok(targets) = access.targets_query.get(e) {
-                        t = t + &format!("[{:?}]{:?}  ", e, targets.0);
+                        let mut a = String::new();
+                        for t in &targets.0 {
+                            a = a + &format!("{}, ", t);
+                        }
+                        t = t + &format!("[{}]: [{}]\n", e, a);
                     }
                 }
-                *text = format!(">TARGETS: {}", t);
+                *text = format!(">TARGETS:\n{}", t);
             }
             Some("iL") => {
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
                     if let Ok(wh) = access.white_hole_query.get(e) {
-                        t = t + &format!("[{:?}]{}  ", e, lt_to_string(wh.link_types.1));
+                        t = t + &format!("[{}]{}  ", e, lt_to_string(wh.link_types.1));
                     }
                     if let Ok(bh) = access.black_hole_query.get(e) {
                         let wh = access.white_hole_query.get(bh.wh).unwrap();
-                        t = t + &format!("[{:?}]{}  ", e, lt_to_string(wh.link_types.0));
+                        t = t + &format!("[{}]{}  ", e, lt_to_string(wh.link_types.0));
                     }
                 }
                 *text = format!(">LINK TYPE: {}", t);
@@ -1295,7 +1302,7 @@ pub fn command_parser(
                 let mut t = String::new();
                 for e in access.selected_query.iter() {
                     if let Ok(wh) = access.white_hole_query.get(e) {
-                        t = t + &format!("[{:?}]{}  ", e, wh.open);
+                        t = t + &format!("[{}]{}  ", e, wh.open);
                     }
                 }
                 *text = format!(">WH_OPEN: {}", t);
