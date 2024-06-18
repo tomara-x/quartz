@@ -1027,7 +1027,7 @@ pub fn command_parser(
                                     "",
                                     TextStyle { color: Color::BLACK, font_size: 120., ..default() },
                                 ),
-                            ]).with_justify(JustifyText::Center),
+                            ]).with_justify(JustifyText::Left),
                             transform: Transform::from_scale(Vec3::new(access.text_size.0, access.text_size.0, 1.)),
                             ..default()
                         }
