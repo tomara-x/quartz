@@ -1,38 +1,38 @@
 (
   resources: {
-    "bevy_render::camera::clear_color::ClearColor": (Hsla(
+    "bevy_render::camera::clear_color::ClearColor": (Hsla((
       hue: 295.78998,
       saturation: 1.0,
       lightness: 0.87975204,
       alpha: 1.0,
-    )),
-    "quartz::components::DefaultDrawColor": (Hsla(
+    ))),
+    "quartz::components::DefaultDrawColor": ((
       hue: 255.46979,
       saturation: 1.0,
       lightness: 0.0,
       alpha: 1.0,
     )),
     "quartz::components::DefaultDrawVerts": (4),
-    "quartz::components::HighlightColor": (Hsla(
+    "quartz::components::HighlightColor": ((
       hue: 58.36165,
       saturation: 1.0,
       lightness: 1.5,
       alpha: 1.0,
     )),
-    "quartz::components::ConnectionColor": (Hsla(
+    "quartz::components::ConnectionColor": ((
       hue: 135.5009,
       saturation: 1.0,
       lightness: 1.5,
       alpha: 1.0,
     )),
     "quartz::components::ConnectionWidth": (4.0),
-    "quartz::components::CommandColor": (Hsla(
+    "quartz::components::CommandColor": ((
       hue: 284.7145,
       saturation: 1.0,
       lightness: 0.21045731,
       alpha: 1.0,
     )),
-    "quartz::components::IndicatorColor": (Hsla(
+    "quartz::components::IndicatorColor": ((
       hue: 302.00833,
       saturation: 1.0,
       lightness: 0.0,

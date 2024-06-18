@@ -1,32 +1,32 @@
 (
   resources: {
-    "bevy_render::camera::clear_color::ClearColor": (Rgba(
-      red: 0.0,
-      green: 0.0,
-      blue: 0.0,
+    "bevy_render::camera::clear_color::ClearColor": (Hsla((
+      hue: 0.0,
+      saturation: 0.0,
+      lightness: 0.0,
       alpha: 1.0,
-    )),
-    "quartz::components::DefaultDrawColor": (Hsla(
+    ))),
+    "quartz::components::DefaultDrawColor": ((
       hue: 270.0,
       saturation: 1.0,
       lightness: 0.5,
       alpha: 1.0,
     )),
     "quartz::components::DefaultDrawVerts": (4),
-    "quartz::components::HighlightColor": (Hsla(
+    "quartz::components::HighlightColor": ((
       hue: 0.0,
       saturation: 1.0,
       lightness: 0.5,
       alpha: 1.0,
     )),
-    "quartz::components::ConnectionColor": (Hsla(
+    "quartz::components::ConnectionColor": ((
       hue: 0.0,
       saturation: 1.0,
       lightness: 1.0,
       alpha: 0.7,
     )),
     "quartz::components::ConnectionWidth": (4.0),
-    "quartz::components::CommandColor": (Hsla(
+    "quartz::components::CommandColor": ((
       hue: 0.0,
       saturation: 0.0,
       lightness: 0.7,
@@ -56,7 +56,7 @@
             z: 1.0,
           ),
         ),
-        "quartz::components::Col": (Hsla(
+        "quartz::components::Col": ((
           hue: 270.0,
           saturation: 1.0,
           lightness: 0.5,
@@ -97,7 +97,7 @@
             z: 1.0,
           ),
         ),
-        "quartz::components::Col": (Hsla(
+        "quartz::components::Col": ((
           hue: 270.0,
           saturation: 1.0,
           lightness: -1.0,
@@ -133,7 +133,7 @@
             z: 1.0,
           ),
         ),
-        "quartz::components::Col": (Hsla(
+        "quartz::components::Col": ((
           hue: 270.0,
           saturation: 1.0,
           lightness: -1.0,
@@ -169,7 +169,7 @@
             z: 1.0,
           ),
         ),
-        "quartz::components::Col": (Hsla(
+        "quartz::components::Col": ((
           hue: 270.0,
           saturation: 1.0,
           lightness: 0.5,
@@ -205,7 +205,7 @@
             z: 1.0,
           ),
         ),
-        "quartz::components::Col": (Hsla(
+        "quartz::components::Col": ((
           hue: 270.0,
           saturation: 1.0,
           lightness: 0.5,
@@ -247,7 +247,7 @@
             z: 1.0,
           ),
         ),
-        "quartz::components::Col": (Hsla(
+        "quartz::components::Col": ((
           hue: 0.0,
           saturation: 0.0,
           lightness: 0.2,
@@ -281,7 +281,7 @@
             z: 1.0,
           ),
         ),
-        "quartz::components::Col": (Hsla(
+        "quartz::components::Col": ((
           hue: 0.0,
           saturation: 0.0,
           lightness: 0.8,
@@ -317,7 +317,7 @@
             z: 1.0,
           ),
         ),
-        "quartz::components::Col": (Hsla(
+        "quartz::components::Col": ((
           hue: 270.0,
           saturation: 1.0,
           lightness: 0.5,
@@ -358,7 +358,7 @@
             z: 1.0,
           ),
         ),
-        "quartz::components::Col": (Hsla(
+        "quartz::components::Col": ((
           hue: 270.0,
           saturation: 1.0,
           lightness: -1.0,
@@ -394,7 +394,7 @@
             z: 1.0,
           ),
         ),
-        "quartz::components::Col": (Hsla(
+        "quartz::components::Col": ((
           hue: 270.0,
           saturation: 1.0,
           lightness: -1.0,
@@ -430,7 +430,7 @@
             z: 1.0,
           ),
         ),
-        "quartz::components::Col": (Hsla(
+        "quartz::components::Col": ((
           hue: 270.0,
           saturation: 1.0,
           lightness: 0.5,
@@ -466,7 +466,7 @@
             z: 1.0,
           ),
         ),
-        "quartz::components::Col": (Hsla(
+        "quartz::components::Col": ((
           hue: 270.0,
           saturation: 1.0,
           lightness: 0.5,
@@ -508,7 +508,7 @@
             z: 1.0,
           ),
         ),
-        "quartz::components::Col": (Hsla(
+        "quartz::components::Col": ((
           hue: 0.0,
           saturation: 0.0,
           lightness: 0.2,
@@ -542,7 +542,7 @@
             z: 1.0,
           ),
         ),
-        "quartz::components::Col": (Hsla(
+        "quartz::components::Col": ((
           hue: 0.0,
           saturation: 0.0,
           lightness: 0.8,
@@ -578,7 +578,7 @@
             z: 1.0,
           ),
         ),
-        "quartz::components::Col": (Hsla(
+        "quartz::components::Col": ((
           hue: 0.0,
           saturation: 0.0,
           lightness: 0.8,
@@ -614,7 +614,7 @@
             z: 1.0,
           ),
         ),
-        "quartz::components::Col": (Hsla(
+        "quartz::components::Col": ((
           hue: 0.0,
           saturation: 0.0,
           lightness: 0.2,
@@ -648,7 +648,7 @@
             z: 1.0,
           ),
         ),
-        "quartz::components::Col": (Hsla(
+        "quartz::components::Col": ((
           hue: 270.0,
           saturation: 1.0,
           lightness: 0.5,
@@ -686,7 +686,7 @@
             z: 1.0,
           ),
         ),
-        "quartz::components::Col": (Hsla(
+        "quartz::components::Col": ((
           hue: 270.0,
           saturation: 1.0,
           lightness: 0.5,
