@@ -548,7 +548,8 @@ fn post_load(
             // update the command line color from resource
             let clt = &mut command_line_text.single_mut();
             clt.sections[0].style.color = more.command_color.0.into();
-            // despawn the now empty instance
+            // despawn the now empty instance (may contain bad state connections when pasting)
+            commands.entity(scene_id).remove::<SceneInstance>();
             commands.entity(scene_id).despawn_recursive();
         }
     }
