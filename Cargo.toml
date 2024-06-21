@@ -35,7 +35,7 @@ features = [
 
 [dependencies]
 bevy_pancam = {version = "0.11.1", git = "https://github.com/tomara-x/bevy_pancam"}
-fundsp = {version = "0.17.1", default-features = false, git = "https://github.com/SamiPerttu/fundsp"}
+fundsp = {version = "0.18.0", default-features = false}
 #cpal = {version = "0.15.3", features = ["jack", "wasm-bindgen"]}
 cpal = {version = "0.15.3", features = ["jack"]}
 copypasta = "0.10.1"
