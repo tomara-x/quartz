@@ -154,6 +154,7 @@ impl AudioNode for ArrGet {
     }
 }
 
+
 /// shift register
 /// - input 0: trigger
 /// - input 1: input signal
@@ -194,6 +195,7 @@ impl AudioNode for ShiftReg {
         self.reg = [0., 0., 0., 0., 0., 0., 0., 0.];
     }
 }
+
 
 /// quantizer
 /// - input 0: value to quantize
@@ -336,6 +338,7 @@ impl AudioNode for Reset {
     }
 }
 
+
 /// reset network when triggered
 /// - input 0: reset the net when non-zero
 /// - output 0: output from the net
@@ -374,6 +377,7 @@ impl AudioNode for TrigReset {
         self.net.reset();
     }
 }
+
 
 /// reset network every s seconds (duration as input)
 /// - input 0: reset interval
@@ -421,6 +425,7 @@ impl AudioNode for ResetV {
         self.net.reset();
     }
 }
+
 
 /// phasor (ramp from 0..1)
 /// - input 0: frequency
@@ -492,11 +497,75 @@ impl AudioNode for InputNode {
         let r = self.rr.recv().unwrap_or(0.);
         [l, r].into()
     }
-
-    //fn reset(&mut self) {
-    //}
-
-    //fn set_sample_rate(&mut self, sample_rate: f64) {
-    //}
 }
 
+
+/// unit for swapping nodes
+#[derive(Clone)]
+pub struct SwapUnit {
+    x: Net,
+    receiver: Receiver<Net>,
+    inputs: usize,
+    outputs: usize,
+}
+
+impl SwapUnit {
+    pub fn new(x: Net, receiver: Receiver<Net>) -> Self {
+        let inputs = x.inputs();
+        let outputs = x.outputs();
+        Self { x, receiver, inputs, outputs }
+    }
+}
+
+impl AudioUnit for SwapUnit {
+    fn reset(&mut self) {
+        self.x.reset();
+    }
+
+    fn set_sample_rate(&mut self, sample_rate: f64) {
+        self.x.set_sample_rate(sample_rate);
+    }
+
+    fn tick(&mut self, input: &[f32], output: &mut [f32]) {
+        if let Ok(net) = self.receiver.try_recv() {
+            self.x = net;
+        }
+        self.x.tick(input, output);
+    }
+
+    fn process(&mut self, size: usize, input: &BufferRef, output: &mut BufferMut) {
+        if let Ok(net) = self.receiver.try_recv() {
+            self.x = net;
+        }
+        self.x.process(size, input, output);
+    }
+
+    fn inputs(&self) -> usize {
+        self.inputs
+    }
+
+    fn outputs(&self) -> usize {
+        self.outputs
+    }
+
+    fn route(&mut self, input: &SignalFrame, _frequency: f64) -> SignalFrame {
+        Routing::Arbitrary(0.0).route(input, self.outputs())
+    }
+
+    fn get_id(&self) -> u64 {
+        const ID: u64 = 1118;
+        ID
+    }
+
+    fn ping(&mut self, probe: bool, hash: AttoHash) -> AttoHash {
+        self.x.ping(probe, hash.hash(self.get_id()))
+    }
+
+    fn footprint(&self) -> usize {
+        core::mem::size_of::<Self>()
+    }
+
+    fn allocate(&mut self) {
+        self.x.allocate();
+    }
+}

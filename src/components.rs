@@ -14,7 +14,7 @@ use fundsp::{
     slot::Slot,
 };
 
-use crossbeam_channel::Receiver;
+use crossbeam_channel::{Sender, Receiver};
 
 use cpal::Stream;
 
@@ -57,6 +57,9 @@ pub struct Network(pub Net);
 
 #[derive(Component)]
 pub struct NetIns(pub Vec<Shared>);
+
+#[derive(Component)]
+pub struct NetChannel(pub Sender<Net>, pub Receiver<Net>);
 
 #[derive(Component, Reflect)]
 #[reflect(Component, MapEntities)]
