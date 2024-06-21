@@ -42,11 +42,6 @@ impl AudioNode for Select {
             net.reset();
         }
     }
-
-    // TODO
-    fn route(&mut self, input: &SignalFrame, _frequency: f64) -> SignalFrame {
-        input.clone()
-    }
 }
 
 
@@ -126,11 +121,6 @@ impl AudioNode for Seq {
             net.reset();
         }
     }
-
-    // TODO
-    fn route(&mut self, input: &SignalFrame, _frequency: f64) -> SignalFrame {
-        input.clone()
-    }
 }
 
 
@@ -161,11 +151,6 @@ impl AudioNode for ArrGet {
             buffer[0] = *n;
         }
         buffer.into()
-    }
-
-    // TODO
-    fn route(&mut self, input: &SignalFrame, _frequency: f64) -> SignalFrame {
-        input.clone()
     }
 }
 
@@ -208,11 +193,6 @@ impl AudioNode for ShiftReg {
     fn reset(&mut self) {
         self.reg = [0., 0., 0., 0., 0., 0., 0., 0.];
     }
-
-    // TODO
-    fn route(&mut self, input: &SignalFrame, _frequency: f64) -> SignalFrame {
-        input.clone()
-    }
 }
 
 /// quantizer
@@ -252,11 +232,6 @@ impl AudioNode for Quantizer {
         }
         buffer[0] = n + nearest - wrapped;
         buffer.into()
-    }
-
-    // TODO
-    fn route(&mut self, input: &SignalFrame, _frequency: f64) -> SignalFrame {
-        input.clone()
     }
 }
 
@@ -305,10 +280,6 @@ impl AudioNode for Kr {
         self.count = 0;
         self.val = 0.;
         self.net.reset();
-    }
-
-    fn route(&mut self, input: &SignalFrame, _frequency: f64) -> SignalFrame {
-        signal::Routing::Generator(0.0).route(input, self.outputs())
     }
 }
 
@@ -363,10 +334,6 @@ impl AudioNode for Reset {
         self.count = 0;
         self.net.reset();
     }
-
-    fn route(&mut self, input: &SignalFrame, _frequency: f64) -> SignalFrame {
-        signal::Routing::Generator(0.0).route(input, self.outputs())
-    }
 }
 
 /// reset network when triggered
@@ -405,11 +372,6 @@ impl AudioNode for TrigReset {
 
     fn reset(&mut self) {
         self.net.reset();
-    }
-
-    // TODO
-    fn route(&mut self, input: &SignalFrame, _frequency: f64) -> SignalFrame {
-        input.clone()
     }
 }
 
@@ -458,11 +420,6 @@ impl AudioNode for ResetV {
         self.count = 0;
         self.net.reset();
     }
-
-    // TODO
-    fn route(&mut self, input: &SignalFrame, _frequency: f64) -> SignalFrame {
-        input.clone()
-    }
 }
 
 /// phasor (ramp from 0..1)
@@ -503,10 +460,6 @@ impl AudioNode for Ramp {
     fn set_sample_rate(&mut self, sample_rate: f64) {
         self.sr = sample_rate as f32;
     }
-
-    fn route(&mut self, input: &SignalFrame, _frequency: f64) -> SignalFrame {
-        signal::Routing::Generator(0.0).route(input, self.outputs())
-    }
 }
 
 
@@ -545,9 +498,5 @@ impl AudioNode for InputNode {
 
     //fn set_sample_rate(&mut self, sample_rate: f64) {
     //}
-
-    fn route(&mut self, input: &SignalFrame, _frequency: f64) -> SignalFrame {
-        signal::Routing::Generator(0.0).route(input, self.outputs())
-    }
 }
 
