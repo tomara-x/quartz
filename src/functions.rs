@@ -1,5 +1,6 @@
 use fundsp::hacker32::*;
 use crate::nodes::*;
+use std::num::Wrapping;
 
 pub fn str_to_lt(s: &str) -> i8 {
     if let Ok(n) = s.parse::<i8>() {
@@ -731,15 +732,27 @@ pub fn str_to_net(op: &str) -> Net {
         }
         "shl" => {
             if let Some(p) = p.first() {
-                let p = *p as i32;
-                return Net::wrap(Box::new(map(move |i: &Frame<f32,U1>| ((i[0] as i32) << p) as f32)));
-            } else {return Net::wrap(Box::new(map(|i: &Frame<f32,U2>| ((i[0] as i32) << (i[1] as i32)) as f32)));}
+                let p = *p as usize;
+                return Net::wrap(Box::new(map(move |i: &Frame<f32,U1>| {
+                    let i = Wrapping(i[0] as i32) << p;
+                    i.0 as f32
+                })));
+            } else {return Net::wrap(Box::new(map(|i: &Frame<f32,U2>| {
+                let i = Wrapping(i[0] as i32) << (i[1] as usize);
+                i.0 as f32
+            })));}
         }
         "shr" => {
             if let Some(p) = p.first() {
-                let p = *p as i32;
-                return Net::wrap(Box::new(map(move |i: &Frame<f32,U1>| ((i[0] as i32) >> p) as f32)));
-            } else {return Net::wrap(Box::new(map(|i: &Frame<f32,U2>| ((i[0] as i32) >> (i[1] as i32)) as f32)));}
+                let p = *p as usize;
+                return Net::wrap(Box::new(map(move |i: &Frame<f32,U1>| {
+                    let i = Wrapping(i[0] as i32) >> p;
+                    i.0 as f32
+                })));
+            } else {return Net::wrap(Box::new(map(|i: &Frame<f32,U2>| {
+                let i = Wrapping(i[0] as i32) >> (i[1] as usize);
+                i.0 as f32
+            })));}
         }
 
         "lerp" => {
