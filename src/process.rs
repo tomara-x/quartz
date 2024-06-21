@@ -1619,11 +1619,12 @@ pub fn process(
                 if changed || lost || op_changed {
                     if let Some(input) = input {
                         let net = access.net_query.get(input).unwrap().0.clone();
-                        if net.inputs() != 0 { continue; }
-                        if net.outputs() == 1 {
+                        if net.inputs() == 0 && net.outputs() == 1 {
                             slot.0.set(Fade::Smooth, 0.01, Box::new(net | dc(0.)));
-                        } else if net.outputs() == 2 {
+                        } else if net.inputs() == 0 && net.outputs() == 2 {
                             slot.0.set(Fade::Smooth, 0.01, Box::new(net));
+                        } else {
+                            slot.0.set(Fade::Smooth, 0.01, Box::new(dc(0.) | dc(0.)));
                         }
                     } else {
                         slot.0.set(Fade::Smooth, 0.01, Box::new(dc(0.) | dc(0.)));
