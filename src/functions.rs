@@ -1015,11 +1015,11 @@ pub fn str_to_op_num(op: &str) -> u16 {
         "^" | "BRA" => 88,
         "!" | "THR" => 89,
         "out()" | "dac()" => 90,
-        "swap()" => 91,
         x => {
             if x.starts_with("osc_r") { 42 }
             else if x.starts_with("osc_s") { 43 }
             else if x.starts_with("pressed") { 51 }
+            else if x.starts_with("swap") { 91 }
             else { 0 }
         }
     }

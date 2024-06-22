@@ -609,9 +609,9 @@ refer to the fundsp [readme](https://github.com/SamiPerttu/fundsp), and [docs](h
     - same as branch() but sum
 - `product()`
     - same as branch() but
-- `swap()`
-    - inputs: `0 -> 1`, `0 -> 2`
-    - first input replaces the node, causing the entire graph to reset. second input will swap the node without resetting (arity must match that of the first input for this to work)
+- `swap(usize, usize)` (non-negative numbers)
+    - inputs: `0 -> 1`
+    - swap the node without resetting the graph. arity of input node must match the ins/outs specified in the op string for the swapping to work. e.g. `swap(2,1)` will accept nodes with 2 inputs and 1 output and swaps them in place
 - `out()` `dac()`
     - inputs: `0 -> 1`
     - output given node to speakers (node must have 1 or 2 outputs)

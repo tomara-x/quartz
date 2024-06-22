@@ -1313,39 +1313,29 @@ pub fn process(
             91 => { // swap()
                 if access.op_changed_query.get(*id).unwrap().0 {
                     let (s, r) = crossbeam_channel::bounded(1);
-                    // startup
-                    let mut input = None;
-                    for hole in holes {
-                        if let Ok(wh) = white_hole_query.get(*hole) {
-                            if wh.link_types == (0, 1) {
-                                if input.is_none() {
-                                    input = Some(wh.bh_parent);
-                                }
-                            } else if wh.link_types == (0, 2) {
-                                input = Some(wh.bh_parent);
-                                break;
-                            }
+                    let op = op.replace(' ', "");
+                    let args: Vec<&str> = op.split(['(', ')']).collect();
+                    let mut p = Vec::new();
+                    if let Some(params) = args.get(1) {
+                        let params = params.split(',').collect::<Vec<&str>>();
+                        for s in params {
+                            if let Ok(n) = s.parse::<usize>() { p.push(n); }
                         }
                     }
-                    if let Some(input) = input {
-                        let input = access.net_query.get(input).unwrap().0.clone();
-                        let swap = Net::wrap(Box::new(SwapUnit::new(input, r.clone())));
-                        access.net_query.get_mut(*id).unwrap().0 = swap;
-                        lt_to_open = Some(0);
-                    }
+                    let net = if let Some(p) = p.get(0..2) {
+                        Net::new(p[0],p[1])
+                    } else {
+                        Net::new(0,0)
+                    };
+                    let swap = Net::wrap(Box::new(SwapUnit::new(net, r.clone())));
+                    access.net_query.get_mut(*id).unwrap().0 = swap;
+                    lt_to_open = Some(0);
                     // store
                     commands.entity(*id).insert(NetChannel(s,r));
                 }
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (0, 1) && wh.open {
-                            let input = access.net_query.get(wh.bh_parent).unwrap().0.clone();
-                            if let Ok(NetChannel(_, r)) = access.net_chan_query.get(*id) {
-                                let swap = Net::wrap(Box::new(SwapUnit::new(input, r.clone())));
-                                access.net_query.get_mut(*id).unwrap().0 = swap;
-                                lt_to_open = Some(0);
-                            }
-                        } else if wh.link_types == (0, 2) && wh.open {
                             let input = access.net_query.get(wh.bh_parent).unwrap().0.clone();
                             let net = &access.net_query.get(*id).unwrap().0;
                             if let Ok(NetChannel(s, _)) = access.net_chan_query.get(*id) {
