@@ -1322,11 +1322,22 @@ pub fn process(
                             if let Ok(n) = s.parse::<usize>() { p.push(n); }
                         }
                     }
-                    let net = if let Some(p) = p.get(0..2) {
+                    let mut net = if let Some(p) = p.get(0..2) {
                         Net::new(p[0],p[1])
                     } else {
                         Net::new(0,0)
                     };
+                    for hole in holes {
+                        if let Ok(wh) = white_hole_query.get(*hole) {
+                            if wh.link_types == (0, 1) {
+                                let input = access.net_query.get(wh.bh_parent).unwrap().0.clone();
+                                if input.inputs() == net.inputs()
+                                && input.outputs() == net.outputs() {
+                                    net = input;
+                                }
+                            }
+                        }
+                    }
                     let swap = Net::wrap(Box::new(SwapUnit::new(net, r.clone())));
                     access.net_query.get_mut(*id).unwrap().0 = swap;
                     lt_to_open = Some(0);
