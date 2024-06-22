@@ -2542,9 +2542,9 @@ dependencies = [
 
 [[package]]
 name = "fundsp"
-version = "0.18.0"
+version = "0.18.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1879474522d869e9037b0a47c99e2256bbc1e32ba0bc83a13c1763ff6038ed0a"
+checksum = "37ef6abfb40f9c89b5f0b7a72f84809e3c5ae539b86f66b5b1b9e954f5efeff4"
 dependencies = [
  "dyn-clone",
  "funutd",
@@ -2552,7 +2552,6 @@ dependencies = [
  "hashbrown",
  "libm",
  "microfft",
- "no_denormals",
  "num-complex",
  "numeric-array",
  "once_cell",
@@ -3371,12 +3370,6 @@ checksum = "ee6cda3051665f1fb8d9e08fc35c96d5a244fb1be711a03b71118828afc9a873"
 dependencies = [
  "jni-sys",
 ]
-
-[[package]]
-name = "no_denormals"
-version = "0.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fc8d4edce03a3be51d7736ddd5cf811f1852c2bb4d03637b82e2d1340e6f0bf9"
 
 [[package]]
 name = "nohash-hasher"
