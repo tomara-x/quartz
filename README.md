@@ -39,7 +39,7 @@ development happens on the `main` branch
 alternatively you can download stable releases from: https://github.com/tomara-x/quartz/releases
 
 there's an experimental wasm build here: https://tomara-x.github.io/quartz/
-(no audio input, no file loading/saving)
+(no audio input, no file loading/saving, and no OSC)
 
 <details><summary>wasm building</summary>
 <p>
