@@ -15,6 +15,8 @@ use crate::{
 
 use fundsp::audiounit::AudioUnit;
 
+use copypasta::ClipboardProvider;
+
 use cpal::traits::{HostTrait, DeviceTrait};
 
 #[derive(SystemParam)]
@@ -32,7 +34,6 @@ pub struct Access<'w, 's> {
     vertices_query: Query<'w, 's, &'static mut Vertices>,
     save_event: EventWriter<'w, SaveCommand>,
     copy_event: EventWriter<'w, CopyCommand>,
-    paste_event: EventWriter<'w, PasteCommand>,
     delete_event: EventWriter<'w, DeleteCommand>,
     targets_query: Query<'w, 's, &'static mut Targets>,
     gained_wh_query: Query<'w, 's, &'static mut GainedWH>,
@@ -53,6 +54,8 @@ pub struct Access<'w, 's> {
     in_device_event: EventWriter<'w, InDeviceCommand>,
     node_limit: ResMut<'w, NodeLimit>,
     op_num_query: Query<'w, 's, &'static mut OpNum>,
+    clipboard: ResMut<'w, SystemClipboard>,
+    paste_chan: Res<'w, PasteChannel>,
 }
 
 pub fn command_parser(
@@ -1438,7 +1441,24 @@ pub fn command_parser(
                 text.clear();
             }
             Some("p") | Some("\"+p") => {
-                access.paste_event.send_default();
+                #[cfg(not(target_arch = "wasm32"))]
+                if let Ok(string) = access.clipboard.0.get_contents() {
+                    let _ = access.paste_chan.0.0.try_send(string);
+                }
+                #[cfg(target_arch = "wasm32")]
+                if let Some(win) = web_sys::window() {
+                    if let Some(clip) = win.navigator().clipboard() {
+                        let sender = access.paste_chan.0.0.clone();
+                        let cb = wasm_bindgen::closure::Closure::new(move |val: wasm_bindgen::JsValue| {
+                            if let Some(string) = val.as_string() {
+                                let _ = sender.try_send(string);
+                            }
+                        });
+                        let _ = clip.read_text().then(&cb);
+                        // fuck it
+                        std::mem::forget(cb);
+                    }
+                }
                 text.clear();
             }
             Some(":delete") => {

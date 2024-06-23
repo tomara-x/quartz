@@ -39,7 +39,22 @@ development happens on the `main` branch
 alternatively you can download stable releases from: https://github.com/tomara-x/quartz/releases
 
 there's an experimental wasm build here: https://tomara-x.github.io/quartz/
-(no audio input, no file loading/saving, and no copy/pasing)
+(no audio input, no file loading/saving)
+
+<details><summary>wasm building</summary>
+<p>
+
+uncomment the commented out dependencies in cargo.toml, then:
+```
+RUSTFLAGS=--cfg=web_sys_unstable_apis cargo build --profile wasm-release --target wasm32-unknown-unknown
+
+wasm-bindgen --out-name quartz --out-dir target --target web target/wasm32-unknown-unknown/wasm-release/quartz.wasm
+```
+more details: https://github.com/bevyengine/bevy/tree/main/examples#wasm
+
+</p>
+</details>
+
 
 ---
 ### modes
@@ -874,6 +889,7 @@ i hope that everyone will become friends
     - serde https://github.com/serde-rs/serde
     - rosc https://github.com/klingtnet/rosc
     - crossbeam https://github.com/crossbeam-rs/crossbeam
+    - wasm-bindgen https://github.com/rustwasm/wasm-bindgen
     - bevy_github_ci_template https://github.com/bevyengine/bevy_github_ci_template
     - tracy https://github.com/wolfpld/tracy
     - vim https://github.com/vim/vim

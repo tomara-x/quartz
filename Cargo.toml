@@ -33,16 +33,24 @@ features = [
   "bevy_pbr",
 ]
 
+
 [dependencies]
 bevy_pancam = {version = "0.11.1", git = "https://github.com/tomara-x/bevy_pancam"}
 fundsp = {version = "0.18.1", default-features = false}
-#cpal = {version = "0.15.3", features = ["jack", "wasm-bindgen"]}
 cpal = {version = "0.15.3", features = ["jack"]}
 copypasta = "0.10.1"
 serde = "1"
 rosc = "0.10.1"
 crossbeam-channel = "0.5"
+
+# wasm stuff
+#cpal = {version = "0.15.3", features = ["jack", "wasm-bindgen"]}
+#wasm-bindgen = "0.2.92"
+#web-sys = {version = "0.3.69", features = ["Clipboard"]}
+
+# inspector
 bevy-inspector-egui = {version = "0.24",  default-features = false, optional = true}
+
 
 # smol amount of optimization for our stuff
 [profile.dev]

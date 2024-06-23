@@ -80,6 +80,7 @@ fn main() {
     .insert_resource(SystemClipboard(ClipboardContext::new().unwrap()))
     .insert_resource(Msaa::Sample4)
     .insert_resource(Version(format!("{} {}", env!("CARGO_PKG_VERSION"), env!("COMMIT_HASH"))))
+    .insert_resource(PasteChannel(crossbeam_channel::bounded::<String>(1)))
     .init_resource::<PolygonHandles>()
 
     .add_systems(Startup, setup)
@@ -94,7 +95,7 @@ fn main() {
     .init_state::<Mode>()
     .add_systems(Update, save_scene)
     .add_systems(Update, copy_scene.run_if(on_event::<CopyCommand>()))
-    .add_systems(Update, paste_scene.run_if(on_event::<PasteCommand>()))
+    .add_systems(Update, paste_scene)
     .add_systems(Update, post_load)
     .add_systems(Update, file_drag_and_drop)
     .add_systems(Update, update_indicator)
@@ -121,7 +122,6 @@ fn main() {
     // events
     .add_event::<SaveCommand>()
     .add_event::<CopyCommand>()
-    .add_event::<PasteCommand>()
     .add_event::<DeleteCommand>()
     .add_event::<ConnectCommand>()
     .add_event::<OutDeviceCommand>()
@@ -400,13 +400,22 @@ fn copy_scene(world: &mut World) {
     let type_registry = world.resource::<AppTypeRegistry>().clone();
     let type_registry = type_registry.read();
     let serialized_scene = scene.serialize(&type_registry).unwrap();
-    let mut ctx = world.resource_mut::<SystemClipboard>();
-    ctx.0.set_contents(serialized_scene).unwrap();
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        let mut ctx = world.resource_mut::<SystemClipboard>();
+        ctx.0.set_contents(serialized_scene).unwrap();
+    }
+    #[cfg(target_arch = "wasm32")]
+    if let Some(window) = web_sys::window() {
+        if let Some(clipboard) = window.navigator().clipboard() {
+            let _ = clipboard.write_text(&serialized_scene);
+        }
+    }
 }
 
 fn paste_scene(world: &mut World) {
-    if let Ok(ctx) = world.resource_mut::<SystemClipboard>().0.get_contents() {
-        let bytes = ctx.into_bytes();
+    if let Ok(string) = world.resource::<PasteChannel>().0.1.try_recv() {
+        let bytes = string.into_bytes();
         let mut scene = None;
         if let Ok(mut deserializer) = Deserializer::from_bytes(&bytes) {
             let type_registry = world.resource::<AppTypeRegistry>();

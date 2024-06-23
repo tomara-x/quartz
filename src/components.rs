@@ -290,6 +290,9 @@ pub struct NodeLimit(pub usize);
 #[derive(Resource)]
 pub struct InputReceivers(pub Receiver<f32>, pub Receiver<f32>);
 
+#[derive(Resource)]
+pub struct PasteChannel(pub (Sender<String>, Receiver<String>));
+
 // -------------------- events --------------------
 #[derive(Event, Default)]
 pub struct OrderChange;
@@ -299,9 +302,6 @@ pub struct SaveCommand(pub String);
 
 #[derive(Event, Default)]
 pub struct CopyCommand;
-
-#[derive(Event, Default)]
-pub struct PasteCommand;
 
 #[derive(Event, Default)]
 pub struct DeleteCommand;
