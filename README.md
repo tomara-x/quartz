@@ -380,6 +380,9 @@ some ops make a circle do things to its targets. like `process`, `del_targets`, 
 - `target_lt`
     - inputs: `n -> 1`
     - for hole targets, set their link type to input num
+- `repeat`
+    - inputs: `n`, `T -> 1`
+    - repeat input targets array n times
 
 </p>
 </details>
@@ -389,9 +392,6 @@ some ops make a circle do things to its targets. like `process`, `del_targets`, 
 <details><summary>arrays</summary>
 <p>
 
-- `repeat`
-    - inputs: `n -> 1` (repetitions), `A -> 2` or `T -> 2`
-    - repeat input array (or input targets array) n times 
 - `zip`
     - inputs: `A -> 1`, `A -> 2`
     - zip array 1 and array 2

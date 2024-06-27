@@ -450,36 +450,19 @@ pub fn process(
                     }
                 }
             }
-            // -------------------- arrays --------------------
             13 => { // repeat
-                let mut arr = None;
-                let mut targets = None;
-                let mut n = None;
-                let mut changed = false;
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
-                        if wh.link_types == (-1, 1) {
-                            n = Some(access.num_query.get(wh.bh_parent).unwrap().0 as usize);
-                        } else if wh.link_types == (-13, 2) { arr = Some(wh.bh_parent); }
-                        else if wh.link_types == (-14, 2) { targets = Some(wh.bh_parent); }
-                        if wh.open { changed = true; }
-                    }
-                }
-                if changed {
-                    if let Some(n) = n {
-                        if let Some(arr) = arr {
-                            let repeated = access.arr_query.get(arr).unwrap().0.repeat(n);
-                            access.arr_query.get_mut(*id).unwrap().0 = repeated;
-                            lt_to_open = Some(-13);
-                        }
-                        if let Some(tar) = targets {
-                            let repeated = access.targets_query.get(tar).unwrap().0.repeat(n);
-                            access.targets_query.get_mut(*id).unwrap().0 = repeated;
+                        if wh.link_types == (-14, 1) && wh.open {
+                            let n = access.num_query.get(*id).unwrap().0 as usize;
+                            let targets = &access.targets_query.get(wh.bh_parent).unwrap().0;
+                            access.targets_query.get_mut(*id).unwrap().0 = targets.repeat(n);
                             lt_to_open = Some(-14);
                         }
                     }
                 }
             }
+            // -------------------- arrays --------------------
             14 => { // zip
                 let mut arr1 = None;
                 let mut arr2 = None;
