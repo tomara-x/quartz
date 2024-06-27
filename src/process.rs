@@ -1064,39 +1064,6 @@ pub fn process(
                 }
             }
             // -------------------- data management --------------------
-            // uses the array to store previous num value
-            52 | 53 => { // rise | fall
-                if access.arr_query.get(*id).unwrap().0.len() != 1 {
-                    access.arr_query.get_mut(*id).unwrap().0 = vec!(0.);
-                }
-                for hole in holes {
-                    if let Ok(wh) = white_hole_query.get(*hole) {
-                        if wh.link_types == (-1, 1) {
-                            let input = access.num_query.get(wh.bh_parent).unwrap().0;
-                            let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
-                            if op_num == 52 { // rise
-                                if input > arr[0] {
-                                    access.num_query.get_mut(*id).unwrap().0 = 1.;
-                                    lt_to_open = Some(-1);
-                                }
-                            } else {
-                                if input < arr[0] {
-                                    access.num_query.get_mut(*id).unwrap().0 = 1.;
-                                    lt_to_open = Some(-1);
-                                }
-                            }
-                            if input == arr[0] {
-                                let n = &mut access.num_query.get_mut(*id).unwrap().0;
-                                if *n != 0. {
-                                    *n = 0.;
-                                    lt_to_open = Some(-1);
-                                }
-                            }
-                            arr[0] = input;
-                        }
-                    }
-                }
-            }
             54 => { // store
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
@@ -1141,28 +1108,6 @@ pub fn process(
                 }
                 access.num_query.get_mut(*id).unwrap().0 = out;
                 lt_to_open = Some(-1);
-            }
-            58 => { // count
-                let mut trig = None;
-                let mut high = None;
-                for hole in holes {
-                    if let Ok(wh) = white_hole_query.get(*hole) {
-                        if wh.link_types == (-1, 1) {
-                            trig = Some(access.num_query.get(wh.bh_parent).unwrap().0);
-                        }
-                        if wh.link_types == (-1, 2) {
-                            high = Some(access.num_query.get(wh.bh_parent).unwrap().0);
-                        }
-                    }
-                }
-                if let Some(trig) = trig {
-                    let num = &mut access.num_query.get_mut(*id).unwrap().0;
-                    *num += trig;
-                    if let Some(high) = high {
-                        if *num >= high { *num = 0.; }
-                    }
-                    lt_to_open = Some(-1);
-                }
             }
             59 => { // apply
                 for hole in holes {

@@ -555,16 +555,10 @@ for more info about osc: https://opensoundcontrol.stanford.edu/spec-1_0.html
 - `render`
     - inputs: `n`, `0 -> 1` (input node), `n -> 2` (trigger)
     - render n samples from the given audio node into the array when the second input is non-zero (node must have 0 inputs, and only first channel's output is saved)
-- `rise`
-    - inputs: `n -> 1`
-    - num = 1 when there's a rise in the input num (current input > previous input), 0 otherwise (uses the array to store previous value)
-- `fall`
-    - inputs: `n -> 1`
-    - num = 1 when there's a fall in the input num, 0 otherwise (same)
 - `store`
     - inputs: `n -> 1`
     - store the input num into self's num, but doesn't open the white holes reading nums like usual
-- `push_num`
+- `num_push`
     - inputs: `n -> 1`
     - output this circle's num (open all white holes reading it) when the input num in non-zero
 - `sum`
@@ -573,9 +567,6 @@ for more info about osc: https://opensoundcontrol.stanford.edu/spec-1_0.html
 - `product`
     - inputs: `n -> 1` (any number of those)
     - multiply numbers together
-- `count`
-    - inputs: `n -> 1`, [`n -> 2`]
-    - count up by first input. if second input is connected, count will wrap around that given number
 
 </p>
 </details>
