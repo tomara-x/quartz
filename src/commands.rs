@@ -6,6 +6,7 @@ use bevy::{
     input::keyboard::{KeyboardInput, Key},
     window::WindowMode,
     sprite::WithMesh2d,
+    core_pipeline::bloom::{BloomCompositeMode, BloomSettings},
 };
 
 use crate::{
@@ -56,6 +57,7 @@ pub struct Access<'w, 's> {
     op_num_query: Query<'w, 's, &'static mut OpNum>,
     clipboard: ResMut<'w, SystemClipboard>,
     paste_chan: Res<'w, PasteChannel>,
+    bloom: Query<'w, 's, & 'static mut BloomSettings, With<Camera>>,
 }
 
 pub fn command_parser(
@@ -816,6 +818,15 @@ pub fn command_parser(
                                 }
                             }
                         }
+                    }
+                    Some(":reset_bloom") => {
+                        *access.bloom.single_mut() = BloomSettings {
+                            intensity: 0.5,
+                            low_frequency_boost: 0.6,
+                            low_frequency_boost_curvature: 0.4,
+                            composite_mode: BloomCompositeMode::Additive,
+                            ..default()
+                        };
                     }
                     _ => {}
                 }

@@ -136,6 +136,7 @@ there are 2 types of commands:
 - `:id {index} {index} [sample rate] [buffer size]` set the input audio device
 - `:nl` set the maximum number of nodes a connective op (`+`, `*`, `>>`, etc) will allow (default 500) (saved in scene file)
 - `:lt [id] {link type}` set [link type](#link-types) of selected holes (use shortcut `l`)
+- `:reset_bloom` if you change bloom settings to the point where you can't see what's happening, reset them
 - `:dv {float}` set default number of vertices of drawn circles
 - `:dc {float} [float] [float] float]` set default color of drawn circles (h s l a)
 - `:ht {id}` toggle open a white hole (by id)
