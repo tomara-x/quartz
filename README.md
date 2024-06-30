@@ -884,6 +884,8 @@ i hope that everyone will become friends
     - wasm-bindgen https://github.com/rustwasm/wasm-bindgen
     - bevy_github_ci_template https://github.com/bevyengine/bevy_github_ci_template
     - tracy https://github.com/wolfpld/tracy
+    - gnuplot http://gnuplot.info/
+    - calc https://github.com/lcn2/calc
     - vim https://github.com/vim/vim
     - void linux https://voidlinux.org/
 - learning / inspiration / used for a while:
