@@ -555,7 +555,7 @@ for more info about osc: https://opensoundcontrol.stanford.edu/spec-1_0.html
     - process the input array as input to the given audio node (array length must match the number of input channels the node has) output of the node is written to this circle's array (process one audio frame)
 - `render`
     - inputs: `n`, `0 -> 1` (input node), `n -> 2` (trigger)
-    - render n samples from the given audio node into the array when the second input is non-zero (node must have 0 inputs, and only first channel's output is saved)
+    - render n samples from the given audio node into the array when the second input is non-zero (node must have 0 ins, and 1 out)
 - `store`
     - inputs: `n -> 1`
     - store the input num into self's num, but doesn't open the white holes reading nums like usual

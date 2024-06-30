@@ -976,6 +976,8 @@ pub fn str_to_op_num(op: &str) -> u16 {
         "butt" => 48,
         "toggle" => 49,
         "key" => 50,
+        "rise" => 52,
+        "fall" => 53,
         "store" => 54,
         "num_push" => 55,
         "sum" => 56,

@@ -1047,6 +1047,39 @@ pub fn process(
                 }
             }
             // -------------------- data management --------------------
+            // uses the array to store previous num value
+            52 | 53 => { // rise | fall
+                if access.arr_query.get(*id).unwrap().0.len() != 1 {
+                    access.arr_query.get_mut(*id).unwrap().0 = vec!(0.);
+                }
+                for hole in holes {
+                    if let Ok(wh) = white_hole_query.get(*hole) {
+                        if wh.link_types == (-1, 1) {
+                            let input = access.num_query.get(wh.bh_parent).unwrap().0;
+                            let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
+                            if op_num == 52 { // rise
+                                if input > arr[0] {
+                                    access.num_query.get_mut(*id).unwrap().0 = 1.;
+                                    lt_to_open = Some(-1);
+                                }
+                            } else {
+                                if input < arr[0] {
+                                    access.num_query.get_mut(*id).unwrap().0 = 1.;
+                                    lt_to_open = Some(-1);
+                                }
+                            }
+                            if input == arr[0] {
+                                let n = &mut access.num_query.get_mut(*id).unwrap().0;
+                                if *n != 0. {
+                                    *n = 0.;
+                                    lt_to_open = Some(-1);
+                                }
+                            }
+                            arr[0] = input;
+                        }
+                    }
+                }
+            }
             54 => { // store
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
@@ -1120,12 +1153,16 @@ pub fn process(
                             access.net_query.get_mut(*id).unwrap().0 = input_net.clone();
                         }
                         if wh.link_types == (-1, 2) && access.num_query.get(wh.bh_parent).unwrap().0 != 0. {
-                            let len = access.num_query.get(*id).unwrap().0 / 44100.;
+                            let len = access.num_query.get(*id).unwrap().0 as usize;
                             let output = &mut access.arr_query.get_mut(*id).unwrap().0;
                             let net = &mut access.net_query.get_mut(*id).unwrap().0;
-                            if net.inputs() == 0 && net.outputs() > 0 && len >= 0. {
-                                let wave = Wave::render(44100., len.into(), net);
-                                *output = wave.channel(0).clone();
+                            if net.inputs() == 0 && net.outputs() == 1 {
+                                output.clear();
+                                for _ in 0..len {
+                                    let mut s = [0.0];
+                                    net.tick(&[], &mut s);
+                                    output.push(s[0])
+                                }
                             }
                             lt_to_open = Some(-13);
                         }
