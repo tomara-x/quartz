@@ -10,7 +10,7 @@ license = "MIT OR Apache-2.0"
 inspector = ["dep:bevy-inspector-egui"]
 
 [dependencies.bevy]
-version = "0.14.0-rc.3"
+version = "0.14.0-rc.4"
 default-features = false
 features = [
   "multi_threaded",
@@ -28,15 +28,12 @@ features = [
   "png",
   "x11",
   #"webgl2",
-
-  # TODO remove once fixed #13571
-  "bevy_pbr",
 ]
 
 
 [dependencies]
 bevy_pancam = {version = "0.11.1", git = "https://github.com/tomara-x/bevy_pancam"}
-fundsp = {version = "0.18.1", default-features = false}
+fundsp = {version = "0.18.1", default-features = false, features = ["std"]}
 cpal = {version = "0.15.3", features = ["jack"]}
 copypasta = "0.10.1"
 serde = "1"

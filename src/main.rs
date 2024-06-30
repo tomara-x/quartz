@@ -149,13 +149,11 @@ fn main() {
     .register_type::<Op>()
     .register_type::<Number>()
     .register_type::<Arr>()
-    .register_type::<Vec<f32>>()
     .register_type::<Selected>()
     .register_type::<Save>()
     .register_type::<Order>()
     .register_type::<BlackHole>()
     .register_type::<WhiteHole>()
-    .register_type::<(i8, i8)>()
     .register_type::<Vertices>()
     .register_type::<Targets>()
     .register_type::<GainedWH>()
@@ -174,7 +172,7 @@ fn main() {
     ;
 
     #[cfg(feature = "inspector")]
-    { app.add_plugins(WorldInspectorPlugin::new()); }
+    app.add_plugins(WorldInspectorPlugin::new());
 
     app.run();
 }
