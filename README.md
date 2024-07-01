@@ -120,6 +120,7 @@ there are 2 types of commands:
 - `:set tar[gets] {id id ...}` set targets (if nothing is selected, the first entity gets the rest of the list as its targets)
 - `:tsel {id}` target selected (`:tsel 4v2` sets selected entities as targets of entity 4v2)
 - `:push {float}/{id}` push a number to the array, or an id to the targets array
+- `:lt [id] {link type}` set holes' [link type](#link-types) (use shortcut `l`)
 
 ```
 :set n 4v0 42  // will set the num of entity 4v0 to 42
@@ -129,13 +130,20 @@ there are 2 types of commands:
 </p>
 </details>
 
-<details><summary>other</summary>
+<details><summary>audio device sellection</summary>
 <p>
 
 - `:od {index} {index} [sample rate] [buffer size]` set the output audio device. first index is the host, second is the device index (use the commands `ah` and `ao` to get those) if sample rate and buffer size aren't given, the device defaults will be used
 - `:id {index} {index} [sample rate] [buffer size]` set the input audio device
+
+</p>
+</details>
+
+
+<details><summary>other</summary>
+<p>
+
 - `:nl` set the maximum number of nodes a connective op (`+`, `*`, `>>`, etc) will allow (default 500) (saved in scene file)
-- `:lt [id] {link type}` set [link type](#link-types) of selected holes (use shortcut `l`)
 - `:reset_bloom` if you change bloom settings to the point where you can't see what's happening, reset them
 - `:dv {float}` set default number of vertices of drawn circles
 - `:dc {float} [float] [float] float]` set default color of drawn circles (h s l a)
