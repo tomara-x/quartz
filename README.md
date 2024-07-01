@@ -829,8 +829,8 @@ math
 - `atanh()`
 - `atan2()`
 - `hypot()`
-- `rfft()`
-- `ifft()`
+- `rfft(n)` n is a power of two between 2 and 32768 (inclusive)
+- `ifft(n)` same
 - `pol()`
 - `car()`
 - `deg()`
