@@ -1,4 +1,5 @@
 use fundsp::hacker32::*;
+use fundsp::fft::*;
 use crossbeam_channel::Receiver;
 
 /// switch between nets based on index
@@ -567,5 +568,113 @@ impl AudioUnit for SwapUnit {
 
     fn allocate(&mut self) {
         self.x.allocate();
+    }
+}
+
+
+/// rfft
+/// - input 0: input
+/// - output 0: real
+/// - output 1: imaginary
+#[derive(Default, Clone)]
+pub struct RFFT {
+    n: usize,
+    input: Vec<f32>,
+    output: Vec<Complex32>,
+    count: usize,
+}
+
+impl RFFT {
+    pub fn new(n: usize) -> Self {
+        let mut input = Vec::new();
+        let mut output = Vec::new();
+        input.resize(n, 0.);
+        output.resize(n/2+1, Complex32::ZERO);
+        RFFT { n, input, output, count: 0 }
+    }
+}
+
+impl AudioNode for RFFT {
+    const ID: u64 = 1120;
+    type Inputs = U1;
+    type Outputs = U2;
+
+    #[inline]
+    fn tick(
+        &mut self,
+        input: &Frame<f32, Self::Inputs>,
+    ) -> Frame<f32, Self::Outputs> {
+        let i = self.count;
+        self.count += 1;
+        if self.count == self.n { self.count = 0; }
+        if i == 0 {
+            real_fft(self.input.as_slice(), self.output.as_mut_slice());
+        }
+        self.input[i] = input[0];
+        let buffer = if i <= self.n/2 {
+            let out = self.output[i];
+            [out.re, out.im]
+        } else {
+            [0., 0.]
+        };
+        buffer.into()
+    }
+
+    fn reset(&mut self) {
+        self.count = 0;
+        self.input.fill(0.);
+        self.output.fill(Complex32::ZERO);
+    }
+}
+
+
+/// ifft
+/// - input 0: real
+/// - input 1: imaginary
+/// - output 0: real
+/// - output 1: imaginary
+#[derive(Default, Clone)]
+pub struct IFFT {
+    n: usize,
+    input: Vec<Complex32>,
+    output: Vec<Complex32>,
+    count: usize,
+}
+
+impl IFFT {
+    pub fn new(n: usize) -> Self {
+        let mut input = Vec::new();
+        let mut output = Vec::new();
+        input.resize(n, Complex32::ZERO);
+        output.resize(n, Complex32::ZERO);
+        IFFT { n, input, output, count: 0 }
+    }
+}
+
+impl AudioNode for IFFT {
+    const ID: u64 = 1121;
+    type Inputs = U2;
+    type Outputs = U2;
+
+    #[inline]
+    fn tick(
+        &mut self,
+        input: &Frame<f32, Self::Inputs>,
+    ) -> Frame<f32, Self::Outputs> {
+        let i = self.count;
+        self.count += 1;
+        if self.count == self.n { self.count = 0; }
+        if i == 0 {
+            inverse_fft(self.input.as_slice(), self.output.as_mut_slice());
+        }
+        self.input[i] = Complex32::new(input[0], input[1]);
+        let buffer = [self.output[i].re, self.output[i].im];
+        buffer.into()
+    }
+
+    fn reset(&mut self) {
+        self.count = 0;
+        self.input.fill(Complex32::ZERO);
+        self.output.fill(Complex32::ZERO);
     }
 }

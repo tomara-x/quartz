@@ -921,6 +921,22 @@ pub fn str_to_net(op: &str) -> Net {
         "deg" => { return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].to_degrees()))); }
         "rad" => { return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].to_radians()))); }
         "recip" => { return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].recip()))); }
+        "rfft" => {
+            if let Some(p) = p.first() {
+                let i = *p as usize;
+                let x = i.clamp(2, 32768).next_power_of_two();
+                if i != x { bevy::prelude::warn!("rfft used next power of two: {}", x); }
+                return Net::wrap(Box::new(An(RFFT::new(x))));
+            }
+        }
+        "ifft" => {
+            if let Some(p) = p.first() {
+                let i = *p as usize;
+                let x = i.clamp(2, 32768).next_power_of_two();
+                if i != x { bevy::prelude::warn!("ifft used next power of two: {}", x); }
+                return Net::wrap(Box::new(An(IFFT::new(x))));
+            }
+        }
         _ => {}
     }
     Net::new(0,0)

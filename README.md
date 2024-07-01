@@ -829,6 +829,8 @@ math
 - `atanh()`
 - `atan2()`
 - `hypot()`
+- `rfft()`
+- `ifft()`
 - `pol()`
 - `car()`
 - `deg()`
