@@ -345,6 +345,17 @@ pub fn str_to_net(op: &str) -> Net {
         // -------------------- channels --------------------
         "sink" => { return Net::wrap(Box::new(sink())); }
         "pass" => { return Net::wrap(Box::new(pass())); }
+        "chan" => {
+            let mut net = Net::new(0,0);
+            for i in p {
+                if i == 0. {
+                    net = net | sink();
+                } else {
+                    net = net | pass();
+                }
+            }
+            return net;
+        }
         "pan" => {
             if let Some(p) = p.first() {
                 return Net::wrap(Box::new(pan(*p)));

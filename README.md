@@ -739,6 +739,7 @@ filters
 channels
 - `sink()` eats an input channel
 - `pass()` takes an input channel and passes it unchanged
+- `chan(float, float,...)` shortcut for stacking pass/sink nodes. e.g. `chan(0,1,0,1,2)` is the same as `sink() | pass() | sink() | pass() | pass()` (non-zero is pass)
 - `pan([float])` e.g. `pan(0)` pan input (mono to stereo) `pan()` takes 2 inputs (signal, and pan [-1...1])
 - `join(float)` float can be [2...8] e.g. `join(8)` takes 8 inputs and averages them into 1 output
 - `split(float)` float can be [2...8] `split(8)` takes 1 input and copies it into 8 outputs
