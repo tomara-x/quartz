@@ -727,7 +727,7 @@ filters
 - `bell([float, float], [float])` if 2 params are given, they're (q, gain), if 3 are give, they're (hz, q, gain), if none, the node takes 4 channels (input, hz, q, gain)
 - `biquad(float, float, float, float, float)`
 - `butterpass([float])` e.g. `butterpass()` takes 2 inputs (signal, and hz). `butterpass(1729)` takes 1 input
-- `dc_block([float])` if no param the cutoff is 10Hz
+- `dcblock([float])` if no param is provided, the cutoff is 10Hz
 - `fir(float [float], [float], ...)` (up to 10 weights)
 - `fir3(float)` param is gain at nyquist
 - `follow(float, [float])` attack and release response times
