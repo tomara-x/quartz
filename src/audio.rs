@@ -17,9 +17,9 @@ pub fn default_out_device(world: &mut World) {
         let mut config = default_config.config();
         config.channels = 2;
         let stream = match default_config.sample_format() {
-            cpal::SampleFormat::F32 => run::<f32>(&device, &config.into(), slot.1),
-            cpal::SampleFormat::I16 => run::<i16>(&device, &config.into(), slot.1),
-            cpal::SampleFormat::U16 => run::<u16>(&device, &config.into(), slot.1),
+            cpal::SampleFormat::F32 => run::<f32>(&device, &config, slot.1),
+            cpal::SampleFormat::I16 => run::<i16>(&device, &config, slot.1),
+            cpal::SampleFormat::U16 => run::<u16>(&device, &config, slot.1),
             format => {
                 error!("unsupported sample format: {}", format);
                 None
@@ -50,9 +50,9 @@ pub fn set_out_device(world: &mut World) {
                         if let Some(sr) = sr { config.sample_rate = cpal::SampleRate(sr); }
                         if let Some(b) = b { config.buffer_size = cpal::BufferSize::Fixed(b); }
                         let stream = match default_config.sample_format() {
-                            cpal::SampleFormat::F32 => run::<f32>(&device, &config.into(), slot.1),
-                            cpal::SampleFormat::I16 => run::<i16>(&device, &config.into(), slot.1),
-                            cpal::SampleFormat::U16 => run::<u16>(&device, &config.into(), slot.1),
+                            cpal::SampleFormat::F32 => run::<f32>(&device, &config, slot.1),
+                            cpal::SampleFormat::I16 => run::<i16>(&device, &config, slot.1),
+                            cpal::SampleFormat::U16 => run::<u16>(&device, &config, slot.1),
                             format => {
                                 error!("unsupported sample format: {}", format);
                                 None
@@ -157,9 +157,9 @@ pub fn set_in_device(world: &mut World) {
                         if let Some(sr) = sr { config.sample_rate = cpal::SampleRate(sr); }
                         if let Some(b) = b { config.buffer_size = cpal::BufferSize::Fixed(b); }
                         let stream = match default_config.sample_format() {
-                            cpal::SampleFormat::F32 => run_in::<f32>(&device, &config.into(), ls, rs),
-                            cpal::SampleFormat::I16 => run_in::<i16>(&device, &config.into(), ls, rs),
-                            cpal::SampleFormat::U16 => run_in::<u16>(&device, &config.into(), ls, rs),
+                            cpal::SampleFormat::F32 => run_in::<f32>(&device, &config, ls, rs),
+                            cpal::SampleFormat::I16 => run_in::<i16>(&device, &config, ls, rs),
+                            cpal::SampleFormat::U16 => run_in::<u16>(&device, &config, ls, rs),
                             format => {
                                 error!("unsupported sample format: {}", format);
                                 None

@@ -577,24 +577,24 @@ impl AudioUnit for SwapUnit {
 /// - output 0: real
 /// - output 1: imaginary
 #[derive(Default, Clone)]
-pub struct RFFT {
+pub struct Rfft {
     n: usize,
     input: Vec<f32>,
     output: Vec<Complex32>,
     count: usize,
 }
 
-impl RFFT {
+impl Rfft {
     pub fn new(n: usize) -> Self {
         let mut input = Vec::new();
         let mut output = Vec::new();
         input.resize(n, 0.);
         output.resize(n/2+1, Complex32::ZERO);
-        RFFT { n, input, output, count: 0 }
+        Rfft { n, input, output, count: 0 }
     }
 }
 
-impl AudioNode for RFFT {
+impl AudioNode for Rfft {
     const ID: u64 = 1120;
     type Inputs = U1;
     type Outputs = U2;
@@ -634,24 +634,24 @@ impl AudioNode for RFFT {
 /// - output 0: real
 /// - output 1: imaginary
 #[derive(Default, Clone)]
-pub struct IFFT {
+pub struct Ifft {
     n: usize,
     input: Vec<Complex32>,
     output: Vec<Complex32>,
     count: usize,
 }
 
-impl IFFT {
+impl Ifft {
     pub fn new(n: usize) -> Self {
         let mut input = Vec::new();
         let mut output = Vec::new();
         input.resize(n, Complex32::ZERO);
         output.resize(n, Complex32::ZERO);
-        IFFT { n, input, output, count: 0 }
+        Ifft { n, input, output, count: 0 }
     }
 }
 
-impl AudioNode for IFFT {
+impl AudioNode for Ifft {
     const ID: u64 = 1121;
     type Inputs = U2;
     type Outputs = U2;

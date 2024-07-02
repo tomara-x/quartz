@@ -525,11 +525,11 @@ pub fn str_to_net(op: &str) -> Net {
         }
         "reverb_stereo" => {
             if let Some(p) = p.get(0..3) {
-                return Net::wrap(Box::new(reverb_stereo(p[0].into(), p[1].into(), p[2].into())));
+                return Net::wrap(Box::new(reverb_stereo(p[0], p[1], p[2])));
             } else if let Some(p) = p.get(0..2) {
-                return Net::wrap(Box::new(reverb_stereo(p[0].into(), p[1].into(), 1.)));
+                return Net::wrap(Box::new(reverb_stereo(p[0], p[1], 1.)));
             } else if let Some(p) = p.first() {
-                return Net::wrap(Box::new(reverb_stereo((*p).into(), 5., 1.)));
+                return Net::wrap(Box::new(reverb_stereo(*p, 5., 1.)));
             }
         }
         "tap" => {
@@ -937,7 +937,7 @@ pub fn str_to_net(op: &str) -> Net {
                 let i = *p as usize;
                 let x = i.clamp(2, 32768).next_power_of_two();
                 if i != x { bevy::prelude::warn!("rfft used next power of two: {}", x); }
-                return Net::wrap(Box::new(An(RFFT::new(x))));
+                return Net::wrap(Box::new(An(Rfft::new(x))));
             }
         }
         "ifft" => {
@@ -945,7 +945,7 @@ pub fn str_to_net(op: &str) -> Net {
                 let i = *p as usize;
                 let x = i.clamp(2, 32768).next_power_of_two();
                 if i != x { bevy::prelude::warn!("ifft used next power of two: {}", x); }
-                return Net::wrap(Box::new(An(IFFT::new(x))));
+                return Net::wrap(Box::new(An(Ifft::new(x))));
             }
         }
         _ => {}

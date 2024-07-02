@@ -1453,7 +1453,7 @@ pub fn process(
                         let arr = &access.arr_query.get(arr).unwrap().0;
                         let op_str = &access.op_query.get(op_str).unwrap().0;
                         for i in arr {
-                            let net = str_to_net(&op_str.replace("#", &format!("{}", i)));
+                            let net = str_to_net(&op_str.replace('#', &format!("{}", i)));
                             if empty {
                                 graph = net;
                                 empty = false;

@@ -57,7 +57,7 @@ pub struct Access<'w, 's> {
     op_num_query: Query<'w, 's, &'static mut OpNum>,
     clipboard: ResMut<'w, SystemClipboard>,
     paste_chan: Res<'w, PasteChannel>,
-    bloom: Query<'w, 's, & 'static mut BloomSettings, With<Camera>>,
+    bloom: Query<'w, 's, &'static mut BloomSettings, With<Camera>>,
 }
 
 pub fn command_parser(
@@ -1105,7 +1105,7 @@ pub fn command_parser(
                 }
             }
             Some("ah") => {
-                *text = format!(">HOSTS:\n");
+                *text = ">HOSTS:\n".to_string();
                 let hosts = cpal::platform::ALL_HOSTS;
                 for (i, host) in hosts.iter().enumerate() {
                     *text += &format!("{}: {:?}\n", i, host);
@@ -1113,7 +1113,7 @@ pub fn command_parser(
             }
             Some("ao") => {
                 let hosts = cpal::platform::ALL_HOSTS;
-                *text = format!(">OUTPUT DEVICES:\n");
+                *text = ">OUTPUT DEVICES:\n".to_string();
                 for (i, host) in hosts.iter().enumerate() {
                     *text += &format!("{}: {:?}:\n", i, host);
                     let devices = cpal::platform::host_from_id(*host).unwrap().output_devices().unwrap();
@@ -1132,7 +1132,7 @@ pub fn command_parser(
             }
             Some("ai") => {
                 let hosts = cpal::platform::ALL_HOSTS;
-                *text = format!(">INPUT DEVICES:\n");
+                *text = ">INPUT DEVICES:\n".to_string();
                 for (i, host) in hosts.iter().enumerate() {
                     *text += &format!("{}: {:?}:\n", i, host);
                     let devices = cpal::platform::host_from_id(*host).unwrap().input_devices().unwrap();
