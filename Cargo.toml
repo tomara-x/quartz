@@ -10,7 +10,7 @@ license = "MIT OR Apache-2.0"
 inspector = ["dep:bevy-inspector-egui"]
 
 [dependencies.bevy]
-version = "0.14.0-rc.4"
+version = "0.14.0"
 default-features = false
 features = [
   "multi_threaded",
