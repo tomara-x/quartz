@@ -611,13 +611,13 @@ impl AudioNode for Rfft {
             real_fft(self.input.as_slice(), self.output.as_mut_slice());
         }
         self.input[i] = input[0];
-        let buffer = if i <= self.n/2 {
+        if i <= self.n/2 {
             let out = self.output[i];
-            [out.re, out.im]
+            [out.re, out.im].into()
         } else {
-            [0., 0.]
-        };
-        buffer.into()
+            let out = self.output[self.n - i].conj();
+            [out.re, out.im].into()
+        }
     }
 
     fn reset(&mut self) {
