@@ -1,20 +1,16 @@
 use bevy::{
-    prelude::*,
-    sprite::Mesh2dHandle,
+    color::Hsla,
     ecs::{
         entity::MapEntities,
         reflect::{ReflectComponent, ReflectMapEntities},
     },
-    color::Hsla,
+    prelude::*,
+    sprite::Mesh2dHandle,
 };
 
-use fundsp::{
-    net::Net,
-    shared::Shared,
-    slot::Slot,
-};
+use fundsp::{net::Net, shared::Shared, slot::Slot};
 
-use crossbeam_channel::{Sender, Receiver};
+use crossbeam_channel::{Receiver, Sender};
 
 use cpal::Stream;
 
@@ -144,10 +140,7 @@ pub struct BlackHole {
 }
 impl FromWorld for BlackHole {
     fn from_world(_world: &mut World) -> Self {
-        BlackHole {
-            wh: Entity::PLACEHOLDER,
-            wh_parent: Entity::PLACEHOLDER,
-        }
+        BlackHole { wh: Entity::PLACEHOLDER, wh_parent: Entity::PLACEHOLDER }
     }
 }
 impl MapEntities for BlackHole {

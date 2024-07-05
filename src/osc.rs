@@ -1,12 +1,9 @@
-use std::net::UdpSocket;
 use bevy::prelude::*;
 use rosc::{
-    encoder,
-    OscMessage,
-    OscPacket,
-    OscType,
     decoder::{decode_udp, MTU},
+    encoder, OscMessage, OscPacket, OscType,
 };
+use std::net::UdpSocket;
 
 #[derive(Resource)]
 pub struct OscSender {

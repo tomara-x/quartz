@@ -1,24 +1,21 @@
 use bevy::{
-    prelude::*,
-    ecs::system::SystemParam,
-    render::view::{RenderLayers, VisibleEntities},
     app::AppExit,
-    input::keyboard::{KeyboardInput, Key},
-    window::WindowMode,
-    sprite::WithMesh2d,
     core_pipeline::bloom::{BloomCompositeMode, BloomSettings},
+    ecs::system::SystemParam,
+    input::keyboard::{Key, KeyboardInput},
+    prelude::*,
+    render::view::{RenderLayers, VisibleEntities},
+    sprite::WithMesh2d,
+    window::WindowMode,
 };
 
-use crate::{
-    components::*,
-    functions::*,
-};
+use crate::{components::*, functions::*};
 
 use fundsp::audiounit::AudioUnit;
 
 use copypasta::ClipboardProvider;
 
-use cpal::traits::{HostTrait, DeviceTrait};
+use cpal::traits::{DeviceTrait, HostTrait};
 
 #[derive(SystemParam)]
 pub struct Access<'w, 's> {
@@ -75,9 +72,9 @@ pub fn command_parser(
     holes_query: Query<&Holes>,
 ) {
     let clt = &mut command_line_text.single_mut();
-    if key_event.is_empty()
-    && !clt.is_changed()
-    && !keyboard_input.just_released(KeyCode::KeyT) { return; }
+    if key_event.is_empty() && !clt.is_changed() && !keyboard_input.just_released(KeyCode::KeyT) {
+        return;
+    }
 
     let text = &mut clt.sections[0].value;
 
@@ -107,8 +104,7 @@ pub fn command_parser(
         }
     } else if *mode.get() == Mode::Connect {
         // edit the link type
-        if text.starts_with("-- CONNECT")
-        && keyboard_input.just_pressed(KeyCode::KeyC) {
+        if text.starts_with("-- CONNECT") && keyboard_input.just_pressed(KeyCode::KeyC) {
             *text = "-- LT --> ".to_string();
             return;
         }
@@ -117,10 +113,10 @@ pub fn command_parser(
                 if key.state.is_pressed() {
                     if let Key::Character(c) = &key.logical_key {
                         if text.len() == 10 {
-                            access.default_lt.0.0 = str_to_lt(c);
+                            access.default_lt.0 .0 = str_to_lt(c);
                             text.push_str(c);
                         } else if text.len() == 11 {
-                            access.default_lt.0.1 = str_to_lt(c);
+                            access.default_lt.0 .1 = str_to_lt(c);
                             *text = "-- CONNECT --".to_string();
                         }
                     }
@@ -129,9 +125,11 @@ pub fn command_parser(
             return;
         }
         if !keyboard_input.pressed(KeyCode::KeyT) {
-            *text = format!("-- CONNECT -- ({} {})",
-                lt_to_string(access.default_lt.0.0),
-                lt_to_string(access.default_lt.0.1));
+            *text = format!(
+                "-- CONNECT -- ({} {})",
+                lt_to_string(access.default_lt.0 .0),
+                lt_to_string(access.default_lt.0 .1)
+            );
         }
         // exit to edit
         if keyboard_input.any_just_pressed([KeyCode::Escape, KeyCode::KeyE]) {
@@ -140,7 +138,9 @@ pub fn command_parser(
             key_event.clear(); // consume the 'e' when exiting to edit
         }
         // target
-        if keyboard_input.just_pressed(KeyCode::KeyT) { *text = "-- TARGET --".to_string(); }
+        if keyboard_input.just_pressed(KeyCode::KeyT) {
+            *text = "-- TARGET --".to_string();
+        }
         // switch to draw mode
         if keyboard_input.just_pressed(KeyCode::KeyD) {
             *text = "-- DRAW --".to_string();
@@ -152,8 +152,12 @@ pub fn command_parser(
                 match &key.logical_key {
                     Key::Character(c) => {
                         if let Some(c) = c.chars().next() {
-                            if text.starts_with('>') { text.clear(); }
-                            if !c.is_control() && *text != "F" { text.push(c); }
+                            if text.starts_with('>') {
+                                text.clear();
+                            }
+                            if !c.is_control() && *text != "F" {
+                                text.push(c);
+                            }
                         }
                     }
                     Key::Space => {
@@ -161,9 +165,15 @@ pub fn command_parser(
                             text.push(' ');
                         }
                     }
-                    Key::Backspace => { text.pop(); }
-                    Key::Escape => { text.clear(); }
-                    Key::Enter => { text.push('\t'); }
+                    Key::Backspace => {
+                        text.pop();
+                    }
+                    Key::Escape => {
+                        text.clear();
+                    }
+                    Key::Enter => {
+                        text.push('\t');
+                    }
                     // tab completion when?
                     _ => {}
                 }
@@ -241,7 +251,8 @@ pub fn command_parser(
                                     if let Some(s) = command.next() {
                                         wh.link_types.1 = str_to_lt(s);
                                         wh.open = true;
-                                        let parent = access.black_hole_query.get(wh.bh).unwrap().wh_parent;
+                                        let parent =
+                                            access.black_hole_query.get(wh.bh).unwrap().wh_parent;
                                         access.gained_wh_query.get_mut(parent).unwrap().0 = true;
                                     }
                                 } else if let Ok(bh) = access.black_hole_query.get(e) {
@@ -249,7 +260,8 @@ pub fn command_parser(
                                     if let Some(s) = command.next() {
                                         wh.link_types.0 = str_to_lt(s);
                                         wh.open = true;
-                                        let parent = access.white_hole_query.get(bh.wh).unwrap().bh_parent;
+                                        let parent =
+                                            access.white_hole_query.get(bh.wh).unwrap().bh_parent;
                                         access.gained_wh_query.get_mut(parent).unwrap().0 = true;
                                     }
                                 }
@@ -258,13 +270,16 @@ pub fn command_parser(
                                     if let Ok(mut wh) = access.white_hole_query.get_mut(id) {
                                         wh.link_types.1 = str_to_lt(s);
                                         wh.open = true;
-                                        let parent = access.black_hole_query.get(wh.bh).unwrap().wh_parent;
+                                        let parent =
+                                            access.black_hole_query.get(wh.bh).unwrap().wh_parent;
                                         access.gained_wh_query.get_mut(parent).unwrap().0 = true;
                                     } else if let Ok(bh) = access.black_hole_query.get(id) {
-                                        let wh = &mut access.white_hole_query.get_mut(bh.wh).unwrap();
+                                        let wh =
+                                            &mut access.white_hole_query.get_mut(bh.wh).unwrap();
                                         wh.link_types.0 = str_to_lt(s);
                                         wh.open = true;
-                                        let parent = access.white_hole_query.get(bh.wh).unwrap().bh_parent;
+                                        let parent =
+                                            access.white_hole_query.get(bh.wh).unwrap().bh_parent;
                                         access.gained_wh_query.get_mut(parent).unwrap().0 = true;
                                     }
                                 }
@@ -274,7 +289,7 @@ pub fn command_parser(
                     Some(":dv") | Some("dv") => {
                         if let Some(s) = command.next() {
                             if let Ok(n) = s.parse::<usize>() {
-                                access.default_verts.0 = n.clamp(3,64);
+                                access.default_verts.0 = n.clamp(3, 64);
                             }
                         }
                     }
@@ -284,18 +299,26 @@ pub fn command_parser(
                         let mut l = 0.5;
                         let mut a = 1.;
                         if let Some(n) = command.next() {
-                            if let Ok(n) = n.parse::<f32>() { h = n; }
+                            if let Ok(n) = n.parse::<f32>() {
+                                h = n;
+                            }
                         }
                         if let Some(n) = command.next() {
-                            if let Ok(n) = n.parse::<f32>() { s = n; }
+                            if let Ok(n) = n.parse::<f32>() {
+                                s = n;
+                            }
                         }
                         if let Some(n) = command.next() {
-                            if let Ok(n) = n.parse::<f32>() { l = n; }
+                            if let Ok(n) = n.parse::<f32>() {
+                                l = n;
+                            }
                         }
                         if let Some(n) = command.next() {
-                            if let Ok(n) = n.parse::<f32>() { a = n; }
+                            if let Ok(n) = n.parse::<f32>() {
+                                a = n;
+                            }
                         }
-                        access.default_color.0 = Hsla::new(h,s,l,a);
+                        access.default_color.0 = Hsla::new(h, s, l, a);
                     }
                     // toggle open a white hole (by id)
                     Some(":ht") | Some("ht") => {
@@ -385,12 +408,16 @@ pub fn command_parser(
                                                         }
                                                     } else {
                                                         if c1 == Some("r") {
-                                                            trans.scale.x = (trans.scale.x+n).max(0.);
-                                                            trans.scale.y = (trans.scale.y+n).max(0.);
+                                                            trans.scale.x =
+                                                                (trans.scale.x + n).max(0.);
+                                                            trans.scale.y =
+                                                                (trans.scale.y + n).max(0.);
                                                         } else if c1 == Some("rx") {
-                                                            trans.scale.x = (trans.scale.x+n).max(0.);
+                                                            trans.scale.x =
+                                                                (trans.scale.x + n).max(0.);
                                                         } else {
-                                                            trans.scale.y = (trans.scale.y+n).max(0.);
+                                                            trans.scale.y =
+                                                                (trans.scale.y + n).max(0.);
                                                         }
                                                     }
                                                     lt_to_open = (Some(e), Some(-2));
@@ -411,12 +438,12 @@ pub fn command_parser(
                                                     }
                                                 } else {
                                                     if c1 == Some("r") {
-                                                        trans.scale.x = (trans.scale.x+n).max(0.);
-                                                        trans.scale.y = (trans.scale.y+n).max(0.);
+                                                        trans.scale.x = (trans.scale.x + n).max(0.);
+                                                        trans.scale.y = (trans.scale.y + n).max(0.);
                                                     } else if c1 == Some("rx") {
-                                                        trans.scale.x = (trans.scale.x+n).max(0.);
+                                                        trans.scale.x = (trans.scale.x + n).max(0.);
                                                     } else {
-                                                        trans.scale.y = (trans.scale.y+n).max(0.);
+                                                        trans.scale.y = (trans.scale.y + n).max(0.);
                                                     }
                                                 }
                                             }
@@ -637,7 +664,7 @@ pub fn command_parser(
                                                     if c0 == Some(":set") || c0 == Some("set") {
                                                         vertices.0 = n.max(3);
                                                     } else {
-                                                        vertices.0 = (vertices.0+n).max(3);
+                                                        vertices.0 = (vertices.0 + n).max(3);
                                                     }
                                                     lt_to_open = (Some(e), Some(-11));
                                                 }
@@ -645,11 +672,13 @@ pub fn command_parser(
                                         }
                                     } else if let Ok(n) = s.parse::<usize>() {
                                         for id in access.selected_query.iter() {
-                                            if let Ok(mut vertices) = access.vertices_query.get_mut(id) {
+                                            if let Ok(mut vertices) =
+                                                access.vertices_query.get_mut(id)
+                                            {
                                                 if c0 == Some(":set") || c0 == Some("set") {
                                                     vertices.0 = n.max(3);
                                                 } else {
-                                                    vertices.0 = (vertices.0+n).max(3);
+                                                    vertices.0 = (vertices.0 + n).max(3);
                                                 }
                                             }
                                         }
@@ -666,7 +695,8 @@ pub fn command_parser(
                                                     if c0 == Some(":set") || c0 == Some("set") {
                                                         t.rotation = Quat::from_rotation_z(n);
                                                     } else {
-                                                        let rot = t.rotation.to_euler(EulerRot::XYZ).2;
+                                                        let rot =
+                                                            t.rotation.to_euler(EulerRot::XYZ).2;
                                                         t.rotation = Quat::from_rotation_z(rot + n);
                                                     }
                                                     lt_to_open = (Some(e), Some(-12));
@@ -701,17 +731,22 @@ pub fn command_parser(
                                             let op_str = op_str.trim_start_matches(s).trim_start();
                                             op.0 = op_str.into();
                                             access.op_changed_query.get_mut(e).unwrap().0 = true;
-                                            access.net_query.get_mut(e).unwrap().0 = str_to_net(op_str);
-                                            access.op_num_query.get_mut(e).unwrap().0 = str_to_op_num(op_str);
+                                            access.net_query.get_mut(e).unwrap().0 =
+                                                str_to_net(op_str);
+                                            access.op_num_query.get_mut(e).unwrap().0 =
+                                                str_to_op_num(op_str);
                                             lt_to_open = (Some(e), Some(0));
                                         }
                                     } else {
                                         for id in access.selected_query.iter() {
                                             if let Ok(mut op) = access.op_query.get_mut(id) {
                                                 op.0 = op_str.into();
-                                                access.op_changed_query.get_mut(id).unwrap().0 = true;
-                                                access.net_query.get_mut(id).unwrap().0 = str_to_net(op_str);
-                                                access.op_num_query.get_mut(id).unwrap().0 = str_to_op_num(op_str);
+                                                access.op_changed_query.get_mut(id).unwrap().0 =
+                                                    true;
+                                                access.net_query.get_mut(id).unwrap().0 =
+                                                    str_to_net(op_str);
+                                                access.op_num_query.get_mut(id).unwrap().0 =
+                                                    str_to_op_num(op_str);
                                             }
                                         }
                                         lt_to_open = (None, Some(0));
@@ -761,7 +796,9 @@ pub fn command_parser(
                                         }
                                     } else {
                                         let mut tmp = Vec::new();
-                                        if let Ok(n) = parse_with_constants(s) { tmp.push(n); }
+                                        if let Ok(n) = parse_with_constants(s) {
+                                            tmp.push(n);
+                                        }
                                         for n in command {
                                             if let Ok(n) = parse_with_constants(n) {
                                                 tmp.push(n);
@@ -787,7 +824,8 @@ pub fn command_parser(
                                 if access.selected_query.is_empty() {
                                     if !tmp.is_empty() {
                                         let controller = tmp.remove(0);
-                                        if let Ok(mut c) = access.targets_query.get_mut(controller) {
+                                        if let Ok(mut c) = access.targets_query.get_mut(controller)
+                                        {
                                             c.0 = tmp;
                                             lt_to_open = (Some(controller), Some(-14));
                                         }
@@ -838,7 +876,8 @@ pub fn command_parser(
                                 if let Ok(bh) = access.black_hole_query.get(*hole) {
                                     if let Ok(wh) = access.white_hole_query.get_mut(bh.wh) {
                                         if wh.link_types.0 == lt {
-                                            access.white_hole_query.get_mut(bh.wh).unwrap().open = true;
+                                            access.white_hole_query.get_mut(bh.wh).unwrap().open =
+                                                true;
                                         }
                                     }
                                 }
@@ -1021,9 +1060,11 @@ pub fn command_parser(
             // insert info texts for selected entities
             Some("II") => {
                 for e in access.selected_query.iter() {
-                    if info_text_query.contains(e) { continue; }
-                    let info_text = commands.spawn(
-                        Text2dBundle {
+                    if info_text_query.contains(e) {
+                        continue;
+                    }
+                    let info_text = commands
+                        .spawn(Text2dBundle {
                             text: Text::from_sections([
                                 TextSection::new(
                                     "",
@@ -1041,11 +1082,16 @@ pub fn command_parser(
                                     "",
                                     TextStyle { color: Color::BLACK, font_size: 120., ..default() },
                                 ),
-                            ]).with_justify(JustifyText::Left),
-                            transform: Transform::from_scale(Vec3::new(access.text_size.0, access.text_size.0, 1.)),
+                            ])
+                            .with_justify(JustifyText::Left),
+                            transform: Transform::from_scale(Vec3::new(
+                                access.text_size.0,
+                                access.text_size.0,
+                                1.,
+                            )),
                             ..default()
-                        }
-                    ).id();
+                        })
+                        .id();
                     commands.entity(e).insert(InfoText(info_text));
                 }
                 text.clear();
@@ -1068,7 +1114,8 @@ pub fn command_parser(
                     }
                 } else {
                     for (e, t) in info_text_query.iter() {
-                        access.text_query.get_mut(t.0).unwrap().sections[0].value = format!("{}\n", e);
+                        access.text_query.get_mut(t.0).unwrap().sections[0].value =
+                            format!("{}\n", e);
                     }
                 }
                 *ids_shown = !*ids_shown;
@@ -1096,7 +1143,9 @@ pub fn command_parser(
             Some("np") => {
                 text.clear();
                 for e in access.selected_query.iter() {
-                    if let Ok(e) = access.op_query.get(e) { *text += &format!("> {}\n", e.0); }
+                    if let Ok(e) = access.op_query.get(e) {
+                        *text += &format!("> {}\n", e.0);
+                    }
                     if let Ok(e) = access.net_query.get(e) {
                         let mut net = e.0.clone();
                         *text += &net.display();
@@ -1116,14 +1165,19 @@ pub fn command_parser(
                 *text = ">OUTPUT DEVICES:\n".to_string();
                 for (i, host) in hosts.iter().enumerate() {
                     *text += &format!("{}: {:?}:\n", i, host);
-                    let devices = cpal::platform::host_from_id(*host).unwrap().output_devices().unwrap();
+                    let devices =
+                        cpal::platform::host_from_id(*host).unwrap().output_devices().unwrap();
                     for (j, device) in devices.enumerate() {
                         if let Ok(config) = device.default_input_config() {
                             let sr = config.sample_rate().0;
                             let b = config.buffer_size();
-                            let b = if let cpal::SupportedBufferSize::Range {min,max} = b {
-                                format!("min:{} max:{}", min, max) } else { String::from("unknown") };
-                            *text += &format!("    {}: {:?}  sr:{:?} b:[{}]\n", j, device.name(), sr, b);
+                            let b = if let cpal::SupportedBufferSize::Range { min, max } = b {
+                                format!("min:{} max:{}", min, max)
+                            } else {
+                                String::from("unknown")
+                            };
+                            *text +=
+                                &format!("    {}: {:?}  sr:{:?} b:[{}]\n", j, device.name(), sr, b);
                         } else {
                             *text += &format!("    {}: {:?}\n", j, device.name());
                         }
@@ -1135,14 +1189,19 @@ pub fn command_parser(
                 *text = ">INPUT DEVICES:\n".to_string();
                 for (i, host) in hosts.iter().enumerate() {
                     *text += &format!("{}: {:?}:\n", i, host);
-                    let devices = cpal::platform::host_from_id(*host).unwrap().input_devices().unwrap();
+                    let devices =
+                        cpal::platform::host_from_id(*host).unwrap().input_devices().unwrap();
                     for (j, device) in devices.enumerate() {
                         if let Ok(config) = device.default_input_config() {
                             let sr = config.sample_rate().0;
                             let b = config.buffer_size();
-                            let b = if let cpal::SupportedBufferSize::Range {min,max} = b {
-                                format!("min:{} max:{}", min, max) } else { String::from("unknown") };
-                            *text += &format!("    {}: {:?}  sr:{:?} b:[{}]\n", j, device.name(), sr, b);
+                            let b = if let cpal::SupportedBufferSize::Range { min, max } = b {
+                                format!("min:{} max:{}", min, max)
+                            } else {
+                                String::from("unknown")
+                            };
+                            *text +=
+                                &format!("    {}: {:?}  sr:{:?} b:[{}]\n", j, device.name(), sr, b);
                         } else {
                             *text += &format!("    {}: {:?}\n", j, device.name());
                         }
@@ -1454,17 +1513,19 @@ pub fn command_parser(
             Some("p") | Some("\"+p") => {
                 #[cfg(not(target_arch = "wasm32"))]
                 if let Ok(string) = access.clipboard.0.get_contents() {
-                    let _ = access.paste_chan.0.0.try_send(string);
+                    let _ = access.paste_chan.0 .0.try_send(string);
                 }
                 #[cfg(target_arch = "wasm32")]
                 if let Some(win) = web_sys::window() {
                     if let Some(clip) = win.navigator().clipboard() {
-                        let sender = access.paste_chan.0.0.clone();
-                        let cb = wasm_bindgen::closure::Closure::new(move |val: wasm_bindgen::JsValue| {
-                            if let Some(string) = val.as_string() {
-                                let _ = sender.try_send(string);
-                            }
-                        });
+                        let sender = access.paste_chan.0 .0.clone();
+                        let cb = wasm_bindgen::closure::Closure::new(
+                            move |val: wasm_bindgen::JsValue| {
+                                if let Some(string) = val.as_string() {
+                                    let _ = sender.try_send(string);
+                                }
+                            },
+                        );
                         let _ = clip.read_text().then(&cb);
                         // fuck it
                         std::mem::forget(cb);
@@ -1483,12 +1544,14 @@ pub fn command_parser(
                 *text = format!(">quartz version: {}", &access.version.0);
             }
             Some("quartz") => {
-                *text = String::from("> never gonna give you up
+                *text = String::from(
+                    "> never gonna give you up
 never gonna let you down
 never gonna run around and desert you
 never gonna make you cry
 never gonna say goodbye
-never gonna tell a lie and hurt you");
+never gonna tell a lie and hurt you",
+                );
             }
             Some("awa") => {
                 let mut aw = "aw".repeat(100);

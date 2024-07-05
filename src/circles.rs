@@ -7,10 +7,7 @@ use bevy::{
 
 use fundsp::net::Net;
 
-use crate::{
-    components::*,
-    functions::*,
-};
+use crate::{components::*, functions::*};
 
 pub fn spawn_circles(
     mut commands: Commands,
@@ -24,8 +21,9 @@ pub fn spawn_circles(
     default_verts: Res<DefaultDrawVerts>,
     mut polygon_handles: ResMut<PolygonHandles>,
 ) {
-    if mouse_button_input.just_released(MouseButton::Left) &&
-    !keyboard_input.pressed(KeyCode::Space) {
+    if mouse_button_input.just_released(MouseButton::Left)
+        && !keyboard_input.pressed(KeyCode::Space)
+    {
         let r = cursor.f.distance(cursor.i);
         let v = default_verts.0;
         let color = default_color.0;
@@ -42,7 +40,7 @@ pub fn spawn_circles(
                 material: materials.add(ColorMaterial::from_color(color)),
                 transform: Transform {
                     translation: cursor.i.extend(*depth),
-                    scale: Vec3::new(r,r,1.),
+                    scale: Vec3::new(r, r, 1.),
                     ..default()
                 },
                 ..default()
@@ -57,7 +55,7 @@ pub fn spawn_circles(
             Order(0),
             (
                 OpNum(0),
-                Network(Net::new(0,0)),
+                Network(Net::new(0, 0)),
                 NetIns(Vec::new()),
                 OpChanged(false),
                 GainedWH(false),
@@ -81,8 +79,8 @@ pub fn highlight_selected(
 ) {
     for (e, v, t) in selected.iter() {
         let trans = t.translation.xy().extend(t.translation.z - 0.00001);
-        let highlight = commands.spawn(
-            ColorMesh2dBundle {
+        let highlight = commands
+            .spawn(ColorMesh2dBundle {
                 mesh: polygon_handles.0[v.0].clone().unwrap(),
                 material: materials.add(ColorMaterial::from_color(highlight_color.0)),
                 transform: Transform {
@@ -91,8 +89,8 @@ pub fn highlight_selected(
                     rotation: t.rotation,
                 },
                 ..default()
-            }
-        ).id();
+            })
+            .id();
         commands.entity(e).insert(Highlight(highlight));
     }
     for e in deselected.iter() {
@@ -137,7 +135,9 @@ pub fn update_selection(
     order_query: Query<(), With<Order>>, // non-hole circle
     mut clicked_on_space: ResMut<ClickedOnSpace>,
 ) {
-    if keyboard_input.pressed(KeyCode::Space) { return; }
+    if keyboard_input.pressed(KeyCode::Space) {
+        return;
+    }
     let shift = keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
     let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
     let alt = keyboard_input.any_pressed([KeyCode::AltLeft, KeyCode::AltRight]);
@@ -145,8 +145,9 @@ pub fn update_selection(
         for e in visible.single().get::<WithMesh2d>() {
             if let Ok(t) = circle_trans_query.get(*e) {
                 if top_clicked_circle.is_some() {
-                    if t.translation.z > top_clicked_circle.unwrap().1 &&
-                        cursor.i.distance_squared(t.translation.xy()) < t.scale.x * t.scale.x {
+                    if t.translation.z > top_clicked_circle.unwrap().1
+                        && cursor.i.distance_squared(t.translation.xy()) < t.scale.x * t.scale.x
+                    {
                         *top_clicked_circle = Some((*e, t.translation.z));
                     }
                 } else if cursor.i.distance_squared(t.translation.xy()) < t.scale.x * t.scale.x {
@@ -157,8 +158,9 @@ pub fn update_selection(
         if let Some(top) = *top_clicked_circle {
             clicked_on_space.0 = false;
             if !selected.contains(top.0) {
-                if shift { commands.entity(top.0).insert(Selected); }
-                else {
+                if shift {
+                    commands.entity(top.0).insert(Selected);
+                } else {
                     for entity in selected.iter() {
                         commands.entity(entity).remove::<Selected>();
                     }
@@ -176,16 +178,29 @@ pub fn update_selection(
                 }
             }
             // select those in the dragged area
-            let (min_x, max_x) = if cursor.i.x < cursor.f.x {(cursor.i.x, cursor.f.x)} else {(cursor.f.x, cursor.i.x)};
-            let (min_y, max_y) = if cursor.i.y < cursor.f.y {(cursor.i.y, cursor.f.y)} else {(cursor.f.y, cursor.i.y)};
+            let (min_x, max_x) = if cursor.i.x < cursor.f.x {
+                (cursor.i.x, cursor.f.x)
+            } else {
+                (cursor.f.x, cursor.i.x)
+            };
+            let (min_y, max_y) = if cursor.i.y < cursor.f.y {
+                (cursor.i.y, cursor.f.y)
+            } else {
+                (cursor.f.y, cursor.i.y)
+            };
             for e in visible.single().get::<WithMesh2d>() {
                 if let Ok(t) = circle_trans_query.get(*e) {
                     if (min_x < t.translation.x && t.translation.x < max_x)
-                    && (min_y < t.translation.y && t.translation.y < max_y) {
+                        && (min_y < t.translation.y && t.translation.y < max_y)
+                    {
                         // only select holes if ctrl is held
-                        if ctrl && order_query.contains(*e) { continue; }
+                        if ctrl && order_query.contains(*e) {
+                            continue;
+                        }
                         // only select non-holes if alt is held
-                        else if alt && !order_query.contains(*e) { continue; }
+                        else if alt && !order_query.contains(*e) {
+                            continue;
+                        }
                         commands.entity(*e).insert(Selected);
                     }
                 }
@@ -203,10 +218,13 @@ pub fn move_selected(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     drag_modes: Res<DragModes>,
 ) {
-    if keyboard_input.pressed(KeyCode::Space) { return; }
+    if keyboard_input.pressed(KeyCode::Space) {
+        return;
+    }
     if drag_modes.t {
-        if mouse_button_input.pressed(MouseButton::Left) &&
-        !mouse_button_input.just_pressed(MouseButton::Left) {
+        if mouse_button_input.pressed(MouseButton::Left)
+            && !mouse_button_input.just_pressed(MouseButton::Left)
+        {
             for mut t in circle_query.iter_mut() {
                 t.translation.x += cursor.d.x;
                 t.translation.y += cursor.d.y;
@@ -242,10 +260,13 @@ pub fn rotate_selected(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     drag_modes: Res<DragModes>,
 ) {
-    if keyboard_input.pressed(KeyCode::Space) { return; }
+    if keyboard_input.pressed(KeyCode::Space) {
+        return;
+    }
     if drag_modes.o {
         if mouse_button_input.pressed(MouseButton::Left)
-        && !mouse_button_input.just_pressed(MouseButton::Left) {
+            && !mouse_button_input.just_pressed(MouseButton::Left)
+        {
             for mut t in query.iter_mut() {
                 t.rotate_z(cursor.d.y / 100.);
             }
@@ -270,9 +291,12 @@ pub fn update_color(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     drag_modes: Res<DragModes>,
 ) {
-    if keyboard_input.pressed(KeyCode::Space) { return; }
+    if keyboard_input.pressed(KeyCode::Space) {
+        return;
+    }
     if mouse_button_input.pressed(MouseButton::Left)
-    && !mouse_button_input.just_pressed(MouseButton::Left) {
+        && !mouse_button_input.just_pressed(MouseButton::Left)
+    {
         if drag_modes.h {
             for mut c in query.iter_mut() {
                 let h = (c.0.hue + cursor.d.x).clamp(0., 360.);
@@ -360,10 +384,13 @@ pub fn update_radius(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     drag_modes: Res<DragModes>,
 ) {
-    if keyboard_input.pressed(KeyCode::Space) { return; }
+    if keyboard_input.pressed(KeyCode::Space) {
+        return;
+    }
     if drag_modes.r {
         if mouse_button_input.pressed(MouseButton::Left)
-        && !mouse_button_input.just_pressed(MouseButton::Left) {
+            && !mouse_button_input.just_pressed(MouseButton::Left)
+        {
             for mut t in query.iter_mut() {
                 t.scale.x = (t.scale.x + cursor.d.y).max(0.);
                 t.scale.y = (t.scale.y + cursor.d.y).max(0.);
@@ -392,10 +419,13 @@ pub fn update_vertices(
     cursor: Res<CursorInfo>,
     mut delta: Local<f32>,
 ) {
-    if keyboard_input.pressed(KeyCode::Space) { return; }
+    if keyboard_input.pressed(KeyCode::Space) {
+        return;
+    }
     if drag_modes.v {
-        if mouse_button_input.pressed(MouseButton::Left) &&
-        !mouse_button_input.just_pressed(MouseButton::Left) {
+        if mouse_button_input.pressed(MouseButton::Left)
+            && !mouse_button_input.just_pressed(MouseButton::Left)
+        {
             *delta += cursor.d.y / 10.;
             let d = *delta as i32;
             if d >= 1 {
@@ -450,10 +480,13 @@ pub fn update_num(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     drag_modes: Res<DragModes>,
 ) {
-    if keyboard_input.pressed(KeyCode::Space) { return; }
+    if keyboard_input.pressed(KeyCode::Space) {
+        return;
+    }
     if drag_modes.n {
-        if mouse_button_input.pressed(MouseButton::Left) &&
-        !mouse_button_input.just_pressed(MouseButton::Left) {
+        if mouse_button_input.pressed(MouseButton::Left)
+            && !mouse_button_input.just_pressed(MouseButton::Left)
+        {
             for mut n in query.iter_mut() {
                 n.0 += cursor.d.y / 10.;
             }
@@ -508,19 +541,21 @@ pub fn update_info_text(
         }
         if let Ok(wh) = white_hole_query.get_mut(id) {
             if wh.is_changed() || info.is_added() {
-                text_query.get_mut(info.0).unwrap().sections[1].value = lt_to_string(wh.link_types.1);
+                text_query.get_mut(info.0).unwrap().sections[1].value =
+                    lt_to_string(wh.link_types.1);
             }
         }
         if let Ok(bh) = black_hole_query.get(id) {
             if let Ok(wh) = white_hole_query.get_mut(bh.wh) {
                 if wh.is_changed() || info.is_added() {
-                    text_query.get_mut(info.0).unwrap().sections[1].value = lt_to_string(wh.link_types.0);
+                    text_query.get_mut(info.0).unwrap().sections[1].value =
+                        lt_to_string(wh.link_types.0);
                 }
             }
         }
         let c = color_query.get_mut(id).unwrap();
         if c.is_changed() || info.is_added() {
-            let l = if c.0.lightness < 0.3 {1.} else {0.};
+            let l = if c.0.lightness < 0.3 { 1. } else { 0. };
             let opposite_color = Color::hsl(0., 1.0, l);
             let t = &mut text_query.get_mut(info.0).unwrap();
             for section in &mut t.sections {
@@ -544,7 +579,8 @@ pub fn delete_selected(
 ) {
     let mut order = false;
     for e in selected_query.iter() {
-        if let Ok(holes) = holes_query.get(e) { // it's a circle
+        if let Ok(holes) = holes_query.get(e) {
+            // it's a circle
             for hole in &holes.0.clone() {
                 if let Ok(bh) = bh_query.get(*hole) {
                     let arrow = arrow_query.get(bh.wh).unwrap().0;
@@ -567,7 +603,9 @@ pub fn delete_selected(
                     holes_query.get_mut(bh.wh_parent).unwrap().0.retain(|x| *x != bh.wh);
                 } else if let Ok(wh) = wh_query.get(*hole) {
                     // don't remove things that will get removed later
-                    if selected_query.contains(wh.bh_parent) { continue; }
+                    if selected_query.contains(wh.bh_parent) {
+                        continue;
+                    }
                     let arrow = arrow_query.get(*hole).unwrap().0;
                     commands.entity(arrow).despawn();
                     commands.entity(wh.bh).despawn();
@@ -595,12 +633,17 @@ pub fn delete_selected(
                 commands.entity(highlight.0).despawn();
             }
             commands.entity(e).despawn();
-        } else { // it's a hole
+        } else {
+            // it's a hole
             if let Ok(wh) = wh_query.get(e) {
                 // get parent
                 let parent = bh_query.get(wh.bh).unwrap().wh_parent;
-                if selected_query.contains(parent) { continue; }
-                if selected_query.contains(wh.bh_parent) { continue; }
+                if selected_query.contains(parent) {
+                    continue;
+                }
+                if selected_query.contains(wh.bh_parent) {
+                    continue;
+                }
                 // remove from parents' vecs
                 holes_query.get_mut(parent).unwrap().0.retain(|x| *x != e);
                 holes_query.get_mut(wh.bh_parent).unwrap().0.retain(|x| *x != wh.bh);
@@ -625,9 +668,15 @@ pub fn delete_selected(
                 }
             } else if let Ok(bh) = bh_query.get(e) {
                 let parent = wh_query.get(bh.wh).unwrap().bh_parent;
-                if selected_query.contains(parent) { continue; }
-                if selected_query.contains(bh.wh_parent) { continue; }
-                if selected_query.contains(bh.wh) { continue; }
+                if selected_query.contains(parent) {
+                    continue;
+                }
+                if selected_query.contains(bh.wh_parent) {
+                    continue;
+                }
+                if selected_query.contains(bh.wh) {
+                    continue;
+                }
                 holes_query.get_mut(parent).unwrap().0.retain(|x| *x != e);
                 holes_query.get_mut(bh.wh_parent).unwrap().0.retain(|x| *x != bh.wh);
                 lost_wh_query.get_mut(bh.wh_parent).unwrap().0 = true;
@@ -650,7 +699,9 @@ pub fn delete_selected(
             }
         }
     }
-    if order { order_change.send_default(); }
+    if order {
+        order_change.send_default();
+    }
 }
 
 pub fn open_after_drag(
@@ -662,18 +713,36 @@ pub fn open_after_drag(
     black_hole_query: Query<&BlackHole>,
 ) {
     let arrows = [KeyCode::ArrowDown, KeyCode::ArrowUp, KeyCode::ArrowLeft, KeyCode::ArrowRight];
-    if keyboard_input.any_pressed(arrows)
-    || mouse_button_input.pressed(MouseButton::Left) {
+    if keyboard_input.any_pressed(arrows) || mouse_button_input.pressed(MouseButton::Left) {
         let mut lts_to_open = Vec::new();
-        if drag_modes.t { lts_to_open.push(-3); lts_to_open.push(-4); }
-        if drag_modes.r { lts_to_open.push(-2); }
-        if drag_modes.n { lts_to_open.push(-1); }
-        if drag_modes.h { lts_to_open.push(-6); }
-        if drag_modes.s { lts_to_open.push(-7); }
-        if drag_modes.l { lts_to_open.push(-8); }
-        if drag_modes.a { lts_to_open.push(-9); }
-        if drag_modes.o { lts_to_open.push(-12); }
-        if drag_modes.v { lts_to_open.push(-11); }
+        if drag_modes.t {
+            lts_to_open.push(-3);
+            lts_to_open.push(-4);
+        }
+        if drag_modes.r {
+            lts_to_open.push(-2);
+        }
+        if drag_modes.n {
+            lts_to_open.push(-1);
+        }
+        if drag_modes.h {
+            lts_to_open.push(-6);
+        }
+        if drag_modes.s {
+            lts_to_open.push(-7);
+        }
+        if drag_modes.l {
+            lts_to_open.push(-8);
+        }
+        if drag_modes.a {
+            lts_to_open.push(-9);
+        }
+        if drag_modes.o {
+            lts_to_open.push(-12);
+        }
+        if drag_modes.v {
+            lts_to_open.push(-11);
+        }
         for holes in query.iter() {
             for hole in &holes.0 {
                 if let Ok(bh) = black_hole_query.get(*hole) {

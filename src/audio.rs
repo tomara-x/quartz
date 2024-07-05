@@ -23,7 +23,7 @@ pub fn default_out_device(world: &mut World) {
             format => {
                 error!("unsupported sample format: {}", format);
                 None
-            },
+            }
         };
         if let Some(stream) = stream {
             world.insert_non_send_resource(OutStream(stream));
@@ -47,8 +47,12 @@ pub fn set_out_device(world: &mut World) {
                         let default_config = device.default_output_config().unwrap();
                         let mut config = default_config.config();
                         config.channels = 2;
-                        if let Some(sr) = sr { config.sample_rate = cpal::SampleRate(sr); }
-                        if let Some(b) = b { config.buffer_size = cpal::BufferSize::Fixed(b); }
+                        if let Some(sr) = sr {
+                            config.sample_rate = cpal::SampleRate(sr);
+                        }
+                        if let Some(b) = b {
+                            config.buffer_size = cpal::BufferSize::Fixed(b);
+                        }
                         let stream = match default_config.sample_format() {
                             cpal::SampleFormat::F32 => run::<f32>(&device, &config, slot.1),
                             cpal::SampleFormat::I16 => run::<i16>(&device, &config, slot.1),
@@ -56,7 +60,7 @@ pub fn set_out_device(world: &mut World) {
                             format => {
                                 error!("unsupported sample format: {}", format);
                                 None
-                            },
+                            }
                         };
                         if let Some(stream) = stream {
                             world.insert_non_send_resource(OutStream(stream));
@@ -74,7 +78,8 @@ fn run<T>(
     device: &cpal::Device,
     config: &cpal::StreamConfig,
     slot: SlotBackend,
-) -> Option<cpal::Stream> where
+) -> Option<cpal::Stream>
+where
     T: SizedSample + FromSample<f32>,
 {
     let mut slot = BlockRateAdapter::new(Box::new(slot));
@@ -89,9 +94,7 @@ fn run<T>(
     let err_fn = |err| eprintln!("an error occurred on stream: {}", err);
     let stream = device.build_output_stream(
         config,
-        move |data: &mut [T], _: &cpal::OutputCallbackInfo| {
-            write_data(data, &mut next_value)
-        },
+        move |data: &mut [T], _: &cpal::OutputCallbackInfo| write_data(data, &mut next_value),
         err_fn,
         None,
     );
@@ -114,8 +117,6 @@ where
     }
 }
 
-
-
 pub fn default_in_device(world: &mut World) {
     let (ls, lr) = bounded(64);
     let (rs, rr) = bounded(64);
@@ -130,7 +131,7 @@ pub fn default_in_device(world: &mut World) {
             format => {
                 error!("unsupported sample format: {}", format);
                 None
-            },
+            }
         };
         if let Some(stream) = stream {
             world.insert_non_send_resource(InStream(stream));
@@ -154,8 +155,12 @@ pub fn set_in_device(world: &mut World) {
                     if let Some(device) = devices.nth(d) {
                         let default_config = device.default_input_config().unwrap();
                         let mut config = default_config.config();
-                        if let Some(sr) = sr { config.sample_rate = cpal::SampleRate(sr); }
-                        if let Some(b) = b { config.buffer_size = cpal::BufferSize::Fixed(b); }
+                        if let Some(sr) = sr {
+                            config.sample_rate = cpal::SampleRate(sr);
+                        }
+                        if let Some(b) = b {
+                            config.buffer_size = cpal::BufferSize::Fixed(b);
+                        }
                         let stream = match default_config.sample_format() {
                             cpal::SampleFormat::F32 => run_in::<f32>(&device, &config, ls, rs),
                             cpal::SampleFormat::I16 => run_in::<i16>(&device, &config, ls, rs),
@@ -163,7 +168,7 @@ pub fn set_in_device(world: &mut World) {
                             format => {
                                 error!("unsupported sample format: {}", format);
                                 None
-                            },
+                            }
                         };
                         if let Some(stream) = stream {
                             world.insert_non_send_resource(InStream(stream));
@@ -182,8 +187,10 @@ fn run_in<T>(
     config: &cpal::StreamConfig,
     ls: Sender<f32>,
     rs: Sender<f32>,
-) -> Option<cpal::Stream> where
-    T: SizedSample, f32: FromSample<T>
+) -> Option<cpal::Stream>
+where
+    T: SizedSample,
+    f32: FromSample<T>,
 {
     let channels = config.channels as usize;
     let err_fn = |err| eprintln!("an error occurred on stream: {}", err);
@@ -205,7 +212,8 @@ fn run_in<T>(
 
 fn read_data<T>(input: &[T], channels: usize, ls: Sender<f32>, rs: Sender<f32>)
 where
-    T: SizedSample, f32: FromSample<T>
+    T: SizedSample,
+    f32: FromSample<T>,
 {
     for frame in input.chunks(channels) {
         for (channel, sample) in frame.iter().enumerate() {

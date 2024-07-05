@@ -1,46 +1,45 @@
 #![allow(clippy::type_complexity, clippy::too_many_arguments)]
 
 use bevy::{
+    asset::ron::Deserializer,
+    color::Hsla,
     core_pipeline::{
         bloom::{BloomCompositeMode, BloomSettings},
         tonemapping::Tonemapping,
     },
-    utils::Duration,
-    winit::{WinitSettings, UpdateMode},
-    tasks::IoTaskPool,
-    scene::{
-        SceneInstance,
-        serde::SceneDeserializer,
-    },
-    asset::ron::Deserializer,
-    render::view::RenderLayers,
-    window::FileDragAndDrop::DroppedFile,
     ecs::system::SystemParam,
+    prelude::*,
+    render::view::RenderLayers,
+    scene::{serde::SceneDeserializer, SceneInstance},
     sprite::Mesh2dHandle,
-    color::Hsla,
-    prelude::*
+    tasks::IoTaskPool,
+    utils::Duration,
+    window::FileDragAndDrop::DroppedFile,
+    winit::{UpdateMode, WinitSettings},
 };
 
 use bevy_pancam::{PanCam, PanCamPlugin};
-use std::{fs::File, io::Write};
 use copypasta::{ClipboardContext, ClipboardProvider};
 use serde::de::DeserializeSeed;
+use std::{fs::File, io::Write};
 
 #[cfg(feature = "inspector")]
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
-mod components;
-mod process;
-mod cursor;
-mod connections;
-mod circles;
 mod audio;
+mod circles;
 mod commands;
-mod nodes;
+mod components;
+mod connections;
+mod cursor;
 mod functions;
+mod nodes;
 mod osc;
-use {components::*, process::*, cursor::*, connections::*,
-     circles::*, audio::*, commands::*, functions::*, osc::*};
+mod process;
+use {
+    audio::*, circles::*, commands::*, components::*, connections::*, cursor::*, functions::*,
+    osc::*, process::*,
+};
 
 fn main() {
     let mut app = App::new();
@@ -57,18 +56,13 @@ fn main() {
         focused_mode: UpdateMode::reactive_low_power(Duration::from_secs_f64(1.0 / 60.0)),
         unfocused_mode: UpdateMode::reactive_low_power(Duration::from_secs_f64(1.0 / 30.0)),
     })
-
     .add_plugins(PanCamPlugin)
-    .insert_resource(OscSender {
-        host: "127.0.0.1".to_string(),
-        port: 1729
-    })
+    .insert_resource(OscSender { host: "127.0.0.1".to_string(), port: 1729 })
     .insert_resource(OscReceiver { socket: None })
-
-    .insert_resource(ClearColor(Color::hsla(0.,0.,0.,1.)))
-    .insert_resource(DefaultDrawColor(Hsla::new(270.,1.,0.5,1.)))
+    .insert_resource(ClearColor(Color::hsla(0., 0., 0., 1.)))
+    .insert_resource(DefaultDrawColor(Hsla::new(270., 1., 0.5, 1.)))
     .insert_resource(DefaultDrawVerts(4))
-    .insert_resource(HighlightColor(Hsla::new(0.0,1.0,0.5,1.)))
+    .insert_resource(HighlightColor(Hsla::new(0.0, 1.0, 0.5, 1.)))
     .insert_resource(ConnectionColor(Hsla::new(0., 1., 1., 0.7)))
     .insert_resource(ConnectionWidth(4.))
     .insert_resource(CommandColor(Hsla::new(0., 0., 0.7, 1.)))
@@ -82,15 +76,12 @@ fn main() {
     .insert_resource(Version(format!("{} {}", env!("CARGO_PKG_VERSION"), env!("COMMIT_HASH"))))
     .insert_resource(PasteChannel(crossbeam_channel::bounded::<String>(1)))
     .init_resource::<PolygonHandles>()
-
     .add_systems(Startup, setup)
-
     // audio
     .add_systems(Startup, default_out_device)
     .add_systems(Update, set_out_device)
     .add_systems(Startup, default_in_device)
     .add_systems(Update, set_in_device)
-
     .add_systems(Update, toggle_pan)
     .init_state::<Mode>()
     .add_systems(Update, save_scene)
@@ -141,7 +132,6 @@ fn main() {
     .add_systems(PostUpdate, process)
     // commands
     .add_systems(Update, command_parser)
-
     // type registry
     .register_type::<DragModes>()
     .register_type::<Queue>()
@@ -168,8 +158,7 @@ fn main() {
     .register_type::<TextSize>()
     .register_type::<Version>()
     .register_type::<Holes>()
-    .register_type::<NodeLimit>()
-    ;
+    .register_type::<NodeLimit>();
 
     #[cfg(feature = "inspector")]
     app.add_plugins(WorldInspectorPlugin::new());
@@ -188,13 +177,10 @@ fn setup(
     // camera
     commands.spawn((
         Camera2dBundle {
-            camera: Camera {
-                hdr: true,
-                ..default()
-            },
+            camera: Camera { hdr: true, ..default() },
             tonemapping: Tonemapping::TonyMcMapface,
             transform: Transform::from_translation(Vec3::Z * 200.),
-        ..default()
+            ..default()
         },
         BloomSettings {
             intensity: 0.5,
@@ -203,17 +189,13 @@ fn setup(
             composite_mode: BloomCompositeMode::Additive,
             ..default()
         },
-        PanCam {
-            enabled: false,
-            max_scale: Some(80.),
-            min_scale: 0.005,
-            ..default()
-        },
+        PanCam { enabled: false, max_scale: Some(80.), min_scale: 0.005, ..default() },
         RenderLayers::from_layers(&[0, 1, 2, 3, 4]),
     ));
 
     // command line
-    commands.spawn(NodeBundle {
+    commands
+        .spawn(NodeBundle {
             style: Style {
                 width: Val::Percent(100.0),
                 height: Val::Percent(100.0),
@@ -226,11 +208,7 @@ fn setup(
             parent.spawn((
                 TextBundle::from_section(
                     "",
-                    TextStyle {
-                        font_size: 13.0,
-                        color: command_color.0.into(),
-                        ..default()
-                    },
+                    TextStyle { font_size: 13.0, color: command_color.0.into(), ..default() },
                 )
                 .with_style(Style {
                     margin: UiRect::all(Val::Px(5.)),
@@ -242,28 +220,29 @@ fn setup(
         });
 
     // selecting / drawing / connecting indicator
-    let id = commands.spawn((
-        ColorMesh2dBundle {
-            mesh: meshes.add(Triangle2d::default()).into(),
-            material: materials.add(ColorMaterial::from_color(indicator_color.0)),
-            transform: Transform::from_translation(Vec3::Z),
-            ..default()
-        },
-        Col(indicator_color.0),
-    )).id();
+    let id = commands
+        .spawn((
+            ColorMesh2dBundle {
+                mesh: meshes.add(Triangle2d::default()).into(),
+                material: materials.add(ColorMaterial::from_color(indicator_color.0)),
+                transform: Transform::from_translation(Vec3::Z),
+                ..default()
+            },
+            Col(indicator_color.0),
+        ))
+        .id();
     commands.insert_resource(Indicator(id));
 
     // arrow mesh
     commands.insert_resource(ArrowHandle(meshes.add(Triangle2d::default()).into()));
 
     // connection material
-    commands.insert_resource(ConnectionMat(materials.add(ColorMaterial::from_color(connection_color.0))));
+    commands.insert_resource(ConnectionMat(
+        materials.add(ColorMaterial::from_color(connection_color.0)),
+    ));
 }
 
-fn toggle_pan(
-    mut query: Query<&mut PanCam>,
-    keyboard_input: Res<ButtonInput<KeyCode>>,
-) {
+fn toggle_pan(mut query: Query<&mut PanCam>, keyboard_input: Res<ButtonInput<KeyCode>>) {
     if keyboard_input.just_pressed(KeyCode::Space) {
         let mut pancam = query.single_mut();
         pancam.enabled = true;
@@ -287,14 +266,15 @@ fn update_indicator(
     clicked_on_space: Res<ClickedOnSpace>,
 ) {
     if mouse_button_input.pressed(MouseButton::Left)
-    && !mouse_button_input.just_pressed(MouseButton::Left)
-    && !keyboard_input.pressed(KeyCode::Space) {
+        && !mouse_button_input.just_pressed(MouseButton::Left)
+        && !keyboard_input.pressed(KeyCode::Space)
+    {
         if *mode.get() == Mode::Edit && clicked_on_space.0 {
             let Mesh2dHandle(mesh_id) = mesh_ids.get(id.0).unwrap();
             let mesh = meshes.get_mut(mesh_id).unwrap();
             *mesh = Rectangle::default().into();
             *trans_query.get_mut(id.0).unwrap() = Transform {
-                translation: ((cursor.i+cursor.f)/2.).extend(400.),
+                translation: ((cursor.i + cursor.f) / 2.).extend(400.),
                 scale: (cursor.f - cursor.i).abs().extend(1.),
                 ..default()
             };
@@ -412,14 +392,12 @@ fn copy_scene(world: &mut World) {
 }
 
 fn paste_scene(world: &mut World) {
-    if let Ok(string) = world.resource::<PasteChannel>().0.1.try_recv() {
+    if let Ok(string) = world.resource::<PasteChannel>().0 .1.try_recv() {
         let bytes = string.into_bytes();
         let mut scene = None;
         if let Ok(mut deserializer) = Deserializer::from_bytes(&bytes) {
             let type_registry = world.resource::<AppTypeRegistry>();
-            let scene_deserializer = SceneDeserializer {
-                type_registry: &type_registry.read(),
-            };
+            let scene_deserializer = SceneDeserializer { type_registry: &type_registry.read() };
             if let Ok(s) = scene_deserializer.deserialize(&mut deserializer) {
                 scene = Some(s);
             }
@@ -437,7 +415,7 @@ fn file_drag_and_drop(
     asset_server: Res<AssetServer>,
 ) {
     for event in events.read() {
-        if let DroppedFile {path_buf, ..} = event {
+        if let DroppedFile { path_buf, .. } = event {
             commands.spawn(DynamicSceneBundle {
                 scene: asset_server.load(path_buf.clone()),
                 ..default()
@@ -445,7 +423,6 @@ fn file_drag_and_drop(
         }
     }
 }
-
 
 #[derive(SystemParam)]
 struct MoreParams<'w, 's> {
@@ -520,16 +497,21 @@ fn post_load(
                             let mut new_holes = Vec::new();
                             for hole in &mut *holes {
                                 if let Ok(mut wh) = white_hole_query.get_mut(*hole) {
-                                    if black_hole_query.contains(wh.bh) && main_query.contains(wh.bh_parent) {
+                                    if black_hole_query.contains(wh.bh)
+                                        && main_query.contains(wh.bh_parent)
+                                    {
                                         wh.open = true;
-                                        let arrow = commands.spawn(( ColorMesh2dBundle {
-                                            mesh: more.arrow_handle.0.clone(),
-                                            material: more.connection_mat.0.clone(),
-                                            transform: Transform::default(),
-                                            ..default()
-                                        },
-                                        RenderLayers::layer(4),
-                                        )).id();
+                                        let arrow = commands
+                                            .spawn((
+                                                ColorMesh2dBundle {
+                                                    mesh: more.arrow_handle.0.clone(),
+                                                    material: more.connection_mat.0.clone(),
+                                                    transform: Transform::default(),
+                                                    ..default()
+                                                },
+                                                RenderLayers::layer(4),
+                                            ))
+                                            .id();
                                         commands.entity(*hole).insert((
                                             ConnectionArrow(arrow),
                                             RenderLayers::layer(3),
@@ -538,7 +520,9 @@ fn post_load(
                                         commands.entity(*hole).remove_parent();
                                     }
                                 } else if let Ok(bh) = black_hole_query.get(*hole) {
-                                    if white_hole_query.contains(bh.wh) && main_query.contains(bh.wh_parent) {
+                                    if white_hole_query.contains(bh.wh)
+                                        && main_query.contains(bh.wh_parent)
+                                    {
                                         commands.entity(*hole).insert(RenderLayers::layer(2));
                                         new_holes.push(*hole);
                                         commands.entity(*hole).remove_parent();
@@ -561,4 +545,3 @@ fn post_load(
         }
     }
 }
-

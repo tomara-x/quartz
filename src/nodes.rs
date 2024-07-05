@@ -1,6 +1,6 @@
-use fundsp::hacker32::*;
-use fundsp::fft::*;
 use crossbeam_channel::Receiver;
+use fundsp::fft::*;
+use fundsp::hacker32::*;
 
 /// switch between nets based on index
 /// - input 0: index
@@ -12,7 +12,9 @@ pub struct Select {
 
 impl Select {
     /// create a select node. takes an array of nets
-    pub fn new(nets: Vec<Net>) -> Self { Select {nets} }
+    pub fn new(nets: Vec<Net>) -> Self {
+        Select { nets }
+    }
 }
 
 impl AudioNode for Select {
@@ -21,10 +23,7 @@ impl AudioNode for Select {
     type Outputs = U1;
 
     #[inline]
-    fn tick(
-        &mut self,
-        input: &Frame<f32, Self::Inputs>,
-    ) -> Frame<f32, Self::Outputs> {
+    fn tick(&mut self, input: &Frame<f32, Self::Inputs>) -> Frame<f32, Self::Outputs> {
         let mut buffer = [0.];
         if let Some(network) = self.nets.get_mut(input[0] as usize) {
             network.tick(&[], &mut buffer);
@@ -44,7 +43,6 @@ impl AudioNode for Select {
         }
     }
 }
-
 
 /// sequence nets
 /// - input 0: trigger
@@ -72,10 +70,7 @@ impl AudioNode for Seq {
     type Outputs = U1;
 
     #[inline]
-    fn tick(
-        &mut self,
-        input: &Frame<f32, Self::Inputs>,
-    ) -> Frame<f32, Self::Outputs> {
+    fn tick(&mut self, input: &Frame<f32, Self::Inputs>) -> Frame<f32, Self::Outputs> {
         // triggered, add an event
         if input[0] != 0. {
             // remove existing events for that index
@@ -88,7 +83,7 @@ impl AudioNode for Seq {
             self.events.push((
                 input[1] as usize,
                 (input[2] * self.sr).round() as usize,
-                (input[3] * self.sr).round() as usize
+                (input[3] * self.sr).round() as usize,
             ));
         }
         // remove finished events
@@ -124,7 +119,6 @@ impl AudioNode for Seq {
     }
 }
 
-
 /// index an array of floats
 /// - input 0: index
 /// - output 0: value at index
@@ -134,7 +128,9 @@ pub struct ArrGet {
 }
 
 impl ArrGet {
-    pub fn new(arr: Vec<f32>) -> Self { ArrGet {arr} }
+    pub fn new(arr: Vec<f32>) -> Self {
+        ArrGet { arr }
+    }
 }
 
 impl AudioNode for ArrGet {
@@ -143,10 +139,7 @@ impl AudioNode for ArrGet {
     type Outputs = U1;
 
     #[inline]
-    fn tick(
-        &mut self,
-        input: &Frame<f32, Self::Inputs>,
-    ) -> Frame<f32, Self::Outputs> {
+    fn tick(&mut self, input: &Frame<f32, Self::Inputs>) -> Frame<f32, Self::Outputs> {
         let mut buffer = [0.];
         if let Some(n) = self.arr.get(input[0] as usize) {
             buffer[0] = *n;
@@ -155,18 +148,19 @@ impl AudioNode for ArrGet {
     }
 }
 
-
 /// shift register
 /// - input 0: trigger
 /// - input 1: input signal
 /// - output 0...8: output from each index
 #[derive(Default, Clone)]
 pub struct ShiftReg {
-    reg: [f32;8],
+    reg: [f32; 8],
 }
 
 impl ShiftReg {
-    pub fn new() -> Self { ShiftReg { reg: [0.;8] } }
+    pub fn new() -> Self {
+        ShiftReg { reg: [0.; 8] }
+    }
 }
 
 impl AudioNode for ShiftReg {
@@ -175,10 +169,7 @@ impl AudioNode for ShiftReg {
     type Outputs = U8;
 
     #[inline]
-    fn tick(
-        &mut self,
-        input: &Frame<f32, Self::Inputs>,
-    ) -> Frame<f32, Self::Outputs> {
+    fn tick(&mut self, input: &Frame<f32, Self::Inputs>) -> Frame<f32, Self::Outputs> {
         if input[0] != 0. {
             self.reg[7] = self.reg[6];
             self.reg[6] = self.reg[5];
@@ -197,7 +188,6 @@ impl AudioNode for ShiftReg {
     }
 }
 
-
 /// quantizer
 /// - input 0: value to quantize
 /// - output 0: quantized value
@@ -208,7 +198,9 @@ pub struct Quantizer {
 }
 
 impl Quantizer {
-    pub fn new(arr: Vec<f32>, range: f32) -> Self { Quantizer { arr, range } }
+    pub fn new(arr: Vec<f32>, range: f32) -> Self {
+        Quantizer { arr, range }
+    }
 }
 
 impl AudioNode for Quantizer {
@@ -217,10 +209,7 @@ impl AudioNode for Quantizer {
     type Outputs = U1;
 
     #[inline]
-    fn tick(
-        &mut self,
-        input: &Frame<f32, Self::Inputs>,
-    ) -> Frame<f32, Self::Outputs> {
+    fn tick(&mut self, input: &Frame<f32, Self::Inputs>) -> Frame<f32, Self::Outputs> {
         let mut buffer = [0.];
         let n = input[0];
         let wrapped = n - self.range * (n / self.range).floor();
@@ -237,7 +226,6 @@ impl AudioNode for Quantizer {
         buffer.into()
     }
 }
-
 
 /// tick a network every n samples
 /// - output 0: latest output from the net
@@ -261,10 +249,7 @@ impl AudioNode for Kr {
     type Outputs = U1;
 
     #[inline]
-    fn tick(
-        &mut self,
-        _input: &Frame<f32, Self::Inputs>,
-    ) -> Frame<f32, Self::Outputs> {
+    fn tick(&mut self, _input: &Frame<f32, Self::Inputs>) -> Frame<f32, Self::Outputs> {
         let mut buffer = [self.val];
         if self.count == 0 {
             self.count = self.n;
@@ -286,7 +271,6 @@ impl AudioNode for Kr {
     }
 }
 
-
 /// reset network every s seconds
 /// - output 0: output from the net
 #[derive(Default, Clone)]
@@ -299,12 +283,7 @@ pub struct Reset {
 
 impl Reset {
     pub fn new(net: Net, s: f32) -> Self {
-        Reset {
-            net,
-            dur: s,
-            n: (s * 44100.).round() as usize,
-            count: 0,
-        }
+        Reset { net, dur: s, n: (s * 44100.).round() as usize, count: 0 }
     }
 }
 
@@ -314,10 +293,7 @@ impl AudioNode for Reset {
     type Outputs = U1;
 
     #[inline]
-    fn tick(
-        &mut self,
-        _input: &Frame<f32, Self::Inputs>,
-    ) -> Frame<f32, Self::Outputs> {
+    fn tick(&mut self, _input: &Frame<f32, Self::Inputs>) -> Frame<f32, Self::Outputs> {
         let mut buffer = [0.];
         if self.count >= self.n {
             self.net.reset();
@@ -339,12 +315,13 @@ impl AudioNode for Reset {
     }
 }
 
-
 /// reset network when triggered
 /// - input 0: reset the net when non-zero
 /// - output 0: output from the net
 #[derive(Default, Clone)]
-pub struct TrigReset { net: Net }
+pub struct TrigReset {
+    net: Net,
+}
 
 impl TrigReset {
     pub fn new(net: Net) -> Self {
@@ -358,10 +335,7 @@ impl AudioNode for TrigReset {
     type Outputs = U1;
 
     #[inline]
-    fn tick(
-        &mut self,
-        input: &Frame<f32, Self::Inputs>,
-    ) -> Frame<f32, Self::Outputs> {
+    fn tick(&mut self, input: &Frame<f32, Self::Inputs>) -> Frame<f32, Self::Outputs> {
         let mut buffer = [0.];
         if input[0] != 0. {
             self.net.reset();
@@ -378,7 +352,6 @@ impl AudioNode for TrigReset {
         self.net.reset();
     }
 }
-
 
 /// reset network every s seconds (duration as input)
 /// - input 0: reset interval
@@ -402,10 +375,7 @@ impl AudioNode for ResetV {
     type Outputs = U1;
 
     #[inline]
-    fn tick(
-        &mut self,
-        input: &Frame<f32, Self::Inputs>,
-    ) -> Frame<f32, Self::Outputs> {
+    fn tick(&mut self, input: &Frame<f32, Self::Inputs>) -> Frame<f32, Self::Outputs> {
         let mut buffer = [0.];
         if self.count >= (input[0] * self.sr).round() as usize {
             self.net.reset();
@@ -426,7 +396,6 @@ impl AudioNode for ResetV {
         self.net.reset();
     }
 }
-
 
 /// phasor (ramp from 0..1)
 /// - input 0: frequency
@@ -449,13 +418,12 @@ impl AudioNode for Ramp {
     type Outputs = U1;
 
     #[inline]
-    fn tick(
-        &mut self,
-        input: &Frame<f32, Self::Inputs>,
-    ) -> Frame<f32, Self::Outputs> {
+    fn tick(&mut self, input: &Frame<f32, Self::Inputs>) -> Frame<f32, Self::Outputs> {
         let buffer = [self.val];
         self.val += input[0] / self.sr;
-        if self.val >= 1. { self.val -= 1.; }
+        if self.val >= 1. {
+            self.val -= 1.;
+        }
         buffer.into()
     }
 
@@ -467,7 +435,6 @@ impl AudioNode for Ramp {
         self.sr = sample_rate as f32;
     }
 }
-
 
 /// node that receives samples from crossbeam channels
 /// - output 0: left
@@ -490,16 +457,12 @@ impl AudioNode for InputNode {
     type Outputs = U2;
 
     #[inline]
-    fn tick(
-        &mut self,
-        _input: &Frame<f32, Self::Inputs>,
-    ) -> Frame<f32, Self::Outputs> {
+    fn tick(&mut self, _input: &Frame<f32, Self::Inputs>) -> Frame<f32, Self::Outputs> {
         let l = self.lr.recv().unwrap_or(0.);
         let r = self.rr.recv().unwrap_or(0.);
         [l, r].into()
     }
 }
-
 
 /// unit for swapping nodes
 #[derive(Clone)]
@@ -571,7 +534,6 @@ impl AudioUnit for SwapUnit {
     }
 }
 
-
 /// rfft
 /// - input 0: input
 /// - output 0: real
@@ -589,7 +551,7 @@ impl Rfft {
         let mut input = Vec::new();
         let mut output = Vec::new();
         input.resize(n, 0.);
-        output.resize(n/2+1, Complex32::ZERO);
+        output.resize(n / 2 + 1, Complex32::ZERO);
         Rfft { n, input, output, count: 0 }
     }
 }
@@ -600,18 +562,17 @@ impl AudioNode for Rfft {
     type Outputs = U2;
 
     #[inline]
-    fn tick(
-        &mut self,
-        input: &Frame<f32, Self::Inputs>,
-    ) -> Frame<f32, Self::Outputs> {
+    fn tick(&mut self, input: &Frame<f32, Self::Inputs>) -> Frame<f32, Self::Outputs> {
         let i = self.count;
         self.count += 1;
-        if self.count == self.n { self.count = 0; }
+        if self.count == self.n {
+            self.count = 0;
+        }
         if i == 0 {
             real_fft(self.input.as_slice(), self.output.as_mut_slice());
         }
         self.input[i] = input[0];
-        if i <= self.n/2 {
+        if i <= self.n / 2 {
             let out = self.output[i];
             [out.re, out.im].into()
         } else {
@@ -626,7 +587,6 @@ impl AudioNode for Rfft {
         self.output.fill(Complex32::ZERO);
     }
 }
-
 
 /// ifft
 /// - input 0: real
@@ -657,13 +617,12 @@ impl AudioNode for Ifft {
     type Outputs = U2;
 
     #[inline]
-    fn tick(
-        &mut self,
-        input: &Frame<f32, Self::Inputs>,
-    ) -> Frame<f32, Self::Outputs> {
+    fn tick(&mut self, input: &Frame<f32, Self::Inputs>) -> Frame<f32, Self::Outputs> {
         let i = self.count;
         self.count += 1;
-        if self.count == self.n { self.count = 0; }
+        if self.count == self.n {
+            self.count = 0;
+        }
         if i == 0 {
             inverse_fft(self.input.as_slice(), self.output.as_mut_slice());
         }
