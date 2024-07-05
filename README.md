@@ -718,10 +718,9 @@ sources
 - `ramp()` ramp from 0 to 1 at input freq (phasor)
 
 filters
-- `allpole()`
+- `allpole([float])` delay in samples. if not provided the node takes 2 inputs (signal, delay)
 - `pinkpass()`
 - `allpass([float], [float])` if 1 param is given, that's the q, and the node takes 2 input channels (signal, and hz) if 2 are given, that's the hz and q and the node only takes input signal
-- `allpole_delay(float)`
 - `bandpass([float], [float])` (same as allpass)
 - `bandrez([float], [float])` (same)
 - `bell([float, float], [float])` if 2 params are given, they're (q, gain), if 3 are give, they're (hz, q, gain), if none, the node takes 4 channels (input, hz, q, gain)

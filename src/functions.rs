@@ -245,7 +245,11 @@ pub fn str_to_net(op: &str) -> Net {
 
         // -------------------- filters --------------------
         "allpole" => {
-            return Net::wrap(Box::new(allpole()));
+            if let Some(p) = p.first() {
+                return Net::wrap(Box::new(allpole_delay(*p)));
+            } else {
+                return Net::wrap(Box::new(allpole()));
+            }
         }
         "pinkpass" => {
             return Net::wrap(Box::new(pinkpass()));
@@ -257,11 +261,6 @@ pub fn str_to_net(op: &str) -> Net {
                 return Net::wrap(Box::new(allpass_q(*p)));
             } else {
                 return Net::wrap(Box::new(allpass()));
-            }
-        }
-        "allpole_delay" => {
-            if let Some(p) = p.first() {
-                return Net::wrap(Box::new(allpole_delay(*p)));
             }
         }
         "bandpass" => {
