@@ -593,11 +593,11 @@ pub fn process(
                             let input = &access.arr_query.get(wh.bh_parent).unwrap().0;
                             let mut l = Vec::new();
                             let mut r = Vec::new();
-                            for i in 0..input.len() {
+                            for (i, v) in input.iter().enumerate() {
                                 if i & 1 == 0 {
-                                    l.push(input[i]);
+                                    l.push(*v);
                                 } else {
-                                    r.push(input[i]);
+                                    r.push(*v);
                                 }
                             }
                             access.arr_query.get_mut(wh.bh_parent).unwrap().0 = l;
@@ -1222,17 +1222,13 @@ pub fn process(
                         if wh.link_types == (-1, 1) {
                             let input = access.num_query.get(wh.bh_parent).unwrap().0;
                             let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
-                            if op_num == 52 {
-                                // rise
-                                if input > arr[0] {
-                                    access.num_query.get_mut(*id).unwrap().0 = 1.;
-                                    lt_to_open = Some(-1);
-                                }
-                            } else {
-                                if input < arr[0] {
-                                    access.num_query.get_mut(*id).unwrap().0 = 1.;
-                                    lt_to_open = Some(-1);
-                                }
+                            // rise
+                            if (op_num == 52 && input > arr[0])
+                                // fall
+                                || (op_num == 53 && input < arr[0])
+                            {
+                                access.num_query.get_mut(*id).unwrap().0 = 1.;
+                                lt_to_open = Some(-1);
                             }
                             if input == arr[0] {
                                 let n = &mut access.num_query.get_mut(*id).unwrap().0;
@@ -1515,7 +1511,7 @@ pub fn process(
                 }
             }
             // kr() | reset() | sr()
-            68 | 69 | 70 => {
+            68..=70 => {
                 let op_changed = access.op_changed_query.get(*id).unwrap().0;
                 let lost = access.lost_wh_query.get(*id).unwrap().0;
                 let num_changed = access.num_query.get_mut(*id).unwrap().is_changed();
@@ -1641,7 +1637,7 @@ pub fn process(
                 }
             }
             // branch() | bus() | pipe() | stack() | sum() | product()
-            76 | 77 | 78 | 79 | 80 | 81 => {
+            76..=81 => {
                 let op_changed = access.op_changed_query.get(*id).unwrap().0;
                 let lost = access.lost_wh_query.get(*id).unwrap().0;
                 let mut changed = false;
@@ -1675,24 +1671,12 @@ pub fn process(
                                 let (gi, go) = (graph.inputs(), graph.outputs());
                                 let (ni, no) = (net.inputs(), net.outputs());
                                 match op_num {
-                                    76 if gi == ni => {
-                                        graph = graph ^ net;
-                                    }
-                                    77 if gi == ni && go == no => {
-                                        graph = graph & net;
-                                    }
-                                    78 if go == ni => {
-                                        graph = graph >> net;
-                                    }
-                                    79 => {
-                                        graph = graph | net;
-                                    }
-                                    80 if go == no => {
-                                        graph = graph + net;
-                                    }
-                                    81 if go == no => {
-                                        graph = graph * net;
-                                    }
+                                    76 if gi == ni => graph = graph ^ net,
+                                    77 if gi == ni && go == no => graph = graph & net,
+                                    78 if go == ni => graph = graph >> net,
+                                    79 => graph = graph | net,
+                                    80 if go == no => graph = graph + net,
+                                    81 if go == no => graph = graph * net,
                                     _ => {}
                                 }
                             }
@@ -1786,7 +1770,7 @@ pub fn process(
                 }
             }
             // ">>" | "|" | "&" | "^" | "PIP" | "STA" | "BUS" | "BRA"
-            85 | 86 | 87 | 88 => {
+            85..=88 => {
                 let op_changed = access.op_changed_query.get(*id).unwrap().0;
                 let lost = access.lost_wh_query.get(*id).unwrap().0;
                 let num_changed = access.num_query.get_mut(*id).unwrap().is_changed();
@@ -1823,18 +1807,10 @@ pub fn process(
                                 let (gi, go) = (graph.inputs(), graph.outputs());
                                 let (ni, no) = (net.inputs(), net.outputs());
                                 match op_num {
-                                    85 if go == ni => {
-                                        graph = graph >> net;
-                                    }
-                                    86 => {
-                                        graph = graph | net;
-                                    }
-                                    87 if gi == ni && go == no => {
-                                        graph = graph & net;
-                                    }
-                                    88 if gi == ni => {
-                                        graph = graph ^ net;
-                                    }
+                                    85 if go == ni => graph = graph >> net,
+                                    86 => graph = graph | net,
+                                    87 if gi == ni && go == no => graph = graph & net,
+                                    88 if gi == ni => graph = graph ^ net,
                                     _ => {}
                                 }
                             }

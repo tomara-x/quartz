@@ -406,19 +406,13 @@ pub fn command_parser(
                                                         } else {
                                                             trans.scale.y = n.max(0.);
                                                         }
+                                                    } else if c1 == Some("r") {
+                                                        trans.scale.x = (trans.scale.x + n).max(0.);
+                                                        trans.scale.y = (trans.scale.y + n).max(0.);
+                                                    } else if c1 == Some("rx") {
+                                                        trans.scale.x = (trans.scale.x + n).max(0.);
                                                     } else {
-                                                        if c1 == Some("r") {
-                                                            trans.scale.x =
-                                                                (trans.scale.x + n).max(0.);
-                                                            trans.scale.y =
-                                                                (trans.scale.y + n).max(0.);
-                                                        } else if c1 == Some("rx") {
-                                                            trans.scale.x =
-                                                                (trans.scale.x + n).max(0.);
-                                                        } else {
-                                                            trans.scale.y =
-                                                                (trans.scale.y + n).max(0.);
-                                                        }
+                                                        trans.scale.y = (trans.scale.y + n).max(0.);
                                                     }
                                                     lt_to_open = (Some(e), Some(-2));
                                                 }
@@ -436,15 +430,13 @@ pub fn command_parser(
                                                     } else {
                                                         trans.scale.y = n.max(0.);
                                                     }
+                                                } else if c1 == Some("r") {
+                                                    trans.scale.x = (trans.scale.x + n).max(0.);
+                                                    trans.scale.y = (trans.scale.y + n).max(0.);
+                                                } else if c1 == Some("rx") {
+                                                    trans.scale.x = (trans.scale.x + n).max(0.);
                                                 } else {
-                                                    if c1 == Some("r") {
-                                                        trans.scale.x = (trans.scale.x + n).max(0.);
-                                                        trans.scale.y = (trans.scale.y + n).max(0.);
-                                                    } else if c1 == Some("rx") {
-                                                        trans.scale.x = (trans.scale.x + n).max(0.);
-                                                    } else {
-                                                        trans.scale.y = (trans.scale.y + n).max(0.);
-                                                    }
+                                                    trans.scale.y = (trans.scale.y + n).max(0.);
                                                 }
                                             }
                                         }
@@ -1021,10 +1013,8 @@ pub fn command_parser(
                     if let Ok(mut order) = access.order_query.get_mut(id) {
                         if c0 == Some("]") {
                             order.0 += 1;
-                        } else {
-                            if order.0 > 0 {
-                                order.0 -= 1;
-                            }
+                        } else if order.0 > 0 {
+                            order.0 -= 1;
                         }
                         access.order_change.send_default();
                     }

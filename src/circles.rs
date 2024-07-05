@@ -194,11 +194,10 @@ pub fn update_selection(
                         && (min_y < t.translation.y && t.translation.y < max_y)
                     {
                         // only select holes if ctrl is held
-                        if ctrl && order_query.contains(*e) {
-                            continue;
-                        }
+                        if (ctrl && order_query.contains(*e))
                         // only select non-holes if alt is held
-                        else if alt && !order_query.contains(*e) {
+                        || (alt && !order_query.contains(*e))
+                        {
                             continue;
                         }
                         commands.entity(*e).insert(Selected);
