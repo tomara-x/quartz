@@ -46,7 +46,7 @@ crossbeam-channel = "0.5"
 #web-sys = {version = "0.3.69", features = ["Clipboard"]}
 
 # inspector
-bevy-inspector-egui = {version = "0.24",  default-features = false, optional = true}
+bevy-inspector-egui = {version = "0.25", default-features = false, features = ["bevy_render"], optional = true}
 
 
 # smol amount of optimization for our stuff
