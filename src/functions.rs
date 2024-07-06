@@ -146,18 +146,10 @@ pub fn str_to_net(op: &str) -> Net {
                 return Net::wrap(Box::new(organ()));
             }
         }
-        "pulse" => {
-            return Net::wrap(Box::new(pulse()));
-        }
-        "brown" => {
-            return Net::wrap(Box::new(brown()));
-        }
-        "pink" => {
-            return Net::wrap(Box::new(pink()));
-        }
-        "white" | "noise" => {
-            return Net::wrap(Box::new(white()));
-        }
+        "pulse" => return Net::wrap(Box::new(pulse())),
+        "brown" => return Net::wrap(Box::new(brown())),
+        "pink" => return Net::wrap(Box::new(pink())),
+        "white" | "noise" => return Net::wrap(Box::new(white())),
         "hammond" => {
             if let Some(p) = p.first() {
                 return Net::wrap(Box::new(hammond_hz(*p)));
@@ -165,46 +157,26 @@ pub fn str_to_net(op: &str) -> Net {
                 return Net::wrap(Box::new(hammond()));
             }
         }
-        "zero" => {
-            return Net::wrap(Box::new(zero()));
-        }
-        "impulse" => {
-            return Net::wrap(Box::new(impulse::<U1>()));
-        }
-        "lorenz" => {
-            return Net::wrap(Box::new(lorenz()));
-        }
-        "rossler" => {
-            return Net::wrap(Box::new(rossler()));
-        }
+        "zero" => return Net::wrap(Box::new(zero())),
+        "impulse" => return Net::wrap(Box::new(impulse::<U1>())),
+        "lorenz" => return Net::wrap(Box::new(lorenz())),
+        "rossler" => return Net::wrap(Box::new(rossler())),
         "constant" | "dc" => match p[..] {
             [p0, p1, p2, p3, p4, p5, p6, p7, ..] => {
-                return Net::wrap(Box::new(constant((p0, p1, p2, p3, p4, p5, p6, p7))));
+                return Net::wrap(Box::new(constant((p0, p1, p2, p3, p4, p5, p6, p7))))
             }
             [p0, p1, p2, p3, p4, p5, p6, ..] => {
-                return Net::wrap(Box::new(constant((p0, p1, p2, p3, p4, p5, p6))));
+                return Net::wrap(Box::new(constant((p0, p1, p2, p3, p4, p5, p6))))
             }
             [p0, p1, p2, p3, p4, p5, ..] => {
-                return Net::wrap(Box::new(constant((p0, p1, p2, p3, p4, p5))));
+                return Net::wrap(Box::new(constant((p0, p1, p2, p3, p4, p5))))
             }
-            [p0, p1, p2, p3, p4, ..] => {
-                return Net::wrap(Box::new(constant((p0, p1, p2, p3, p4))));
-            }
-            [p0, p1, p2, p3, ..] => {
-                return Net::wrap(Box::new(constant((p0, p1, p2, p3))));
-            }
-            [p0, p1, p2, ..] => {
-                return Net::wrap(Box::new(constant((p0, p1, p2))));
-            }
-            [p0, p1, ..] => {
-                return Net::wrap(Box::new(constant((p0, p1))));
-            }
-            [p0, ..] => {
-                return Net::wrap(Box::new(constant(p0)));
-            }
-            _ => {
-                return Net::wrap(Box::new(constant(1.)));
-            }
+            [p0, p1, p2, p3, p4, ..] => return Net::wrap(Box::new(constant((p0, p1, p2, p3, p4)))),
+            [p0, p1, p2, p3, ..] => return Net::wrap(Box::new(constant((p0, p1, p2, p3)))),
+            [p0, p1, p2, ..] => return Net::wrap(Box::new(constant((p0, p1, p2)))),
+            [p0, p1, ..] => return Net::wrap(Box::new(constant((p0, p1)))),
+            [p0, ..] => return Net::wrap(Box::new(constant(p0))),
+            _ => return Net::wrap(Box::new(constant(1.))),
         },
         "dsf_saw" => {
             if let Some(p) = p.first() {
@@ -239,9 +211,7 @@ pub fn str_to_net(op: &str) -> Net {
                 return Net::wrap(Box::new(soft_saw()));
             }
         }
-        "ramp" => {
-            return Net::wrap(Box::new(An(Ramp::new())));
-        }
+        "ramp" => return Net::wrap(Box::new(An(Ramp::new()))),
 
         // -------------------- filters --------------------
         "allpole" => {
@@ -251,9 +221,7 @@ pub fn str_to_net(op: &str) -> Net {
                 return Net::wrap(Box::new(allpole()));
             }
         }
-        "pinkpass" => {
-            return Net::wrap(Box::new(pinkpass()));
-        }
+        "pinkpass" => return Net::wrap(Box::new(pinkpass())),
         "allpass" => {
             if let Some(p) = p.get(0..2) {
                 return Net::wrap(Box::new(allpass_hz(p[0], p[1])));
@@ -311,35 +279,25 @@ pub fn str_to_net(op: &str) -> Net {
         }
         "fir" => match p[..] {
             [p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, ..] => {
-                return Net::wrap(Box::new(fir((p0, p1, p2, p3, p4, p5, p6, p7, p8, p9))));
+                return Net::wrap(Box::new(fir((p0, p1, p2, p3, p4, p5, p6, p7, p8, p9))))
             }
             [p0, p1, p2, p3, p4, p5, p6, p7, p8, ..] => {
-                return Net::wrap(Box::new(fir((p0, p1, p2, p3, p4, p5, p6, p7, p8))));
+                return Net::wrap(Box::new(fir((p0, p1, p2, p3, p4, p5, p6, p7, p8))))
             }
             [p0, p1, p2, p3, p4, p5, p6, p7, ..] => {
-                return Net::wrap(Box::new(fir((p0, p1, p2, p3, p4, p5, p6, p7))));
+                return Net::wrap(Box::new(fir((p0, p1, p2, p3, p4, p5, p6, p7))))
             }
             [p0, p1, p2, p3, p4, p5, p6, ..] => {
-                return Net::wrap(Box::new(fir((p0, p1, p2, p3, p4, p5, p6))));
+                return Net::wrap(Box::new(fir((p0, p1, p2, p3, p4, p5, p6))))
             }
             [p0, p1, p2, p3, p4, p5, ..] => {
-                return Net::wrap(Box::new(fir((p0, p1, p2, p3, p4, p5))));
+                return Net::wrap(Box::new(fir((p0, p1, p2, p3, p4, p5))))
             }
-            [p0, p1, p2, p3, p4, ..] => {
-                return Net::wrap(Box::new(fir((p0, p1, p2, p3, p4))));
-            }
-            [p0, p1, p2, p3, ..] => {
-                return Net::wrap(Box::new(fir((p0, p1, p2, p3))));
-            }
-            [p0, p1, p2, ..] => {
-                return Net::wrap(Box::new(fir((p0, p1, p2))));
-            }
-            [p0, p1, ..] => {
-                return Net::wrap(Box::new(fir((p0, p1))));
-            }
-            [p0, ..] => {
-                return Net::wrap(Box::new(fir(p0)));
-            }
+            [p0, p1, p2, p3, p4, ..] => return Net::wrap(Box::new(fir((p0, p1, p2, p3, p4)))),
+            [p0, p1, p2, p3, ..] => return Net::wrap(Box::new(fir((p0, p1, p2, p3)))),
+            [p0, p1, p2, ..] => return Net::wrap(Box::new(fir((p0, p1, p2)))),
+            [p0, p1, ..] => return Net::wrap(Box::new(fir((p0, p1)))),
+            [p0, ..] => return Net::wrap(Box::new(fir(p0))),
             _ => {}
         },
         "fir3" => {
@@ -456,12 +414,8 @@ pub fn str_to_net(op: &str) -> Net {
         }
 
         // -------------------- channels --------------------
-        "sink" => {
-            return Net::wrap(Box::new(sink()));
-        }
-        "pass" => {
-            return Net::wrap(Box::new(pass()));
-        }
+        "sink" => return Net::wrap(Box::new(sink())),
+        "pass" => return Net::wrap(Box::new(pass())),
         "chan" => {
             let mut net = Net::new(0, 0);
             for i in p {
@@ -483,27 +437,13 @@ pub fn str_to_net(op: &str) -> Net {
         "join" => {
             if let Some(p) = p.first() {
                 match *p as usize {
-                    2 => {
-                        return Net::wrap(Box::new(join::<U2>()));
-                    }
-                    3 => {
-                        return Net::wrap(Box::new(join::<U3>()));
-                    }
-                    4 => {
-                        return Net::wrap(Box::new(join::<U4>()));
-                    }
-                    5 => {
-                        return Net::wrap(Box::new(join::<U5>()));
-                    }
-                    6 => {
-                        return Net::wrap(Box::new(join::<U6>()));
-                    }
-                    7 => {
-                        return Net::wrap(Box::new(join::<U7>()));
-                    }
-                    8 => {
-                        return Net::wrap(Box::new(join::<U8>()));
-                    }
+                    2 => return Net::wrap(Box::new(join::<U2>())),
+                    3 => return Net::wrap(Box::new(join::<U3>())),
+                    4 => return Net::wrap(Box::new(join::<U4>())),
+                    5 => return Net::wrap(Box::new(join::<U5>())),
+                    6 => return Net::wrap(Box::new(join::<U6>())),
+                    7 => return Net::wrap(Box::new(join::<U7>())),
+                    8 => return Net::wrap(Box::new(join::<U8>())),
                     _ => {}
                 }
             }
@@ -511,27 +451,13 @@ pub fn str_to_net(op: &str) -> Net {
         "split" => {
             if let Some(p) = p.first() {
                 match *p as usize {
-                    2 => {
-                        return Net::wrap(Box::new(split::<U2>()));
-                    }
-                    3 => {
-                        return Net::wrap(Box::new(split::<U3>()));
-                    }
-                    4 => {
-                        return Net::wrap(Box::new(split::<U4>()));
-                    }
-                    5 => {
-                        return Net::wrap(Box::new(split::<U5>()));
-                    }
-                    6 => {
-                        return Net::wrap(Box::new(split::<U6>()));
-                    }
-                    7 => {
-                        return Net::wrap(Box::new(split::<U7>()));
-                    }
-                    8 => {
-                        return Net::wrap(Box::new(split::<U8>()));
-                    }
+                    2 => return Net::wrap(Box::new(split::<U2>())),
+                    3 => return Net::wrap(Box::new(split::<U3>())),
+                    4 => return Net::wrap(Box::new(split::<U4>())),
+                    5 => return Net::wrap(Box::new(split::<U5>())),
+                    6 => return Net::wrap(Box::new(split::<U6>())),
+                    7 => return Net::wrap(Box::new(split::<U7>())),
+                    8 => return Net::wrap(Box::new(split::<U8>())),
                     _ => {}
                 }
             }
@@ -539,27 +465,13 @@ pub fn str_to_net(op: &str) -> Net {
         "reverse" => {
             if let Some(p) = p.first() {
                 match *p as usize {
-                    2 => {
-                        return Net::wrap(Box::new(reverse::<U2>()));
-                    }
-                    3 => {
-                        return Net::wrap(Box::new(reverse::<U3>()));
-                    }
-                    4 => {
-                        return Net::wrap(Box::new(reverse::<U4>()));
-                    }
-                    5 => {
-                        return Net::wrap(Box::new(reverse::<U5>()));
-                    }
-                    6 => {
-                        return Net::wrap(Box::new(reverse::<U6>()));
-                    }
-                    7 => {
-                        return Net::wrap(Box::new(reverse::<U7>()));
-                    }
-                    8 => {
-                        return Net::wrap(Box::new(reverse::<U8>()));
-                    }
+                    2 => return Net::wrap(Box::new(reverse::<U2>())),
+                    3 => return Net::wrap(Box::new(reverse::<U3>())),
+                    4 => return Net::wrap(Box::new(reverse::<U4>())),
+                    5 => return Net::wrap(Box::new(reverse::<U5>())),
+                    6 => return Net::wrap(Box::new(reverse::<U6>())),
+                    7 => return Net::wrap(Box::new(reverse::<U7>())),
+                    8 => return Net::wrap(Box::new(reverse::<U8>())),
                     _ => {}
                 }
             }
@@ -650,12 +562,8 @@ pub fn str_to_net(op: &str) -> Net {
         }
 
         // -------------------- other --------------------
-        "tick" => {
-            return Net::wrap(Box::new(tick()));
-        }
-        "shift_reg" => {
-            return Net::wrap(Box::new(An(ShiftReg::new())));
-        }
+        "tick" => return Net::wrap(Box::new(tick())),
+        "shift_reg" => return Net::wrap(Box::new(An(ShiftReg::new()))),
         "meter" => {
             if let (Some(arg), Some(p)) = (args.get(1), p.first()) {
                 if arg.starts_with("peak") {
@@ -769,90 +677,54 @@ pub fn str_to_net(op: &str) -> Net {
         // -------------------- math --------------------
         "add" => match p[..] {
             [p0, p1, p2, p3, p4, p5, p6, p7, ..] => {
-                return Net::wrap(Box::new(add((p0, p1, p2, p3, p4, p5, p6, p7))));
+                return Net::wrap(Box::new(add((p0, p1, p2, p3, p4, p5, p6, p7))))
             }
             [p0, p1, p2, p3, p4, p5, p6, ..] => {
-                return Net::wrap(Box::new(add((p0, p1, p2, p3, p4, p5, p6))));
+                return Net::wrap(Box::new(add((p0, p1, p2, p3, p4, p5, p6))))
             }
             [p0, p1, p2, p3, p4, p5, ..] => {
-                return Net::wrap(Box::new(add((p0, p1, p2, p3, p4, p5))));
+                return Net::wrap(Box::new(add((p0, p1, p2, p3, p4, p5))))
             }
-            [p0, p1, p2, p3, p4, ..] => {
-                return Net::wrap(Box::new(add((p0, p1, p2, p3, p4))));
-            }
-            [p0, p1, p2, p3, ..] => {
-                return Net::wrap(Box::new(add((p0, p1, p2, p3))));
-            }
-            [p0, p1, p2, ..] => {
-                return Net::wrap(Box::new(add((p0, p1, p2))));
-            }
-            [p0, p1, ..] => {
-                return Net::wrap(Box::new(add((p0, p1))));
-            }
-            [p0, ..] => {
-                return Net::wrap(Box::new(add(p0)));
-            }
-            _ => {
-                return Net::wrap(Box::new(add(1.)));
-            }
+            [p0, p1, p2, p3, p4, ..] => return Net::wrap(Box::new(add((p0, p1, p2, p3, p4)))),
+            [p0, p1, p2, p3, ..] => return Net::wrap(Box::new(add((p0, p1, p2, p3)))),
+            [p0, p1, p2, ..] => return Net::wrap(Box::new(add((p0, p1, p2)))),
+            [p0, p1, ..] => return Net::wrap(Box::new(add((p0, p1)))),
+            [p0, ..] => return Net::wrap(Box::new(add(p0))),
+            _ => return Net::wrap(Box::new(add(1.))),
         },
         "sub" => match p[..] {
             [p0, p1, p2, p3, p4, p5, p6, p7, ..] => {
-                return Net::wrap(Box::new(sub((p0, p1, p2, p3, p4, p5, p6, p7))));
+                return Net::wrap(Box::new(sub((p0, p1, p2, p3, p4, p5, p6, p7))))
             }
             [p0, p1, p2, p3, p4, p5, p6, ..] => {
-                return Net::wrap(Box::new(sub((p0, p1, p2, p3, p4, p5, p6))));
+                return Net::wrap(Box::new(sub((p0, p1, p2, p3, p4, p5, p6))))
             }
             [p0, p1, p2, p3, p4, p5, ..] => {
-                return Net::wrap(Box::new(sub((p0, p1, p2, p3, p4, p5))));
+                return Net::wrap(Box::new(sub((p0, p1, p2, p3, p4, p5))))
             }
-            [p0, p1, p2, p3, p4, ..] => {
-                return Net::wrap(Box::new(sub((p0, p1, p2, p3, p4))));
-            }
-            [p0, p1, p2, p3, ..] => {
-                return Net::wrap(Box::new(sub((p0, p1, p2, p3))));
-            }
-            [p0, p1, p2, ..] => {
-                return Net::wrap(Box::new(sub((p0, p1, p2))));
-            }
-            [p0, p1, ..] => {
-                return Net::wrap(Box::new(sub((p0, p1))));
-            }
-            [p0, ..] => {
-                return Net::wrap(Box::new(sub(p0)));
-            }
-            _ => {
-                return Net::wrap(Box::new(sub(1.)));
-            }
+            [p0, p1, p2, p3, p4, ..] => return Net::wrap(Box::new(sub((p0, p1, p2, p3, p4)))),
+            [p0, p1, p2, p3, ..] => return Net::wrap(Box::new(sub((p0, p1, p2, p3)))),
+            [p0, p1, p2, ..] => return Net::wrap(Box::new(sub((p0, p1, p2)))),
+            [p0, p1, ..] => return Net::wrap(Box::new(sub((p0, p1)))),
+            [p0, ..] => return Net::wrap(Box::new(sub(p0))),
+            _ => return Net::wrap(Box::new(sub(1.))),
         },
         "mul" => match p[..] {
             [p0, p1, p2, p3, p4, p5, p6, p7, ..] => {
-                return Net::wrap(Box::new(mul((p0, p1, p2, p3, p4, p5, p6, p7))));
+                return Net::wrap(Box::new(mul((p0, p1, p2, p3, p4, p5, p6, p7))))
             }
             [p0, p1, p2, p3, p4, p5, p6, ..] => {
-                return Net::wrap(Box::new(mul((p0, p1, p2, p3, p4, p5, p6))));
+                return Net::wrap(Box::new(mul((p0, p1, p2, p3, p4, p5, p6))))
             }
             [p0, p1, p2, p3, p4, p5, ..] => {
-                return Net::wrap(Box::new(mul((p0, p1, p2, p3, p4, p5))));
+                return Net::wrap(Box::new(mul((p0, p1, p2, p3, p4, p5))))
             }
-            [p0, p1, p2, p3, p4, ..] => {
-                return Net::wrap(Box::new(mul((p0, p1, p2, p3, p4))));
-            }
-            [p0, p1, p2, p3, ..] => {
-                return Net::wrap(Box::new(mul((p0, p1, p2, p3))));
-            }
-            [p0, p1, p2, ..] => {
-                return Net::wrap(Box::new(mul((p0, p1, p2))));
-            }
-            [p0, p1, ..] => {
-                return Net::wrap(Box::new(mul((p0, p1))));
-            }
-            [p0, ..] => {
-                return Net::wrap(Box::new(mul(p0)));
-            }
-            _ => {
-                return Net::wrap(Box::new(mul(1.)));
-            }
+            [p0, p1, p2, p3, p4, ..] => return Net::wrap(Box::new(mul((p0, p1, p2, p3, p4)))),
+            [p0, p1, p2, p3, ..] => return Net::wrap(Box::new(mul((p0, p1, p2, p3)))),
+            [p0, p1, p2, ..] => return Net::wrap(Box::new(mul((p0, p1, p2)))),
+            [p0, p1, ..] => return Net::wrap(Box::new(mul((p0, p1)))),
+            [p0, ..] => return Net::wrap(Box::new(mul(p0))),
+            _ => return Net::wrap(Box::new(mul(1.))),
         },
         "div" => match p[..] {
             [p0, p1, p2, p3, p4, p5, p6, p7, ..] => {
@@ -865,7 +737,7 @@ pub fn str_to_net(op: &str) -> Net {
                     1. / p5,
                     1. / p6,
                     1. / p7,
-                ))));
+                ))))
             }
             [p0, p1, p2, p3, p4, p5, p6, ..] => {
                 return Net::wrap(Box::new(mul((
@@ -876,7 +748,7 @@ pub fn str_to_net(op: &str) -> Net {
                     1. / p4,
                     1. / p5,
                     1. / p6,
-                ))));
+                ))))
             }
             [p0, p1, p2, p3, p4, p5, ..] => {
                 return Net::wrap(Box::new(mul((
@@ -886,26 +758,18 @@ pub fn str_to_net(op: &str) -> Net {
                     1. / p3,
                     1. / p4,
                     1. / p5,
-                ))));
+                ))))
             }
             [p0, p1, p2, p3, p4, ..] => {
-                return Net::wrap(Box::new(mul((1. / p0, 1. / p1, 1. / p2, 1. / p3, 1. / p4))));
+                return Net::wrap(Box::new(mul((1. / p0, 1. / p1, 1. / p2, 1. / p3, 1. / p4))))
             }
             [p0, p1, p2, p3, ..] => {
-                return Net::wrap(Box::new(mul((1. / p0, 1. / p1, 1. / p2, 1. / p3))));
+                return Net::wrap(Box::new(mul((1. / p0, 1. / p1, 1. / p2, 1. / p3))))
             }
-            [p0, p1, p2, ..] => {
-                return Net::wrap(Box::new(mul((1. / p0, 1. / p1, 1. / p2))));
-            }
-            [p0, p1, ..] => {
-                return Net::wrap(Box::new(mul((1. / p0, 1. / p1))));
-            }
-            [p0, ..] => {
-                return Net::wrap(Box::new(mul(1. / p0)));
-            }
-            _ => {
-                return Net::wrap(Box::new(mul(1.)));
-            }
+            [p0, p1, p2, ..] => return Net::wrap(Box::new(mul((1. / p0, 1. / p1, 1. / p2)))),
+            [p0, p1, ..] => return Net::wrap(Box::new(mul((1. / p0, 1. / p1)))),
+            [p0, ..] => return Net::wrap(Box::new(mul(1. / p0))),
+            _ => return Net::wrap(Box::new(mul(1.))),
         },
 
         "rotate" => {
@@ -913,9 +777,8 @@ pub fn str_to_net(op: &str) -> Net {
                 return Net::wrap(Box::new(rotate(p[0], p[1])));
             }
         }
-        "t" => {
-            return Net::wrap(Box::new(lfo(|t| t)));
-        }
+        "t" => return Net::wrap(Box::new(lfo(|t| t))),
+
         "rise" => {
             return Net::wrap(Box::new(
                 (pass() ^ tick()) >> map(|i: &Frame<f32, U2>| if i[0] > i[1] { 1. } else { 0. }),
@@ -1170,117 +1033,47 @@ pub fn str_to_net(op: &str) -> Net {
             }
         }
 
-        "abs" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].abs())));
-        }
-        "signum" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].signum())));
-        }
-        "floor" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].floor())));
-        }
-        "fract" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].fract())));
-        }
-        "ceil" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].ceil())));
-        }
-        "round" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].round())));
-        }
-        "sqrt" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].sqrt())));
-        }
-        "exp" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].exp())));
-        }
-        "exp2" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].exp2())));
-        }
-        "exp10" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| (exp10(i[0])))));
-        }
-        "exp_m1" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| (i[0].ln_1p()))));
-        }
-        "ln_1p" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| (i[0].exp_m1()))));
-        }
-        "ln" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].ln())));
-        }
-        "log2" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].log2())));
-        }
-        "log10" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].log10())));
-        }
-        "hypot" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U2>| i[0].hypot(i[1]))));
-        }
-        "atan2" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U2>| i[0].atan2(i[1]))));
-        }
-        "sin" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].sin())));
-        }
-        "cos" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].cos())));
-        }
-        "tan" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].tan())));
-        }
-        "asin" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].asin())));
-        }
-        "acos" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].acos())));
-        }
-        "atan" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].atan())));
-        }
-        "sinh" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].sinh())));
-        }
-        "cosh" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].cosh())));
-        }
-        "tanh" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].tanh())));
-        }
-        "asinh" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].asinh())));
-        }
-        "acosh" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].acosh())));
-        }
-        "atanh" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].atanh())));
-        }
-        "squared" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0] * i[0])));
-        }
-        "cubed" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0] * i[0] * i[0])));
-        }
+        "abs" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].abs()))),
+        "signum" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].signum()))),
+        "floor" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].floor()))),
+        "fract" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].fract()))),
+        "ceil" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].ceil()))),
+        "round" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].round()))),
+        "sqrt" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].sqrt()))),
+        "exp" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].exp()))),
+        "exp2" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].exp2()))),
+        "exp10" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| (exp10(i[0]))))),
+        "exp_m1" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| (i[0].ln_1p())))),
+        "ln_1p" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| (i[0].exp_m1())))),
+        "ln" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].ln()))),
+        "log2" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].log2()))),
+        "log10" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].log10()))),
+        "hypot" => return Net::wrap(Box::new(map(|i: &Frame<f32, U2>| i[0].hypot(i[1])))),
+        "atan2" => return Net::wrap(Box::new(map(|i: &Frame<f32, U2>| i[0].atan2(i[1])))),
+        "sin" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].sin()))),
+        "cos" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].cos()))),
+        "tan" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].tan()))),
+        "asin" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].asin()))),
+        "acos" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].acos()))),
+        "atan" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].atan()))),
+        "sinh" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].sinh()))),
+        "cosh" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].cosh()))),
+        "tanh" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].tanh()))),
+        "asinh" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].asinh()))),
+        "acosh" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].acosh()))),
+        "atanh" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].atanh()))),
+        "squared" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0] * i[0]))),
+        "cubed" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0] * i[0] * i[0]))),
         "dissonance" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U2>| dissonance(i[0], i[1]))));
+            return Net::wrap(Box::new(map(|i: &Frame<f32, U2>| dissonance(i[0], i[1]))))
         }
         "dissonance_max" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| dissonance_max(i[0]))));
+            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| dissonance_max(i[0]))))
         }
-        "db_amp" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| db_amp(i[0]))));
-        }
-        "amp_db" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| amp_db(i[0]))));
-        }
-        "a_weight" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| a_weight(i[0]))));
-        }
-        "m_weight" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| m_weight(i[0]))));
-        }
+        "db_amp" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| db_amp(i[0])))),
+        "amp_db" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| amp_db(i[0])))),
+        "a_weight" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| a_weight(i[0])))),
+        "m_weight" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| m_weight(i[0])))),
         "spline" => {
             return Net::wrap(Box::new(map(|i: &Frame<f32, U5>| {
                 spline(i[0], i[1], i[2], i[3], i[4])
@@ -1291,57 +1084,27 @@ pub fn str_to_net(op: &str) -> Net {
                 spline_mono(i[0], i[1], i[2], i[3], i[4])
             })));
         }
-        "softsign" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| softsign(i[0]))));
-        }
-        "softexp" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| softexp(i[0]))));
-        }
+        "softsign" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| softsign(i[0])))),
+        "softexp" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| softexp(i[0])))),
         "softmix" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U3>| softmix(i[0], i[1], i[2]))));
+            return Net::wrap(Box::new(map(|i: &Frame<f32, U3>| softmix(i[0], i[1], i[2]))))
         }
-        "smooth3" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| smooth3(i[0]))));
-        }
-        "smooth5" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| smooth5(i[0]))));
-        }
-        "smooth7" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| smooth7(i[0]))));
-        }
-        "smooth9" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| smooth9(i[0]))));
-        }
-        "uparc" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| uparc(i[0]))));
-        }
-        "downarc" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| downarc(i[0]))));
-        }
-        "sine_ease" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| sine_ease(i[0]))));
-        }
-        "sin_hz" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U2>| sin_hz(i[0], i[1]))));
-        }
-        "cos_hz" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U2>| cos_hz(i[0], i[1]))));
-        }
-        "sqr_hz" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U2>| sqr_hz(i[0], i[1]))));
-        }
-        "tri_hz" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U2>| tri_hz(i[0], i[1]))));
-        }
+        "smooth3" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| smooth3(i[0])))),
+        "smooth5" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| smooth5(i[0])))),
+        "smooth7" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| smooth7(i[0])))),
+        "smooth9" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| smooth9(i[0])))),
+        "uparc" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| uparc(i[0])))),
+        "downarc" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| downarc(i[0])))),
+        "sine_ease" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| sine_ease(i[0])))),
+        "sin_hz" => return Net::wrap(Box::new(map(|i: &Frame<f32, U2>| sin_hz(i[0], i[1])))),
+        "cos_hz" => return Net::wrap(Box::new(map(|i: &Frame<f32, U2>| cos_hz(i[0], i[1])))),
+        "sqr_hz" => return Net::wrap(Box::new(map(|i: &Frame<f32, U2>| sqr_hz(i[0], i[1])))),
+        "tri_hz" => return Net::wrap(Box::new(map(|i: &Frame<f32, U2>| tri_hz(i[0], i[1])))),
         "semitone_ratio" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| semitone_ratio(i[0]))));
+            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| semitone_ratio(i[0]))))
         }
-        "rnd1" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| rnd1(i[0] as u64) as f32)));
-        }
-        "rnd2" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| rnd2(i[0] as u64) as f32)));
-        }
+        "rnd1" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| rnd1(i[0] as u64) as f32))),
+        "rnd2" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| rnd2(i[0] as u64) as f32))),
         "spline_noise" => {
             return Net::wrap(Box::new(map(|i: &Frame<f32, U2>| {
                 spline_noise(i[0] as u64, i[1]) as f32
@@ -1396,15 +1159,9 @@ pub fn str_to_net(op: &str) -> Net {
                 (i[0] * i[1].cos(), i[0] * i[1].sin())
             })));
         }
-        "deg" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].to_degrees())));
-        }
-        "rad" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].to_radians())));
-        }
-        "recip" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].recip())));
-        }
+        "deg" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].to_degrees()))),
+        "rad" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].to_radians()))),
+        "recip" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].recip()))),
         "rfft" => {
             if let Some(p) = p.first() {
                 let i = *p as usize;
