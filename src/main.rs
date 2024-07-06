@@ -52,13 +52,15 @@ fn main() {
         }),
         ..default()
     }))
+    .add_plugins(PanCamPlugin)
+    // osc
+    .insert_resource(OscSender { host: "127.0.0.1".to_string(), port: 1729 })
+    .insert_resource(OscReceiver { socket: None })
+    // settings
     .insert_resource(WinitSettings {
         focused_mode: UpdateMode::reactive_low_power(Duration::from_secs_f64(1.0 / 60.0)),
         unfocused_mode: UpdateMode::reactive_low_power(Duration::from_secs_f64(1.0 / 30.0)),
     })
-    .add_plugins(PanCamPlugin)
-    .insert_resource(OscSender { host: "127.0.0.1".to_string(), port: 1729 })
-    .insert_resource(OscReceiver { socket: None })
     .insert_resource(ClearColor(Color::hsla(0., 0., 0., 1.)))
     .insert_resource(DefaultDrawColor(Hsla::new(270., 1., 0.5, 1.)))
     .insert_resource(DefaultDrawVerts(4))
@@ -67,34 +69,34 @@ fn main() {
     .insert_resource(ConnectionWidth(4.))
     .insert_resource(CommandColor(Hsla::new(0., 0., 0.7, 1.)))
     .insert_resource(IndicatorColor(Hsla::new(0., 1., 0.5, 0.3)))
-    .insert_resource(DefaultLT((0, 0)))
     .insert_resource(TextSize(0.1))
-    .insert_resource(ClickedOnSpace(true))
     .insert_resource(NodeLimit(500))
-    .insert_resource(SystemClipboard(ClipboardContext::new().unwrap()))
-    .insert_resource(Msaa::Sample4)
     .insert_resource(Version(format!("{} {}", env!("CARGO_PKG_VERSION"), env!("COMMIT_HASH"))))
-    .insert_resource(PasteChannel(crossbeam_channel::bounded::<String>(1)))
-    .init_resource::<PolygonHandles>()
-    .add_systems(Startup, setup)
+    .insert_resource(Msaa::Sample4)
     // audio
     .add_systems(Startup, default_out_device)
     .add_systems(Update, set_out_device)
     .add_systems(Startup, default_in_device)
     .add_systems(Update, set_in_device)
+    // main
+    .insert_resource(SystemClipboard(ClipboardContext::new().unwrap()))
+    .insert_resource(PasteChannel(crossbeam_channel::bounded::<String>(1)))
+    .add_systems(Startup, setup)
     .add_systems(Update, toggle_pan)
-    .init_state::<Mode>()
     .add_systems(Update, save_scene)
     .add_systems(Update, copy_scene.run_if(on_event::<CopyCommand>()))
     .add_systems(Update, paste_scene)
     .add_systems(Update, post_load)
     .add_systems(Update, file_drag_and_drop)
     .add_systems(Update, update_indicator)
-    .init_resource::<DragModes>()
+    .init_state::<Mode>()
     // cursor
     .insert_resource(CursorInfo::default())
     .add_systems(Update, update_cursor_info)
     // circles
+    .insert_resource(ClickedOnSpace(true))
+    .init_resource::<PolygonHandles>()
+    .init_resource::<DragModes>()
     .add_systems(Update, spawn_circles.run_if(in_state(Mode::Draw)))
     .add_systems(Update, update_selection.after(update_cursor_info).run_if(in_state(Mode::Edit)))
     .add_systems(Update, move_selected.after(update_selection).run_if(in_state(Mode::Edit)))
@@ -118,17 +120,17 @@ fn main() {
     .add_event::<OutDeviceCommand>()
     .add_event::<InDeviceCommand>()
     // connections
+    .insert_resource(DefaultLT((0, 0)))
     .add_systems(Update, connect.run_if(in_state(Mode::Connect)))
     .add_systems(Update, connect_targets)
     .add_systems(Update, target.run_if(in_state(Mode::Connect)))
     .add_systems(PreUpdate, update_connection_arrows)
-    // order
+    // process
     .init_resource::<Queue>()
     .init_resource::<LoopQueue>()
     .add_event::<OrderChange>()
     .add_systems(PostUpdate, sort_by_order.before(process).run_if(on_event::<OrderChange>()))
     .add_systems(PostUpdate, prepare_loop_queue.after(sort_by_order).before(process))
-    // process
     .add_systems(PostUpdate, process)
     // commands
     .add_systems(Update, command_parser)
