@@ -376,10 +376,7 @@ fn copy_scene(world: &mut World) {
         .allow::<Targets>()
         .extract_entities(query.iter(world))
         .build();
-    // FIXME(amy): can we not clone it?
-    let type_registry = world.resource::<AppTypeRegistry>().clone();
-    let type_registry = type_registry.read();
-    let serialized_scene = scene.serialize(&type_registry).unwrap();
+    let serialized_scene = scene.serialize(&world.resource::<AppTypeRegistry>().read()).unwrap();
     #[cfg(not(target_arch = "wasm32"))]
     {
         let mut ctx = world.resource_mut::<SystemClipboard>();
