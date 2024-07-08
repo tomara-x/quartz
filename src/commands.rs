@@ -1530,7 +1530,7 @@ pub fn command_parser(
             Some(":help") | Some(":about") | Some("about") | Some("help") => {
                 *text = format!(">see: {}", env!("CARGO_PKG_REPOSITORY"));
             }
-            Some(":version") => {
+            Some("version") | Some(":version") => {
                 *text = format!(">quartz version: {}", &access.version.0);
             }
             Some("quartz") => {

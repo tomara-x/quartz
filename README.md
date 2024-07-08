@@ -293,6 +293,7 @@ note: when drag-selecting, holding `alt` will only select circles (ignores holes
 - `ht` toggle white hole open status
 - `F` freeze the command line (press `esc`, `Enter`, or `Backspace` to reactivate it)
 - `quartz` shhh!
+- `version` print version
 - `awa` [awawawa](https://www.youtube.com/watch?v=LLrIGJEz818)
 
 </p>
