@@ -774,34 +774,31 @@ pub fn command_parser(
                                 }
                             }
                             Some("arr") | Some("array") => {
+                                let mut tmp = Vec::new();
+                                let mut id = None;
                                 if let Some(s) = command.next() {
-                                    if let Some(e) = str_to_id(s) {
-                                        if let Ok(mut arr) = access.arr_query.get_mut(e) {
-                                            arr.0.clear();
-                                            for n in command {
-                                                if let Ok(n) = parse_with_constants(n) {
-                                                    arr.0.push(n);
-                                                }
-                                            }
-                                            lt_to_open = (Some(e), Some(-13));
-                                        }
-                                    } else {
-                                        let mut tmp = Vec::new();
-                                        if let Ok(n) = parse_with_constants(s) {
-                                            tmp.push(n);
-                                        }
-                                        for n in command {
-                                            if let Ok(n) = parse_with_constants(n) {
-                                                tmp.push(n);
-                                            }
-                                        }
-                                        for id in access.selected_query.iter() {
-                                            if let Ok(mut arr) = access.arr_query.get_mut(id) {
-                                                arr.0 = tmp.clone();
-                                            }
-                                        }
-                                        lt_to_open = (None, Some(-13));
+                                    id = str_to_id(s);
+                                    if let Ok(n) = parse_with_constants(s) {
+                                        tmp.push(n);
                                     }
+                                }
+                                for n in command {
+                                    if let Ok(n) = parse_with_constants(n) {
+                                        tmp.push(n);
+                                    }
+                                }
+                                if let Some(id) = id {
+                                    if let Ok(mut arr) = access.arr_query.get_mut(id) {
+                                        arr.0 = tmp;
+                                        lt_to_open = (Some(id), Some(-13));
+                                    }
+                                } else {
+                                    for id in access.selected_query.iter() {
+                                        if let Ok(mut arr) = access.arr_query.get_mut(id) {
+                                            arr.0 = tmp.clone();
+                                        }
+                                    }
+                                    lt_to_open = (None, Some(-13));
                                 }
                             }
                             Some("tar") | Some("targets") => {
