@@ -1,6 +1,7 @@
 use crossbeam_channel::Receiver;
 use fundsp::fft::*;
 use fundsp::hacker32::*;
+use std::collections::VecDeque;
 
 /// switch between nets based on index
 /// - input 0: index
@@ -635,5 +636,43 @@ impl AudioNode for Ifft {
         self.count = 0;
         self.input.fill(Complex32::ZERO);
         self.output.fill(Complex32::ZERO);
+    }
+}
+
+/// variable delay with input time in samples
+/// - input 0: signal
+/// - input 1: delay time in samples
+/// - output 0: delayed signal
+#[derive(Clone)]
+pub struct SampDelay {
+    buffer: VecDeque<f32>,
+    max: usize,
+}
+
+impl SampDelay {
+    pub fn new(max: usize) -> Self {
+        let mut buffer = VecDeque::new();
+        buffer.resize(max, 0.);
+        SampDelay { buffer, max }
+    }
+}
+
+impl AudioNode for SampDelay {
+    const ID: u64 = 1122;
+    type Inputs = U2;
+    type Outputs = U1;
+
+    #[inline]
+    fn tick(&mut self, input: &Frame<f32, Self::Inputs>) -> Frame<f32, Self::Outputs> {
+        self.buffer.push_front(input[0]);
+        let _ = self.buffer.pop_back();
+        let out = self.buffer.get(input[1] as usize).unwrap_or(&0.);
+        [*out].into()
+    }
+
+    fn reset(&mut self) {
+        let mut new = VecDeque::new();
+        new.resize(self.max, 0.);
+        self.buffer = new;
     }
 }

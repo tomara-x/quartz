@@ -771,6 +771,7 @@ other
 - `reverb_stereo(float, [float], [float])` (room size, reverberation time, damping) when damping isn't provided it defaults to 1, time defaults to 5
 - `tap(float, float)` (min delay time, max delay time)
 - `tap_linear(float, float)` (same)
+- `samp_delay(float)` argument is max delay time (in samples), node takes 2 inputs (signal, delay time in samples)
 
 math
 - `add(float, [float], [float], ...)` (up to 8 params)

@@ -641,6 +641,11 @@ pub fn str_to_net(op: &str) -> Net {
                 return Net::wrap(Box::new(tap_linear(min(p0, p1), max(p0, p1))));
             }
         }
+        "samp_delay" => {
+            if let Some(p) = p.first() {
+                return Net::wrap(Box::new(An(SampDelay::new(*p as usize))));
+            }
+        }
         // thanks to the pdhalf csound opcode
         // https://github.com/csound/csound/blob/master/Opcodes/shape.c#L299
         "pdhalf_bi" => {
