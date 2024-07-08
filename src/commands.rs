@@ -243,7 +243,6 @@ pub fn command_parser(
                         }
                     }
                     // white hole / black hole link type
-                    // TODO(amy): set-both-ends version
                     Some(":lt") | Some("lt") => {
                         if let Some(s) = command.next() {
                             if let Some(e) = str_to_id(s) {
@@ -1509,6 +1508,7 @@ pub fn command_parser(
                 if let Some(win) = web_sys::window() {
                     if let Some(clip) = win.navigator().clipboard() {
                         let sender = access.paste_chan.0 .0.clone();
+                        // TODO(amy): can't we store this instead of forgetting?
                         let cb = wasm_bindgen::closure::Closure::new(
                             move |val: wasm_bindgen::JsValue| {
                                 if let Some(string) = val.as_string() {

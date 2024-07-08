@@ -582,7 +582,6 @@ pub fn process(
                         }
                         lt_to_open = Some(-13);
                     }
-                    // TODO(mara): zip for targets?
                 }
             }
             // unzip
@@ -1224,8 +1223,8 @@ pub fn process(
                             let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
                             // rise
                             if (op_num == 52 && input > arr[0])
-                                // fall
-                                || (op_num == 53 && input < arr[0])
+                            // fall
+                            || (op_num == 53 && input < arr[0])
                             {
                                 access.num_query.get_mut(*id).unwrap().0 = 1.;
                                 lt_to_open = Some(-1);
@@ -1832,7 +1831,7 @@ pub fn process(
                             input = Some(wh.bh_parent);
                         }
                         if wh.open {
-                            changed = true
+                            changed = true;
                         }
                     }
                 }
