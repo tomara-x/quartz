@@ -56,12 +56,15 @@ more details: https://github.com/bevyengine/bevy/tree/main/examples#wasm
 
 
 ---
-### modes
+### modes and navigation
 when you open quartz, it will be an empty window. there's 3 modes:
 - **edit**: (default) interact with entities and execute commands (press `e` or `esc`)
 - **draw**: draw new circles (press `d`)
 - **connect**: connect circles (press `c`)
     - **target**: target an entity from another (hold `t` in connect mode)
+
+hold `space`, then drag to pan the view, or scroll to zoom in and out
+
 ---
 ### circle anatomy
 first, define your terms:
