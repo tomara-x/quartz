@@ -132,7 +132,7 @@ there are 2 types of commands:
 </p>
 </details>
 
-<details><summary>audio device sellection</summary>
+<details><summary>audio device selection</summary>
 <p>
 
 - `:od {index} {index} [sample rate] [buffer size]` set the output audio device. first index is the host, second is the device index (use the commands `ah` and `ao` to get those) if sample rate and buffer size aren't given, the device defaults will be used
