@@ -14,7 +14,7 @@ use bevy::{
     sprite::Mesh2dHandle,
     tasks::IoTaskPool,
     utils::Duration,
-    window::FileDragAndDrop::DroppedFile,
+    window::{FileDragAndDrop::DroppedFile, WindowMode},
     winit::{UpdateMode, WinitSettings},
 };
 
@@ -83,6 +83,7 @@ fn main() {
     .insert_resource(PasteChannel(crossbeam_channel::bounded::<String>(1)))
     .add_systems(Startup, setup)
     .add_systems(Update, toggle_pan)
+    .add_systems(Update, toggle_fullscreen)
     .add_systems(Update, save_scene)
     .add_systems(Update, copy_scene.run_if(on_event::<CopyCommand>()))
     .add_systems(Update, paste_scene)
@@ -246,11 +247,19 @@ fn setup(
 
 fn toggle_pan(mut query: Query<&mut PanCam>, keyboard_input: Res<ButtonInput<KeyCode>>) {
     if keyboard_input.just_pressed(KeyCode::Space) {
-        let mut pancam = query.single_mut();
-        pancam.enabled = true;
+        query.single_mut().enabled = true;
     } else if keyboard_input.just_released(KeyCode::Space) {
-        let mut pancam = query.single_mut();
-        pancam.enabled = false;
+        query.single_mut().enabled = false;
+    }
+}
+
+fn toggle_fullscreen(mut query: Query<&mut Window>, keyboard_input: Res<ButtonInput<KeyCode>>) {
+    if keyboard_input.just_pressed(KeyCode::F11) {
+        if query.single().mode == WindowMode::Fullscreen {
+            query.single_mut().mode = WindowMode::Windowed;
+        } else {
+            query.single_mut().mode = WindowMode::Fullscreen;
+        }
     }
 }
 

@@ -6,7 +6,6 @@ use bevy::{
     prelude::*,
     render::view::{RenderLayers, VisibleEntities},
     sprite::WithMesh2d,
-    window::WindowMode,
 };
 
 use crate::{components::*, functions::*};
@@ -41,7 +40,6 @@ pub struct Access<'w, 's> {
     op_changed_query: Query<'w, 's, &'static mut OpChanged>,
     exit_event: EventWriter<'w, AppExit>,
     drag_modes: ResMut<'w, DragModes>,
-    windows: Query<'w, 's, &'static mut Window>,
     default_color: ResMut<'w, DefaultDrawColor>,
     default_verts: ResMut<'w, DefaultDrawVerts>,
     default_lt: ResMut<'w, DefaultLT>,
@@ -77,16 +75,6 @@ pub fn command_parser(
     }
 
     let text = &mut clt.sections[0].value;
-
-    // toggle fullscreen mode
-    if keyboard_input.just_pressed(KeyCode::F11) {
-        if access.windows.single().mode == WindowMode::Fullscreen {
-            access.windows.single_mut().mode = WindowMode::Windowed;
-        } else {
-            access.windows.single_mut().mode = WindowMode::Fullscreen;
-        }
-        return;
-    }
 
     if *mode.get() == Mode::Draw {
         // exit to edit
