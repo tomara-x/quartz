@@ -286,7 +286,6 @@ pub struct InputReceivers(pub Receiver<f32>, pub Receiver<f32>);
 #[derive(Resource)]
 pub struct PasteChannel(pub (Sender<String>, Receiver<String>));
 
-// TODO(amy): save in scene
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
 pub struct ShowInfoText(pub bool, pub bool); // (show text, show id)

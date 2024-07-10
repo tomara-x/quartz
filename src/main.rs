@@ -163,7 +163,8 @@ fn main() {
     .register_type::<TextSize>()
     .register_type::<Version>()
     .register_type::<Holes>()
-    .register_type::<NodeLimit>();
+    .register_type::<NodeLimit>()
+    .register_type::<ShowInfoText>();
 
     #[cfg(feature = "inspector")]
     app.add_plugins(WorldInspectorPlugin::new());
@@ -352,6 +353,7 @@ fn save_scene(world: &mut World) {
             .allow_resource::<TextSize>()
             .allow_resource::<Version>()
             .allow_resource::<NodeLimit>()
+            .allow_resource::<ShowInfoText>()
             .extract_entities(query.iter(world))
             .extract_resources()
             .build();
