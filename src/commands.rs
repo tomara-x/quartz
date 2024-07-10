@@ -85,9 +85,7 @@ pub fn command_parser(
         } else {
             access.windows.single_mut().mode = WindowMode::Fullscreen;
         }
-    }
-    if keyboard_input.just_pressed(KeyCode::Delete) {
-        access.delete_event.send_default();
+        return;
     }
 
     if *mode.get() == Mode::Draw {
@@ -147,6 +145,11 @@ pub fn command_parser(
             next_mode.set(Mode::Draw);
         }
     } else if *mode.get() == Mode::Edit {
+        if keyboard_input.just_pressed(KeyCode::Delete) {
+            access.delete_event.send_default();
+            return;
+        }
+
         for key in key_event.read() {
             if key.state.is_pressed() {
                 match &key.logical_key {
