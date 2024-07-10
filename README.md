@@ -203,7 +203,7 @@ note: using the [std constants](https://doc.rust-lang.org/std/f32/consts/index.h
 <p>
 
 (information about the selected entities)
-- `ii` entity id's
+- `ii` entity ids
 - `in` number values
 - `ira` radius values
 - `ix` x position
@@ -334,7 +334,7 @@ unless...
 ---
 ### targets
 
-a circle has an array of "targets" those are just entity id's. so it's like a "pointer" to another circles or hole. think of it as a one-way wireless connection.
+a circle has an array of "targets" those are just entity ids. so it's like a "pointer" to another circles or hole. think of it as a one-way wireless connection.
 some ops make a circle do things to its targets. like `process`, `del_targets`, `spin_target`, `distro`, `reorder`, (see [ops](#ops) for full list)
 
 (they allow some things that aren't easy through normal processing. since circles read their input when they process, while targets are written to when the controller circle is processed instead)
