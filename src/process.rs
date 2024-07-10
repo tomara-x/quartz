@@ -499,9 +499,10 @@ pub fn process(
                                             arr[i];
                                     }
                                     -10 => {
-                                        access.order_query.get_mut(targets[i]).unwrap().0 =
-                                            arr[i] as usize;
-                                        access.order_change.send_default();
+                                        if let Ok(mut ord) = access.order_query.get_mut(targets[i]) {
+                                            ord.0 = arr[i] as usize;
+                                            access.order_change.send_default();
+                                        }
                                     }
                                     -11 => {
                                         let v = arr[i].max(3.) as usize;
