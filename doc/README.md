@@ -4,7 +4,7 @@
 
 [audio graphs as functions](audio_graphs_as_functions.md)
 
-[circle info text](circle_info_text.md)
+[arity](arity.md)
 
 [connecting audio nodes](connecting_audio_nodes.md)
 
