@@ -727,8 +727,9 @@ dependencies = [
 
 [[package]]
 name = "bevy_pancam"
-version = "0.11.1"
-source = "git+https://github.com/tomara-x/bevy_pancam#d62b4c69c5becf8ad6a3fff039e6d3b7d3f0a952"
+version = "0.12.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f911424ae6dad142b8e1b7475a5dfe16031cbe0fe7b54cc386e7e74a8722ae59"
 dependencies = [
  "bevy",
 ]
