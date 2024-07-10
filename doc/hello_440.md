@@ -1,4 +1,10 @@
-in edit mode, select a circle then press `o`, you'll notice that the command line displays: `:set op `, start typing an op string like: `out()` or `sine(440)` then press enter. then connect sine to out with a `0 -> 1` connection (audio node to first input)
+- press `d` to go to draw mode
+- draw 2 circles
+- press `esc` to go to edit mode 
+- select a circle then press `o`, you'll notice that the command line displays: `:set op `, start typing the op string: `sine(440)` then press enter
+- select the other circle and do the same but give it the op string `out()` 
+- press `c` to go to connect mode
+- connect sine to out with a `0 -> 1` connection (audio node to first input) (see [connecting circles](connecting_circles.md))
 
 this video contains audio (mono)
 
