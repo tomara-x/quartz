@@ -353,7 +353,8 @@ pub fn connect_targets(
         for hole in &holes_query.get(e.0).unwrap().0 {
             if let Ok(wh) = white_hole_query.get(*hole) {
                 if wh.link_types == (-14, 2) {
-                    targets_query.get_mut(wh.bh_parent).unwrap().0 = white_holes.clone();
+                    targets_query.get_mut(wh.bh_parent).unwrap().0 = white_holes;
+                    break;
                 }
             }
         }
