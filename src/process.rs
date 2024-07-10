@@ -175,12 +175,12 @@ pub fn process(
                     _ => {}
                 }
                 if wh.link_types == (-13, -13) {
-                    let arr = &access.arr_query.get(wh.bh_parent).unwrap().0;
-                    access.arr_query.get_mut(*id).unwrap().0 = arr.clone();
+                    let arr = access.arr_query.get(wh.bh_parent).unwrap().0.clone();
+                    access.arr_query.get_mut(*id).unwrap().0 = arr;
                 }
                 if wh.link_types == (-14, -14) {
-                    let arr = &access.targets_query.get(wh.bh_parent).unwrap().0;
-                    access.targets_query.get_mut(*id).unwrap().0 = arr.clone();
+                    let arr = access.targets_query.get(wh.bh_parent).unwrap().0.clone();
+                    access.targets_query.get_mut(*id).unwrap().0 = arr;
                 }
                 lt_to_open = wh.link_types.1;
             }
