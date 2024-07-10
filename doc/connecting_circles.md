@@ -2,7 +2,7 @@ go to connect mode (press `c`) then drag from one circle to another:
 
 https://github.com/tomara-x/quartz/assets/86204514/a4eb6054-5f61-46fb-9df2-b57f6febeda4
 
-exit connect mode (press `e`) then select the newly created holes and give them info texts `II` just to see what's happening.. you see that we've created a `0 -> 0` connection. we can change the connection in place by selecting each hole, pressing `l` then typing a link type, then pressing enter.
+you see that we've created a `0 -> 0` connection. we can change the connection in place by selecting each hole, pressing `l` then typing a link type, then pressing enter.
 
 i've made it a `n -> h` connection (number controlling the hue)
 then `n -> r` (number controlling the radius)

@@ -12,7 +12,7 @@ and you non-africans, listen to me with open mind"
 
 ### learning
 - read this readme
-- there's some exapmles of the basic ideas here: https://github.com/tomara-x/quartz/discussions/categories/e
+- there's some exapmles of the basic ideas in [doc](doc/readme.md)
 - drag and drop examples from the assets folder into a quartz window (type `sa` then `II` to display info)
 - if anything is confusing, please start a discussion: https://github.com/tomara-x/quartz/discussions
 
