@@ -503,6 +503,49 @@ pub fn update_num(
     }
 }
 
+pub fn spawn_info_text(
+    show_info_text: Res<ShowInfoText>,
+    query: Query<Entity, (With<Vertices>, Without<InfoText>)>,
+    text_size: Res<TextSize>,
+    mut commands: Commands,
+) {
+    if show_info_text.0 {
+        for e in query.iter() {
+            let id_text = if show_info_text.1 { format!("{}\n", e) } else { String::new() };
+            let info_text = commands
+                .spawn(Text2dBundle {
+                    text: Text::from_sections([
+                        TextSection::new(
+                            id_text,
+                            TextStyle { color: Color::BLACK, font_size: 120., ..default() },
+                        ),
+                        TextSection::new(
+                            "",
+                            TextStyle { color: Color::BLACK, font_size: 120., ..default() },
+                        ),
+                        TextSection::new(
+                            "",
+                            TextStyle { color: Color::BLACK, font_size: 120., ..default() },
+                        ),
+                        TextSection::new(
+                            "",
+                            TextStyle { color: Color::BLACK, font_size: 120., ..default() },
+                        ),
+                    ])
+                    .with_justify(JustifyText::Left),
+                    transform: Transform::from_scale(Vec3::new(
+                        text_size.0,
+                        text_size.0,
+                        1.,
+                    )),
+                    ..default()
+                })
+                .id();
+            commands.entity(e).insert(InfoText(info_text));
+        }
+    }
+}
+
 pub fn update_info_text(
     mut query: Query<(Entity, &mut InfoText)>,
     mut text_query: Query<&mut Text>,

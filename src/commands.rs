@@ -34,7 +34,6 @@ pub struct Access<'w, 's> {
     delete_event: EventWriter<'w, DeleteCommand>,
     targets_query: Query<'w, 's, &'static mut Targets>,
     gained_wh_query: Query<'w, 's, &'static mut GainedWH>,
-    text_query: Query<'w, 's, &'static mut Text, Without<CommandText>>,
     render_layers: Query<'w, 's, &'static mut RenderLayers, With<Camera>>,
     net_query: Query<'w, 's, &'static mut Network>,
     op_changed_query: Query<'w, 's, &'static mut OpChanged>,
@@ -45,7 +44,6 @@ pub struct Access<'w, 's> {
     default_lt: ResMut<'w, DefaultLT>,
     version: Res<'w, Version>,
     visible: Query<'w, 's, &'static VisibleEntities>,
-    text_size: Res<'w, TextSize>,
     out_device_event: EventWriter<'w, OutDeviceCommand>,
     in_device_event: EventWriter<'w, InDeviceCommand>,
     node_limit: ResMut<'w, NodeLimit>,
@@ -53,6 +51,7 @@ pub struct Access<'w, 's> {
     clipboard: ResMut<'w, SystemClipboard>,
     paste_chan: Res<'w, PasteChannel>,
     bloom: Query<'w, 's, &'static mut BloomSettings, With<Camera>>,
+    show_info_text: ResMut<'w, ShowInfoText>,
 }
 
 pub fn command_parser(
@@ -66,7 +65,6 @@ pub fn command_parser(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     info_text_query: Query<(Entity, &InfoText)>,
-    mut ids_shown: Local<bool>,
     holes_query: Query<&Holes>,
 ) {
     let clt = &mut command_line_text.single_mut();
@@ -1034,70 +1032,6 @@ pub fn command_parser(
                 }
                 text.clear();
             }
-            // insert info texts for selected entities
-            Some("II") => {
-                for e in access.selected_query.iter() {
-                    if info_text_query.contains(e) {
-                        continue;
-                    }
-                    let info_text = commands
-                        .spawn(Text2dBundle {
-                            text: Text::from_sections([
-                                TextSection::new(
-                                    "",
-                                    TextStyle { color: Color::BLACK, font_size: 120., ..default() },
-                                ),
-                                TextSection::new(
-                                    "",
-                                    TextStyle { color: Color::BLACK, font_size: 120., ..default() },
-                                ),
-                                TextSection::new(
-                                    "",
-                                    TextStyle { color: Color::BLACK, font_size: 120., ..default() },
-                                ),
-                                TextSection::new(
-                                    "",
-                                    TextStyle { color: Color::BLACK, font_size: 120., ..default() },
-                                ),
-                            ])
-                            .with_justify(JustifyText::Left),
-                            transform: Transform::from_scale(Vec3::new(
-                                access.text_size.0,
-                                access.text_size.0,
-                                1.,
-                            )),
-                            ..default()
-                        })
-                        .id();
-                    commands.entity(e).insert(InfoText(info_text));
-                }
-                text.clear();
-            }
-            // despawn selected entities' info texts
-            Some("IC") => {
-                for e in access.selected_query.iter() {
-                    if let Ok((_, info_text)) = info_text_query.get(e) {
-                        commands.entity(info_text.0).despawn();
-                        commands.entity(e).remove::<InfoText>();
-                    }
-                }
-                text.clear();
-            }
-            // toggle ids in info texts
-            Some("ID") => {
-                if *ids_shown {
-                    for (_, t) in info_text_query.iter() {
-                        access.text_query.get_mut(t.0).unwrap().sections[0].value = String::new();
-                    }
-                } else {
-                    for (e, t) in info_text_query.iter() {
-                        access.text_query.get_mut(t.0).unwrap().sections[0].value =
-                            format!("{}\n", e);
-                    }
-                }
-                *ids_shown = !*ids_shown;
-                text.clear();
-            }
             // audio node inputs / outputs number / print info
             Some("ni") => {
                 let mut t = String::new();
@@ -1442,9 +1376,10 @@ pub fn command_parser(
                 }
                 text.clear();
             }
-            // render layers
+            // visibility
             Some("vv") => {
                 *access.render_layers.single_mut() = RenderLayers::from_layers(&[0, 1, 2, 3, 4]);
+                access.show_info_text.0 = true;
                 text.clear();
             }
             Some("vc") => {
@@ -1483,6 +1418,29 @@ pub fn command_parser(
                 };
                 text.clear();
             }
+            Some("vt") => {
+                if access.show_info_text.0 {
+                    access.show_info_text.0 = false;
+                    for e in circle_query.iter() {
+                        if let Ok((_, info_text)) = info_text_query.get(e) {
+                            commands.entity(info_text.0).despawn();
+                            commands.entity(e).remove::<InfoText>();
+                        }
+                    }
+                } else {
+                    access.show_info_text.0 = true;
+                }
+                text.clear();
+            }
+            Some("vT") => {
+                if access.show_info_text.1 {
+                    access.show_info_text.1 = false;
+                } else {
+                    access.show_info_text.1 = true;
+                }
+                text.clear();
+            }
+            // copypasting
             Some("yy") | Some("\"+y") => {
                 access.copy_event.send_default();
                 text.clear();

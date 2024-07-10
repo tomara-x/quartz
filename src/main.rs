@@ -96,6 +96,7 @@ fn main() {
     .add_systems(Update, update_cursor_info)
     // circles
     .insert_resource(ClickedOnSpace(true))
+    .insert_resource(ShowInfoText(true, false))
     .init_resource::<PolygonHandles>()
     .init_resource::<DragModes>()
     .add_systems(Update, spawn_circles.run_if(in_state(Mode::Draw)))
@@ -113,6 +114,7 @@ fn main() {
     .add_systems(Update, rotate_selected.after(update_selection).run_if(in_state(Mode::Edit)))
     .add_systems(Update, delete_selected.run_if(on_event::<DeleteCommand>()))
     .add_systems(PreUpdate, update_info_text)
+    .add_systems(Update, spawn_info_text)
     // events
     .add_event::<SaveCommand>()
     .add_event::<CopyCommand>()

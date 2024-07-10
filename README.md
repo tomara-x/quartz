@@ -198,15 +198,6 @@ note: using the [std constants](https://doc.rust-lang.org/std/f32/consts/index.h
 </p>
 </details>
 
-<details><summary>info texts</summary>
-<p>
-
-- `II` spawn info texts for selected entities
-- `IC` clear info texts
-- `ID` show/hide entity id in visible info texts
-
-</p>
-</details>
 
 <details><summary>inspect commands</summary>
 <p>
@@ -284,6 +275,8 @@ note: when drag-selecting, holding `alt` will only select circles (ignores holes
 - `vb` toggle black hole visibility
 - `vw` toggle white hole visibility
 - `va` toggle arrow visibility
+- `vt` toggle info texts
+- `vT` toggle id in info texts (flick `vt` after changing this)
 - `vv` show all
 
 </p>
