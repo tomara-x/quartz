@@ -795,7 +795,7 @@ pub fn command_parser(
                                 } else {
                                     for id in access.selected_query.iter() {
                                         if let Ok(mut arr) = access.arr_query.get_mut(id) {
-                                            arr.0 = tmp.clone();
+                                            arr.0.clone_from(&tmp);
                                         }
                                     }
                                     lt_to_open = (None, Some(-13));
@@ -822,7 +822,7 @@ pub fn command_parser(
                                     // all selected circles get the list of entities as targets
                                     for e in access.selected_query.iter() {
                                         if let Ok(mut c) = access.targets_query.get_mut(e) {
-                                            c.0 = tmp.clone();
+                                            c.0.clone_from(&tmp);
                                         }
                                     }
                                     lt_to_open = (None, Some(-14));
