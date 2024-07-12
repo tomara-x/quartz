@@ -834,8 +834,8 @@ math
 - `atanh()`
 - `atan2()`
 - `hypot()`
-- `rfft(n)` n is a power of two between 2 and 32768 (inclusive)
-- `ifft(n)` same
+- `rfft(n, start)` `n` is the size of the analysis window, a power of two between 2 and 32768 (inclusive). `start` determines the offset within the window to begin writing to (so we can do correct overlap)
+- `ifft(n, start)` same
 - `pol()`
 - `car()`
 - `deg()`
