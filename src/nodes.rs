@@ -545,15 +545,16 @@ pub struct Rfft {
     input: Vec<f32>,
     output: Vec<Complex32>,
     count: usize,
+    start: usize,
 }
 
 impl Rfft {
-    pub fn new(n: usize) -> Self {
+    pub fn new(n: usize, start: usize) -> Self {
         let mut input = Vec::new();
         let mut output = Vec::new();
         input.resize(n, 0.);
         output.resize(n / 2 + 1, Complex32::ZERO);
-        Rfft { n, input, output, count: 0 }
+        Rfft { n, input, output, count: start, start }
     }
 }
 
@@ -583,7 +584,7 @@ impl AudioNode for Rfft {
     }
 
     fn reset(&mut self) {
-        self.count = 0;
+        self.count = self.start;
         self.input.fill(0.);
         self.output.fill(Complex32::ZERO);
     }
@@ -600,15 +601,16 @@ pub struct Ifft {
     input: Vec<Complex32>,
     output: Vec<Complex32>,
     count: usize,
+    start: usize,
 }
 
 impl Ifft {
-    pub fn new(n: usize) -> Self {
+    pub fn new(n: usize, start: usize) -> Self {
         let mut input = Vec::new();
         let mut output = Vec::new();
         input.resize(n, Complex32::ZERO);
         output.resize(n, Complex32::ZERO);
-        Ifft { n, input, output, count: 0 }
+        Ifft { n, input, output, count: start, start }
     }
 }
 
@@ -633,7 +635,7 @@ impl AudioNode for Ifft {
     }
 
     fn reset(&mut self) {
-        self.count = 0;
+        self.count = self.start;
         self.input.fill(Complex32::ZERO);
         self.output.fill(Complex32::ZERO);
     }

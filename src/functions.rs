@@ -1168,23 +1168,25 @@ pub fn str_to_net(op: &str) -> Net {
         "rad" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].to_radians()))),
         "recip" => return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| i[0].recip()))),
         "rfft" => {
-            if let Some(p) = p.first() {
-                let i = *p as usize;
+            if let Some(p) = p.get(0..2) {
+                let i = p[0] as usize;
                 let x = i.clamp(2, 32768).next_power_of_two();
+                let start = std::cmp::Ord::min(p[1] as usize, x-1);
                 if i != x {
                     bevy::prelude::warn!("rfft used next power of two: {}", x);
                 }
-                return Net::wrap(Box::new(An(Rfft::new(x))));
+                return Net::wrap(Box::new(An(Rfft::new(x, start))));
             }
         }
         "ifft" => {
-            if let Some(p) = p.first() {
-                let i = *p as usize;
+            if let Some(p) = p.get(0..2) {
+                let i = p[0] as usize;
                 let x = i.clamp(2, 32768).next_power_of_two();
+                let start = std::cmp::Ord::min(p[1] as usize, x-1);
                 if i != x {
                     bevy::prelude::warn!("ifft used next power of two: {}", x);
                 }
-                return Net::wrap(Box::new(An(Ifft::new(x))));
+                return Net::wrap(Box::new(An(Ifft::new(x, start))));
             }
         }
         _ => {}
