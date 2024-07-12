@@ -6,7 +6,7 @@ and you non-africans, listen to me with open mind"
 ```
 ![Screenshot_2024-04-28_19-32-55](https://github.com/tomara-x/quartz/assets/86204514/a69b9a7c-396a-44ad-9c40-1702df524a68)
 ![Screenshot_2024-06-07_09-43-35](https://github.com/tomara-x/quartz/assets/86204514/cf9ca485-6e82-42ae-af60-4dbd54df2133)
-![Screenshot_2024-07-06_04-30-22](https://github.com/tomara-x/quartz/assets/86204514/ffd72cc9-1fcd-4ff0-bc4b-4b3d45aa1f5c)
+![Screenshot_2024-07-12_06-12-55](https://github.com/user-attachments/assets/60f739e6-529e-44a8-b75d-71d9878a3e24)
 
 ## let's play
 
