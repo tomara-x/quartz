@@ -505,7 +505,8 @@ pub fn update_num(
 
 pub fn spawn_info_text(
     show_info_text: Res<ShowInfoText>,
-    query: Query<Entity, (With<Vertices>, Without<InfoText>)>,
+    // fully loaded (not an orphaned hole) that's why With<RenderLayers>
+    query: Query<Entity, (With<Vertices>, Without<InfoText>, With<RenderLayers>)>,
     text_size: Res<TextSize>,
     mut commands: Commands,
 ) {
