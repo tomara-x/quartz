@@ -7,7 +7,6 @@ use bevy::{
         bloom::{BloomCompositeMode, BloomSettings},
         tonemapping::Tonemapping,
     },
-    ecs::system::SystemParam,
     prelude::*,
     render::view::RenderLayers,
     scene::{serde::SceneDeserializer, SceneInstance},
@@ -435,17 +434,6 @@ fn file_drag_and_drop(
     }
 }
 
-#[derive(SystemParam)]
-struct MoreParams<'w, 's> {
-    command_color: Res<'w, CommandColor>,
-    connection_color: Res<'w, ConnectionColor>,
-    arrow_handle: Res<'w, ArrowHandle>,
-    connection_mat: Res<'w, ConnectionMat>,
-    selected_query: Query<'w, 's, Entity, With<Selected>>,
-    indicator_color: Res<'w, IndicatorColor>,
-    indicator_id: Res<'w, Indicator>,
-}
-
 fn post_load(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -461,20 +449,34 @@ fn post_load(
     mut command_line_text: Query<&mut Text, With<CommandText>>,
     scene_spawner: Res<SceneSpawner>,
     mut polygon_handles: ResMut<PolygonHandles>,
-    more: MoreParams,
     mut indicator_color_query: Query<&mut Col, Without<Vertices>>,
+    (
+        command_color,
+        connection_color,
+        arrow_handle,
+        connection_mat,
+        selected_query,
+        indicator_color,
+        indicator_id,
+    ): (
+        Res<CommandColor>,
+        Res<ConnectionColor>,
+        Res<ArrowHandle>,
+        Res<ConnectionMat>,
+        Query<Entity, With<Selected>>,
+        Res<IndicatorColor>,
+        Res<Indicator>,
+    ),
 ) {
     for (scene_id, instance_id) in scenes.iter() {
         if scene_spawner.instance_is_ready(**instance_id) {
-            for e in more.selected_query.iter() {
+            for e in selected_query.iter() {
                 commands.entity(e).remove::<Selected>();
             }
             // update indicator color
-            let indicator_color = more.indicator_color.0;
-            indicator_color_query.get_mut(more.indicator_id.0).unwrap().0 = indicator_color;
+            indicator_color_query.get_mut(indicator_id.0).unwrap().0 = indicator_color.0;
             // update connection material from color resource
-            let mat_id = &more.connection_mat.0;
-            materials.get_mut(mat_id).unwrap().color = more.connection_color.0.into();
+            materials.get_mut(&connection_mat.0).unwrap().color = connection_color.0.into();
             if let Ok(children) = children_query.get(scene_id) {
                 for child in children {
                     if let Ok((t, c, v)) = main_query.get(*child) {
@@ -514,8 +516,8 @@ fn post_load(
                                         let arrow = commands
                                             .spawn((
                                                 ColorMesh2dBundle {
-                                                    mesh: more.arrow_handle.0.clone(),
-                                                    material: more.connection_mat.0.clone(),
+                                                    mesh: arrow_handle.0.clone(),
+                                                    material: connection_mat.0.clone(),
                                                     transform: Transform::default(),
                                                     ..default()
                                                 },
@@ -548,7 +550,7 @@ fn post_load(
             }
             // update the command line color from resource
             let clt = &mut command_line_text.single_mut();
-            clt.sections[0].style.color = more.command_color.0.into();
+            clt.sections[0].style.color = command_color.0.into();
             // despawn the now empty instance (may contain bad state connections when pasting)
             commands.entity(scene_id).remove::<SceneInstance>();
             commands.entity(scene_id).despawn_recursive();
