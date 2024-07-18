@@ -41,8 +41,7 @@ pub fn prepare_loop_queue(
     loopq.0.clear();
     for id in queue.0.iter().flatten() {
         if op_query.get(*id).unwrap().0 == "process" {
-            let targets = &targets_query.get(*id).unwrap().0;
-            for t in targets {
+            for t in &targets_query.get(*id).unwrap().0 {
                 // only add existing circles (that aren't holes)
                 if op_query.contains(*t) {
                     loopq.0.push(*t);

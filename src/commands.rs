@@ -1420,24 +1420,18 @@ pub fn command_parser(
             }
             Some("vt") => {
                 if access.show_info_text.0 {
-                    access.show_info_text.0 = false;
                     for e in circle_query.iter() {
                         if let Ok((_, info_text)) = info_text_query.get(e) {
                             commands.entity(info_text.0).despawn();
                             commands.entity(e).remove::<InfoText>();
                         }
                     }
-                } else {
-                    access.show_info_text.0 = true;
                 }
+                access.show_info_text.0 = !access.show_info_text.0;
                 text.clear();
             }
             Some("vT") => {
-                if access.show_info_text.1 {
-                    access.show_info_text.1 = false;
-                } else {
-                    access.show_info_text.1 = true;
-                }
+                access.show_info_text.1 = !access.show_info_text.1;
                 text.clear();
             }
             // copypasting
