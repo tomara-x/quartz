@@ -508,7 +508,9 @@ pub fn process(
                                         col_query.get_mut(targets[i]).unwrap().0.saturation =
                                             arr[i];
                                     }
-                                    -8 => col_query.get_mut(targets[i]).unwrap().0.lightness = arr[i],
+                                    -8 => {
+                                        col_query.get_mut(targets[i]).unwrap().0.lightness = arr[i]
+                                    }
                                     -9 => col_query.get_mut(targets[i]).unwrap().0.alpha = arr[i],
                                     -10 => {
                                         if let Ok(mut ord) = order_query.get_mut(targets[i]) {
@@ -1431,7 +1433,7 @@ pub fn process(
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (0, 1) {
-                            net = Some(Box::new(net_query.get(wh.bh_parent).unwrap().0.clone()));
+                            net = Some(wh.bh_parent);
                         } else if wh.link_types == (-1, 2) {
                             del = Some(num_query.get(wh.bh_parent).unwrap().0);
                         }
@@ -1442,13 +1444,17 @@ pub fn process(
                 }
                 if lost || op_changed || changed {
                     if let Some(net) = net {
+                        let net = net_query.get(net).unwrap().0.clone();
                         if net.outputs() == net.inputs() {
                             if let Some(del) = del {
-                                let feedback =
-                                    Net::wrap(Box::new(FeedbackUnit::new(del.into(), net)));
+                                let feedback = Net::wrap(Box::new(FeedbackUnit::new(
+                                    del.into(),
+                                    Box::new(net),
+                                )));
                                 net_query.get_mut(*id).unwrap().0 = feedback;
                             } else {
-                                let feedback = Net::wrap(Box::new(FeedbackUnit::new(0., net)));
+                                let feedback =
+                                    Net::wrap(Box::new(FeedbackUnit::new(0., Box::new(net))));
                                 net_query.get_mut(*id).unwrap().0 = feedback;
                             }
                             lt_to_open = Some(0);
