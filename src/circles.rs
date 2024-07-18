@@ -534,11 +534,7 @@ pub fn spawn_info_text(
                         ),
                     ])
                     .with_justify(JustifyText::Left),
-                    transform: Transform::from_scale(Vec3::new(
-                        text_size.0,
-                        text_size.0,
-                        1.,
-                    )),
+                    transform: Transform::from_scale(Vec3::new(text_size.0, text_size.0, 1.)),
                     ..default()
                 })
                 .id();
