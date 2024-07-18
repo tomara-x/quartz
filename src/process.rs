@@ -1447,15 +1447,12 @@ pub fn process(
                         let net = net_query.get(net).unwrap().0.clone();
                         if net.outputs() == net.inputs() {
                             if let Some(del) = del {
-                                let feedback = Net::wrap(Box::new(FeedbackUnit::new(
-                                    del.into(),
-                                    Box::new(net),
-                                )));
-                                net_query.get_mut(*id).unwrap().0 = feedback;
+                                net_query.get_mut(*id).unwrap().0 = Net::wrap(Box::new(
+                                    FeedbackUnit::new(del.into(), Box::new(net)),
+                                ));
                             } else {
-                                let feedback =
+                                net_query.get_mut(*id).unwrap().0 =
                                     Net::wrap(Box::new(FeedbackUnit::new(0., Box::new(net))));
-                                net_query.get_mut(*id).unwrap().0 = feedback;
                             }
                             lt_to_open = Some(0);
                         }
