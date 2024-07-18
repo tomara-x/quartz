@@ -58,7 +58,6 @@ pub fn spawn_circles(
                 Network(Net::new(0, 0)),
                 NetIns(Vec::new()),
                 OpChanged(false),
-                GainedWH(false),
                 LostWH(false),
             ),
             RenderLayers::layer(1),

@@ -151,7 +151,6 @@ fn main() {
     .register_type::<WhiteHole>()
     .register_type::<Vertices>()
     .register_type::<Targets>()
-    .register_type::<GainedWH>()
     .register_type::<LostWH>()
     .register_type::<DefaultDrawColor>()
     .register_type::<DefaultDrawVerts>()
@@ -501,7 +500,6 @@ fn post_load(
                                 Network(str_to_net(&op.0)),
                                 NetIns(Vec::new()),
                                 OpChanged(true),
-                                GainedWH(false),
                                 LostWH(false),
                                 RenderLayers::layer(1),
                             ));

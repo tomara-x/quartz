@@ -33,7 +33,6 @@ pub struct Access<'w, 's> {
     copy_event: EventWriter<'w, CopyCommand>,
     delete_event: EventWriter<'w, DeleteCommand>,
     targets_query: Query<'w, 's, &'static mut Targets>,
-    gained_wh_query: Query<'w, 's, &'static mut GainedWH>,
     render_layers: Query<'w, 's, &'static mut RenderLayers, With<Camera>>,
     net_query: Query<'w, 's, &'static mut Network>,
     op_changed_query: Query<'w, 's, &'static mut OpChanged>,
@@ -239,18 +238,12 @@ pub fn command_parser(
                                     if let Some(s) = command.next() {
                                         wh.link_types.1 = str_to_lt(s);
                                         wh.open = true;
-                                        let parent =
-                                            access.black_hole_query.get(wh.bh).unwrap().wh_parent;
-                                        access.gained_wh_query.get_mut(parent).unwrap().0 = true;
                                     }
                                 } else if let Ok(bh) = access.black_hole_query.get(e) {
                                     let wh = &mut access.white_hole_query.get_mut(bh.wh).unwrap();
                                     if let Some(s) = command.next() {
                                         wh.link_types.0 = str_to_lt(s);
                                         wh.open = true;
-                                        let parent =
-                                            access.white_hole_query.get(bh.wh).unwrap().bh_parent;
-                                        access.gained_wh_query.get_mut(parent).unwrap().0 = true;
                                     }
                                 }
                             } else {
@@ -258,17 +251,11 @@ pub fn command_parser(
                                     if let Ok(mut wh) = access.white_hole_query.get_mut(id) {
                                         wh.link_types.1 = str_to_lt(s);
                                         wh.open = true;
-                                        let parent =
-                                            access.black_hole_query.get(wh.bh).unwrap().wh_parent;
-                                        access.gained_wh_query.get_mut(parent).unwrap().0 = true;
                                     } else if let Ok(bh) = access.black_hole_query.get(id) {
                                         let wh =
                                             &mut access.white_hole_query.get_mut(bh.wh).unwrap();
                                         wh.link_types.0 = str_to_lt(s);
                                         wh.open = true;
-                                        let parent =
-                                            access.white_hole_query.get(bh.wh).unwrap().bh_parent;
-                                        access.gained_wh_query.get_mut(parent).unwrap().0 = true;
                                     }
                                 }
                             }
@@ -1016,8 +1003,6 @@ pub fn command_parser(
                             wh.link_types.1 = wh.link_types.1.saturating_sub(1);
                         }
                         wh.open = true;
-                        let parent = access.black_hole_query.get(wh.bh).unwrap().wh_parent;
-                        access.gained_wh_query.get_mut(parent).unwrap().0 = true;
                     } else if let Ok(bh) = access.black_hole_query.get(id) {
                         let wh = &mut access.white_hole_query.get_mut(bh.wh).unwrap();
                         if c0 == Some("}") {
@@ -1026,8 +1011,6 @@ pub fn command_parser(
                             wh.link_types.0 = wh.link_types.0.saturating_sub(1);
                         }
                         wh.open = true;
-                        let parent = access.white_hole_query.get(bh.wh).unwrap().bh_parent;
-                        access.gained_wh_query.get_mut(parent).unwrap().0 = true;
                     }
                 }
                 text.clear();

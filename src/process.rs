@@ -63,7 +63,6 @@ pub fn process(
     windows: Query<(Entity, &Window)>,
     mut commands: Commands,
     mut slot: ResMut<SlotRes>,
-    // TODO(mara): yeet gainedWH
     (
         mut order_query,
         op_query,
@@ -395,7 +394,6 @@ pub fn process(
                                         Network(Net::new(0, 0)),
                                         NetIns(Vec::new()),
                                         OpChanged(false),
-                                        GainedWH(false),
                                         LostWH(false),
                                     ),
                                     RenderLayers::layer(1),

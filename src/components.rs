@@ -75,10 +75,6 @@ impl MapEntities for Holes {
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
-pub struct GainedWH(pub bool);
-
-#[derive(Component, Reflect, Default)]
-#[reflect(Component)]
 pub struct LostWH(pub bool);
 
 #[derive(Component, Reflect, Default)]
