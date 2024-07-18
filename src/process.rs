@@ -3,7 +3,6 @@ use bevy::{
         bloom::{BloomCompositeMode, BloomSettings},
         tonemapping::Tonemapping,
     },
-    ecs::system::SystemParam,
     input::keyboard::{Key, KeyboardInput},
     prelude::*,
     render::view::{screenshot::ScreenshotManager, RenderLayers},
@@ -51,71 +50,121 @@ pub fn prepare_loop_queue(
     }
 }
 
-#[derive(SystemParam)]
-pub struct Access<'w, 's> {
-    order_query: Query<'w, 's, &'static mut Order>,
-    op_query: Query<'w, 's, &'static mut Op>,
-    bloom: Query<'w, 's, &'static mut BloomSettings, With<Camera>>,
-    num_query: Query<'w, 's, &'static mut Number>,
-    trans_query: Query<'w, 's, &'static mut Transform>,
-    arr_query: Query<'w, 's, &'static mut Arr>,
-    tonemapping: Query<'w, 's, &'static mut Tonemapping, With<Camera>>,
-    net_query: Query<'w, 's, &'static mut Network>,
-    net_ins_query: Query<'w, 's, &'static mut NetIns>,
-    net_chan_query: Query<'w, 's, &'static mut NetChannel>,
-    col_query: Query<'w, 's, &'static mut Col>,
-    order_change: EventWriter<'w, OrderChange>,
-    vertices_query: Query<'w, 's, &'static mut Vertices>,
-    op_changed_query: Query<'w, 's, &'static mut OpChanged>,
-    //gained_wh_query: Query<'w, 's, &'static mut GainedWH>,
-    lost_wh_query: Query<'w, 's, &'static mut LostWH>,
-    targets_query: Query<'w, 's, &'static mut Targets>,
-    screensot_manager: ResMut<'w, ScreenshotManager>,
-    winit_settings: ResMut<'w, WinitSettings>,
-    clear_color: ResMut<'w, ClearColor>,
-    default_color: ResMut<'w, DefaultDrawColor>,
-    default_verts: ResMut<'w, DefaultDrawVerts>,
-    highlight_color: ResMut<'w, HighlightColor>,
-    connection_color: ResMut<'w, ConnectionColor>,
-    connection_width: ResMut<'w, ConnectionWidth>,
-    arrow_query: Query<'w, 's, &'static ConnectionArrow>,
-    indicator: Res<'w, Indicator>,
-    indicator_color: ResMut<'w, IndicatorColor>,
-    command_line_text: Query<'w, 's, &'static mut Text, With<CommandText>>,
-    command_color: ResMut<'w, CommandColor>,
-    selected_query: Query<'w, 's, Entity, With<Selected>>,
-    delete_event: EventWriter<'w, DeleteCommand>,
-    polygon_handles: Res<'w, PolygonHandles>,
-    materials: ResMut<'w, Assets<ColorMaterial>>,
-    connection_mat: ResMut<'w, ConnectionMat>,
-    connect_command: EventWriter<'w, ConnectCommand>,
-    info_text_query: Query<'w, 's, &'static InfoText>,
-    text_size: ResMut<'w, TextSize>,
-    osc_sender: ResMut<'w, OscSender>,
-    osc_receiver: ResMut<'w, OscReceiver>,
-    osc_messages: Local<'s, Vec<rosc::OscMessage>>,
-    node_limit: Res<'w, NodeLimit>,
-    input_receivers: Res<'w, InputReceivers>,
-    op_num_query: Query<'w, 's, &'static OpNum>,
-    key_event: EventReader<'w, 's, KeyboardInput>,
-    ortho: Query<'w, 's, &'static mut OrthographicProjection>,
-}
-
 pub fn process(
+    // TODO(mara): organize
     queue: Res<Queue>,
     loopq: Res<LoopQueue>,
     holes_query: Query<&Holes>,
     mut white_hole_query: Query<&mut WhiteHole>,
     black_hole_query: Query<&BlackHole>,
-    mut access: Access,
     cursor: Res<CursorInfo>,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     camera_query: Query<(Entity, &Camera, &GlobalTransform)>,
     windows: Query<(Entity, &Window)>,
     mut commands: Commands,
     mut slot: ResMut<SlotRes>,
+    // TODO(mara): yeet gainedWH
+    (
+        mut order_query,
+        op_query,
+        mut bloom,
+        mut num_query,
+        mut trans_query,
+        mut arr_query,
+        mut tonemapping,
+        mut net_query,
+        mut net_ins_query,
+        net_chan_query,
+        mut col_query,
+        mut order_change,
+        mut vertices_query,
+        mut op_changed_query,
+        mut lost_wh_query,
+        mut targets_query,
+    ): (
+        Query<&mut Order>,
+        Query<&mut Op>,
+        Query<&mut BloomSettings, With<Camera>>,
+        Query<&mut Number>,
+        Query<&mut Transform>,
+        Query<&mut Arr>,
+        Query<&mut Tonemapping, With<Camera>>,
+        Query<&mut Network>,
+        Query<&mut NetIns>,
+        Query<&mut NetChannel>,
+        Query<&mut Col>,
+        EventWriter<OrderChange>,
+        Query<&mut Vertices>,
+        Query<&mut OpChanged>,
+        Query<&mut LostWH>,
+        Query<&mut Targets>,
+    ),
+    (
+        mut screensot_manager,
+        mut winit_settings,
+        mut clear_color,
+        mut default_color,
+        mut default_verts,
+        mut highlight_color,
+        mut connection_color,
+        mut connection_width,
+        arrow_query,
+        indicator,
+        mut indicator_color,
+        mut command_line_text,
+        mut command_color,
+        selected_query,
+        mut delete_event,
+        polygon_handles,
+    ): (
+        ResMut<ScreenshotManager>,
+        ResMut<WinitSettings>,
+        ResMut<ClearColor>,
+        ResMut<DefaultDrawColor>,
+        ResMut<DefaultDrawVerts>,
+        ResMut<HighlightColor>,
+        ResMut<ConnectionColor>,
+        ResMut<ConnectionWidth>,
+        Query<&ConnectionArrow>,
+        Res<Indicator>,
+        ResMut<IndicatorColor>,
+        Query<&mut Text, With<CommandText>>,
+        ResMut<CommandColor>,
+        Query<Entity, With<Selected>>,
+        EventWriter<DeleteCommand>,
+        Res<PolygonHandles>,
+    ),
+    (
+        mut materials,
+        connection_mat,
+        mut connect_command,
+        info_text_query,
+        mut text_size,
+        mut osc_sender,
+        mut osc_receiver,
+        mut osc_messages,
+        node_limit,
+        input_receivers,
+        op_num_query,
+        mut key_event,
+        mut ortho,
+    ): (
+        ResMut<Assets<ColorMaterial>>,
+        ResMut<ConnectionMat>,
+        EventWriter<ConnectCommand>,
+        Query<&InfoText>,
+        ResMut<TextSize>,
+        ResMut<OscSender>,
+        ResMut<OscReceiver>,
+        Local<Vec<rosc::OscMessage>>,
+        Res<NodeLimit>,
+        Res<InputReceivers>,
+        Query<&OpNum>,
+        EventReader<KeyboardInput>,
+        Query<&mut OrthographicProjection>,
+    ),
 ) {
-    let key_event = access.key_event.read().collect::<Vec<_>>();
+    let key_event = key_event.read().collect::<Vec<_>>();
     for id in queue.0.iter().flatten().chain(loopq.0.iter()) {
         let holes = &holes_query.get(*id).unwrap().0;
         for hole in holes {
@@ -129,19 +178,18 @@ pub fn process(
                 }
                 let mut input = 0.;
                 match wh.link_types.0 {
-                    -1 => input = access.num_query.get(wh.bh_parent).unwrap().0,
-                    -2 => input = access.trans_query.get(wh.bh_parent).unwrap().scale.x,
-                    -3 => input = access.trans_query.get(wh.bh_parent).unwrap().translation.x,
-                    -4 => input = access.trans_query.get(wh.bh_parent).unwrap().translation.y,
-                    -5 => input = access.trans_query.get(wh.bh_parent).unwrap().translation.z,
-                    -6 => input = access.col_query.get(wh.bh_parent).unwrap().0.hue,
-                    -7 => input = access.col_query.get(wh.bh_parent).unwrap().0.saturation,
-                    -8 => input = access.col_query.get(wh.bh_parent).unwrap().0.lightness,
-                    -9 => input = access.col_query.get(wh.bh_parent).unwrap().0.alpha,
-                    -11 => input = access.vertices_query.get(wh.bh_parent).unwrap().0 as f32,
+                    -1 => input = num_query.get(wh.bh_parent).unwrap().0,
+                    -2 => input = trans_query.get(wh.bh_parent).unwrap().scale.x,
+                    -3 => input = trans_query.get(wh.bh_parent).unwrap().translation.x,
+                    -4 => input = trans_query.get(wh.bh_parent).unwrap().translation.y,
+                    -5 => input = trans_query.get(wh.bh_parent).unwrap().translation.z,
+                    -6 => input = col_query.get(wh.bh_parent).unwrap().0.hue,
+                    -7 => input = col_query.get(wh.bh_parent).unwrap().0.saturation,
+                    -8 => input = col_query.get(wh.bh_parent).unwrap().0.lightness,
+                    -9 => input = col_query.get(wh.bh_parent).unwrap().0.alpha,
+                    -11 => input = vertices_query.get(wh.bh_parent).unwrap().0 as f32,
                     -12 => {
-                        input = access
-                            .trans_query
+                        input = trans_query
                             .get(wh.bh_parent)
                             .unwrap()
                             .rotation
@@ -151,35 +199,32 @@ pub fn process(
                     _ => {}
                 }
                 match wh.link_types.1 {
-                    -1 => access.num_query.get_mut(*id).unwrap().0 = input,
+                    -1 => num_query.get_mut(*id).unwrap().0 = input,
                     -2 => {
-                        access.trans_query.get_mut(*id).unwrap().scale.x = input.max(0.);
-                        access.trans_query.get_mut(*id).unwrap().scale.y = input.max(0.);
+                        trans_query.get_mut(*id).unwrap().scale.x = input.max(0.);
+                        trans_query.get_mut(*id).unwrap().scale.y = input.max(0.);
                     }
-                    -3 => access.trans_query.get_mut(*id).unwrap().translation.x = input,
-                    -4 => access.trans_query.get_mut(*id).unwrap().translation.y = input,
-                    -5 => access.trans_query.get_mut(*id).unwrap().translation.z = input,
-                    -6 => access.col_query.get_mut(*id).unwrap().0.hue = input,
-                    -7 => access.col_query.get_mut(*id).unwrap().0.saturation = input,
-                    -8 => access.col_query.get_mut(*id).unwrap().0.lightness = input,
-                    -9 => access.col_query.get_mut(*id).unwrap().0.alpha = input,
-                    -11 => {
-                        access.vertices_query.get_mut(*id).unwrap().0 =
-                            (input as usize).clamp(3, 64)
-                    }
+                    -3 => trans_query.get_mut(*id).unwrap().translation.x = input,
+                    -4 => trans_query.get_mut(*id).unwrap().translation.y = input,
+                    -5 => trans_query.get_mut(*id).unwrap().translation.z = input,
+                    -6 => col_query.get_mut(*id).unwrap().0.hue = input,
+                    -7 => col_query.get_mut(*id).unwrap().0.saturation = input,
+                    -8 => col_query.get_mut(*id).unwrap().0.lightness = input,
+                    -9 => col_query.get_mut(*id).unwrap().0.alpha = input,
+                    -11 => vertices_query.get_mut(*id).unwrap().0 = (input as usize).clamp(3, 64),
                     -12 => {
                         let q = Quat::from_euler(EulerRot::XYZ, 0., 0., input);
-                        access.trans_query.get_mut(*id).unwrap().rotation = q;
+                        trans_query.get_mut(*id).unwrap().rotation = q;
                     }
                     _ => {}
                 }
                 if wh.link_types == (-13, -13) {
-                    let arr = access.arr_query.get(wh.bh_parent).unwrap().0.clone();
-                    access.arr_query.get_mut(*id).unwrap().0 = arr;
+                    let arr = arr_query.get(wh.bh_parent).unwrap().0.clone();
+                    arr_query.get_mut(*id).unwrap().0 = arr;
                 }
                 if wh.link_types == (-14, -14) {
-                    let arr = access.targets_query.get(wh.bh_parent).unwrap().0.clone();
-                    access.targets_query.get_mut(*id).unwrap().0 = arr;
+                    let arr = targets_query.get(wh.bh_parent).unwrap().0.clone();
+                    targets_query.get_mut(*id).unwrap().0 = arr;
                 }
                 lt_to_open = wh.link_types.1;
             }
@@ -197,8 +242,8 @@ pub fn process(
             }
         }
         let mut lt_to_open = None;
-        let op = access.op_query.get(*id).unwrap().0.as_str();
-        let op_num = access.op_num_query.get(*id).unwrap().0;
+        let op = op_query.get(*id).unwrap().0.as_str();
+        let op_num = op_num_query.get(*id).unwrap().0;
         match op_num {
             0 => {}
             // -------------------- targets --------------------
@@ -206,10 +251,9 @@ pub fn process(
             1 | 2 => {
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
-                        if wh.link_types == (-1, 1)
-                            && access.num_query.get(wh.bh_parent).unwrap().0 != 0.
+                        if wh.link_types == (-1, 1) && num_query.get(wh.bh_parent).unwrap().0 != 0.
                         {
-                            let targets = &access.targets_query.get(*id).unwrap().0;
+                            let targets = &targets_query.get(*id).unwrap().0;
                             for t in targets {
                                 if let Ok(mut wh) = white_hole_query.get_mut(*t) {
                                     wh.open = op_num == 1;
@@ -224,8 +268,8 @@ pub fn process(
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (-1, 1) && wh.open {
-                            let n = access.num_query.get(wh.bh_parent).unwrap().0;
-                            let targets = &access.targets_query.get(*id).unwrap().0;
+                            let n = num_query.get(wh.bh_parent).unwrap().0;
+                            let targets = &targets_query.get(*id).unwrap().0;
                             if let Some(nth) = targets.get(n as usize) {
                                 if let Ok(mut wh) = white_hole_query.get_mut(*nth) {
                                     wh.open = true;
@@ -239,19 +283,18 @@ pub fn process(
             4 => {
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
-                        if wh.link_types == (-1, 1)
-                            && access.num_query.get(wh.bh_parent).unwrap().0 != 0.
+                        if wh.link_types == (-1, 1) && num_query.get(wh.bh_parent).unwrap().0 != 0.
                         {
-                            for e in access.selected_query.iter() {
+                            for e in selected_query.iter() {
                                 commands.entity(e).remove::<Selected>();
                             }
-                            for t in &access.targets_query.get(*id).unwrap().0 {
-                                if access.vertices_query.contains(*t) {
+                            for t in &targets_query.get(*id).unwrap().0 {
+                                if vertices_query.contains(*t) {
                                     commands.entity(*t).insert(Selected);
                                 }
                             }
-                            access.targets_query.get_mut(*id).unwrap().0.clear();
-                            access.delete_event.send_default();
+                            targets_query.get_mut(*id).unwrap().0.clear();
+                            delete_event.send_default();
                         }
                     }
                 }
@@ -261,16 +304,16 @@ pub fn process(
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (-1, 1) && wh.open {
-                            let n = access.num_query.get(wh.bh_parent).unwrap().0;
+                            let n = num_query.get(wh.bh_parent).unwrap().0;
                             if n != 0. {
-                                for t in &access.targets_query.get(*id).unwrap().0 {
-                                    if access.vertices_query.contains(*t) {
+                                for t in &targets_query.get(*id).unwrap().0 {
+                                    if vertices_query.contains(*t) {
                                         commands.entity(*t).insert(Selected);
                                     }
                                 }
                             } else {
-                                for t in &access.targets_query.get(*id).unwrap().0 {
-                                    if access.vertices_query.contains(*t) {
+                                for t in &targets_query.get(*id).unwrap().0 {
+                                    if vertices_query.contains(*t) {
                                         commands.entity(*t).remove::<Selected>();
                                     }
                                 }
@@ -283,14 +326,13 @@ pub fn process(
             6 => {
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
-                        if wh.link_types == (-1, 1)
-                            && access.num_query.get(wh.bh_parent).unwrap().0 != 0.
+                        if wh.link_types == (-1, 1) && num_query.get(wh.bh_parent).unwrap().0 != 0.
                         {
-                            let point = access.trans_query.get(*id).unwrap().translation;
-                            let n = access.num_query.get(*id).unwrap().0;
+                            let point = trans_query.get(*id).unwrap().translation;
+                            let n = num_query.get(*id).unwrap().0;
                             let rotation = Quat::from_euler(EulerRot::XYZ, 0., 0., n);
-                            for t in &access.targets_query.get(*id).unwrap().0 {
-                                if let Ok(mut trans) = access.trans_query.get_mut(*t) {
+                            for t in &targets_query.get(*id).unwrap().0 {
+                                if let Ok(mut trans) = trans_query.get_mut(*t) {
                                     trans.rotate_around(point, rotation);
                                 }
                             }
@@ -303,12 +345,12 @@ pub fn process(
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (-1, 1) && wh.open {
-                            let n = access.num_query.get(wh.bh_parent).unwrap().0;
-                            let targets = &access.targets_query.get(*id).unwrap().0;
+                            let n = num_query.get(wh.bh_parent).unwrap().0;
+                            let targets = &targets_query.get(*id).unwrap().0;
                             for t in targets {
-                                if let Ok(mut order) = access.order_query.get_mut(*t) {
+                                if let Ok(mut order) = order_query.get_mut(*t) {
                                     order.0 = n as usize;
-                                    access.order_change.send_default();
+                                    order_change.send_default();
                                 }
                             }
                         }
@@ -319,23 +361,20 @@ pub fn process(
             8 => {
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
-                        if wh.link_types == (-1, 1)
-                            && access.num_query.get(wh.bh_parent).unwrap().0 != 0.
+                        if wh.link_types == (-1, 1) && num_query.get(wh.bh_parent).unwrap().0 != 0.
                         {
-                            let targets = &mut access.targets_query.get_mut(*id).unwrap().0;
-                            let v = access.vertices_query.get(*id).unwrap().0;
-                            let trans = access.trans_query.get(*id).unwrap();
+                            let targets = &mut targets_query.get_mut(*id).unwrap().0;
+                            let v = vertices_query.get(*id).unwrap().0;
+                            let trans = trans_query.get(*id).unwrap();
                             let t = trans.translation.xy();
                             let r = trans.scale.x;
                             let depth = trans.translation.z + (targets.len() + 1) as f32 * 0.01;
-                            let color = access.col_query.get(*id).unwrap().0;
+                            let color = col_query.get(*id).unwrap().0;
                             let new = commands
                                 .spawn((
                                     ColorMesh2dBundle {
-                                        mesh: access.polygon_handles.0[v].clone().unwrap(),
-                                        material: access
-                                            .materials
-                                            .add(ColorMaterial::from_color(color)),
+                                        mesh: polygon_handles.0[v].clone().unwrap(),
+                                        material: materials.add(ColorMaterial::from_color(color)),
                                         transform: Transform {
                                             translation: t.extend(depth),
                                             rotation: trans.rotation,
@@ -375,15 +414,14 @@ pub fn process(
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (-1, 1)
                             && wh.open
-                            && access.num_query.get(wh.bh_parent).unwrap().0 != 0.
+                            && num_query.get(wh.bh_parent).unwrap().0 != 0.
                         {
-                            access
-                                .targets_query
+                            targets_query
                                 .get_mut(*id)
                                 .unwrap()
                                 .0
                                 .retain(|x| holes_query.contains(*x));
-                            access.connect_command.send(ConnectCommand(*id));
+                            connect_command.send(ConnectCommand(*id));
                         }
                     }
                 }
@@ -394,19 +432,19 @@ pub fn process(
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (-1, 1)
                             && wh.open
-                            && access.num_query.get(wh.bh_parent).unwrap().0 != 0.
+                            && num_query.get(wh.bh_parent).unwrap().0 != 0.
                         {
-                            for e in access.selected_query.iter() {
+                            for e in selected_query.iter() {
                                 commands.entity(e).remove::<Selected>();
                             }
-                            for t in &access.targets_query.get(*id).unwrap().0 {
+                            for t in &targets_query.get(*id).unwrap().0 {
                                 if let Ok(holes) = holes_query.get(*t) {
                                     for hole in &holes.0 {
                                         commands.entity(*hole).insert(Selected);
                                     }
                                 }
                             }
-                            access.delete_event.send_default();
+                            delete_event.send_default();
                         }
                     }
                 }
@@ -416,8 +454,8 @@ pub fn process(
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (-1, 1) && wh.open {
-                            let n = access.num_query.get(wh.bh_parent).unwrap().0;
-                            for t in &access.targets_query.get(*id).unwrap().0 {
+                            let n = num_query.get(wh.bh_parent).unwrap().0;
+                            for t in &targets_query.get(*id).unwrap().0 {
                                 if let Ok(mut wh) = white_hole_query.get_mut(*t) {
                                     wh.link_types.1 = n as i8;
                                 } else if let Ok(bh) = black_hole_query.get(*t) {
@@ -433,90 +471,64 @@ pub fn process(
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types.0 == -13 && wh.open {
-                            let arr = &access.arr_query.get(wh.bh_parent).unwrap().0;
-                            let targets = &access.targets_query.get(*id).unwrap().0;
+                            let arr = &arr_query.get(wh.bh_parent).unwrap().0;
+                            let targets = &targets_query.get(*id).unwrap().0;
                             let len = Ord::min(arr.len(), targets.len());
                             for i in 0..len {
-                                if access.vertices_query.get(targets[i]).is_err() {
+                                if vertices_query.get(targets[i]).is_err() {
                                     continue;
                                 }
                                 // input link type determines what property to write to in targets
                                 match wh.link_types.1 {
                                     -1 => {
-                                        if let Ok(mut n) = access.num_query.get_mut(targets[i]) {
+                                        if let Ok(mut n) = num_query.get_mut(targets[i]) {
                                             n.0 = arr[i];
                                         }
                                     }
                                     -2 => {
-                                        access.trans_query.get_mut(targets[i]).unwrap().scale.x =
+                                        trans_query.get_mut(targets[i]).unwrap().scale.x =
                                             arr[i].max(0.1);
-                                        access.trans_query.get_mut(targets[i]).unwrap().scale.y =
+                                        trans_query.get_mut(targets[i]).unwrap().scale.y =
                                             arr[i].max(0.1);
                                     }
                                     -3 => {
-                                        access
-                                            .trans_query
-                                            .get_mut(targets[i])
-                                            .unwrap()
-                                            .translation
-                                            .x = arr[i];
+                                        trans_query.get_mut(targets[i]).unwrap().translation.x =
+                                            arr[i];
                                     }
                                     -4 => {
-                                        access
-                                            .trans_query
-                                            .get_mut(targets[i])
-                                            .unwrap()
-                                            .translation
-                                            .y = arr[i];
+                                        trans_query.get_mut(targets[i]).unwrap().translation.y =
+                                            arr[i];
                                     }
                                     -5 => {
-                                        access
-                                            .trans_query
-                                            .get_mut(targets[i])
-                                            .unwrap()
-                                            .translation
-                                            .z = arr[i];
-                                    }
-                                    -6 => {
-                                        access.col_query.get_mut(targets[i]).unwrap().0.hue =
+                                        trans_query.get_mut(targets[i]).unwrap().translation.z =
                                             arr[i];
                                     }
+                                    -6 => col_query.get_mut(targets[i]).unwrap().0.hue = arr[i],
                                     -7 => {
-                                        access
-                                            .col_query
-                                            .get_mut(targets[i])
-                                            .unwrap()
-                                            .0
-                                            .saturation = arr[i];
-                                    }
-                                    -8 => {
-                                        access.col_query.get_mut(targets[i]).unwrap().0.lightness =
+                                        col_query.get_mut(targets[i]).unwrap().0.saturation =
                                             arr[i];
                                     }
-                                    -9 => {
-                                        access.col_query.get_mut(targets[i]).unwrap().0.alpha =
-                                            arr[i];
-                                    }
+                                    -8 => col_query.get_mut(targets[i]).unwrap().0.lightness = arr[i],
+                                    -9 => col_query.get_mut(targets[i]).unwrap().0.alpha = arr[i],
                                     -10 => {
-                                        if let Ok(mut ord) = access.order_query.get_mut(targets[i]) {
+                                        if let Ok(mut ord) = order_query.get_mut(targets[i]) {
                                             ord.0 = arr[i] as usize;
-                                            access.order_change.send_default();
+                                            order_change.send_default();
                                         }
                                     }
                                     -11 => {
                                         let v = arr[i].max(3.) as usize;
-                                        access.vertices_query.get_mut(targets[i]).unwrap().0 = v;
+                                        vertices_query.get_mut(targets[i]).unwrap().0 = v;
                                     }
                                     -12 => {
                                         let q = Quat::from_euler(EulerRot::XYZ, 0., 0., arr[i]);
-                                        access.trans_query.get_mut(targets[i]).unwrap().rotation =
-                                            q;
+                                        trans_query.get_mut(targets[i]).unwrap().rotation = q;
                                     }
                                     _ => {}
                                 }
                             }
                             let lt = wh.link_types.1;
-                            for t in &access.targets_query.get(*id).unwrap().0 {
+                            for t in &targets_query.get(*id).unwrap().0 {
                                 if let Ok(holes) = &holes_query.get(*t) {
                                     for hole in &holes.0 {
                                         if let Ok(bh) = black_hole_query.get(*hole) {
@@ -539,9 +551,9 @@ pub fn process(
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (-14, 1) && wh.open {
-                            let n = access.num_query.get(*id).unwrap().0 as usize;
-                            let targets = &access.targets_query.get(wh.bh_parent).unwrap().0;
-                            access.targets_query.get_mut(*id).unwrap().0 = targets.repeat(n);
+                            let n = num_query.get(*id).unwrap().0 as usize;
+                            let targets = &targets_query.get(wh.bh_parent).unwrap().0;
+                            targets_query.get_mut(*id).unwrap().0 = targets.repeat(n);
                             lt_to_open = Some(-14);
                         }
                     }
@@ -567,10 +579,10 @@ pub fn process(
                 }
                 if changed {
                     if let (Some(arr1), Some(arr2)) = (arr1, arr2) {
-                        let a1 = access.arr_query.get(arr1).unwrap().0.clone();
-                        let a2 = access.arr_query.get(arr2).unwrap().0.clone();
+                        let a1 = arr_query.get(arr1).unwrap().0.clone();
+                        let a2 = arr_query.get(arr2).unwrap().0.clone();
                         let n = Ord::max(a1.len(), a2.len());
-                        let out = &mut access.arr_query.get_mut(*id).unwrap().0;
+                        let out = &mut arr_query.get_mut(*id).unwrap().0;
                         out.clear();
                         for i in 0..n {
                             if let Some(x) = a1.get(i) {
@@ -589,7 +601,7 @@ pub fn process(
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (-13, 1) && wh.open {
-                            let input = &access.arr_query.get(wh.bh_parent).unwrap().0;
+                            let input = &arr_query.get(wh.bh_parent).unwrap().0;
                             let mut l = Vec::new();
                             let mut r = Vec::new();
                             for (i, v) in input.iter().enumerate() {
@@ -599,8 +611,8 @@ pub fn process(
                                     r.push(*v);
                                 }
                             }
-                            access.arr_query.get_mut(wh.bh_parent).unwrap().0 = l;
-                            access.arr_query.get_mut(*id).unwrap().0 = r;
+                            arr_query.get_mut(wh.bh_parent).unwrap().0 = l;
+                            arr_query.get_mut(*id).unwrap().0 = r;
                             lt_to_open = Some(-13);
                         }
                     }
@@ -611,8 +623,8 @@ pub fn process(
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (-1, 1) && wh.open {
-                            let n = access.num_query.get_mut(wh.bh_parent).unwrap().0;
-                            access.arr_query.get_mut(*id).unwrap().0.push(n);
+                            let n = num_query.get_mut(wh.bh_parent).unwrap().0;
+                            arr_query.get_mut(*id).unwrap().0.push(n);
                             lt_to_open = Some(-13);
                         }
                     }
@@ -622,11 +634,10 @@ pub fn process(
             17 => {
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
-                        if wh.link_types == (-1, 1)
-                            && access.num_query.get(wh.bh_parent).unwrap().0 != 0.
+                        if wh.link_types == (-1, 1) && num_query.get(wh.bh_parent).unwrap().0 != 0.
                         {
-                            if let Some(n) = access.arr_query.get_mut(*id).unwrap().0.pop() {
-                                access.num_query.get_mut(*id).unwrap().0 = n;
+                            if let Some(n) = arr_query.get_mut(*id).unwrap().0.pop() {
+                                num_query.get_mut(*id).unwrap().0 = n;
                                 lt_to_open = Some(-1);
                             }
                         }
@@ -638,13 +649,12 @@ pub fn process(
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (-13, 1) && wh.open {
-                            let len = access.arr_query.get(wh.bh_parent).unwrap().0.len() as f32;
-                            access.num_query.get_mut(*id).unwrap().0 = len;
+                            let len = arr_query.get(wh.bh_parent).unwrap().0.len() as f32;
+                            num_query.get_mut(*id).unwrap().0 = len;
                             lt_to_open = Some(-1);
                         } else if wh.link_types == (-14, 1) && wh.open {
-                            let len =
-                                access.targets_query.get(wh.bh_parent).unwrap().0.len() as f32;
-                            access.num_query.get_mut(*id).unwrap().0 = len;
+                            let len = targets_query.get(wh.bh_parent).unwrap().0.len() as f32;
+                            num_query.get_mut(*id).unwrap().0 = len;
                             lt_to_open = Some(-1);
                         }
                     }
@@ -655,8 +665,8 @@ pub fn process(
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (-13, 1) && wh.open {
-                            let arr = &mut access.arr_query.get(wh.bh_parent).unwrap().0.clone();
-                            access.arr_query.get_mut(*id).unwrap().0.append(arr);
+                            let arr = &mut arr_query.get(wh.bh_parent).unwrap().0.clone();
+                            arr_query.get_mut(*id).unwrap().0.append(arr);
                             lt_to_open = Some(-13);
                         }
                     }
@@ -667,11 +677,11 @@ pub fn process(
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (-13, 1) && wh.open {
-                            let arr = &mut access.arr_query.get_mut(wh.bh_parent).unwrap();
-                            let n = access.num_query.get(*id).unwrap().0 as usize;
+                            let arr = &mut arr_query.get_mut(wh.bh_parent).unwrap();
+                            let n = num_query.get(*id).unwrap().0 as usize;
                             if n <= arr.0.len() {
                                 let slice = arr.0.split_off(n);
-                                access.arr_query.get_mut(*id).unwrap().0 = slice;
+                                arr_query.get_mut(*id).unwrap().0 = slice;
                                 lt_to_open = Some(-13);
                             }
                         }
@@ -683,8 +693,8 @@ pub fn process(
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (-1, 1) && wh.open {
-                            let n = access.num_query.get(wh.bh_parent).unwrap().0 as usize;
-                            access.arr_query.get_mut(*id).unwrap().0.resize(n, 0.);
+                            let n = num_query.get(wh.bh_parent).unwrap().0 as usize;
+                            arr_query.get_mut(*id).unwrap().0.resize(n, 0.);
                             lt_to_open = Some(-13);
                         }
                     }
@@ -713,11 +723,11 @@ pub fn process(
                 }
                 if changed {
                     if let (Some(arr), Some(n)) = (arr, n) {
-                        let n = access.num_query.get(n).unwrap().0;
-                        if access.arr_query.get(arr).unwrap().0.contains(&n) {
-                            access.num_query.get_mut(*id).unwrap().0 = 1.;
+                        let n = num_query.get(n).unwrap().0;
+                        if arr_query.get(arr).unwrap().0.contains(&n) {
+                            num_query.get_mut(*id).unwrap().0 = 1.;
                         } else {
-                            access.num_query.get_mut(*id).unwrap().0 = 0.;
+                            num_query.get_mut(*id).unwrap().0 = 0.;
                         }
                         lt_to_open = Some(-1);
                     }
@@ -746,9 +756,9 @@ pub fn process(
                 }
                 if changed {
                     if let (Some(ndx), Some(val)) = (ndx, val) {
-                        let ndx = access.num_query.get(ndx).unwrap().0.max(0.) as usize;
-                        let val = access.num_query.get(val).unwrap().0;
-                        if let Some(i) = access.arr_query.get_mut(*id).unwrap().0.get_mut(ndx) {
+                        let ndx = num_query.get(ndx).unwrap().0.max(0.) as usize;
+                        let val = num_query.get(val).unwrap().0;
+                        if let Some(i) = arr_query.get_mut(*id).unwrap().0.get_mut(ndx) {
                             *i = val;
                             lt_to_open = Some(-13);
                         }
@@ -765,20 +775,20 @@ pub fn process(
                             arr = Some(wh.bh_parent);
                         }
                         if wh.link_types == (-1, 2) && wh.open {
-                            n = Some(access.num_query.get(wh.bh_parent).unwrap().0);
+                            n = Some(num_query.get(wh.bh_parent).unwrap().0);
                         }
                     }
                 }
                 if let (Some(arr), Some(n)) = (arr, n) {
-                    if let Some(v) = access.arr_query.get(arr).unwrap().0.get(n as usize) {
-                        access.num_query.get_mut(*id).unwrap().0 = *v;
+                    if let Some(v) = arr_query.get(arr).unwrap().0.get(n as usize) {
+                        num_query.get_mut(*id).unwrap().0 = *v;
                         lt_to_open = Some(-1);
                     }
                 }
             }
             // collect
             25 => {
-                let lost = access.lost_wh_query.get(*id).unwrap().0;
+                let lost = lost_wh_query.get(*id).unwrap().0;
                 let mut changed = false;
                 let mut inputs = Vec::new();
                 for hole in holes {
@@ -788,7 +798,7 @@ pub fn process(
                             if index >= inputs.len() {
                                 inputs.resize(index + 1, None);
                             }
-                            inputs[index] = Some(access.num_query.get(wh.bh_parent).unwrap().0);
+                            inputs[index] = Some(num_query.get(wh.bh_parent).unwrap().0);
                         }
                         if wh.open {
                             changed = true;
@@ -796,7 +806,7 @@ pub fn process(
                     }
                 }
                 if changed || lost {
-                    let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
+                    let arr = &mut arr_query.get_mut(*id).unwrap().0;
                     arr.clear();
                     for i in inputs.iter().flatten() {
                         arr.push(*i);
@@ -807,77 +817,77 @@ pub fn process(
             // -------------------- settings --------------------
             // clear_color
             26 => {
-                let color = access.col_query.get_mut(*id).unwrap();
+                let color = col_query.get_mut(*id).unwrap();
                 if color.is_changed() {
-                    access.clear_color.0 = color.0.into();
+                    clear_color.0 = color.0.into();
                 }
             }
             // draw_verts
             27 => {
-                let verts = access.vertices_query.get_mut(*id).unwrap();
+                let verts = vertices_query.get_mut(*id).unwrap();
                 if verts.is_changed() {
-                    access.default_verts.0 = verts.0;
+                    default_verts.0 = verts.0;
                 }
             }
             // draw_color
             28 => {
-                let color = access.col_query.get_mut(*id).unwrap();
+                let color = col_query.get_mut(*id).unwrap();
                 if color.is_changed() {
-                    access.default_color.0 = color.0;
+                    default_color.0 = color.0;
                 }
             }
             // highlight_color
             29 => {
-                let color = access.col_query.get_mut(*id).unwrap();
+                let color = col_query.get_mut(*id).unwrap();
                 if color.is_changed() {
-                    access.highlight_color.0 = color.0;
+                    highlight_color.0 = color.0;
                 }
             }
             // indicator_color
             30 => {
-                let color = access.col_query.get_mut(*id).unwrap();
+                let color = col_query.get_mut(*id).unwrap();
                 if color.is_changed() {
-                    access.indicator_color.0 = color.0;
-                    let id = access.indicator.0;
-                    access.col_query.get_mut(id).unwrap().0 = color.0;
+                    indicator_color.0 = color.0;
+                    let id = indicator.0;
+                    col_query.get_mut(id).unwrap().0 = color.0;
                 }
             }
             // connection_color
             31 => {
-                let color = access.col_query.get_mut(*id).unwrap();
+                let color = col_query.get_mut(*id).unwrap();
                 if color.is_changed() {
-                    access.connection_color.0 = color.0;
-                    let mat_id = &access.connection_mat.0;
-                    access.materials.get_mut(mat_id).unwrap().color = color.0.into();
+                    connection_color.0 = color.0;
+                    let mat_id = &connection_mat.0;
+                    materials.get_mut(mat_id).unwrap().color = color.0.into();
                 }
             }
             // command_color
             32 => {
-                let color = access.col_query.get_mut(*id).unwrap();
+                let color = col_query.get_mut(*id).unwrap();
                 if color.is_changed() {
-                    access.command_color.0 = color.0;
-                    let clt = &mut access.command_line_text.single_mut();
+                    command_color.0 = color.0;
+                    let clt = &mut command_line_text.single_mut();
                     clt.sections[0].style.color = color.0.into();
                 }
             }
             // connection_width
             33 => {
-                let n = access.num_query.get_mut(*id).unwrap();
+                let n = num_query.get_mut(*id).unwrap();
                 if n.is_changed() {
-                    access.connection_width.0 = n.0;
-                    for e in access.arrow_query.iter() {
-                        access.trans_query.get_mut(e.0).unwrap().scale.x = n.0;
+                    connection_width.0 = n.0;
+                    for e in arrow_query.iter() {
+                        trans_query.get_mut(e.0).unwrap().scale.x = n.0;
                     }
                 }
             }
             // text_size
             34 => {
-                let n = access.num_query.get_mut(*id).unwrap();
+                let n = num_query.get_mut(*id).unwrap();
                 if n.is_changed() {
                     let size = n.0.max(0.1) / 120.;
-                    access.text_size.0 = size;
-                    for e in access.info_text_query.iter() {
-                        let scale = &mut access.trans_query.get_mut(e.0).unwrap().scale;
+                    text_size.0 = size;
+                    for e in info_text_query.iter() {
+                        let scale = &mut trans_query.get_mut(e.0).unwrap().scale;
                         scale.x = size;
                         scale.y = size;
                     }
@@ -885,11 +895,11 @@ pub fn process(
             }
             // tonemapping
             35 => {
-                let mut tm = access.tonemapping.single_mut();
+                let mut tm = tonemapping.single_mut();
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (-1, 1) && wh.open {
-                            let input = access.num_query.get(wh.bh_parent).unwrap().0;
+                            let input = num_query.get(wh.bh_parent).unwrap().0;
                             match input as usize {
                                 0 => *tm = Tonemapping::None,
                                 1 => *tm = Tonemapping::Reinhard,
@@ -907,13 +917,13 @@ pub fn process(
             }
             // bloom
             36 => {
-                let mut bloom_settings = access.bloom.single_mut();
+                let mut bloom_settings = bloom.single_mut();
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if !wh.open {
                             continue;
                         }
-                        let input = access.num_query.get(wh.bh_parent).unwrap().0;
+                        let input = num_query.get(wh.bh_parent).unwrap().0;
                         match wh.link_types {
                             (-1, 1) => bloom_settings.intensity = input,
                             (-1, 2) => bloom_settings.low_frequency_boost = input,
@@ -939,15 +949,15 @@ pub fn process(
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types.0 == -1 && wh.open {
-                            let n = access.num_query.get(wh.bh_parent).unwrap().0;
+                            let n = num_query.get(wh.bh_parent).unwrap().0;
                             let id = camera_query.single().0;
-                            let t = &mut access.trans_query.get_mut(id).unwrap();
+                            let t = &mut trans_query.get_mut(id).unwrap();
                             match wh.link_types.1 {
                                 1 => t.translation.x = n,
                                 2 => t.translation.y = n,
                                 3 => t.translation.z = n,
                                 4 => t.rotation = Quat::from_euler(EulerRot::XYZ, 0., 0., n),
-                                5 => access.ortho.single_mut().scale = n.clamp(0.005, 80.),
+                                5 => ortho.single_mut().scale = n.clamp(0.005, 80.),
                                 _ => {}
                             }
                         }
@@ -959,13 +969,13 @@ pub fn process(
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (-1, 1) && wh.open {
-                            let n = access.num_query.get(wh.bh_parent).unwrap().0;
-                            access.winit_settings.focused_mode = UpdateMode::reactive_low_power(
+                            let n = num_query.get(wh.bh_parent).unwrap().0;
+                            winit_settings.focused_mode = UpdateMode::reactive_low_power(
                                 Duration::from_secs_f64((1.0 / n.max(0.01)).into()),
                             );
                         } else if wh.link_types == (-1, 2) && wh.open {
-                            let n = access.num_query.get(wh.bh_parent).unwrap().0;
-                            access.winit_settings.unfocused_mode = UpdateMode::reactive_low_power(
+                            let n = num_query.get(wh.bh_parent).unwrap().0;
+                            winit_settings.unfocused_mode = UpdateMode::reactive_low_power(
                                 Duration::from_secs_f64((1.0 / n.max(0.01)).into()),
                             );
                         }
@@ -977,8 +987,8 @@ pub fn process(
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (0, 1) && wh.open {
-                            let input = access.op_query.get(wh.bh_parent).unwrap().0.clone();
-                            access.command_line_text.single_mut().sections[0].value = input;
+                            let input = op_query.get(wh.bh_parent).unwrap().0.clone();
+                            command_line_text.single_mut().sections[0].value = input;
                         }
                     }
                 }
@@ -987,8 +997,7 @@ pub fn process(
             40 => {
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
-                        if wh.link_types == (-1, 1)
-                            && access.num_query.get(wh.bh_parent).unwrap().0 != 0.
+                        if wh.link_types == (-1, 1) && num_query.get(wh.bh_parent).unwrap().0 != 0.
                         {
                             let win = windows.single().0;
                             let epoch = std::time::UNIX_EPOCH;
@@ -996,10 +1005,7 @@ pub fn process(
                             if let Ok(dur) = now.duration_since(epoch) {
                                 let time = dur.as_millis();
                                 let path = format!("screenshots/{:?}.png", time);
-                                access
-                                    .screensot_manager
-                                    .save_screenshot_to_disk(win, path)
-                                    .unwrap();
+                                screensot_manager.save_screenshot_to_disk(win, path).unwrap();
                             }
                         }
                     }
@@ -1010,35 +1016,35 @@ pub fn process(
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (-1, 1) && wh.open {
-                            let port = access.num_query.get(wh.bh_parent).unwrap().0.max(1.) as u16;
-                            access.osc_receiver.init(port);
+                            let port = num_query.get(wh.bh_parent).unwrap().0.max(1.) as u16;
+                            osc_receiver.init(port);
                         } else if wh.link_types == (0, 2) && wh.open {
-                            let ip = access.op_query.get(wh.bh_parent).unwrap().0.clone();
+                            let ip = op_query.get(wh.bh_parent).unwrap().0.clone();
                             if std::net::Ipv4Addr::from_str(&ip).is_ok() {
-                                access.osc_sender.host = ip;
+                                osc_sender.host = ip;
                             }
                         } else if wh.link_types == (-1, 3) && wh.open {
-                            let port = access.num_query.get(wh.bh_parent).unwrap().0.max(1.) as u16;
-                            access.osc_sender.port = port;
+                            let port = num_query.get(wh.bh_parent).unwrap().0.max(1.) as u16;
+                            osc_sender.port = port;
                         }
                     }
                 }
-                access.osc_messages.clear();
-                if let Some(socket) = &access.osc_receiver.socket {
+                osc_messages.clear();
+                if let Some(socket) = &osc_receiver.socket {
                     for _ in 0..10 {
                         if let Some(packet) = receive_packet(socket) {
                             let mut buffer = Vec::new();
                             unpacket(packet, &mut buffer);
-                            access.osc_messages.append(&mut buffer);
+                            osc_messages.append(&mut buffer);
                         }
                     }
                 }
             }
             // osc_r
             42 => {
-                for message in &access.osc_messages {
+                for message in &osc_messages {
                     if op.contains(&message.addr) {
-                        let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
+                        let arr = &mut arr_query.get_mut(*id).unwrap().0;
                         arr.clear();
                         for arg in message.args.clone() {
                             if let rosc::OscType::Float(f) = arg {
@@ -1055,8 +1061,8 @@ pub fn process(
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (-13, 1) && wh.open {
                             if let Some(address) = op.get(6..) {
-                                let arr = access.arr_query.get(wh.bh_parent).unwrap().0.clone();
-                                access.osc_sender.send(address, arr);
+                                let arr = arr_query.get(wh.bh_parent).unwrap().0.clone();
+                                osc_sender.send(address, arr);
                             }
                         }
                     }
@@ -1068,7 +1074,7 @@ pub fn process(
                 let (_, cam, cam_transform) = camera_query.single();
                 if let Some(cursor_pos) = windows.single().1.cursor_position() {
                     if let Some(point) = cam.viewport_to_world_2d(cam_transform, cursor_pos) {
-                        access.arr_query.get_mut(*id).unwrap().0 = point.to_array().into();
+                        arr_query.get_mut(*id).unwrap().0 = point.to_array().into();
                         lt_to_open = Some(-13);
                     }
                 }
@@ -1076,55 +1082,55 @@ pub fn process(
             // lmb_pressed
             45 => {
                 if mouse_button_input.pressed(MouseButton::Left) {
-                    access.num_query.get_mut(*id).unwrap().0 = 1.;
+                    num_query.get_mut(*id).unwrap().0 = 1.;
                     lt_to_open = Some(-1);
                 } else {
-                    access.num_query.get_mut(*id).unwrap().0 = 0.;
+                    num_query.get_mut(*id).unwrap().0 = 0.;
                     lt_to_open = Some(-1);
                 }
             }
             // mmb_pressed
             46 => {
                 if mouse_button_input.pressed(MouseButton::Middle) {
-                    access.num_query.get_mut(*id).unwrap().0 = 1.;
+                    num_query.get_mut(*id).unwrap().0 = 1.;
                     lt_to_open = Some(-1);
                 } else {
-                    access.num_query.get_mut(*id).unwrap().0 = 0.;
+                    num_query.get_mut(*id).unwrap().0 = 0.;
                     lt_to_open = Some(-1);
                 }
             }
             // rmb_pressed
             47 => {
                 if mouse_button_input.pressed(MouseButton::Right) {
-                    access.num_query.get_mut(*id).unwrap().0 = 1.;
+                    num_query.get_mut(*id).unwrap().0 = 1.;
                     lt_to_open = Some(-1);
                 } else {
-                    access.num_query.get_mut(*id).unwrap().0 = 0.;
+                    num_query.get_mut(*id).unwrap().0 = 0.;
                     lt_to_open = Some(-1);
                 }
             }
             // butt
             48 => {
                 if mouse_button_input.just_pressed(MouseButton::Left) {
-                    let t = access.trans_query.get(*id).unwrap().translation.xy();
-                    let r = access.trans_query.get(*id).unwrap().scale.x;
+                    let t = trans_query.get(*id).unwrap().translation.xy();
+                    let r = trans_query.get(*id).unwrap().scale.x;
                     if cursor.i.distance_squared(t) < r * r {
-                        access.num_query.get_mut(*id).unwrap().0 = 1.;
+                        num_query.get_mut(*id).unwrap().0 = 1.;
                         lt_to_open = Some(-1);
                     }
                 }
                 if mouse_button_input.just_released(MouseButton::Left) {
-                    access.num_query.get_mut(*id).unwrap().0 = 0.;
+                    num_query.get_mut(*id).unwrap().0 = 0.;
                     lt_to_open = Some(-1);
                 }
             }
             // toggle
             49 => {
                 if mouse_button_input.just_pressed(MouseButton::Left) {
-                    let t = access.trans_query.get(*id).unwrap().translation.xy();
-                    let r = access.trans_query.get(*id).unwrap().scale.x;
+                    let t = trans_query.get(*id).unwrap().translation.xy();
+                    let r = trans_query.get(*id).unwrap().scale.x;
                     if cursor.i.distance_squared(t) < r * r {
-                        let n = &mut access.num_query.get_mut(*id).unwrap().0;
+                        let n = &mut num_query.get_mut(*id).unwrap().0;
                         *n = if *n == 0. { 1. } else { 0. };
                         lt_to_open = Some(-1);
                     }
@@ -1178,7 +1184,7 @@ pub fn process(
                         Key::F12 => n = -12.,
                         _ => {}
                     }
-                    let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
+                    let arr = &mut arr_query.get_mut(*id).unwrap().0;
                     if key.state.is_pressed() {
                         if !arr.contains(&n) {
                             arr.push(n);
@@ -1197,10 +1203,10 @@ pub fn process(
                             if let Some(arg) = op.get(8..) {
                                 if arg.contains(c) {
                                     if key.state.is_pressed() {
-                                        access.num_query.get_mut(*id).unwrap().0 = 1.;
+                                        num_query.get_mut(*id).unwrap().0 = 1.;
                                         lt_to_open = Some(-1);
                                     } else {
-                                        access.num_query.get_mut(*id).unwrap().0 = 0.;
+                                        num_query.get_mut(*id).unwrap().0 = 0.;
                                         lt_to_open = Some(-1);
                                     }
                                 }
@@ -1213,24 +1219,24 @@ pub fn process(
             // rise | fall
             // uses the array to store previous num value
             52 | 53 => {
-                if access.arr_query.get(*id).unwrap().0.len() != 1 {
-                    access.arr_query.get_mut(*id).unwrap().0 = vec![0.];
+                if arr_query.get(*id).unwrap().0.len() != 1 {
+                    arr_query.get_mut(*id).unwrap().0 = vec![0.];
                 }
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (-1, 1) {
-                            let input = access.num_query.get(wh.bh_parent).unwrap().0;
-                            let arr = &mut access.arr_query.get_mut(*id).unwrap().0;
+                            let input = num_query.get(wh.bh_parent).unwrap().0;
+                            let arr = &mut arr_query.get_mut(*id).unwrap().0;
                             // rise
                             if (op_num == 52 && input > arr[0])
                             // fall
                             || (op_num == 53 && input < arr[0])
                             {
-                                access.num_query.get_mut(*id).unwrap().0 = 1.;
+                                num_query.get_mut(*id).unwrap().0 = 1.;
                                 lt_to_open = Some(-1);
                             }
                             if input == arr[0] {
-                                let n = &mut access.num_query.get_mut(*id).unwrap().0;
+                                let n = &mut num_query.get_mut(*id).unwrap().0;
                                 if *n != 0. {
                                     *n = 0.;
                                     lt_to_open = Some(-1);
@@ -1246,8 +1252,8 @@ pub fn process(
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (-1, 1) && wh.open {
-                            let n = access.num_query.get(wh.bh_parent).unwrap().0;
-                            access.num_query.get_mut(*id).unwrap().0 = n;
+                            let n = num_query.get(wh.bh_parent).unwrap().0;
+                            num_query.get_mut(*id).unwrap().0 = n;
                             // this op only stores the value, don't open wh
                         }
                     }
@@ -1259,7 +1265,7 @@ pub fn process(
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (-1, 1)
                             && wh.open
-                            && access.num_query.get(wh.bh_parent).unwrap().0 != 0.
+                            && num_query.get(wh.bh_parent).unwrap().0 != 0.
                         {
                             lt_to_open = Some(-1);
                         }
@@ -1272,11 +1278,11 @@ pub fn process(
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (-1, 1) {
-                            out += access.num_query.get(wh.bh_parent).unwrap().0;
+                            out += num_query.get(wh.bh_parent).unwrap().0;
                         }
                     }
                 }
-                access.num_query.get_mut(*id).unwrap().0 = out;
+                num_query.get_mut(*id).unwrap().0 = out;
                 lt_to_open = Some(-1);
             }
             // product
@@ -1285,11 +1291,11 @@ pub fn process(
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (-1, 1) {
-                            out *= access.num_query.get(wh.bh_parent).unwrap().0;
+                            out *= num_query.get(wh.bh_parent).unwrap().0;
                         }
                     }
                 }
-                access.num_query.get_mut(*id).unwrap().0 = out;
+                num_query.get_mut(*id).unwrap().0 = out;
                 lt_to_open = Some(-1);
             }
             // apply
@@ -1297,13 +1303,13 @@ pub fn process(
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (0, 1) && wh.open {
-                            let input_net = &access.net_query.get(wh.bh_parent).unwrap().0;
-                            access.net_query.get_mut(*id).unwrap().0 = input_net.clone();
+                            let input_net = &net_query.get(wh.bh_parent).unwrap().0;
+                            net_query.get_mut(*id).unwrap().0 = input_net.clone();
                         }
                         if wh.link_types == (-13, 2) && wh.open {
-                            let input = access.arr_query.get(wh.bh_parent).unwrap().0.clone();
-                            let output = &mut access.arr_query.get_mut(*id).unwrap().0;
-                            let net = &mut access.net_query.get_mut(*id).unwrap().0;
+                            let input = arr_query.get(wh.bh_parent).unwrap().0.clone();
+                            let output = &mut arr_query.get_mut(*id).unwrap().0;
+                            let net = &mut net_query.get_mut(*id).unwrap().0;
                             if net.inputs() == input.len() {
                                 output.resize(net.outputs(), 0.);
                                 net.tick(input.as_slice(), output.as_mut_slice());
@@ -1318,15 +1324,14 @@ pub fn process(
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (0, 1) && wh.open {
-                            let input_net = &access.net_query.get(wh.bh_parent).unwrap().0;
-                            access.net_query.get_mut(*id).unwrap().0 = input_net.clone();
+                            let input_net = &net_query.get(wh.bh_parent).unwrap().0;
+                            net_query.get_mut(*id).unwrap().0 = input_net.clone();
                         }
-                        if wh.link_types == (-1, 2)
-                            && access.num_query.get(wh.bh_parent).unwrap().0 != 0.
+                        if wh.link_types == (-1, 2) && num_query.get(wh.bh_parent).unwrap().0 != 0.
                         {
-                            let len = access.num_query.get(*id).unwrap().0 as usize;
-                            let output = &mut access.arr_query.get_mut(*id).unwrap().0;
-                            let net = &mut access.net_query.get_mut(*id).unwrap().0;
+                            let len = num_query.get(*id).unwrap().0 as usize;
+                            let output = &mut arr_query.get_mut(*id).unwrap().0;
+                            let net = &mut net_query.get_mut(*id).unwrap().0;
                             if net.inputs() == 0 && net.outputs() == 1 {
                                 output.clear();
                                 for _ in 0..len {
@@ -1343,36 +1348,36 @@ pub fn process(
             // -------------------- audio nodes --------------------
             // var()
             61 => {
-                if access.op_changed_query.get(*id).unwrap().0 {
-                    let net = &mut access.net_query.get_mut(*id).unwrap().0;
-                    let inputs = &mut access.net_ins_query.get_mut(*id).unwrap().0;
+                if op_changed_query.get(*id).unwrap().0 {
+                    let net = &mut net_query.get_mut(*id).unwrap().0;
+                    let inputs = &mut net_ins_query.get_mut(*id).unwrap().0;
                     let input = shared(0.);
                     *net = Net::wrap(Box::new(var(&input)));
                     inputs.push(input);
                     lt_to_open = Some(0);
                 }
-                let num = access.num_query.get_mut(*id).unwrap();
+                let num = num_query.get_mut(*id).unwrap();
                 //if num.is_changed() {
-                if let Some(var) = &access.net_ins_query.get(*id).unwrap().0.first() {
+                if let Some(var) = &net_ins_query.get(*id).unwrap().0.first() {
                     var.set_value(num.0);
                 }
                 //}
             }
             // in() | adc()
             62 => {
-                if access.op_changed_query.get(*id).unwrap().0 {
-                    let net = &mut access.net_query.get_mut(*id).unwrap().0;
-                    let lr = access.input_receivers.0.clone();
-                    let rr = access.input_receivers.1.clone();
+                if op_changed_query.get(*id).unwrap().0 {
+                    let net = &mut net_query.get_mut(*id).unwrap().0;
+                    let lr = input_receivers.0.clone();
+                    let rr = input_receivers.1.clone();
                     *net = Net::wrap(Box::new(An(InputNode::new(lr, rr))));
                     lt_to_open = Some(0);
                 }
             }
             // monitor() | timer()
             63 | 64 => {
-                if access.op_changed_query.get(*id).unwrap().0 {
-                    let net = &mut access.net_query.get_mut(*id).unwrap().0;
-                    let inputs = &mut access.net_ins_query.get_mut(*id).unwrap().0;
+                if op_changed_query.get(*id).unwrap().0 {
+                    let net = &mut net_query.get_mut(*id).unwrap().0;
+                    let inputs = &mut net_ins_query.get_mut(*id).unwrap().0;
                     let s = shared(0.);
                     if op_num == 63 {
                         *net = Net::wrap(Box::new(monitor(&s, Meter::Sample)));
@@ -1382,8 +1387,8 @@ pub fn process(
                     inputs.push(s);
                     lt_to_open = Some(0);
                 }
-                if let Some(var) = access.net_ins_query.get(*id).unwrap().0.first() {
-                    access.num_query.get_mut(*id).unwrap().0 = var.value();
+                if let Some(var) = net_ins_query.get(*id).unwrap().0.first() {
+                    num_query.get_mut(*id).unwrap().0 = var.value();
                     lt_to_open = Some(-1);
                 }
             }
@@ -1392,8 +1397,8 @@ pub fn process(
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (-13, 1) && wh.open {
-                            let arr = access.arr_query.get(wh.bh_parent).unwrap().0.clone();
-                            let net = &mut access.net_query.get_mut(*id).unwrap().0;
+                            let arr = arr_query.get(wh.bh_parent).unwrap().0.clone();
+                            let net = &mut net_query.get_mut(*id).unwrap().0;
                             *net = Net::wrap(Box::new(An(ArrGet::new(arr))));
                             lt_to_open = Some(0);
                         }
@@ -1405,10 +1410,10 @@ pub fn process(
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (-13, 1) && wh.open {
-                            let arr = &access.arr_query.get(wh.bh_parent).unwrap().0;
+                            let arr = &arr_query.get(wh.bh_parent).unwrap().0;
                             if let (Some(first), Some(last)) = (arr.first(), arr.last()) {
                                 let range = *last - *first;
-                                let net = &mut access.net_query.get_mut(*id).unwrap().0;
+                                let net = &mut net_query.get_mut(*id).unwrap().0;
                                 *net = Net::wrap(Box::new(An(Quantizer::new(arr.clone(), range))));
                                 lt_to_open = Some(0);
                             }
@@ -1418,19 +1423,17 @@ pub fn process(
             }
             // feedback()
             67 => {
-                let op_changed = access.op_changed_query.get(*id).unwrap().0;
-                let lost = access.lost_wh_query.get(*id).unwrap().0;
+                let op_changed = op_changed_query.get(*id).unwrap().0;
+                let lost = lost_wh_query.get(*id).unwrap().0;
                 let mut changed = false;
                 let mut net = None;
                 let mut del = None;
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (0, 1) {
-                            net = Some(Box::new(
-                                access.net_query.get(wh.bh_parent).unwrap().0.clone(),
-                            ));
+                            net = Some(Box::new(net_query.get(wh.bh_parent).unwrap().0.clone()));
                         } else if wh.link_types == (-1, 2) {
-                            del = Some(access.num_query.get(wh.bh_parent).unwrap().0);
+                            del = Some(num_query.get(wh.bh_parent).unwrap().0);
                         }
                         if wh.open {
                             changed = true;
@@ -1443,21 +1446,21 @@ pub fn process(
                             if let Some(del) = del {
                                 let feedback =
                                     Net::wrap(Box::new(FeedbackUnit::new(del.into(), net)));
-                                access.net_query.get_mut(*id).unwrap().0 = feedback;
+                                net_query.get_mut(*id).unwrap().0 = feedback;
                             } else {
                                 let feedback = Net::wrap(Box::new(FeedbackUnit::new(0., net)));
-                                access.net_query.get_mut(*id).unwrap().0 = feedback;
+                                net_query.get_mut(*id).unwrap().0 = feedback;
                             }
                             lt_to_open = Some(0);
                         }
                     } else {
-                        access.net_query.get_mut(*id).unwrap().0 = Net::new(0, 0);
+                        net_query.get_mut(*id).unwrap().0 = Net::new(0, 0);
                     }
                 }
             }
             // swap()
             91 => {
-                if access.op_changed_query.get(*id).unwrap().0 {
+                if op_changed_query.get(*id).unwrap().0 {
                     let (s, r) = crossbeam_channel::bounded(1);
                     let op = op.replace(' ', "");
                     let args: Vec<&str> = op.split(['(', ')']).collect();
@@ -1478,7 +1481,7 @@ pub fn process(
                     for hole in holes {
                         if let Ok(wh) = white_hole_query.get(*hole) {
                             if wh.link_types == (0, 1) {
-                                let input = access.net_query.get(wh.bh_parent).unwrap().0.clone();
+                                let input = net_query.get(wh.bh_parent).unwrap().0.clone();
                                 if input.inputs() == net.inputs()
                                     && input.outputs() == net.outputs()
                                 {
@@ -1488,7 +1491,7 @@ pub fn process(
                         }
                     }
                     let swap = Net::wrap(Box::new(SwapUnit::new(net, r.clone())));
-                    access.net_query.get_mut(*id).unwrap().0 = swap;
+                    net_query.get_mut(*id).unwrap().0 = swap;
                     lt_to_open = Some(0);
                     // store
                     commands.entity(*id).insert(NetChannel(s, r));
@@ -1496,9 +1499,9 @@ pub fn process(
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (0, 1) && wh.open {
-                            let input = access.net_query.get(wh.bh_parent).unwrap().0.clone();
-                            let net = &access.net_query.get(*id).unwrap().0;
-                            if let Ok(NetChannel(s, _)) = access.net_chan_query.get(*id) {
+                            let input = net_query.get(wh.bh_parent).unwrap().0.clone();
+                            let net = &net_query.get(*id).unwrap().0;
+                            if let Ok(NetChannel(s, _)) = net_chan_query.get(*id) {
                                 if input.inputs() == net.inputs()
                                     && input.outputs() == net.outputs()
                                 {
@@ -1511,9 +1514,9 @@ pub fn process(
             }
             // kr() | reset() | sr()
             68..=70 => {
-                let op_changed = access.op_changed_query.get(*id).unwrap().0;
-                let lost = access.lost_wh_query.get(*id).unwrap().0;
-                let num_changed = access.num_query.get_mut(*id).unwrap().is_changed();
+                let op_changed = op_changed_query.get(*id).unwrap().0;
+                let lost = lost_wh_query.get(*id).unwrap().0;
+                let num_changed = num_query.get_mut(*id).unwrap().is_changed();
                 let mut changed = false;
                 let mut input = None;
                 for hole in holes {
@@ -1528,9 +1531,9 @@ pub fn process(
                 }
                 if changed || lost || op_changed || num_changed {
                     if let Some(input) = input {
-                        let net = access.net_query.get(input).unwrap().0.clone();
-                        let n = access.num_query.get(*id).unwrap().0;
-                        let output = &mut access.net_query.get_mut(*id).unwrap().0;
+                        let net = net_query.get(input).unwrap().0.clone();
+                        let n = num_query.get(*id).unwrap().0;
+                        let output = &mut net_query.get_mut(*id).unwrap().0;
                         if op_num == 68 && net.inputs() == 0 && net.outputs() == 1 {
                             // kr()
                             *output = Net::wrap(Box::new(An(Kr::new(net, n.max(1.) as usize))));
@@ -1544,14 +1547,14 @@ pub fn process(
                         }
                         lt_to_open = Some(0);
                     } else {
-                        access.net_query.get_mut(*id).unwrap().0 = Net::new(0, 0);
+                        net_query.get_mut(*id).unwrap().0 = Net::new(0, 0);
                     }
                 }
             }
             // trig_reset() | reset_v()
             71 | 72 => {
-                let op_changed = access.op_changed_query.get(*id).unwrap().0;
-                let lost = access.lost_wh_query.get(*id).unwrap().0;
+                let op_changed = op_changed_query.get(*id).unwrap().0;
+                let lost = lost_wh_query.get(*id).unwrap().0;
                 let mut changed = false;
                 let mut input = None;
                 for hole in holes {
@@ -1566,9 +1569,9 @@ pub fn process(
                 }
                 if changed || lost || op_changed {
                     if let Some(input) = input {
-                        let net = access.net_query.get(input).unwrap().0.clone();
+                        let net = net_query.get(input).unwrap().0.clone();
                         if net.inputs() == 0 && net.outputs() == 1 {
-                            let output = &mut access.net_query.get_mut(*id).unwrap().0;
+                            let output = &mut net_query.get_mut(*id).unwrap().0;
                             if op_num == 71 {
                                 *output = Net::wrap(Box::new(An(TrigReset::new(net))));
                             } else {
@@ -1577,14 +1580,14 @@ pub fn process(
                             lt_to_open = Some(0);
                         }
                     } else {
-                        access.net_query.get_mut(*id).unwrap().0 = Net::new(0, 0);
+                        net_query.get_mut(*id).unwrap().0 = Net::new(0, 0);
                     }
                 }
             }
             // seq() | select()
             73 | 74 => {
-                let op_changed = access.op_changed_query.get(*id).unwrap().0;
-                let lost = access.lost_wh_query.get(*id).unwrap().0;
+                let op_changed = op_changed_query.get(*id).unwrap().0;
+                let lost = lost_wh_query.get(*id).unwrap().0;
                 let mut changed = false;
                 let mut inputs = Vec::new();
                 for hole in holes {
@@ -1604,12 +1607,12 @@ pub fn process(
                 if changed || lost || op_changed {
                     let mut nets = Vec::new();
                     for i in inputs.iter().flatten() {
-                        let net = &access.net_query.get(*i).unwrap().0;
+                        let net = &net_query.get(*i).unwrap().0;
                         if net.inputs() == 0 && net.outputs() == 1 {
                             nets.push(net.clone());
                         }
                     }
-                    let n = &mut access.net_query.get_mut(*id).unwrap().0;
+                    let n = &mut net_query.get_mut(*id).unwrap().0;
                     if op_num == 73 {
                         *n = Net::wrap(Box::new(An(Seq::new(nets))));
                     } else {
@@ -1623,8 +1626,8 @@ pub fn process(
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (-13, 1) && wh.open {
-                            let arr = &access.arr_query.get(wh.bh_parent).unwrap().0;
-                            let net = &mut access.net_query.get_mut(*id).unwrap().0;
+                            let arr = &arr_query.get(wh.bh_parent).unwrap().0;
+                            let net = &mut net_query.get_mut(*id).unwrap().0;
                             *net = Net::wrap(Box::new(wavech(
                                 &std::sync::Arc::new(Wave::from_samples(44100., arr)),
                                 0,
@@ -1637,8 +1640,8 @@ pub fn process(
             }
             // branch() | bus() | pipe() | stack() | sum() | product()
             76..=81 => {
-                let op_changed = access.op_changed_query.get(*id).unwrap().0;
-                let lost = access.lost_wh_query.get(*id).unwrap().0;
+                let op_changed = op_changed_query.get(*id).unwrap().0;
+                let lost = lost_wh_query.get(*id).unwrap().0;
                 let mut changed = false;
                 let mut arr = None;
                 let mut op_str = None;
@@ -1659,8 +1662,8 @@ pub fn process(
                     let mut graph = Net::new(0, 0);
                     let mut empty = true;
                     if let (Some(arr), Some(op_str)) = (arr, op_str) {
-                        let arr = &access.arr_query.get(arr).unwrap().0;
-                        let op_str = &access.op_query.get(op_str).unwrap().0;
+                        let arr = &arr_query.get(arr).unwrap().0;
+                        let op_str = &op_query.get(op_str).unwrap().0;
                         for i in arr {
                             let net = str_to_net(&op_str.replace('#', &format!("{}", i)));
                             if empty {
@@ -1681,15 +1684,15 @@ pub fn process(
                             }
                         }
                     }
-                    access.net_query.get_mut(*id).unwrap().0 = graph;
+                    net_query.get_mut(*id).unwrap().0 = graph;
                     lt_to_open = Some(0);
                 }
             }
             // "SUM" | "+" | "PRO" | "*"
             82 | 83 => {
-                let op_changed = access.op_changed_query.get(*id).unwrap().0;
-                let lost = access.lost_wh_query.get(*id).unwrap().0;
-                let num_changed = access.num_query.get_mut(*id).unwrap().is_changed();
+                let op_changed = op_changed_query.get(*id).unwrap().0;
+                let lost = lost_wh_query.get(*id).unwrap().0;
+                let num_changed = num_query.get_mut(*id).unwrap().is_changed();
                 let mut changed = false;
                 let mut inputs = Vec::new();
                 for hole in holes {
@@ -1711,15 +1714,15 @@ pub fn process(
                 if changed || lost || op_changed || num_changed {
                     let mut graph = Net::new(0, 0);
                     let mut empty = true;
-                    let n = access.num_query.get(*id).unwrap().0.max(1.) as i32;
+                    let n = num_query.get(*id).unwrap().0.max(1.) as i32;
                     for _ in 0..n {
                         for i in inputs.iter().flatten() {
-                            let net = access.net_query.get(*i).unwrap().0.clone();
+                            let net = net_query.get(*i).unwrap().0.clone();
                             if empty {
                                 graph = net;
                                 empty = false;
                             } else if graph.outputs() == net.outputs() {
-                                if graph.size() >= access.node_limit.0 {
+                                if graph.size() >= node_limit.0 {
                                     continue;
                                 }
                                 if op_num == 82 {
@@ -1730,14 +1733,14 @@ pub fn process(
                             }
                         }
                     }
-                    access.net_query.get_mut(*id).unwrap().0 = graph;
+                    net_query.get_mut(*id).unwrap().0 = graph;
                     lt_to_open = Some(0);
                 }
             }
             // "-" | "SUB"
             84 => {
-                let op_changed = access.op_changed_query.get(*id).unwrap().0;
-                let lost = access.lost_wh_query.get(*id).unwrap().0;
+                let op_changed = op_changed_query.get(*id).unwrap().0;
+                let lost = lost_wh_query.get(*id).unwrap().0;
                 let mut changed = false;
                 let mut lhs = None;
                 let mut rhs = None;
@@ -1756,12 +1759,12 @@ pub fn process(
                 }
                 if changed || lost || op_changed {
                     if let (Some(lhs), Some(rhs)) = (lhs, rhs) {
-                        let lhs = access.net_query.get(lhs).unwrap().0.clone();
-                        let rhs = access.net_query.get(rhs).unwrap().0.clone();
+                        let lhs = net_query.get(lhs).unwrap().0.clone();
+                        let rhs = net_query.get(rhs).unwrap().0.clone();
                         if lhs.outputs() == rhs.outputs() {
                             let graph = lhs - rhs;
-                            if graph.size() < access.node_limit.0 {
-                                access.net_query.get_mut(*id).unwrap().0 = graph;
+                            if graph.size() < node_limit.0 {
+                                net_query.get_mut(*id).unwrap().0 = graph;
                             }
                         }
                     }
@@ -1770,9 +1773,9 @@ pub fn process(
             }
             // ">>" | "|" | "&" | "^" | "PIP" | "STA" | "BUS" | "BRA"
             85..=88 => {
-                let op_changed = access.op_changed_query.get(*id).unwrap().0;
-                let lost = access.lost_wh_query.get(*id).unwrap().0;
-                let num_changed = access.num_query.get_mut(*id).unwrap().is_changed();
+                let op_changed = op_changed_query.get(*id).unwrap().0;
+                let lost = lost_wh_query.get(*id).unwrap().0;
+                let num_changed = num_query.get_mut(*id).unwrap().is_changed();
                 let mut changed = false;
                 let mut inputs = Vec::new();
                 for hole in holes {
@@ -1792,15 +1795,15 @@ pub fn process(
                 if changed || lost || op_changed || num_changed {
                     let mut graph = Net::new(0, 0);
                     let mut empty = true;
-                    let n = access.num_query.get(*id).unwrap().0.max(1.) as i32;
+                    let n = num_query.get(*id).unwrap().0.max(1.) as i32;
                     for _ in 0..n {
                         for i in inputs.iter().flatten() {
-                            let net = access.net_query.get(*i).unwrap().0.clone();
+                            let net = net_query.get(*i).unwrap().0.clone();
                             if empty {
                                 graph = net;
                                 empty = false;
                             } else {
-                                if graph.size() >= access.node_limit.0 {
+                                if graph.size() >= node_limit.0 {
                                     continue;
                                 }
                                 let (gi, go) = (graph.inputs(), graph.outputs());
@@ -1815,14 +1818,14 @@ pub fn process(
                             }
                         }
                     }
-                    access.net_query.get_mut(*id).unwrap().0 = graph;
+                    net_query.get_mut(*id).unwrap().0 = graph;
                     lt_to_open = Some(0);
                 }
             }
             // "!" | "THR"
             89 => {
-                let op_changed = access.op_changed_query.get(*id).unwrap().0;
-                let lost = access.lost_wh_query.get(*id).unwrap().0;
+                let op_changed = op_changed_query.get(*id).unwrap().0;
+                let lost = lost_wh_query.get(*id).unwrap().0;
                 let mut input = None;
                 let mut changed = false;
                 for hole in holes {
@@ -1838,16 +1841,16 @@ pub fn process(
                 if changed || lost || op_changed {
                     let mut graph = Net::new(0, 0);
                     if let Some(input) = input {
-                        graph = access.net_query.get(input).unwrap().0.clone();
+                        graph = net_query.get(input).unwrap().0.clone();
                     }
-                    access.net_query.get_mut(*id).unwrap().0 = !graph;
+                    net_query.get_mut(*id).unwrap().0 = !graph;
                     lt_to_open = Some(0);
                 }
             }
             // out() | dac()
             90 => {
-                let op_changed = access.op_changed_query.get(*id).unwrap().0;
-                let lost = access.lost_wh_query.get(*id).unwrap().0;
+                let op_changed = op_changed_query.get(*id).unwrap().0;
+                let lost = lost_wh_query.get(*id).unwrap().0;
                 let mut input = None;
                 let mut changed = false;
                 for hole in holes {
@@ -1862,7 +1865,7 @@ pub fn process(
                 }
                 if changed || lost || op_changed {
                     if let Some(input) = input {
-                        let net = access.net_query.get(input).unwrap().0.clone();
+                        let net = net_query.get(input).unwrap().0.clone();
                         if net.inputs() == 0 && net.outputs() == 1 {
                             slot.0.set(Fade::Smooth, 0.01, Box::new(net | dc(0.)));
                         } else if net.inputs() == 0 && net.outputs() == 2 {
@@ -1889,8 +1892,8 @@ pub fn process(
                 }
             }
         }
-        access.op_changed_query.get_mut(*id).unwrap().0 = false;
-        access.lost_wh_query.get_mut(*id).unwrap().0 = false;
+        op_changed_query.get_mut(*id).unwrap().0 = false;
+        lost_wh_query.get_mut(*id).unwrap().0 = false;
         // close the white holes we just read
         for hole in holes {
             if let Ok(mut wh) = white_hole_query.get_mut(*hole) {
