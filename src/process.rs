@@ -34,15 +34,15 @@ pub fn sort_by_order(query: Query<(Entity, &Order), With<Network>>, mut queue: R
 pub fn prepare_loop_queue(
     mut loopq: ResMut<LoopQueue>,
     queue: Res<Queue>,
-    op_query: Query<&Op>,
+    op_num_query: Query<&OpNum>,
     targets_query: Query<&Targets>,
 ) {
     loopq.0.clear();
     for id in queue.0.iter().flatten() {
-        if op_query.get(*id).unwrap().0 == "process" {
+        if op_num_query.get(*id).unwrap().0 == 92 {
             for t in &targets_query.get(*id).unwrap().0 {
                 // only add existing circles (that aren't holes)
-                if op_query.contains(*t) {
+                if op_num_query.contains(*t) {
                     loopq.0.push(*t);
                 }
             }
