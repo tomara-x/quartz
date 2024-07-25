@@ -172,6 +172,8 @@ pub fn update_selection(
             } else if ctrl {
                 commands.entity(top.0).remove::<Selected>();
             }
+        } else {
+            clicked_on_space.0 = true;
         }
     } else if mouse_button_input.just_released(MouseButton::Left) {
         if top_clicked_circle.is_none() {
@@ -208,7 +210,6 @@ pub fn update_selection(
                 }
             }
         }
-        clicked_on_space.0 = true;
     }
 }
 
