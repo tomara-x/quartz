@@ -141,6 +141,10 @@ pub fn update_selection(
     let ctrl = keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
     let alt = keyboard_input.any_pressed([KeyCode::AltLeft, KeyCode::AltRight]);
     if mouse_button_input.just_pressed(MouseButton::Left) {
+        // NOTE apparently this can be missed in just_released?
+        // so an invalid id when deleted. very rare tho (only 2 panics ever)
+        // we only use the id here, so it's better updated here
+        *top_clicked_circle = None;
         for e in visible.single().get::<WithMesh2d>() {
             if let Ok(t) = circle_trans_query.get(*e) {
                 if top_clicked_circle.is_some() {
@@ -205,7 +209,6 @@ pub fn update_selection(
             }
         }
         clicked_on_space.0 = true;
-        *top_clicked_circle = None;
     }
 }
 
