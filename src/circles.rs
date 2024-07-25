@@ -175,38 +175,36 @@ pub fn update_selection(
         } else {
             clicked_on_space.0 = true;
         }
-    } else if mouse_button_input.just_released(MouseButton::Left) {
-        if top_clicked_circle.is_none() {
-            if !shift {
-                for entity in selected.iter() {
-                    commands.entity(entity).remove::<Selected>();
-                }
+    } else if mouse_button_input.just_released(MouseButton::Left) && top_clicked_circle.is_none() {
+        if !shift {
+            for entity in selected.iter() {
+                commands.entity(entity).remove::<Selected>();
             }
-            // select those in the dragged area
-            let (min_x, max_x) = if cursor.i.x < cursor.f.x {
-                (cursor.i.x, cursor.f.x)
-            } else {
-                (cursor.f.x, cursor.i.x)
-            };
-            let (min_y, max_y) = if cursor.i.y < cursor.f.y {
-                (cursor.i.y, cursor.f.y)
-            } else {
-                (cursor.f.y, cursor.i.y)
-            };
-            for e in visible.single().get::<WithMesh2d>() {
-                if let Ok(t) = circle_trans_query.get(*e) {
-                    if (min_x < t.translation.x && t.translation.x < max_x)
-                        && (min_y < t.translation.y && t.translation.y < max_y)
+        }
+        // select those in the dragged area
+        let (min_x, max_x) = if cursor.i.x < cursor.f.x {
+            (cursor.i.x, cursor.f.x)
+        } else {
+            (cursor.f.x, cursor.i.x)
+        };
+        let (min_y, max_y) = if cursor.i.y < cursor.f.y {
+            (cursor.i.y, cursor.f.y)
+        } else {
+            (cursor.f.y, cursor.i.y)
+        };
+        for e in visible.single().get::<WithMesh2d>() {
+            if let Ok(t) = circle_trans_query.get(*e) {
+                if (min_x < t.translation.x && t.translation.x < max_x)
+                    && (min_y < t.translation.y && t.translation.y < max_y)
+                {
+                    // only select holes if ctrl is held
+                    if (ctrl && order_query.contains(*e))
+                    // only select non-holes if alt is held
+                    || (alt && !order_query.contains(*e))
                     {
-                        // only select holes if ctrl is held
-                        if (ctrl && order_query.contains(*e))
-                        // only select non-holes if alt is held
-                        || (alt && !order_query.contains(*e))
-                        {
-                            continue;
-                        }
-                        commands.entity(*e).insert(Selected);
+                        continue;
                     }
+                    commands.entity(*e).insert(Selected);
                 }
             }
         }
