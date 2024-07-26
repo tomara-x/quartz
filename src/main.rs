@@ -326,14 +326,13 @@ fn save_scene(world: &mut World) {
     let events: Vec<SaveCommand> = save_events.drain().collect();
     for event in events {
         let name = event.0;
-        let mut query = world.query_filtered::<Entity, With<Save>>();
+        let mut query = world.query_filtered::<Entity, With<Vertices>>();
         let scene = DynamicSceneBuilder::from_world(world)
             .allow::<Col>()
             .allow::<Transform>()
             .allow::<Op>()
             .allow::<Number>()
             .allow::<Arr>()
-            .allow::<Save>()
             .allow::<Order>()
             .allow::<BlackHole>()
             .allow::<WhiteHole>()
@@ -378,7 +377,6 @@ fn copy_scene(world: &mut World) {
         .allow::<Op>()
         .allow::<Number>()
         .allow::<Arr>()
-        .allow::<Save>()
         .allow::<Order>()
         .allow::<BlackHole>()
         .allow::<WhiteHole>()

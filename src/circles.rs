@@ -61,7 +61,6 @@ pub fn spawn_circles(
                 LostWH(false),
             ),
             RenderLayers::layer(1),
-            Save,
         ));
         *depth += 0.01;
     }

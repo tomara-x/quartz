@@ -99,7 +99,6 @@ pub fn connect(
                     Col(bh_color),
                     Vertices(bh_verts),
                     RenderLayers::layer(2),
-                    Save,
                 ))
                 .id();
             let wh_depth = 0.001 * (holes_query.get(snk).unwrap().0.len() + 1) as f32;
@@ -126,7 +125,6 @@ pub fn connect(
                         open: true,
                     },
                     RenderLayers::layer(3),
-                    Save,
                     ConnectionArrow(arrow),
                 ))
                 .id();
@@ -308,7 +306,6 @@ pub fn connect_targets(
                     Col(bh_color),
                     Vertices(bh_verts),
                     RenderLayers::layer(2),
-                    Save,
                 ))
                 .id();
             let wh_depth = 0.001 * (holes_query.get(snk).unwrap().0.len() + 1) as f32;
@@ -330,7 +327,6 @@ pub fn connect_targets(
                     Vertices(wh_verts),
                     WhiteHole { bh_parent: src, bh: black_hole, link_types: lt, open: true },
                     RenderLayers::layer(3),
-                    Save,
                     ConnectionArrow(arrow),
                 ))
                 .id();

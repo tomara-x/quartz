@@ -77,6 +77,7 @@ impl MapEntities for Holes {
 #[reflect(Component)]
 pub struct LostWH(pub bool);
 
+// deprecated
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
 pub struct Save;
