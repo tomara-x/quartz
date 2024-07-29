@@ -117,8 +117,9 @@ pub fn str_to_net(op: &str) -> Net {
             }
         }
     } else {
+        // no parentheses
         return Net::new(0, 0);
-    } // no parentheses
+    }
     match args[0] {
         // -------------------- sources --------------------
         "sine" => {

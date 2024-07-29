@@ -4,8 +4,6 @@
 
 [connecting circles](connecting_circles.md)
 
-[drag modes](drag_modes.md)
-
 [hello 440](hello_440.md)
 
 [connecting audio nodes](connecting_audio_nodes.md)
