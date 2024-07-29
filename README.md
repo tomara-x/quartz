@@ -139,6 +139,11 @@ there are 2 types of commands:
 - `:od {index} {index} [sample rate] [buffer size]` set the output audio device. first index is the host, second is the device index (use the commands `ah` and `ao` to get those) if sample rate and buffer size aren't given, the device defaults will be used
 - `:id {index} {index} [sample rate] [buffer size]` set the input audio device
 
+notes:
+- if device has a sampling rate different from 44100, you need to connect your node to an `sr()` node (with matching sr) before connecting that to `out()` (unless you want mismatched sr)
+- after changing input device, you must re-set the op of the `in()` node. (because it only initializes internal stuff once the op is set and it depends on the selected device)
+- after changing output device, you must open the white hole connecting your node to the `out()` node (the new device will not automatically read it)
+
 </p>
 </details>
 
