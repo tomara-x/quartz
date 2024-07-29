@@ -68,6 +68,11 @@ pub fn parse_with_constants(s: &str) -> Result<f32, &str> {
             "PI" => Ok(std::f32::consts::PI),
             "SQRT_2" => Ok(std::f32::consts::SQRT_2),
             "TAU" => Ok(std::f32::consts::TAU),
+            "EGAMMA" => Ok(0.5772157),
+            "FRAC_1_SQRT_3" => Ok(0.57735026),
+            "FRAC_1_SQRT_PI" => Ok(0.5641896),
+            "PHI" => Ok(1.618034),
+            "SQRT_3" => Ok(1.7320508),
 
             "-E" => Ok(-std::f32::consts::E),
             "-FRAC_1_PI" => Ok(-std::f32::consts::FRAC_1_PI),
@@ -88,6 +93,11 @@ pub fn parse_with_constants(s: &str) -> Result<f32, &str> {
             "-PI" => Ok(-std::f32::consts::PI),
             "-SQRT_2" => Ok(-std::f32::consts::SQRT_2),
             "-TAU" => Ok(-std::f32::consts::TAU),
+            "-EGAMMA" => Ok(-0.5772157),
+            "-FRAC_1_SQRT_3" => Ok(-0.57735026),
+            "-FRAC_1_SQRT_PI" => Ok(-0.5641896),
+            "-PHI" => Ok(-1.618034),
+            "-SQRT_3" => Ok(-1.7320508),
             _ => Err("not a float nor a constant"),
         }
     }
