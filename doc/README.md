@@ -1,14 +1,10 @@
 :fresh: 🍑 ❤️ 🚿
 
-⚠️ under construction ⚠️
-
 [connecting circles](connecting_circles.md)
 
 [hello 440](hello_440.md)
 
 [connecting audio nodes](connecting_audio_nodes.md)
-
-[arity](arity.md)
 
 [audio graphs as functions](audio_graphs_as_functions.md)
 

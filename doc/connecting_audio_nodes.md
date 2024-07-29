@@ -1,3 +1,14 @@
+multichannel audio is everything. any node can have zero or more input or output channels.
+
+a sine oscillator for example has one input (frequency) and one output (sine wave).
+some nodes take many channels as input. a lowpass() for example takes a 3 channel input (signal to filter, frequency, q) and outputs one channel (filtered signal)
+
+fundsp (and so quartz as well) provides many connective operators for sticking nodes together in different and interesting ways to create more complicated nodes.
+
+see fundsp's readme for more details about them: https://github.com/SamiPerttu/fundsp?tab=readme-ov-file#operators
+
+(keep in mind, some of those apply to fundsp, but not quartz due to its visual nature, but the main concepts still apply. see the ops section in quartz's readme for a list of what's available)
+
 you can create an audio node by giving a circle a certain op string (see readme for more details)
 
 select a circle, and press `o` in edit mode, then type `lowpass()` then press enter
@@ -39,6 +50,6 @@ https://github.com/tomara-x/quartz/assets/86204514/a7b09968-497c-4f4c-84b5-1710a
 always make sure var has at least order 1, it wont be set while in order 0 like other audio nodes
 
 
-this diagram from [fundsp's readme](https://crates.io/crates/fundsp) is very useful for visualizing how connective ops work
+this diagram from [fundsp's readme](https://github.com/SamiPerttu/fundsp) is very useful for visualizing how connective ops work
 
-![](https://raw.githubusercontent.com/SamiPerttu/fundsp/9d4446666b0142517c2d58edcfadbf8b63471a2d/operators.png)
+![](https://raw.githubusercontent.com/SamiPerttu/fundsp/master/operators.png)
