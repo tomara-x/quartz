@@ -156,7 +156,7 @@ there are 2 types of commands:
 </p>
 </details>
 
-note: using the [std constants](https://doc.rust-lang.org/std/f32/consts/index.html) in the commands works. e.g. `:set op dc(-PI)`, `:set n TAU`
+note: the [std constants](https://doc.rust-lang.org/std/f32/consts/index.html), `inf`, `-inf`, `nan` are valid floats. e.g. `:set op dc(-PI)`, `:set n TAU`, `:set x inf`
 
 2. immediate commands
 (these execute when you finish typing them)
