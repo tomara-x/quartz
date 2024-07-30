@@ -269,7 +269,10 @@ note: the [std constants](https://doc.rust-lang.org/std/f32/consts/index.html), 
 - `yy` copy selection to clipboard
 - `p` paste copied
 
-note: when drag-selecting, holding `alt` will only select circles (ignores holes), holding `ctrl` will only select holes (ignores circles), and holding `shift` will add to the selection
+notes:
+- holding shift, then clicking an entity, or dragging across and area will add to the selection
+- when drag-selecting, holding `alt` will only select circles (ignores holes), holding `ctrl` will only select holes (ignores circles)
+- ctrl+clicking a selected entity will deselect it
 
 </p>
 </details>
