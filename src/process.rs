@@ -1468,16 +1468,16 @@ pub fn process(
                             let input = net_query.get(wh.bh_parent).unwrap().0.clone();
                             let net = &mut net_query.get_mut(*id).unwrap().0;
                             if let Ok(NetChannel(s, r)) = net_chan_query.get(*id) {
-                                // store it here
-                                *net = Net::wrap(Box::new(SwapUnit::new(input.clone(), r.clone())));
                                 if input.inputs() == net.inputs()
                                     && input.outputs() == net.outputs()
                                 {
                                     // send it to the clones across the graph
-                                    let _ = s.try_send(input);
+                                    let _ = s.try_send(input.clone());
                                 } else {
                                     lt_to_open = Some(0);
                                 }
+                                // store it here
+                                *net = Net::wrap(Box::new(SwapUnit::new(input, r.clone())));
                             }
                         }
                     }
