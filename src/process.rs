@@ -1483,7 +1483,7 @@ pub fn process(
                             if wh.link_types == (0, 1) {
                                 let input = net_query.get(wh.bh_parent).unwrap().0.clone();
                                 if input.inputs() == net.inputs()
-                                    && input.outputs() == net.outputs()
+                                && input.outputs() == net.outputs()
                                 {
                                     net = input;
                                 }
@@ -1503,7 +1503,7 @@ pub fn process(
                             let net = &net_query.get(*id).unwrap().0;
                             if let Ok(NetChannel(s, _)) = net_chan_query.get(*id) {
                                 if input.inputs() == net.inputs()
-                                    && input.outputs() == net.outputs()
+                                && input.outputs() == net.outputs()
                                 {
                                     let _ = s.try_send(input);
                                 }
