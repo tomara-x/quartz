@@ -369,6 +369,7 @@ pub fn process(
                             let r = trans.scale.x;
                             let depth = trans.translation.z + (targets.len() + 1) as f32 * 0.01;
                             let color = col_query.get(*id).unwrap().0;
+                            let (sndr, rcvr) = crossbeam_channel::bounded(1);
                             let new = commands
                                 .spawn((
                                     ColorMesh2dBundle {
@@ -395,6 +396,7 @@ pub fn process(
                                         NetIns(Vec::new()),
                                         OpChanged(false),
                                         LostWH(false),
+                                        NetChannel(sndr, rcvr),
                                     ),
                                     RenderLayers::layer(1),
                                 ))
@@ -1397,8 +1399,8 @@ pub fn process(
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (-13, 1) && wh.open {
                             let arr = arr_query.get(wh.bh_parent).unwrap().0.clone();
-                            let net = &mut net_query.get_mut(*id).unwrap().0;
-                            *net = Net::wrap(Box::new(An(ArrGet::new(arr))));
+                            let net = Net::wrap(Box::new(An(ArrGet::new(arr))));
+                            net_query.get_mut(*id).unwrap().0 = net;
                             lt_to_open = Some(0);
                         }
                     }
@@ -1460,52 +1462,21 @@ pub fn process(
             }
             // swap()
             91 => {
-                if op_changed_query.get(*id).unwrap().0 {
-                    let (s, r) = crossbeam_channel::bounded(1);
-                    let op = op.replace(' ', "");
-                    let args: Vec<&str> = op.split(['(', ')']).collect();
-                    let mut p = Vec::new();
-                    if let Some(params) = args.get(1) {
-                        let params = params.split(',').collect::<Vec<&str>>();
-                        for s in params {
-                            if let Ok(n) = s.parse::<usize>() {
-                                p.push(std::cmp::Ord::min(n,1000));
-                            }
-                        }
-                    }
-                    let mut net = if let Some(p) = p.get(0..2) {
-                        Net::new(p[0], p[1])
-                    } else {
-                        Net::new(0, 0)
-                    };
-                    for hole in holes {
-                        if let Ok(wh) = white_hole_query.get(*hole) {
-                            if wh.link_types == (0, 1) {
-                                let input = net_query.get(wh.bh_parent).unwrap().0.clone();
-                                if input.inputs() == net.inputs()
-                                && input.outputs() == net.outputs()
-                                {
-                                    net = input;
-                                }
-                            }
-                        }
-                    }
-                    let swap = Net::wrap(Box::new(SwapUnit::new(net, r.clone())));
-                    net_query.get_mut(*id).unwrap().0 = swap;
-                    lt_to_open = Some(0);
-                    // store
-                    commands.entity(*id).insert(NetChannel(s, r));
-                }
                 for hole in holes {
                     if let Ok(wh) = white_hole_query.get(*hole) {
                         if wh.link_types == (0, 1) && wh.open {
                             let input = net_query.get(wh.bh_parent).unwrap().0.clone();
-                            let net = &net_query.get(*id).unwrap().0;
-                            if let Ok(NetChannel(s, _)) = net_chan_query.get(*id) {
+                            let net = &mut net_query.get_mut(*id).unwrap().0;
+                            if let Ok(NetChannel(s, r)) = net_chan_query.get(*id) {
+                                // store it here
+                                *net = Net::wrap(Box::new(SwapUnit::new(input.clone(), r.clone())));
                                 if input.inputs() == net.inputs()
-                                && input.outputs() == net.outputs()
+                                    && input.outputs() == net.outputs()
                                 {
+                                    // send it to the clones across the graph
                                     let _ = s.try_send(input);
+                                } else {
+                                    lt_to_open = Some(0);
                                 }
                             }
                         }

@@ -34,6 +34,7 @@ pub fn spawn_circles(
             let handle = meshes.add(RegularPolygon::new(1., v)).into();
             polygon_handles.0[v] = Some(handle);
         }
+        let (sndr, rcvr) = crossbeam_channel::bounded(1);
         commands.spawn((
             ColorMesh2dBundle {
                 mesh: polygon_handles.0[v].clone().unwrap(),
@@ -59,6 +60,7 @@ pub fn spawn_circles(
                 NetIns(Vec::new()),
                 OpChanged(false),
                 LostWH(false),
+                NetChannel(sndr, rcvr),
             ),
             RenderLayers::layer(1),
         ));

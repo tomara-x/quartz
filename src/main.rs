@@ -495,12 +495,14 @@ fn post_load(
                             Selected,
                         ));
                         if let Ok(op) = op_query.get_mut(*child) {
+                            let (s, r) = crossbeam_channel::bounded(1);
                             commands.entity(*child).insert((
                                 OpNum(str_to_op_num(&op.0)),
                                 Network(str_to_net(&op.0)),
                                 NetIns(Vec::new()),
                                 OpChanged(true),
                                 LostWH(false),
+                                NetChannel(s, r),
                                 RenderLayers::layer(1),
                             ));
                             let holes = &mut holes_query.get_mut(*child).unwrap().0;
