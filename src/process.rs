@@ -1469,7 +1469,7 @@ pub fn process(
                         let params = params.split(',').collect::<Vec<&str>>();
                         for s in params {
                             if let Ok(n) = s.parse::<usize>() {
-                                p.push(n);
+                                p.push(std::cmp::Ord::min(n,1000));
                             }
                         }
                     }
