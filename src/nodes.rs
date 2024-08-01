@@ -229,6 +229,7 @@ impl AudioNode for Quantizer {
 }
 
 /// tick a network every n samples
+/// - inputs 0..: inputs to the net
 /// - outputs 0..: last outputs from the net
 #[derive(Clone)]
 pub struct Kr {

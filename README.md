@@ -658,7 +658,7 @@ refer to the fundsp [readme](https://github.com/SamiPerttu/fundsp), and [docs](h
     - node: ins and outs are the same as the input node
 - `kr()`
     - inputs: `n`, `0 -> 1` (input node)
-    - node: 0 ins, 1 out
+    - node: ins and outs are the same as the given node
     - tick the input node once every n samples
 - `sr()`
     - inputs: `n`, `0 -> 1` (input node)
