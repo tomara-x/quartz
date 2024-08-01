@@ -592,28 +592,28 @@ for more info about osc: https://opensoundcontrol.stanford.edu/spec-1_0.html
 
 refer to the fundsp [readme](https://github.com/SamiPerttu/fundsp), and [docs](https://docs.rs/fundsp/latest/fundsp/) for more details (sometimes)
 
-- `+` `SUM`
+- `+` or `SUM`
     - inputs: `0 -> {non-negative}` (any number of those), `n` (repetitions)
     - sum given nodes together. their number of outputs must match, their inputs are stacked together in the order they appear in connections
-- `*` `PRO`
+- `*` or `PRO`
     - inputs: `0 -> {non-negative}` (any number of those), `n` (repetitions)
     - multiply given nodes together. their number of outputs must match, their inputs are stacked together in the order they appear in connections
-- `-` `SUB`
+- `-` or `SUB`
     - inputs: `0 -> 1`, `0 -> 2`
     - node 1 - node 2 (number of outputs of those nodes must match)
-- `>>` `PIP`
+- `>>` or `PIP`
     - inputs: `0 -> {non-negative}` (any number of those), `n` (repetitions)
     - pipe nodes though each other. if outputs of node 1 matches inputs of node 2 they're piped together, and so on
-- `|` `STA`
+- `|` or `STA`
     - inputs: `0 -> {non-negative}` (any number of those), `n` (repetitions)
     - stack inputs and outputs of given nodes
-- `&` `BUS`
+- `&` or `BUS`
     - inputs: `0 -> {non-negative}` (any number of those), `n` (repetitions)
     - bus given nodes together. number of inputs and outputs must match. input is passed through each node and output from them is mixed at output
-- `^` `BRA`
+- `^` or `BRA`
     - inputs: `0 -> {non-negative}` (any number of those), `n` (repetitions)
     - branch given nodes together (same inputs are passed to each node, but their outputs are kept separate)
-- `!` `THR`
+- `!` or `THR`
     - inputs: `0 -> 1`
     - pass extra inputs through
 - `branch()`
@@ -632,10 +632,10 @@ refer to the fundsp [readme](https://github.com/SamiPerttu/fundsp), and [docs](h
 - `swap()`
     - inputs: `0 -> 1`
     - swap the node without resetting the graph if arity is identical. connecting a different arity will reset the graph
-- `out()` `dac()`
+- `out()` or `dac()`
     - inputs: `0 -> 1`
     - output given node to speakers (node must have 1 or 2 outputs)
-- `in()` `adc()`
+- `in()` or `adc()`
     - node with 2 outputs corresponding to the quartz input device (mic input and the like)
 - `var()`
     - node: 0 ins, 1 out
@@ -796,7 +796,7 @@ math
 - `min([float])`
 - `max([float])`
 - `pow([float])`
-- `mod([float])` `rem([float])`
+- `mod([float])` or `rem([float])`
 - `log([float])`
 - `bitand([float])`
 - `bitor([float])`
@@ -842,14 +842,14 @@ math
 - `acosh()`
 - `atanh()`
 - `atan2()`
-- `hypot()`
+- `hypot()` distance between the origin and a point (x, y)
 - `rfft(n, start)` `n` is the size of the analysis window, a power of two between 2 and 32768 (inclusive). `start` determines the offset within the window to begin writing to (so we can do correct overlap)
 - `ifft(n, start)` same
-- `pol()`
-- `car()`
-- `deg()`
-- `rad()`
-- `recip()`
+- `pol()` give it cartesian, get polar
+- `car()` give it polar, get cartesian
+- `deg()` give it radians, get degrees
+- `rad()` give it degrees, get radians
+- `recip()` reciprocate. give it x, get 1/x
 - `squared()`
 - `cubed()`
 - `dissonance()`
@@ -879,6 +879,7 @@ math
 - `rnd2()`
 - `spline_noise()`
 - `fractal_noise()`
+- `normal()` filter nan, inf, and -inf
 
 </p>
 </details>

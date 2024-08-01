@@ -1200,6 +1200,9 @@ pub fn str_to_net(op: &str) -> Net {
                 return Net::wrap(Box::new(An(Ifft::new(x, start))));
             }
         }
+        "normal" => {
+            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| if i[0].is_normal() { i[0] } else { 0. })));
+        }
         _ => {}
     }
     Net::new(0, 0)
