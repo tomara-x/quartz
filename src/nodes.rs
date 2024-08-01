@@ -267,9 +267,7 @@ impl AudioUnit for Kr {
             self.x.tick(input, &mut self.vals);
         }
         self.count -= 1;
-        for i in 0..self.outputs {
-            output[i] = self.vals[i];
-        }
+        output[..self.outputs].copy_from_slice(&self.vals[..self.outputs]);
     }
 
     fn process(&mut self, size: usize, input: &BufferRef, output: &mut BufferMut) {
