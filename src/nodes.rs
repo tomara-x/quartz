@@ -229,46 +229,95 @@ impl AudioNode for Quantizer {
 }
 
 /// tick a network every n samples
-/// - output 0: latest output from the net
-#[derive(Default, Clone)]
+/// - outputs 0..: last outputs from the net
+#[derive(Clone)]
 pub struct Kr {
-    net: Net,
+    x: Net,
     n: usize,
-    val: f32,
+    vals: Vec<f32>,
     count: usize,
+    inputs: usize,
+    outputs: usize,
 }
 
 impl Kr {
-    pub fn new(net: Net, n: usize) -> Self {
-        Kr { net, n, val: 0., count: 0 }
+    pub fn new(x: Net, n: usize) -> Self {
+        let inputs = x.inputs();
+        let outputs = x.outputs();
+        let mut vals = Vec::new();
+        vals.resize(outputs, 0.);
+        Kr { x, n, vals, count: 0, inputs, outputs }
     }
 }
 
-impl AudioNode for Kr {
-    const ID: u64 = 1112;
-    type Inputs = U0;
-    type Outputs = U1;
-
-    #[inline]
-    fn tick(&mut self, _input: &Frame<f32, Self::Inputs>) -> Frame<f32, Self::Outputs> {
-        let mut buffer = [self.val];
-        if self.count == 0 {
-            self.count = self.n;
-            self.net.tick(&[], &mut buffer);
-            self.val = buffer[0];
-        }
-        self.count -= 1;
-        buffer.into()
+impl AudioUnit for Kr {
+    fn reset(&mut self) {
+        self.x.reset();
+        self.count = 0;
+        self.vals.fill(0.);
     }
 
     fn set_sample_rate(&mut self, sample_rate: f64) {
-        self.net.set_sample_rate(sample_rate);
+        self.x.set_sample_rate(sample_rate);
     }
 
-    fn reset(&mut self) {
-        self.count = 0;
-        self.val = 0.;
-        self.net.reset();
+    fn tick(&mut self, input: &[f32], output: &mut [f32]) {
+        if self.count == 0 {
+            self.count = self.n;
+            self.x.tick(input, &mut self.vals);
+        }
+        self.count -= 1;
+        for i in 0..self.outputs {
+            output[i] = self.vals[i];
+        }
+    }
+
+    fn process(&mut self, size: usize, input: &BufferRef, output: &mut BufferMut) {
+        let mut i = 0;
+        while i < size {
+            if self.count == 0 {
+                self.count = self.n;
+                let mut tmp = Vec::new();
+                for c in 0..input.channels() {
+                    tmp.push(input.at_f32(c, i));
+                }
+                self.x.tick(&tmp, &mut self.vals);
+            }
+            self.count -= 1;
+            for c in 0..output.channels() {
+                output.set_f32(c, i, self.vals[c]);
+            }
+            i += 1;
+        }
+    }
+
+    fn inputs(&self) -> usize {
+        self.inputs
+    }
+
+    fn outputs(&self) -> usize {
+        self.outputs
+    }
+
+    fn route(&mut self, input: &SignalFrame, _frequency: f64) -> SignalFrame {
+        Routing::Arbitrary(0.0).route(input, self.outputs())
+    }
+
+    fn get_id(&self) -> u64 {
+        const ID: u64 = 1112;
+        ID
+    }
+
+    fn ping(&mut self, probe: bool, hash: AttoHash) -> AttoHash {
+        self.x.ping(probe, hash.hash(self.get_id()))
+    }
+
+    fn footprint(&self) -> usize {
+        core::mem::size_of::<Self>()
+    }
+
+    fn allocate(&mut self) {
+        self.x.allocate();
     }
 }
 

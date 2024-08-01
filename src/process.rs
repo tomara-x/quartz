@@ -1505,9 +1505,9 @@ pub fn process(
                         let net = net_query.get(input).unwrap().0.clone();
                         let n = num_query.get(*id).unwrap().0;
                         let output = &mut net_query.get_mut(*id).unwrap().0;
-                        if op_num == 68 && net.inputs() == 0 && net.outputs() == 1 {
+                        if op_num == 68 {
                             // kr()
-                            *output = Net::wrap(Box::new(An(Kr::new(net, n.max(1.) as usize))));
+                            *output = Net::wrap(Box::new(Kr::new(net, n.max(1.) as usize)));
                         } else if op_num == 69 && net.inputs() == 0 && net.outputs() == 1 {
                             // reset()
                             *output = Net::wrap(Box::new(An(Reset::new(net, n))));

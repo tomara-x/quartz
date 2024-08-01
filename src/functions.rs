@@ -1201,7 +1201,9 @@ pub fn str_to_net(op: &str) -> Net {
             }
         }
         "normal" => {
-            return Net::wrap(Box::new(map(|i: &Frame<f32, U1>| if i[0].is_normal() { i[0] } else { 0. })));
+            return Net::wrap(Box::new(map(
+                |i: &Frame<f32, U1>| if i[0].is_normal() { i[0] } else { 0. },
+            )));
         }
         _ => {}
     }
