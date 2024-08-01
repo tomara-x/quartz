@@ -659,7 +659,7 @@ refer to the fundsp [readme](https://github.com/SamiPerttu/fundsp), and [docs](h
 - `kr()`
     - inputs: `n`, `0 -> 1` (input node)
     - node: 0 ins, 1 out
-    - tick the input node once every n samples (input node must have 0 ins and 1 out)
+    - tick the input node once every n samples
 - `sr()`
     - inputs: `n`, `0 -> 1` (input node)
     - set the sample rate for the input node
