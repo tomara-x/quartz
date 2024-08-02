@@ -300,9 +300,6 @@ pub struct CopyCommand;
 #[derive(Event, Default)]
 pub struct DeleteCommand;
 
-#[derive(Event, Default)]
-pub struct DacChange;
-
 #[derive(Event)]
 pub struct ConnectCommand(pub Entity);
 
