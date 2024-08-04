@@ -1348,33 +1348,6 @@ pub fn process(
                     }
                 }
             }
-            // buffin
-            93 => {
-                if op_changed_query.get(*id).unwrap().0
-                    || num_query.get_mut(*id).unwrap().is_changed()
-                {
-                    let n = num_query.get(*id).unwrap().0 as usize;
-                    let (s, r) = crossbeam_channel::bounded(n.clamp(1, 100000));
-                    let buffin = Net::wrap(Box::new(An(BuffIn::new(s.clone()))));
-                    net_query.get_mut(*id).unwrap().0 = buffin;
-                    commands.entity(*id).insert(FloatChannel(s, r));
-                    lt_to_open = Some(0);
-                }
-            }
-            // buffout
-            94 => {
-                for hole in holes {
-                    if let Ok(wh) = white_hole_query.get(*hole) {
-                        if wh.link_types == (0, 1) && wh.open {
-                            if let Ok(FloatChannel(_, r)) = float_chan_query.get(wh.bh_parent) {
-                                let buffout = Net::wrap(Box::new(An(BuffOut::new(r.clone()))));
-                                net_query.get_mut(*id).unwrap().0 = buffout;
-                                lt_to_open = Some(0);
-                            }
-                        }
-                    }
-                }
-            }
             // -------------------- audio nodes --------------------
             // var()
             61 => {
@@ -1387,11 +1360,9 @@ pub fn process(
                     lt_to_open = Some(0);
                 }
                 let num = num_query.get_mut(*id).unwrap();
-                //if num.is_changed() {
                 if let Some(var) = &net_ins_query.get(*id).unwrap().0.first() {
                     var.set_value(num.0);
                 }
-                //}
             }
             // in() | adc()
             62 => {
@@ -1420,6 +1391,33 @@ pub fn process(
                 if let Some(var) = net_ins_query.get(*id).unwrap().0.first() {
                     num_query.get_mut(*id).unwrap().0 = var.value();
                     lt_to_open = Some(-1);
+                }
+            }
+            // buffin()
+            93 => {
+                if op_changed_query.get(*id).unwrap().0
+                    || num_query.get_mut(*id).unwrap().is_changed()
+                {
+                    let n = num_query.get(*id).unwrap().0 as usize;
+                    let (s, r) = crossbeam_channel::bounded(n.clamp(1, 100000));
+                    let buffin = Net::wrap(Box::new(An(BuffIn::new(s.clone()))));
+                    net_query.get_mut(*id).unwrap().0 = buffin;
+                    commands.entity(*id).insert(FloatChannel(s, r));
+                    lt_to_open = Some(0);
+                }
+            }
+            // buffout()
+            94 => {
+                for hole in holes {
+                    if let Ok(wh) = white_hole_query.get(*hole) {
+                        if wh.link_types == (0, 1) && wh.open {
+                            if let Ok(FloatChannel(_, r)) = float_chan_query.get(wh.bh_parent) {
+                                let buffout = Net::wrap(Box::new(An(BuffOut::new(r.clone()))));
+                                net_query.get_mut(*id).unwrap().0 = buffout;
+                                lt_to_open = Some(0);
+                            }
+                        }
+                    }
                 }
             }
             // get()
