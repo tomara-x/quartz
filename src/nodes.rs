@@ -507,8 +507,8 @@ impl AudioNode for InputNode {
 
     #[inline]
     fn tick(&mut self, _input: &Frame<f32, Self::Inputs>) -> Frame<f32, Self::Outputs> {
-        let l = self.lr.recv().unwrap_or(0.);
-        let r = self.rr.recv().unwrap_or(0.);
+        let l = self.lr.try_recv().unwrap_or(0.);
+        let r = self.rr.try_recv().unwrap_or(0.);
         [l, r].into()
     }
 }

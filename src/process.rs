@@ -90,7 +90,7 @@ pub fn process(
         Query<&mut Tonemapping, With<Camera>>,
         Query<&mut Network>,
         Query<&mut NetIns>,
-        Query<&mut NetChannel>,
+        Query<&NetChannel>,
         Query<&mut Col>,
         EventWriter<OrderChange>,
         Query<&mut Vertices>,

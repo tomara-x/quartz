@@ -118,8 +118,8 @@ where
 }
 
 pub fn default_in_device(world: &mut World) {
-    let (ls, lr) = bounded(64);
-    let (rs, rr) = bounded(64);
+    let (ls, lr) = bounded(4096);
+    let (rs, rr) = bounded(4096);
     world.insert_resource(InputReceivers(lr, rr));
     let host = cpal::default_host();
     if let Some(device) = host.default_input_device() {
@@ -145,8 +145,8 @@ pub fn set_in_device(world: &mut World) {
     let mut out_events = world.resource_mut::<Events<InDeviceCommand>>();
     let events: Vec<InDeviceCommand> = out_events.drain().collect();
     for e in events {
-        let (ls, lr) = bounded(64);
-        let (rs, rr) = bounded(64);
+        let (ls, lr) = bounded(4096);
+        let (rs, rr) = bounded(4096);
         world.insert_resource(InputReceivers(lr, rr));
         let InDeviceCommand(h, d, sr, b) = e;
         if let Some(host_id) = cpal::platform::ALL_HOSTS.get(h) {
@@ -218,9 +218,9 @@ where
     for frame in input.chunks(channels) {
         for (channel, sample) in frame.iter().enumerate() {
             if channel & 1 == 0 {
-                let _ = ls.send(sample.to_sample::<f32>());
+                let _ = ls.try_send(sample.to_sample::<f32>());
             } else {
-                let _ = rs.send(sample.to_sample::<f32>());
+                let _ = rs.try_send(sample.to_sample::<f32>());
             }
         }
     }
