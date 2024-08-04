@@ -1299,6 +1299,8 @@ pub fn str_to_op_num(op: &str) -> u16 {
         "!" | "THR" => 89,
         "out()" | "dac()" => 90,
         "process" => 92,
+        "buffin()" => 93,
+        "buffout()" => 94,
         x => {
             if x.starts_with("osc_r") {
                 42

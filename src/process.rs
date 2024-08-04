@@ -147,6 +147,7 @@ pub fn process(
         op_num_query,
         mut key_event,
         mut ortho,
+        float_chan_query,
     ): (
         ResMut<Assets<ColorMaterial>>,
         ResMut<ConnectionMat>,
@@ -161,6 +162,7 @@ pub fn process(
         Query<&OpNum>,
         EventReader<KeyboardInput>,
         Query<&mut OrthographicProjection>,
+        Query<&FloatChannel>,
     ),
 ) {
     let key_event = key_event.read().collect::<Vec<_>>();
@@ -1342,6 +1344,33 @@ pub fn process(
                                 }
                             }
                             lt_to_open = Some(-13);
+                        }
+                    }
+                }
+            }
+            // buffin
+            93 => {
+                if op_changed_query.get(*id).unwrap().0
+                    || num_query.get_mut(*id).unwrap().is_changed()
+                {
+                    let n = num_query.get(*id).unwrap().0 as usize;
+                    let (s, r) = crossbeam_channel::bounded(n.clamp(1, 100000));
+                    let buffin = Net::wrap(Box::new(An(BuffIn::new(s.clone()))));
+                    net_query.get_mut(*id).unwrap().0 = buffin;
+                    commands.entity(*id).insert(FloatChannel(s, r));
+                    lt_to_open = Some(0);
+                }
+            }
+            // buffout
+            94 => {
+                for hole in holes {
+                    if let Ok(wh) = white_hole_query.get(*hole) {
+                        if wh.link_types == (0, 1) && wh.open {
+                            if let Ok(FloatChannel(_, r)) = float_chan_query.get(wh.bh_parent) {
+                                let buffout = Net::wrap(Box::new(An(BuffOut::new(r.clone()))));
+                                net_query.get_mut(*id).unwrap().0 = buffout;
+                                lt_to_open = Some(0);
+                            }
                         }
                     }
                 }

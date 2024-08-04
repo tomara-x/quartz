@@ -57,6 +57,9 @@ pub struct NetIns(pub Vec<Shared>);
 #[derive(Component)]
 pub struct NetChannel(pub Sender<Net>, pub Receiver<Net>);
 
+#[derive(Component)]
+pub struct FloatChannel(pub Sender<f32>, pub Receiver<f32>);
+
 #[derive(Component, Reflect)]
 #[reflect(Component, MapEntities)]
 pub struct Holes(pub Vec<Entity>);

@@ -1,4 +1,4 @@
-use crossbeam_channel::Receiver;
+use crossbeam_channel::{Receiver, Sender};
 use fundsp::fft::*;
 use fundsp::hacker32::*;
 use std::collections::VecDeque;
@@ -724,5 +724,55 @@ impl AudioNode for SampDelay {
         let mut new = VecDeque::new();
         new.resize(self.max, 0.);
         self.buffer = new;
+    }
+}
+
+/// send samples to crossbeam channel
+/// - input 0: input
+/// - output 0: input passed through
+#[derive(Clone)]
+pub struct BuffIn {
+    s: Sender<f32>,
+}
+
+impl BuffIn {
+    pub fn new(s: Sender<f32>) -> Self {
+        BuffIn { s }
+    }
+}
+
+impl AudioNode for BuffIn {
+    const ID: u64 = 1123;
+    type Inputs = U1;
+    type Outputs = U1;
+
+    #[inline]
+    fn tick(&mut self, input: &Frame<f32, Self::Inputs>) -> Frame<f32, Self::Outputs> {
+        let _ = self.s.try_send(input[0]);
+        [input[0]].into()
+    }
+}
+
+/// receive smaples from crossbeam channel
+/// - output 0: output
+#[derive(Clone)]
+pub struct BuffOut {
+    r: Receiver<f32>,
+}
+
+impl BuffOut {
+    pub fn new(r: Receiver<f32>) -> Self {
+        BuffOut { r }
+    }
+}
+
+impl AudioNode for BuffOut {
+    const ID: u64 = 1124;
+    type Inputs = U0;
+    type Outputs = U1;
+
+    #[inline]
+    fn tick(&mut self, _input: &Frame<f32, Self::Inputs>) -> Frame<f32, Self::Outputs> {
+        [self.r.try_recv().unwrap_or(0.)].into()
     }
 }
