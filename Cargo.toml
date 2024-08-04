@@ -1,6 +1,6 @@
 [package]
 name = "quartz"
-version = "0.6.2"
+version = "0.7.0"
 edition = "2021"
 authors = ["amy universe <nopenullnilvoid00@gmail.com>"]
 repository = "https://github.com/tomara-x/quartz"
@@ -10,7 +10,7 @@ license = "MIT OR Apache-2.0"
 inspector = ["dep:bevy-inspector-egui"]
 
 [dependencies.bevy]
-version = "0.14.0"
+version = "0.14.1"
 default-features = false
 features = [
   "multi_threaded",
