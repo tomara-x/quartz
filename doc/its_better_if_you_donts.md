@@ -1,3 +1,5 @@
+note: if any of this doesn't make any sense to you yet, you can ignore it. this is more of a ramble than a tutorial.
+
 it's better if you don't do the following things:
 
 ### have more than one `in()` node
@@ -24,7 +26,7 @@ when using the sum op this can work as a counter (we're not in the audio graph),
 
 ![Screenshot_2024-08-05_14-56-55](https://github.com/user-attachments/assets/499d1e41-4a1a-4534-a6bc-5f1e46202902)
 
-### connecting a graph containing `swap()` to both `out()` and `render()`/`apply()`
+### connecting a graph containing `swap()` to both `out()` and `render`/`apply`
 please don't! the way `swap()` works is that it sends the net you give it to every receiver. every connective op down the graph that contains a swap will have one of those receivers. but those are just idle (cause they're not processing) so none of them will receive the new node and only the final graph will actually get it. that's the only reason it works, is that only the final point will actually try receiving. when you connect that same graph to a render, you change that whole store. now you have another active point that can, depending on how active your `render` op is, intercept that node. and so the audio graph (connected to `out()`) doesn't update. (this is another place where `buffin()` and `buffout()` save the day)
 
 ### pay no attention to the order when `swap()` nodes are involved
@@ -40,7 +42,7 @@ if you want silence, you can't just delete the `out()` circle. disconnecting it 
 there's no cleaning! when you open a scene the old one will still be there! you can either select everything and press `delete` then load the new scene. or open a new quartz window.
 
 ### run at default update rate if you don't need it
-by default the update rate is 60hz focused and 30hz unfocused. you can change that to something lower if you aren't doing anything that needs smooth visual updating. try loading the `lowcpu` scene which is an extreme of 0.01hz but still responsive to input. it saves energy, but keep in mind that it can interfere with the things that need immediate updating. `rise`/`fall` can malfunction
+by default the update rate is 60hz focused and 30hz unfocused. you can change that to something lower if you aren't doing anything that needs smooth visual updating. try loading the `lowcpu` scene which is an extreme of 0.01hz but still responsive to input. it saves energy, but keep in mind that it can interfere with the things that need immediate updating. `rise`/`fall` will malfunction
 
 ### work without saving
 there is no undo!
