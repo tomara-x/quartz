@@ -97,6 +97,7 @@ pub fn command_parser(
         Res<PasteChannel>,
         Query<&mut BloomSettings, With<Camera>>,
     ),
+    (mut ortho, cam): (Query<&mut OrthographicProjection>, Query<Entity, With<Camera>>),
 ) {
     let clt = &mut command_line_text.single_mut();
     if key_event.is_empty() && !clt.is_changed() && !keyboard_input.just_released(KeyCode::KeyT) {
@@ -855,6 +856,11 @@ pub fn command_parser(
                             composite_mode: BloomCompositeMode::Additive,
                             ..default()
                         };
+                    }
+                    Some(":reset_cam") => {
+                        *trans_query.get_mut(cam.single()).unwrap() =
+                            Transform::from_translation(Vec3::Z * 200.);
+                        ortho.single_mut().scale = 1.;
                     }
                     _ => {}
                 }

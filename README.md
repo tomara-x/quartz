@@ -153,6 +153,7 @@ notes:
 
 - `:nl` set the maximum number of nodes a connective op (`+`, `*`, `>>`, etc) will allow (default 500) (saved in scene file)
 - `:reset_bloom` if you change bloom settings to the point where you can't see what's happening, reset them
+- `:reset_cam` in case you took it too far with the `cam` op (might need to set everything to order 0 first)
 - `:dv {float}` set default number of vertices of drawn circles
 - `:dc {float} [float] [float] float]` set default color of drawn circles (h s l a)
 - `:ht {id}` toggle open a white hole (by id)
