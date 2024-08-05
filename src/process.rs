@@ -1332,7 +1332,8 @@ pub fn process(
                         }
                         if wh.link_types == (-1, 2) && num_query.get(wh.bh_parent).unwrap().0 != 0.
                         {
-                            let len = num_query.get(*id).unwrap().0 as usize;
+                            let mut len = num_query.get(*id).unwrap().0 as usize;
+                            len = std::cmp::Ord::min(len, 10000000);
                             let output = &mut arr_query.get_mut(*id).unwrap().0;
                             let net = &mut net_query.get_mut(*id).unwrap().0;
                             if net.inputs() == 0 && net.outputs() == 1 {
