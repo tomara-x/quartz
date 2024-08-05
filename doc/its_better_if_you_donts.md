@@ -15,7 +15,8 @@ if you find yourself doing something like this thinking that it would work as a 
 
 it won't. use feedback() instead, like so: [^1]
 
-![Screenshot_2024-08-05_14-50-05](https://github.com/user-attachments/assets/e3f6afe9-6be7-45c7-b88a-e2fbfaccc655)
+![Screenshot_2024-08-05_18-41-04](https://github.com/user-attachments/assets/a0af77ba-c994-4403-9776-66ad000495cb)
+
 
 [^1]: this counter will go from 1 to 16777216 before stopping due to floating point precision (16777217 isn't a number you can represent in f32).. oh yeah, it starts from 1. pipe it through a tick() to start from 0
 
