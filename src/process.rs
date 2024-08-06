@@ -166,7 +166,7 @@ pub fn process(
     ),
 ) {
     let key_event = key_event.read().collect::<Vec<_>>();
-    for id in queue.0.iter().flatten().chain(loopq.0.iter()) {
+    'entity: for id in queue.0.iter().flatten().chain(loopq.0.iter()) {
         let holes = &holes_query.get(*id).unwrap().0;
         for hole in holes {
             let mut lt_to_open = 0;
@@ -1416,6 +1416,12 @@ pub fn process(
                                 let buffout = Net::wrap(Box::new(An(BuffOut::new(r.clone()))));
                                 net_query.get_mut(*id).unwrap().0 = buffout;
                                 lt_to_open = Some(0);
+                            } else {
+                                // ensures that we don't close the wh in case the input doesn't
+                                // have the component. this way it works regardless of how long it
+                                // takes to insert it in buffin(). without the need to resort to
+                                // the inverse-order one-frame-delay trick.
+                                continue 'entity;
                             }
                         }
                     }
