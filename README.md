@@ -118,7 +118,7 @@ there are 2 types of commands:
 - `:set v [id] {float}` set number of vertices (3 or higher)
 - `:set o [id] {float}` set rotation [-pi...pi] (`:set rot` and `:set rotation` also work)
 - `:set op [id] {string}` set op (use shortcut `o`)
-- `:set ord[der] [id] {float}` set order (use `[` and `]` to increment/decrement order)
+- `:set ord[er] [id] {float}` set order (use `[` and `]` to increment/decrement order)
 - `:set arr[ay] [id] {float float ...}` set the array (space separated)
 - `:set tar[gets] {id id ...}` set targets (if nothing is selected, the first entity gets the rest of the list as its targets)
 - `:tsel {id}` target selected (`:tsel 4v2` sets selected entities as targets of entity 4v2)
