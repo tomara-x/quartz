@@ -476,7 +476,7 @@ some ops make a circle do things to its targets. like `process`, `del_targets`, 
 - `bloom`
     - control bloom parameters
     - inputs:
-        - `n -> 1` : intensity (default: 0.5)
+        - `n -> 1` : intensity (default: 0.2)
         - `n -> 2` : low frequency boost (default: 0.6)
         - `n -> 3` : low frequency boost curvature (default: 0.4)
         - `n -> 4` : high pass frequency (default: 1)

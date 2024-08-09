@@ -187,7 +187,7 @@ fn setup(
             ..default()
         },
         BloomSettings {
-            intensity: 0.5,
+            intensity: 0.2,
             low_frequency_boost: 0.6,
             low_frequency_boost_curvature: 0.4,
             composite_mode: BloomCompositeMode::Additive,
