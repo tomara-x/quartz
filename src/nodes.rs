@@ -150,8 +150,8 @@ impl AudioNode for ArrGet {
 }
 
 /// shift register
-/// - input 0: trigger
-/// - input 1: input signal
+/// - input 0: input signal
+/// - input 1: trigger
 /// - output 0...8: output from each index
 #[derive(Default, Clone)]
 pub struct ShiftReg {
@@ -171,7 +171,7 @@ impl AudioNode for ShiftReg {
 
     #[inline]
     fn tick(&mut self, input: &Frame<f32, Self::Inputs>) -> Frame<f32, Self::Outputs> {
-        if input[0] != 0. {
+        if input[1] != 0. {
             self.reg[7] = self.reg[6];
             self.reg[6] = self.reg[5];
             self.reg[5] = self.reg[4];
@@ -179,7 +179,7 @@ impl AudioNode for ShiftReg {
             self.reg[3] = self.reg[2];
             self.reg[2] = self.reg[1];
             self.reg[1] = self.reg[0];
-            self.reg[0] = input[1];
+            self.reg[0] = input[0];
         }
         self.reg.into()
     }
