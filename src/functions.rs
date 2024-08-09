@@ -575,6 +575,7 @@ pub fn str_to_net(op: &str) -> Net {
         // -------------------- other --------------------
         "tick" => return Net::wrap(Box::new(tick())),
         "shift_reg" => return Net::wrap(Box::new(An(ShiftReg::new()))),
+        "snh" => return Net::wrap(Box::new(An(SnH::new()))),
         "meter" => {
             if let (Some(arg), Some(p)) = (args.get(1), p.first()) {
                 if arg.starts_with("peak") {

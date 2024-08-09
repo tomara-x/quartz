@@ -776,3 +776,36 @@ impl AudioNode for BuffOut {
         [self.r.try_recv().unwrap_or(0.)].into()
     }
 }
+
+/// sample and hold
+/// - input 0: input signal
+/// - input 1: trigger
+/// - output 0: held signal
+#[derive(Clone)]
+pub struct SnH {
+    val: f32,
+}
+
+impl SnH {
+    pub fn new() -> Self {
+        SnH { val: 0. }
+    }
+}
+
+impl AudioNode for SnH {
+    const ID: u64 = 1125;
+    type Inputs = U2;
+    type Outputs = U1;
+
+    #[inline]
+    fn tick(&mut self, input: &Frame<f32, Self::Inputs>) -> Frame<f32, Self::Outputs> {
+        if input[1] != 0. {
+            self.val = input[0];
+        }
+        [self.val].into()
+    }
+
+    fn reset(&mut self) {
+        self.val = 0.;
+    }
+}

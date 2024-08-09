@@ -769,6 +769,7 @@ envelopes (all subsampled at ~2 ms)
 other
 - `tick()` one sample delay
 - `shift_reg()` 2 ins (input signal, trigger signal), 8 outs (outputs of the shift register)
+- `snh()` sample and hold node. 2 ins (input signal, trigger signal), 1 out (held signal)
 - `meter(peak/rms, float)` e.g. `meter(rms, 0.5)` `rms(peak, 2)`
 - `chorus(float, float, float, float)` (seed, separation, variation, mod frequency)
 - `declick([float])` e.g. `declick()` 10ms fade in, `declick(2)` 2 second fade in
