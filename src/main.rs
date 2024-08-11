@@ -61,7 +61,7 @@ fn main() {
         unfocused_mode: UpdateMode::reactive_low_power(Duration::from_secs_f64(1.0 / 30.0)),
     })
     .insert_resource(ClearColor(Color::hsla(0., 0., 0., 1.)))
-    .insert_resource(DefaultDrawColor(Hsla::new(270., 1., 0.5, 1.)))
+    .insert_resource(DefaultDrawColor(Hsla::new(300., 1., 0.5, 1.)))
     .insert_resource(DefaultDrawVerts(4))
     .insert_resource(HighlightColor(Hsla::new(0.0, 1.0, 0.5, 1.)))
     .insert_resource(ConnectionColor(Hsla::new(0., 1., 1., 0.7)))
