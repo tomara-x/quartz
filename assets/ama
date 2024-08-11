@@ -20,7 +20,7 @@
       alpha: 1.0,
     )),
     "quartz::components::ConnectionColor": ((
-      hue: 266.8542,
+      hue: 358.3542,
       saturation: 1.0,
       lightness: 1.5,
       alpha: 1.0,
@@ -5017,8 +5017,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 550.2755,
-            y: -1012.3745,
+            x: 509.4075,
+            y: -1002.11847,
             z: 0.09999999,
           ),
           rotation: (
@@ -5054,8 +5054,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 628.92664,
-            y: -1034.238,
+            x: 577.6522,
+            y: -1011.2333,
             z: 0.070999995,
           ),
           rotation: (
@@ -5490,8 +5490,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 532.9343,
-            y: -1086.3624,
+            x: 499.62033,
+            y: -1063.1067,
             z: 0.17300001,
           ),
           rotation: (
@@ -5958,8 +5958,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 562.7307,
-            y: -1086.7101,
+            x: 526.50714,
+            y: -1066.8289,
             z: 0.11099999,
           ),
           rotation: (
@@ -5993,8 +5993,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 609.5123,
-            y: -1060.2931,
+            x: 555.68274,
+            y: -1038.8522,
             z: 0.113999985,
           ),
           rotation: (
@@ -6028,8 +6028,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 517.11865,
-            y: -1057.9147,
+            x: 478.53442,
+            y: -1049.6787,
             z: 0.172,
           ),
           rotation: (
@@ -6039,8 +6039,8 @@
             w: 1.0,
           ),
           scale: (
-            x: 8.37641,
-            y: 8.37641,
+            x: 6.795355,
+            y: 6.795355,
             z: 1.0,
           ),
         ),
@@ -6175,8 +6175,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 533.5311,
-            y: -1040.6375,
+            x: 508.8252,
+            y: -1028.0099,
             z: 0.10099999,
           ),
           rotation: (
@@ -6208,8 +6208,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 501.5675,
-            y: -1085.8451,
+            x: 467.81436,
+            y: -1057.7583,
             z: 0.17,
           ),
           rotation: (
@@ -6284,8 +6284,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 592.37463,
-            y: -1087.2306,
+            x: 539.2502,
+            y: -1065.1515,
             z: 0.109999985,
           ),
           rotation: (
@@ -6314,6 +6314,7 @@
           4294967462,
           4294967463,
           4294967732,
+          4294968453,
         ]),
         "quartz::components::Arr": ([]),
         "quartz::components::Targets": ([]),
@@ -6323,8 +6324,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 637.1477,
-            y: -1007.3988,
+            x: 588.2866,
+            y: -988.974,
             z: 0.06999999,
           ),
           rotation: (
@@ -8470,7 +8471,7 @@
         )),
         "quartz::components::Vertices": (6),
         "quartz::components::Order": (1),
-        "quartz::components::Number": (0.1),
+        "quartz::components::Number": (0.2),
         "quartz::components::Op": ("var()"),
         "quartz::components::Holes": ([
           4294967544,
@@ -9084,8 +9085,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 404.9436,
-            y: -1014.75854,
+            x: 376.72418,
+            y: -1006.43494,
             z: 0.17,
           ),
           rotation: (
@@ -14882,7 +14883,7 @@
           4294967698,
         ]),
         "quartz::components::Arr": ([
-          266.8542,
+          358.3542,
         ]),
         "quartz::components::Targets": ([]),
       },
@@ -14908,7 +14909,7 @@
           ),
         ),
         "quartz::components::Col": ((
-          hue: 266.8542,
+          hue: 358.3542,
           saturation: 1.0,
           lightness: 1.5,
           alpha: 1.0,
@@ -15169,8 +15170,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 558.63293,
-            y: -1138.987,
+            x: 471.88715,
+            y: -1150.3545,
             z: 0.061999995,
           ),
           rotation: (
@@ -15204,8 +15205,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 536.50793,
-            y: -1136.4578,
+            x: 449.76215,
+            y: -1147.8252,
             z: 0.070999995,
           ),
           rotation: (
@@ -15272,8 +15273,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 590.597,
-            y: -1171.7655,
+            x: 511.74023,
+            y: -1176.5161,
             z: 0.042999998,
           ),
           rotation: (
@@ -15305,8 +15306,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 599.49915,
-            y: -1136.991,
+            x: 512.75336,
+            y: -1148.3584,
             z: 0.042,
           ),
           rotation: (
@@ -15340,8 +15341,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 730.277,
-            y: -1049.3967,
+            x: 616.0593,
+            y: -1124.9722,
             z: 0.031999998,
           ),
           rotation: (
@@ -15410,8 +15411,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 642.97534,
-            y: -1085.3804,
+            x: 550.2087,
+            y: -1101.3342,
             z: 0.051999997,
           ),
           rotation: (
@@ -15445,8 +15446,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 619.5697,
-            y: -1084.6293,
+            x: 547.91144,
+            y: -1074.7008,
             z: 0.11299998,
           ),
           rotation: (
@@ -15478,8 +15479,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 650.37964,
-            y: -1104.592,
+            x: 548.31396,
+            y: -1126.8699,
             z: 0.052999996,
           ),
           rotation: (
@@ -15511,8 +15512,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 770.51624,
-            y: -1035.6663,
+            x: 640.8835,
+            y: -1099.5742,
             z: 0.031,
           ),
           rotation: (
@@ -15544,8 +15545,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 750.85864,
-            y: -1049.8928,
+            x: 616.70557,
+            y: -1109.5585,
             z: 0.031,
           ),
           rotation: (
@@ -15579,8 +15580,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 712.6865,
-            y: -997.4159,
+            x: 633.45465,
+            y: -1159.833,
             z: 0.0,
           ),
           rotation: (
@@ -15616,8 +15617,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 580.35034,
-            y: -1137.4333,
+            x: 493.60455,
+            y: -1148.8008,
             z: 0.060999993,
           ),
           rotation: (
@@ -15649,8 +15650,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 569.5055,
-            y: -1138.8994,
+            x: 482.7597,
+            y: -1150.2668,
             z: 0.059999995,
           ),
           rotation: (
@@ -15687,8 +15688,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 614.089,
-            y: -1139.2073,
+            x: 527.3432,
+            y: -1150.5747,
             z: 0.04,
           ),
           rotation: (
@@ -15760,8 +15761,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 725.68994,
-            y: -1026.6377,
+            x: 632.9777,
+            y: -1146.7843,
             z: 0.001,
           ),
           rotation: (
@@ -15793,8 +15794,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 795.885,
-            y: -1005.50146,
+            x: 663.3572,
+            y: -1101.6243,
             z: 0.03,
           ),
           rotation: (
@@ -15868,8 +15869,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 693.55164,
-            y: -1078.1552,
+            x: 571.16064,
+            y: -1106.9137,
             z: 0.050999995,
           ),
           rotation: (
@@ -15903,8 +15904,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 668.48816,
-            y: -1085.351,
+            x: 559.80084,
+            y: -1105.2766,
             z: 0.049999997,
           ),
           rotation: (
@@ -15942,8 +15943,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 739.51196,
-            y: -1056.2821,
+            x: 605.9819,
+            y: -1116.5553,
             z: 0.03,
           ),
           rotation: (
@@ -15981,8 +15982,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 524.577,
-            y: -1136.7183,
+            x: 437.83124,
+            y: -1148.0857,
             z: 0.06999999,
           ),
           rotation: (
@@ -16018,8 +16019,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 714.31885,
-            y: -1065.5065,
+            x: 595.05194,
+            y: -1113.5132,
             z: 0.033,
           ),
           rotation: (
@@ -16051,8 +16052,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 634.0021,
-            y: -1119.6758,
+            x: 538.30133,
+            y: -1142.4689,
             z: 0.040999997,
           ),
           rotation: (
@@ -16259,8 +16260,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 622.64026,
-            y: -1150.938,
+            x: 535.8945,
+            y: -1162.3054,
             z: 0.044,
           ),
           rotation: (
@@ -16294,8 +16295,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 634.27527,
-            y: -1170.1802,
+            x: 550.3019,
+            y: -1177.054,
             z: 0.001,
           ),
           rotation: (
@@ -16327,8 +16328,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 644.96985,
-            y: -1189.54,
+            x: 554.8676,
+            y: -1196.1729,
             z: 0.0,
           ),
           rotation: (
@@ -16856,8 +16857,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -151.4283,
-            y: 77.15654,
+            x: -151.5268,
+            y: 77.20673,
             z: 0.01,
           ),
           rotation: (
@@ -16891,8 +16892,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -152.82536,
-            y: -74.53793,
+            x: -152.77603,
+            y: -74.51387,
             z: 0.01,
           ),
           rotation: (
@@ -16926,8 +16927,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -139.14084,
-            y: -97.42745,
+            x: -139.28601,
+            y: -97.529106,
             z: 0.01,
           ),
           rotation: (
@@ -16961,8 +16962,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -133.97539,
-            y: -104.673134,
+            x: -133.91377,
+            y: -104.624985,
             z: 0.01,
           ),
           rotation: (
@@ -16996,8 +16997,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -128.40445,
-            y: -111.62036,
+            x: -128.25337,
+            y: -111.48903,
             z: 0.01,
           ),
           rotation: (
@@ -17031,8 +17032,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -140.80714,
-            y: -94.97563,
+            x: -140.98079,
+            y: -95.09275,
             z: 0.01,
           ),
           rotation: (
@@ -17099,8 +17100,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 87.5459,
-            y: -145.70074,
+            x: 87.455246,
+            y: -145.54987,
             z: 0.01,
           ),
           rotation: (
@@ -17134,8 +17135,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 90.088036,
-            y: -144.17093,
+            x: 89.99514,
+            y: -144.02225,
             z: 0.01,
           ),
           rotation: (
@@ -17169,8 +17170,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 99.94335,
-            y: -137.56013,
+            x: 99.93759,
+            y: -137.55222,
             z: 0.01,
           ),
           rotation: (
@@ -17204,8 +17205,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 111.597855,
-            y: -128.37859,
+            x: 111.5072,
+            y: -128.27429,
             z: 0.01,
           ),
           rotation: (
@@ -17239,8 +17240,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 120.3048,
-            y: -120.30472,
+            x: 120.21562,
+            y: -120.215546,
             z: 0.01,
           ),
           rotation: (
@@ -17274,8 +17275,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 122.363235,
-            y: -118.16475,
+            x: 122.30672,
+            y: -118.11017,
             z: 0.01,
           ),
           rotation: (
@@ -17309,8 +17310,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 124.38007,
-            y: -115.98626,
+            x: 124.36834,
+            y: -115.97531,
             z: 0.01,
           ),
           rotation: (
@@ -17344,8 +17345,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 126.36498,
-            y: -113.779526,
+            x: 126.39285,
+            y: -113.80463,
             z: 0.01,
           ),
           rotation: (
@@ -17379,8 +17380,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 128.31339,
-            y: -111.54104,
+            x: 128.37848,
+            y: -111.59762,
             z: 0.01,
           ),
           rotation: (
@@ -17414,8 +17415,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 130.22171,
-            y: -109.26892,
+            x: 130.32712,
+            y: -109.357376,
             z: 0.01,
           ),
           rotation: (
@@ -17449,8 +17450,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 144.1641,
-            y: -90.08372,
+            x: 144.25774,
+            y: -90.142235,
             z: 0.01,
           ),
           rotation: (
@@ -17484,8 +17485,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 145.71724,
-            y: -87.55568,
+            x: 145.75339,
+            y: -87.5774,
             z: 0.01,
           ),
           rotation: (
@@ -17519,8 +17520,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 147.23174,
-            y: -85.00423,
+            x: 147.20242,
+            y: -84.987305,
             z: 0.01,
           ),
           rotation: (
@@ -17554,8 +17555,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 151.51299,
-            y: -77.19964,
+            x: 151.37079,
+            y: -77.12719,
             z: 0.01,
           ),
           rotation: (
@@ -17589,8 +17590,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 154.14565,
-            y: -71.87925,
+            x: 153.93062,
+            y: -71.77898,
             z: 0.01,
           ),
           rotation: (
@@ -17624,8 +17625,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 155.3834,
-            y: -69.18112,
+            x: 155.17546,
+            y: -69.08853,
             z: 0.01,
           ),
           rotation: (
@@ -17659,8 +17660,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 156.56331,
-            y: -66.45708,
+            x: 156.39029,
+            y: -66.38364,
             z: 0.01,
           ),
           rotation: (
@@ -17694,8 +17695,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 157.68895,
-            y: -63.71039,
+            x: 157.57137,
+            y: -63.66288,
             z: 0.01,
           ),
           rotation: (
@@ -17729,8 +17730,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 158.77213,
-            y: -60.946846,
+            x: 158.71939,
+            y: -60.9266,
             z: 0.01,
           ),
           rotation: (
@@ -17764,8 +17765,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 159.80724,
-            y: -58.16503,
+            x: 159.81792,
+            y: -58.168922,
             z: 0.01,
           ),
           rotation: (
@@ -17799,8 +17800,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 160.79427,
-            y: -55.36588,
+            x: 160.84192,
+            y: -55.382286,
             z: 0.01,
           ),
           rotation: (
@@ -17834,8 +17835,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 161.74103,
-            y: -52.552753,
+            x: 161.78949,
+            y: -52.568497,
             z: 0.01,
           ),
           rotation: (
@@ -17869,8 +17870,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 162.64256,
-            y: -49.724747,
+            x: 162.67683,
+            y: -49.735226,
             z: 0.01,
           ),
           rotation: (
@@ -17904,8 +17905,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 163.49521,
-            y: -46.881435,
+            x: 163.5037,
+            y: -46.883865,
             z: 0.01,
           ),
           rotation: (
@@ -17939,8 +17940,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 165.02477,
-            y: -41.14527,
+            x: 164.95387,
+            y: -41.127594,
             z: 0.01,
           ),
           rotation: (
@@ -17974,8 +17975,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 166.33171,
-            y: -35.354824,
+            x: 166.20288,
+            y: -35.327442,
             z: 0.01,
           ),
           rotation: (
@@ -18009,8 +18010,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 167.48285,
-            y: -29.53163,
+            x: 167.34789,
+            y: -29.50783,
             z: 0.01,
           ),
           rotation: (
@@ -18044,8 +18045,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 167.97095,
-            y: -26.603966,
+            x: 167.85359,
+            y: -26.585379,
             z: 0.01,
           ),
           rotation: (
@@ -18079,8 +18080,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 168.41432,
-            y: -23.669088,
+            x: 168.31067,
+            y: -23.65452,
             z: 0.01,
           ),
           rotation: (
@@ -18114,8 +18115,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 168.82025,
-            y: -20.728453,
+            x: 168.72139,
+            y: -20.716314,
             z: 0.01,
           ),
           rotation: (
@@ -18149,8 +18150,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 169.18002,
-            y: -17.781487,
+            x: 169.09445,
+            y: -17.772493,
             z: 0.01,
           ),
           rotation: (
@@ -18184,8 +18185,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 169.49666,
-            y: -14.82892,
+            x: 169.42963,
+            y: -14.823057,
             z: 0.01,
           ),
           rotation: (
@@ -18219,8 +18220,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 169.77225,
-            y: -11.871535,
+            x: 169.71669,
+            y: -11.86765,
             z: 0.01,
           ),
           rotation: (
@@ -18254,8 +18255,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 169.99078,
-            y: -8.908841,
+            x: 169.94907,
+            y: -8.906654,
             z: 0.01,
           ),
           rotation: (
@@ -18289,8 +18290,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 170.12791,
-            y: -5.940934,
+            x: 170.10713,
+            y: -5.940208,
             z: 0.01,
           ),
           rotation: (
@@ -18324,8 +18325,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 170.18242,
-            y: -2.9704986,
+            x: 170.1796,
+            y: -2.9704492,
             z: 0.01,
           ),
           rotation: (
@@ -18359,8 +18360,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -126.24857,
-            y: 113.67468,
+            x: -126.28143,
+            y: 113.70427,
             z: 0.01,
           ),
           rotation: (
@@ -18394,8 +18395,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 169.40915,
-            y: 11.846243,
+            x: 169.50983,
+            y: 11.853283,
             z: 0.01,
           ),
           rotation: (
@@ -18429,8 +18430,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -8.899743,
-            y: 169.81726,
+            x: -8.909255,
+            y: 169.99876,
             z: 0.01,
           ),
           rotation: (
@@ -18464,8 +18465,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -0.0000074314057,
-            y: 170.01074,
+            x: -0.0000074407567,
+            y: 170.22467,
             z: 0.01,
           ),
           rotation: (
@@ -18499,8 +18500,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 11.858389,
-            y: 169.58307,
+            x: 11.869612,
+            y: 169.74355,
             z: 0.01,
           ),
           rotation: (
@@ -18534,8 +18535,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 20.711279,
-            y: 168.68002,
+            x: 20.738138,
+            y: 168.89877,
             z: 0.01,
           ),
           rotation: (
@@ -18569,8 +18570,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 29.529657,
-            y: 167.47108,
+            x: 29.543898,
+            y: 167.55185,
             z: 0.01,
           ),
           rotation: (
@@ -18604,8 +18605,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 38.25459,
-            y: 165.69894,
+            x: 38.243935,
+            y: 165.65277,
             z: 0.01,
           ),
           rotation: (
@@ -18639,8 +18640,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 52.485775,
-            y: 161.53462,
+            x: 52.47556,
+            y: 161.50317,
             z: 0.01,
           ),
           rotation: (
@@ -18674,8 +18675,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -94.95257,
-            y: 140.77293,
+            x: -95.07727,
+            y: 140.95781,
             z: 0.01,
           ),
           rotation: (
@@ -18709,8 +18710,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -109.33546,
-            y: 130.30084,
+            x: -109.27803,
+            y: 130.2324,
             z: 0.01,
           ),
           rotation: (
@@ -18744,8 +18745,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -69.15719,
-            y: 155.32956,
+            x: -69.115814,
+            y: 155.23663,
             z: 0.01,
           ),
           rotation: (
@@ -18779,8 +18780,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -60.94975,
-            y: 158.77946,
+            x: -60.90098,
+            y: 158.65242,
             z: 0.01,
           ),
           rotation: (
@@ -18814,8 +18815,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -46.891033,
-            y: 163.52847,
+            x: -46.82387,
+            y: 163.29424,
             z: 0.01,
           ),
           rotation: (
@@ -18849,8 +18850,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -38.274746,
-            y: 165.78609,
+            x: -38.237183,
+            y: 165.62338,
             z: 0.01,
           ),
           rotation: (
@@ -18884,8 +18885,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -26.613615,
-            y: 168.03163,
+            x: -26.615656,
+            y: 168.04453,
             z: 0.01,
           ),
           rotation: (
@@ -18919,8 +18920,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 49.663406,
-            y: 162.44171,
+            x: 49.663506,
+            y: 162.44203,
             z: 0.01,
           ),
           rotation: (
@@ -18954,8 +18955,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -5.933776,
-            y: 169.9207,
+            x: -5.9411554,
+            y: 170.13202,
             z: 0.01,
           ),
           rotation: (
@@ -18989,8 +18990,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -118.10421,
-            y: 122.30046,
+            x: -118.03894,
+            y: 122.23287,
             z: 0.01,
           ),
           rotation: (
@@ -19024,8 +19025,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -79.72095,
-            y: 149.93329,
+            x: -79.827446,
+            y: 150.13358,
             z: 0.01,
           ),
           rotation: (
@@ -19059,8 +19060,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -49.73338,
-            y: 162.67052,
+            x: -49.662632,
+            y: 162.43912,
             z: 0.01,
           ),
           rotation: (
@@ -19094,8 +19095,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -89.95754,
-            y: 143.96213,
+            x: -90.10335,
+            y: 144.19547,
             z: 0.01,
           ),
           rotation: (
@@ -19129,8 +19130,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -166.90161,
-            y: 32.44235,
+            x: -166.86386,
+            y: 32.43501,
             z: 0.01,
           ),
           rotation: (
@@ -19164,8 +19165,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 97.614685,
-            y: 139.40822,
+            x: 97.58004,
+            y: 139.35875,
             z: 0.01,
           ),
           rotation: (
@@ -19199,8 +19200,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 107.07065,
-            y: 132.22125,
+            x: 107.13517,
+            y: 132.30092,
             z: 0.01,
           ),
           rotation: (
@@ -19234,8 +19235,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 113.80559,
-            y: 126.39392,
+            x: 113.90361,
+            y: 126.50279,
             z: 0.01,
           ),
           rotation: (
@@ -19269,8 +19270,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 126.12678,
-            y: 113.56506,
+            x: 126.31013,
+            y: 113.73015,
             z: 0.01,
           ),
           rotation: (
@@ -19304,8 +19305,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 63.638157,
-            y: 157.51,
+            x: 63.58645,
+            y: 157.38202,
             z: 0.01,
           ),
           rotation: (
@@ -19339,8 +19340,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 124.149536,
-            y: 115.77132,
+            x: 124.32369,
+            y: 115.933716,
             z: 0.01,
           ),
           rotation: (
@@ -19374,8 +19375,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 82.45671,
-            y: 148.75586,
+            x: 82.41723,
+            y: 148.68463,
             z: 0.01,
           ),
           rotation: (
@@ -19409,8 +19410,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 120.12297,
-            y: 120.12297,
+            x: 120.249596,
+            y: 120.249596,
             z: 0.01,
           ),
           rotation: (
@@ -19444,8 +19445,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 132.09595,
-            y: 106.969185,
+            x: 132.10344,
+            y: 106.975266,
             z: 0.01,
           ),
           rotation: (
@@ -19479,8 +19480,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 71.823105,
-            y: 154.02519,
+            x: 71.75752,
+            y: 153.88455,
             z: 0.01,
           ),
           rotation: (
@@ -19514,8 +19515,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 145.64868,
-            y: 87.514565,
+            x: 145.61838,
+            y: 87.49635,
             z: 0.01,
           ),
           rotation: (
@@ -19549,8 +19550,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 150.05365,
-            y: 79.78495,
+            x: 150.03773,
+            y: 79.77649,
             z: 0.01,
           ),
           rotation: (
@@ -19584,8 +19585,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 156.3707,
-            y: 66.37543,
+            x: 156.45177,
+            y: 66.409836,
             z: 0.01,
           ),
           rotation: (
@@ -19619,8 +19620,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 140.9051,
-            y: 95.04171,
+            x: 140.86472,
+            y: 95.014465,
             z: 0.01,
           ),
           rotation: (
@@ -19654,8 +19655,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 152.74745,
-            y: 74.49991,
+            x: 152.73001,
+            y: 74.4914,
             z: 0.01,
           ),
           rotation: (
@@ -19689,8 +19690,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -104.676575,
-            y: 133.97984,
+            x: -104.66461,
+            y: 133.96454,
             z: 0.01,
           ),
           rotation: (
@@ -19724,8 +19725,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 168.85617,
-            y: 17.7475,
+            x: 168.91483,
+            y: 17.753664,
             z: 0.01,
           ),
           rotation: (
@@ -19759,8 +19760,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -156.42586,
-            y: 66.398796,
+            x: -156.49081,
+            y: 66.42637,
             z: 0.01,
           ),
           rotation: (
@@ -19794,8 +19795,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -165.68771,
-            y: 38.25199,
+            x: -165.57237,
+            y: 38.22536,
             z: 0.01,
           ),
           rotation: (
@@ -19829,8 +19830,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -169.77701,
-            y: 5.928695,
+            x: -169.77953,
+            y: 5.9287834,
             z: 0.01,
           ),
           rotation: (
@@ -19864,8 +19865,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -148.70428,
-            y: 82.428116,
+            x: -148.70958,
+            y: 82.43105,
             z: 0.01,
           ),
           rotation: (
@@ -19899,8 +19900,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 169.8573,
-            y: 2.9648705,
+            x: 170.03418,
+            y: 2.9679577,
             z: 0.01,
           ),
           rotation: (
@@ -19934,8 +19935,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -158.65395,
-            y: 60.90154,
+            x: -158.69814,
+            y: 60.9185,
             z: 0.01,
           ),
           rotation: (
@@ -19969,8 +19970,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 160.46948,
-            y: 55.254078,
+            x: 160.66054,
+            y: 55.319862,
             z: 0.01,
           ),
           rotation: (
@@ -20004,8 +20005,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -154.00116,
-            y: 71.81193,
+            x: -154.10645,
+            y: 71.86103,
             z: 0.01,
           ),
           rotation: (
@@ -20039,8 +20040,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -147.27509,
-            y: 85.02927,
+            x: -147.2203,
+            y: 84.99764,
             z: 0.01,
           ),
           rotation: (
@@ -20074,8 +20075,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -135.72337,
-            y: 102.274864,
+            x: -135.6629,
+            y: 102.22929,
             z: 0.01,
           ),
           rotation: (
@@ -20109,8 +20110,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -142.68422,
-            y: 92.66022,
+            x: -142.52736,
+            y: 92.55836,
             z: 0.01,
           ),
           rotation: (
@@ -20144,8 +20145,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -133.87247,
-            y: 104.592575,
+            x: -133.85579,
+            y: 104.57955,
             z: 0.01,
           ),
           rotation: (
@@ -20179,8 +20180,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -97.42706,
-            y: 139.14018,
+            x: -97.51781,
+            y: 139.26978,
             z: 0.01,
           ),
           rotation: (
@@ -20214,8 +20215,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -145.79878,
-            y: 87.60474,
+            x: -145.68962,
+            y: 87.53915,
             z: 0.01,
           ),
           rotation: (
@@ -20249,8 +20250,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 163.95041,
-            y: 43.930378,
+            x: 164.01935,
+            y: 43.948853,
             z: 0.01,
           ),
           rotation: (
@@ -20284,8 +20285,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 168.50513,
-            y: 20.689829,
+            x: 168.53853,
+            y: 20.693932,
             z: 0.01,
           ),
           rotation: (
@@ -20319,8 +20320,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 167.1659,
-            y: 29.47586,
+            x: 167.07329,
+            y: 29.459532,
             z: 0.01,
           ),
           rotation: (
@@ -20354,8 +20355,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 163.14583,
-            y: 46.781322,
+            x: 163.27939,
+            y: 46.819614,
             z: 0.01,
           ),
           rotation: (
@@ -20389,8 +20390,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -122.2529,
-            y: 118.05822,
+            x: -122.20778,
+            y: 118.01465,
             z: 0.01,
           ),
           rotation: (
@@ -20424,8 +20425,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -120.20001,
-            y: 120.20001,
+            x: -120.13139,
+            y: 120.13139,
             z: 0.01,
           ),
           rotation: (
@@ -20459,8 +20460,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -107.029465,
-            y: 132.17033,
+            x: -106.98845,
+            y: 132.11969,
             z: 0.01,
           ),
           rotation: (
@@ -20494,8 +20495,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 169.15707,
-            y: 14.799326,
+            x: 169.23651,
+            y: 14.806276,
             z: 0.01,
           ),
           rotation: (
@@ -20529,8 +20530,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 137.54785,
-            y: 99.934364,
+            x: 137.49675,
+            y: 99.89723,
             z: 0.01,
           ),
           rotation: (
@@ -20564,8 +20565,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 142.51715,
-            y: 92.55172,
+            x: 142.49358,
+            y: 92.536415,
             z: 0.01,
           ),
           rotation: (
@@ -20599,8 +20600,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 135.78424,
-            y: 102.32077,
+            x: 135.74687,
+            y: 102.29261,
             z: 0.01,
           ),
           rotation: (
@@ -20634,8 +20635,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 154.01247,
-            y: 71.8172,
+            x: 154.01125,
+            y: 71.816635,
             z: 0.01,
           ),
           rotation: (
@@ -20669,8 +20670,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 147.15373,
-            y: 84.95925,
+            x: 147.12512,
+            y: 84.942726,
             z: 0.01,
           ),
           rotation: (
@@ -20704,8 +20705,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 115.95394,
-            y: 124.345375,
+            x: 116.052666,
+            y: 124.45124,
             z: 0.01,
           ),
           rotation: (
@@ -20739,8 +20740,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 102.39925,
-            y: 135.8884,
+            x: 102.416,
+            y: 135.91061,
             z: 0.01,
           ),
           rotation: (
@@ -20774,8 +20775,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 58.089092,
-            y: 159.59853,
+            x: 58.063866,
+            y: 159.52922,
             z: 0.01,
           ),
           rotation: (
@@ -20809,8 +20810,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 122.1525,
-            y: 117.961296,
+            x: 122.30259,
+            y: 118.10625,
             z: 0.01,
           ),
           rotation: (
@@ -20844,8 +20845,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 85.052216,
-            y: 147.31477,
+            x: 85.02746,
+            y: 147.2719,
             z: 0.01,
           ),
           rotation: (
@@ -20879,8 +20880,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 74.51128,
-            y: 152.77081,
+            x: 74.44476,
+            y: 152.63443,
             z: 0.01,
           ),
           rotation: (
@@ -20914,8 +20915,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 109.35772,
-            y: 130.32747,
+            x: 109.44444,
+            y: 130.43082,
             z: 0.01,
           ),
           rotation: (
@@ -20949,8 +20950,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 92.68086,
-            y: 142.71602,
+            x: 92.66412,
+            y: 142.69025,
             z: 0.01,
           ),
           rotation: (
@@ -20984,8 +20985,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 100.02087,
-            y: 137.66693,
+            x: 100.009285,
+            y: 137.651,
             z: 0.01,
           ),
           rotation: (
@@ -21019,8 +21020,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -74.48298,
-            y: 152.71266,
+            x: -74.514404,
+            y: 152.77708,
             z: 0.01,
           ),
           rotation: (
@@ -21054,8 +21055,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -63.71345,
-            y: 157.69626,
+            x: -63.66413,
+            y: 157.57419,
             z: 0.01,
           ),
           rotation: (
@@ -21089,8 +21090,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -87.430466,
-            y: 145.50865,
+            x: -87.57425,
+            y: 145.74796,
             z: 0.01,
           ),
           rotation: (
@@ -21124,8 +21125,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -115.96621,
-            y: 124.35849,
+            x: -115.912895,
+            y: 124.301315,
             z: 0.01,
           ),
           rotation: (
@@ -21159,8 +21160,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -17.776276,
-            y: 169.12968,
+            x: -17.788568,
+            y: 169.24664,
             z: 0.01,
           ),
           rotation: (
@@ -21194,8 +21195,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 5.933425,
-            y: 169.91107,
+            x: 5.938994,
+            y: 170.07054,
             z: 0.01,
           ),
           rotation: (
@@ -21229,8 +21230,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -23.673756,
-            y: 168.44742,
+            x: -23.681421,
+            y: 168.50194,
             z: 0.01,
           ),
           rotation: (
@@ -21264,8 +21265,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -32.466885,
-            y: 167.02751,
+            x: -32.454304,
+            y: 166.96278,
             z: 0.01,
           ),
           rotation: (
@@ -21299,8 +21300,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -44.032303,
-            y: 164.33063,
+            x: -43.97234,
+            y: 164.10684,
             z: 0.01,
           ),
           rotation: (
@@ -21334,8 +21335,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -58.167976,
-            y: 159.8152,
+            x: -58.112644,
+            y: 159.6632,
             z: 0.01,
           ),
           rotation: (
@@ -21369,8 +21370,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -66.45069,
-            y: 156.54796,
+            x: -66.40004,
+            y: 156.42862,
             z: 0.01,
           ),
           rotation: (
@@ -21404,8 +21405,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -77.11111,
-            y: 151.33902,
+            x: -77.18576,
+            y: 151.48553,
             z: 0.01,
           ),
           rotation: (
@@ -21439,8 +21440,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 8.897912,
-            y: 169.78261,
+            x: 8.905725,
+            y: 169.93167,
             z: 0.01,
           ),
           rotation: (
@@ -21474,8 +21475,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 55.294617,
-            y: 160.5873,
+            x: 55.275215,
+            y: 160.53096,
             z: 0.01,
           ),
           rotation: (
@@ -21509,8 +21510,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 41.129604,
-            y: 164.96182,
+            x: 41.119095,
+            y: 164.91968,
             z: 0.01,
           ),
           rotation: (
@@ -21544,8 +21545,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 32.451912,
-            y: 166.95067,
+            x: 32.456444,
+            y: 166.97398,
             z: 0.01,
           ),
           rotation: (
@@ -21579,8 +21580,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 23.655724,
-            y: 168.31921,
+            x: 23.682304,
+            y: 168.50833,
             z: 0.01,
           ),
           rotation: (
@@ -21614,8 +21615,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 14.813171,
-            y: 169.31543,
+            x: 14.829644,
+            y: 169.50372,
             z: 0.01,
           ),
           rotation: (
@@ -21649,8 +21650,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -169.4796,
-            y: 11.851168,
+            x: -169.4708,
+            y: 11.850551,
             z: 0.01,
           ),
           rotation: (
@@ -21684,8 +21685,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -169.66116,
-            y: 8.89154,
+            x: -169.6428,
+            y: 8.890577,
             z: 0.01,
           ),
           rotation: (
@@ -21719,8 +21720,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -14.821681,
-            y: 169.4123,
+            x: -14.83434,
+            y: 169.55699,
             z: 0.01,
           ),
           rotation: (
@@ -21754,8 +21755,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -168.29335,
-            y: 23.652061,
+            x: -168.35379,
+            y: 23.660553,
             z: 0.01,
           ),
           rotation: (
@@ -21789,8 +21790,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 66.384964,
-            y: 156.3932,
+            x: 66.3259,
+            y: 156.25404,
             z: 0.01,
           ),
           rotation: (
@@ -21824,8 +21825,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 128.08421,
-            y: 111.3419,
+            x: 128.26582,
+            y: 111.49977,
             z: 0.01,
           ),
           rotation: (
@@ -21859,8 +21860,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -147.16788,
-            y: -84.96751,
+            x: -147.27412,
+            y: -85.02885,
             z: 0.01,
           ),
           rotation: (
@@ -21894,8 +21895,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -155.28433,
-            y: -69.137054,
+            x: -155.23227,
+            y: -69.11388,
             z: 0.01,
           ),
           rotation: (
@@ -21929,8 +21930,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -156.45558,
-            y: -66.41149,
+            x: -156.39519,
+            y: -66.38586,
             z: 0.01,
           ),
           rotation: (
@@ -21964,8 +21965,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -157.58688,
-            y: -63.669292,
+            x: -157.54088,
+            y: -63.650703,
             z: 0.01,
           ),
           rotation: (
@@ -22031,366 +22032,366 @@
           4294967930,
         ]),
         "quartz::components::Arr": ([
-          169.8573,
-          169.757,
-          169.60936,
-          169.40915,
-          169.15707,
-          168.85617,
-          168.50513,
-          168.10841,
-          167.66275,
-          167.1659,
-          166.62444,
-          166.03711,
-          165.39894,
-          164.70451,
-          163.95041,
-          163.14583,
-          162.2989,
-          161.40399,
-          160.46948,
-          159.50223,
-          158.49359,
-          157.4518,
-          156.3707,
-          155.22534,
-          154.01247,
-          152.74745,
-          151.43216,
-          150.05365,
-          148.62102,
-          147.15373,
-          145.64868,
-          144.10011,
-          142.51715,
-          140.9051,
-          139.25359,
-          137.54785,
-          135.78424,
-          133.96632,
-          132.09595,
-          130.18204,
-          128.08421,
-          126.12678,
-          124.149536,
-          122.1525,
-          120.12297,
-          118.05634,
-          115.95394,
-          113.80559,
-          111.60456,
-          109.35772,
-          107.07065,
-          104.7497,
-          102.39925,
-          100.02087,
-          97.614685,
-          95.16951,
-          92.68086,
-          90.16003,
-          87.617645,
-          85.052216,
-          82.45671,
-          79.83082,
-          77.18015,
-          74.51128,
-          71.823105,
-          69.11347,
-          66.384964,
-          63.638157,
-          60.871616,
-          58.089092,
-          55.294617,
-          52.485775,
-          49.663406,
-          46.830948,
-          43.987373,
-          41.129604,
-          38.25459,
-          35.36125,
-          32.451912,
-          29.529657,
-          26.596378,
-          23.655724,
-          20.711279,
-          17.763739,
-          14.813171,
-          11.858389,
-          8.897912,
-          5.933425,
-          2.9671004,
-          -0.0000074314057,
-          -2.9671047,
-          -5.933776,
-          -8.899743,
-          -11.863044,
-          -14.821681,
-          -17.776276,
-          -20.727322,
-          -23.673756,
-          -26.613615,
-          -29.544922,
-          -32.466885,
-          -35.37739,
-          -38.274746,
-          -41.15943,
-          -44.032303,
-          -46.891033,
-          -49.73338,
-          -52.561234,
-          -55.372902,
-          -58.167976,
-          -60.94975,
-          -63.71345,
-          -66.45069,
-          -69.15719,
-          -71.83322,
-          -74.48298,
-          -77.11111,
-          -79.72095,
-          -82.31134,
-          -84.88086,
-          -87.430466,
-          -89.95754,
-          -92.463745,
-          -94.95257,
-          -97.42706,
-          -99.87778,
-          -102.29195,
-          -104.676575,
-          -107.029465,
-          -109.33546,
-          -111.59044,
-          -113.79721,
-          -115.96621,
-          -118.10421,
-          -120.20001,
-          -122.2529,
-          -124.27194,
-          -126.24857,
-          -128.18266,
-          -130.09369,
-          -131.9924,
-          -133.87247,
-          -135.72337,
-          -137.53796,
-          -139.30777,
-          -141.02628,
-          -142.68422,
-          -144.27246,
-          -145.79878,
-          -147.27509,
-          -148.70428,
-          -150.08768,
-          -151.4283,
-          -152.73322,
-          -154.00116,
-          -155.23143,
-          -156.42586,
-          -157.56972,
-          -158.65395,
-          -159.68799,
-          -160.68744,
-          -161.65181,
-          -162.56648,
-          -163.42813,
-          -164.23402,
-          -164.9868,
-          -165.68771,
-          -166.32681,
-          -166.90161,
-          -167.41226,
-          -167.87157,
-          -168.29335,
-          -168.66754,
-          -168.98378,
-          -169.2509,
-          -169.4796,
-          -169.66116,
-          -169.77701,
-          -169.82587,
-          -169.83142,
-          -169.80931,
-          -169.75426,
-          -169.66925,
-          -169.5425,
-          -169.35341,
-          -169.10524,
-          -168.79976,
-          -168.44327,
-          -168.038,
-          -167.57297,
-          -167.03877,
-          -166.43759,
-          -165.78273,
-          -165.08081,
-          -164.3312,
-          -163.52829,
-          -162.67029,
-          -161.74788,
-          -160.75853,
-          -159.72754,
-          -158.6738,
-          -157.58688,
-          -156.45558,
-          -155.28433,
-          -154.07695,
-          -152.82536,
-          -151.51056,
-          -150.12415,
-          -148.67023,
-          -147.16788,
-          -145.63748,
-          -144.06795,
-          -142.45238,
-          -140.80714,
-          -139.14084,
-          -137.45203,
-          -135.73586,
-          -133.97539,
-          -132.15741,
-          -130.29552,
-          -128.40445,
-          -126.47785,
-          -124.49853,
-          -122.45351,
-          -120.34395,
-          -118.18527,
-          -115.99495,
-          -113.78241,
-          -111.55314,
-          -109.2991,
-          -107.00596,
-          -104.67223,
-          -102.30397,
-          -99.90488,
-          -97.47171,
-          -95.00361,
-          -92.506134,
-          -89.98536,
-          -87.44046,
-          -84.874084,
-          -82.296844,
-          -79.70737,
-          -77.09339,
-          -74.44978,
-          -71.77964,
-          -69.082375,
-          -66.36017,
-          -63.622944,
-          -60.871613,
-          -58.099663,
-          -55.307274,
-          -52.495968,
-          -49.666935,
-          -46.82289,
-          -43.96654,
-          -41.099907,
-          -38.220226,
-          -35.32741,
-          -32.425083,
-          -29.511599,
-          -26.585,
-          -23.647612,
-          -20.70388,
-          -17.756165,
-          -14.805123,
-          -11.85097,
-          -8.892712,
-          -5.930369,
-          -2.9657445,
-          0.000002026614,
-          2.966458,
-          5.932406,
-          8.896602,
-          11.858889,
-          14.818292,
-          17.772556,
-          20.72101,
-          23.665106,
-          26.604008,
-          29.534195,
-          32.4537,
-          35.36164,
-          38.257435,
-          41.14215,
-          44.012333,
-          46.866848,
-          49.706726,
-          52.53005,
-          55.33761,
-          58.1258,
-          60.890137,
-          63.63554,
-          66.36543,
-          69.078476,
-          71.77778,
-          74.4646,
-          77.13611,
-          79.78509,
-          82.40156,
-          84.985214,
-          87.5459,
-          90.088036,
-          92.60573,
-          95.08797,
-          97.53207,
-          99.94335,
-          102.32546,
-          104.67908,
-          107.00479,
-          109.309975,
-          111.597855,
-          113.85306,
-          116.054726,
-          118.201706,
-          120.3048,
-          122.363235,
-          124.38007,
-          126.36498,
-          128.31339,
-          130.22171,
-          132.09464,
-          133.92822,
-          135.7253,
-          137.49615,
-          139.23105,
-          140.91756,
-          142.56248,
-          144.1641,
-          145.71724,
-          147.23174,
-          148.70735,
-          150.13391,
-          151.51299,
-          152.85274,
-          154.14565,
-          155.3834,
-          156.56331,
-          157.68895,
-          158.77213,
-          159.80724,
-          160.79427,
-          161.74103,
-          162.64256,
-          163.49521,
-          164.29268,
-          165.02477,
-          165.69748,
-          166.33171,
-          166.93294,
-          167.48285,
-          167.97095,
-          168.41432,
-          168.82025,
-          169.18002,
-          169.49666,
-          169.77225,
-          169.99078,
-          170.12791,
-          170.18242,
-          170.18167,
+          170.03418,
+          169.90648,
+          169.73459,
+          169.50983,
+          169.23651,
+          168.91483,
+          168.53853,
+          168.10303,
+          167.6099,
+          167.07329,
+          166.5123,
+          165.93628,
+          165.33684,
+          164.70067,
+          164.01935,
+          163.27939,
+          162.47229,
+          161.5973,
+          160.66054,
+          159.67494,
+          158.65184,
+          157.58524,
+          156.45177,
+          155.25429,
+          154.01125,
+          152.73001,
+          151.4108,
+          150.03773,
+          148.60394,
+          147.12512,
+          145.61838,
+          144.07964,
+          142.49358,
+          140.86472,
+          139.20071,
+          137.49675,
+          135.74687,
+          133.94963,
+          132.10344,
+          130.20752,
+          128.26582,
+          126.31013,
+          124.32369,
+          122.30259,
+          120.249596,
+          118.16639,
+          116.052666,
+          113.90361,
+          111.703636,
+          109.44444,
+          107.13517,
+          104.79102,
+          102.416,
+          100.009285,
+          97.58004,
+          95.13382,
+          92.66412,
+          90.15825,
+          87.61038,
+          85.02746,
+          82.41723,
+          79.78203,
+          77.1219,
+          74.44476,
+          71.75752,
+          69.05202,
+          66.3259,
+          63.58645,
+          60.834217,
+          58.063866,
+          55.275215,
+          52.47556,
+          49.663506,
+          46.830883,
+          43.980804,
+          41.119095,
+          38.243935,
+          35.35569,
+          32.456444,
+          29.543898,
+          26.617867,
+          23.682304,
+          20.738138,
+          17.786211,
+          14.829644,
+          11.869612,
+          8.905725,
+          5.938994,
+          2.9703112,
+          -0.0000074407567,
+          -2.971098,
+          -5.9411554,
+          -8.909255,
+          -11.874391,
+          -14.83434,
+          -17.788568,
+          -20.738068,
+          -23.681421,
+          -26.615656,
+          -29.54042,
+          -32.454304,
+          -35.35301,
+          -38.237183,
+          -41.11017,
+          -43.97234,
+          -46.82387,
+          -49.662632,
+          -52.48838,
+          -55.30581,
+          -58.112644,
+          -60.90098,
+          -63.66413,
+          -66.40004,
+          -69.115814,
+          -71.820946,
+          -74.514404,
+          -77.18576,
+          -79.827446,
+          -82.4392,
+          -85.021164,
+          -87.57425,
+          -90.10335,
+          -92.606384,
+          -95.07727,
+          -97.51781,
+          -99.92852,
+          -102.31042,
+          -104.66461,
+          -106.98845,
+          -109.27803,
+          -111.53027,
+          -113.74323,
+          -115.912895,
+          -118.03894,
+          -120.13139,
+          -122.20778,
+          -124.26487,
+          -126.28143,
+          -128.24818,
+          -130.16335,
+          -132.028,
+          -133.85579,
+          -135.6629,
+          -137.4467,
+          -139.18922,
+          -140.8817,
+          -142.52736,
+          -144.1269,
+          -145.68962,
+          -147.2203,
+          -148.70958,
+          -150.14886,
+          -151.5268,
+          -152.84299,
+          -154.10645,
+          -155.32114,
+          -156.49081,
+          -157.61794,
+          -158.69814,
+          -159.72832,
+          -160.71017,
+          -161.64507,
+          -162.52745,
+          -163.35048,
+          -164.12323,
+          -164.86316,
+          -165.57237,
+          -166.24207,
+          -166.86386,
+          -167.42584,
+          -167.92365,
+          -168.35379,
+          -168.71303,
+          -169.00995,
+          -169.25932,
+          -169.4708,
+          -169.6428,
+          -169.77953,
+          -169.87254,
+          -169.89864,
+          -169.85449,
+          -169.74991,
+          -169.59044,
+          -169.37799,
+          -169.12541,
+          -168.84244,
+          -168.51152,
+          -168.12042,
+          -167.6801,
+          -167.19527,
+          -166.657,
+          -166.07362,
+          -165.46228,
+          -164.81299,
+          -164.10695,
+          -163.33774,
+          -162.51222,
+          -161.63377,
+          -160.69841,
+          -159.70702,
+          -158.65323,
+          -157.54088,
+          -156.39519,
+          -155.23227,
+          -154.0343,
+          -152.77603,
+          -151.4679,
+          -150.12068,
+          -148.72289,
+          -147.27412,
+          -145.77432,
+          -144.22325,
+          -142.62726,
+          -140.98079,
+          -139.28601,
+          -137.54541,
+          -135.75073,
+          -133.91377,
+          -132.05742,
+          -130.1782,
+          -128.25337,
+          -126.27736,
+          -124.26044,
+          -122.20749,
+          -120.11545,
+          -117.98904,
+          -115.83922,
+          -113.665276,
+          -111.46337,
+          -109.22958,
+          -106.955086,
+          -104.6338,
+          -102.26818,
+          -99.86671,
+          -97.43989,
+          -94.99281,
+          -92.52332,
+          -90.028465,
+          -87.507904,
+          -84.96541,
+          -82.40315,
+          -79.82221,
+          -77.21556,
+          -74.57224,
+          -71.89619,
+          -69.19212,
+          -66.456406,
+          -63.696625,
+          -60.923225,
+          -58.13427,
+          -55.3312,
+          -52.51639,
+          -49.68416,
+          -46.835316,
+          -43.974834,
+          -41.101254,
+          -38.214268,
+          -35.315083,
+          -32.405346,
+          -29.488653,
+          -26.565128,
+          -23.632757,
+          -20.693024,
+          -17.74785,
+          -14.7974,
+          -11.842136,
+          -8.884247,
+          -5.9246397,
+          -2.9629672,
+          0.0000020245195,
+          2.9629953,
+          5.9259033,
+          8.889303,
+          11.852204,
+          14.811906,
+          17.766636,
+          20.717014,
+          23.662895,
+          26.60278,
+          29.536612,
+          32.464363,
+          35.38277,
+          38.286827,
+          41.17429,
+          44.045288,
+          46.903175,
+          49.748974,
+          52.57953,
+          55.39207,
+          58.188046,
+          60.97153,
+          63.73792,
+          66.47543,
+          69.180786,
+          71.85811,
+          74.51229,
+          77.14688,
+          79.75723,
+          82.34116,
+          84.904526,
+          87.455246,
+          89.99514,
+          92.51934,
+          95.02507,
+          97.50379,
+          99.93759,
+          102.31994,
+          104.66246,
+          106.975876,
+          109.2576,
+          111.5072,
+          113.728935,
+          115.9254,
+          118.0907,
+          120.21562,
+          122.30672,
+          124.36834,
+          126.39285,
+          128.37848,
+          130.32712,
+          132.22638,
+          134.0711,
+          135.88228,
+          137.6661,
+          139.4035,
+          141.08203,
+          142.7006,
+          144.25774,
+          145.75339,
+          147.20242,
+          148.62737,
+          150.0242,
+          151.37079,
+          152.66583,
+          153.93062,
+          155.17546,
+          156.39029,
+          157.57137,
+          158.71939,
+          159.81792,
+          160.84192,
+          161.78949,
+          162.67683,
+          163.5037,
+          164.2606,
+          164.95387,
+          165.59596,
+          166.20288,
+          166.7913,
+          167.34789,
+          167.85359,
+          168.31067,
+          168.72139,
+          169.09445,
+          169.42963,
+          169.71669,
+          169.94907,
+          170.10713,
+          170.1796,
+          170.18544,
         ]),
         "quartz::components::Targets": ([]),
       },
@@ -23114,365 +23115,365 @@
           4294967936,
         ]),
         "quartz::components::Arr": ([
-          2.9648705,
-          5.9280453,
-          8.888851,
-          11.846243,
-          14.799326,
-          17.7475,
-          20.689829,
-          23.6261,
-          26.555172,
-          29.47586,
-          32.38851,
-          35.292282,
-          38.18536,
-          41.065453,
-          43.930378,
-          46.781322,
-          49.61976,
-          52.443333,
-          55.254078,
-          58.054066,
-          60.839993,
-          63.61466,
-          66.37543,
-          69.11079,
-          71.8172,
-          74.49991,
-          77.15855,
-          79.78495,
-          82.38199,
-          84.95925,
-          87.514565,
-          90.043755,
-          92.55172,
-          95.04171,
-          97.50643,
-          99.934364,
-          102.32077,
-          104.66597,
-          106.969185,
-          109.2357,
-          111.3419,
-          113.56506,
-          115.77132,
-          117.961296,
-          120.12297,
-          122.25094,
-          124.345375,
-          126.39392,
-          128.38637,
-          130.32747,
-          132.22125,
-          134.07352,
-          135.8884,
-          137.66693,
-          139.40822,
-          141.09462,
-          142.71602,
-          144.28624,
-          145.82025,
-          147.31477,
-          148.75586,
-          150.13995,
-          151.47458,
-          152.77081,
-          154.02519,
-          155.23141,
-          156.3932,
-          157.51,
-          158.57602,
-          159.59853,
-          160.5873,
-          161.53462,
-          162.44171,
-          163.31895,
-          164.16318,
-          164.96182,
-          165.69894,
-          166.36165,
-          166.95067,
-          167.47108,
-          167.92302,
-          168.31921,
-          168.68002,
-          169.01076,
-          169.31543,
-          169.58307,
-          169.78261,
-          169.91107,
-          169.98645,
-          170.01074,
-          169.98468,
-          169.9207,
-          169.81726,
-          169.64943,
-          169.4123,
-          169.12968,
-          168.81024,
-          168.44742,
-          168.03163,
-          167.55745,
-          167.02751,
-          166.43748,
-          165.78609,
-          165.08139,
-          164.33063,
-          163.52847,
-          162.67052,
-          161.76675,
-          160.81448,
-          159.8152,
-          158.77946,
-          157.69626,
-          156.54796,
-          155.32956,
-          154.0468,
-          152.71266,
-          151.33902,
-          149.93329,
-          148.49353,
-          147.01794,
-          145.50865,
-          143.96213,
-          142.38168,
-          140.77293,
-          139.14018,
-          137.46999,
-          135.74597,
-          133.97984,
-          132.17033,
-          130.30084,
-          128.37007,
-          126.38459,
-          124.35849,
-          122.30046,
-          120.20001,
-          118.05822,
-          115.885445,
-          113.67468,
-          111.42747,
-          109.161514,
-          106.88531,
-          104.592575,
-          102.274864,
-          99.92716,
-          97.544304,
-          95.123405,
-          92.66022,
-          90.15141,
-          87.60474,
-          85.02927,
-          82.428116,
-          79.80304,
-          77.15654,
-          74.49291,
-          71.81193,
-          69.11347,
-          66.398796,
-          63.662273,
-          60.90154,
-          58.12165,
-          55.329113,
-          52.52382,
-          49.701504,
-          46.862263,
-          44.006355,
-          41.135777,
-          38.25199,
-          35.35384,
-          32.44235,
-          29.519278,
-          26.5882,
-          23.652061,
-          20.709759,
-          17.760876,
-          14.807476,
-          11.851168,
-          8.89154,
-          5.928695,
-          2.9642897,
-          -0.0000148471345,
-          -2.964071,
-          -5.9279714,
-          -8.8919935,
-          -11.855596,
-          -14.816515,
-          -17.773672,
-          -20.726023,
-          -23.673162,
-          -26.61467,
-          -29.547684,
-          -32.469044,
-          -35.37746,
-          -38.274002,
-          -41.159336,
-          -44.032463,
-          -46.891014,
-          -49.733356,
-          -52.555115,
-          -55.35362,
-          -58.13612,
-          -60.90919,
-          -63.669292,
-          -66.41149,
-          -69.137054,
-          -71.847305,
-          -74.53793,
-          -77.198494,
-          -79.82246,
-          -82.40926,
-          -84.96751,
-          -87.50785,
-          -90.02364,
-          -92.50973,
-          -94.97563,
-          -97.42745,
-          -99.86482,
-          -102.2843,
-          -104.673134,
-          -107.01903,
-          -109.33091,
-          -111.62036,
-          -113.88122,
-          -116.09678,
-          -118.252045,
-          -120.343994,
-          -122.38451,
-          -124.389404,
-          -126.368195,
-          -128.32727,
-          -130.25764,
-          -132.1415,
-          -133.97446,
-          -135.76205,
-          -137.50734,
-          -139.20406,
-          -140.84865,
-          -142.44708,
-          -144.00679,
-          -145.52544,
-          -147.00626,
-          -148.46744,
-          -149.9079,
-          -151.30441,
-          -152.64474,
-          -153.93196,
-          -155.16156,
-          -156.33493,
-          -157.47244,
-          -158.57607,
-          -159.62779,
-          -160.62398,
-          -161.56592,
-          -162.45338,
-          -163.29092,
-          -164.08572,
-          -164.84303,
-          -165.5499,
-          -166.2026,
-          -166.81273,
-          -167.36911,
-          -167.85155,
-          -168.2619,
-          -168.6199,
-          -168.93883,
-          -169.22339,
-          -169.47775,
-          -169.68404,
-          -169.82457,
-          -169.90846,
-          -169.94838,
-          -169.94447,
-          -169.88048,
-          -169.75664,
-          -169.58978,
-          -169.37387,
-          -169.09396,
-          -168.75871,
-          -168.38577,
-          -167.97049,
-          -167.4963,
-          -166.95993,
-          -166.36324,
-          -165.71104,
-          -165.01176,
-          -164.25598,
-          -163.44391,
-          -162.58324,
-          -161.67079,
-          -160.71182,
-          -159.69911,
-          -158.62408,
-          -157.50339,
-          -156.34712,
-          -155.15279,
-          -153.92778,
-          -152.67494,
-          -151.38788,
-          -150.0539,
-          -148.65634,
-          -147.19856,
-          -145.70074,
-          -144.17093,
-          -142.60014,
-          -140.97371,
-          -139.2901,
-          -137.56013,
-          -135.79044,
-          -133.98296,
-          -132.13979,
-          -130.27058,
-          -128.37859,
-          -126.446594,
-          -124.45332,
-          -122.40134,
-          -120.30472,
-          -118.16475,
-          -115.98626,
-          -113.779526,
-          -111.54104,
-          -109.26892,
-          -106.96807,
-          -104.63617,
-          -102.27634,
-          -99.89672,
-          -97.49056,
-          -95.04995,
-          -92.58114,
-          -90.08372,
-          -87.55568,
-          -85.00423,
-          -82.4298,
-          -79.82751,
-          -77.19964,
-          -74.551186,
-          -71.87925,
-          -69.18112,
-          -66.45708,
-          -63.71039,
-          -60.946846,
-          -58.16503,
-          -55.36588,
-          -52.552753,
-          -49.724747,
-          -46.881435,
-          -44.022053,
-          -41.14527,
-          -38.254272,
-          -35.354824,
-          -32.44842,
-          -29.53163,
-          -26.603966,
-          -23.669088,
-          -20.728453,
-          -17.781487,
-          -14.82892,
-          -11.871535,
-          -8.908841,
-          -5.940934,
-          -2.9704986,
+          2.9679577,
+          5.933265,
+          8.895414,
+          11.853283,
+          14.806276,
+          17.753664,
+          20.693932,
+          23.625345,
+          26.5468,
+          29.459532,
+          32.366714,
+          35.270847,
+          38.17102,
+          41.06449,
+          43.948853,
+          46.819614,
+          49.672768,
+          52.506145,
+          55.319862,
+          58.116932,
+          60.900738,
+          63.66857,
+          66.409836,
+          69.123665,
+          71.816635,
+          74.4914,
+          77.14767,
+          79.77649,
+          82.37253,
+          84.942726,
+          87.49635,
+          90.03096,
+          92.536415,
+          95.014465,
+          97.46941,
+          99.89723,
+          102.29261,
+          104.65292,
+          106.975266,
+          109.25709,
+          111.49977,
+          113.73015,
+          115.933716,
+          118.10625,
+          120.249596,
+          122.36489,
+          124.45124,
+          126.50279,
+          128.50034,
+          130.43082,
+          132.30092,
+          134.1264,
+          135.91061,
+          137.651,
+          139.35875,
+          141.0417,
+          142.69025,
+          144.2834,
+          145.80817,
+          147.2719,
+          148.68463,
+          150.04819,
+          151.36024,
+          152.63443,
+          153.88455,
+          155.09338,
+          156.25404,
+          157.38202,
+          158.4786,
+          159.52922,
+          160.53096,
+          161.50317,
+          162.44203,
+          163.31874,
+          164.13866,
+          164.91968,
+          165.65277,
+          166.33546,
+          166.97398,
+          167.55185,
+          168.0587,
+          168.50833,
+          168.89877,
+          169.22458,
+          169.50372,
+          169.74355,
+          169.93167,
+          170.07054,
+          170.1704,
+          170.22467,
+          170.21346,
+          170.13202,
+          169.99876,
+          169.81169,
+          169.55699,
+          169.24664,
+          168.89775,
+          168.50194,
+          168.04453,
+          167.53192,
+          166.96278,
+          166.32277,
+          165.62338,
+          164.8838,
+          164.10684,
+          163.29424,
+          162.43912,
+          161.54254,
+          160.61963,
+          159.6632,
+          158.65242,
+          157.57419,
+          156.42862,
+          155.23663,
+          154.0205,
+          152.77708,
+          151.48553,
+          150.13358,
+          148.7242,
+          147.26096,
+          145.74796,
+          144.19547,
+          142.60132,
+          140.95781,
+          139.26978,
+          137.53983,
+          135.77048,
+          133.96454,
+          132.11969,
+          130.2324,
+          128.30087,
+          126.32464,
+          124.301315,
+          122.23287,
+          120.13139,
+          118.01465,
+          115.878845,
+          113.70427,
+          111.48443,
+          109.21996,
+          106.91413,
+          104.57955,
+          102.22929,
+          99.860855,
+          97.4613,
+          95.02589,
+          92.55836,
+          90.06046,
+          87.53915,
+          84.99764,
+          82.43105,
+          79.83557,
+          77.20673,
+          74.546455,
+          71.86103,
+          69.15341,
+          66.42637,
+          63.68176,
+          60.9185,
+          58.136326,
+          55.33694,
+          52.52163,
+          49.68957,
+          46.839996,
+          43.97666,
+          41.10495,
+          38.22536,
+          35.335827,
+          32.43501,
+          29.521673,
+          26.596449,
+          23.660553,
+          20.715345,
+          17.763628,
+          14.808214,
+          11.850551,
+          8.890577,
+          5.9287834,
+          2.9651046,
+          -0.000014853011,
+          -2.9648595,
+          -5.9278193,
+          -8.887863,
+          -11.844091,
+          -14.796568,
+          -17.74605,
+          -20.690632,
+          -23.627789,
+          -26.557985,
+          -29.481085,
+          -32.394833,
+          -35.3001,
+          -38.200016,
+          -41.09256,
+          -43.972374,
+          -46.836376,
+          -49.68503,
+          -52.51804,
+          -55.332916,
+          -58.128647,
+          -60.901295,
+          -63.650703,
+          -66.38586,
+          -69.11388,
+          -71.82742,
+          -74.51387,
+          -77.17676,
+          -79.82062,
+          -82.43846,
+          -85.02885,
+          -87.59007,
+          -90.12069,
+          -92.62331,
+          -95.09275,
+          -97.529106,
+          -99.93267,
+          -102.29552,
+          -104.624985,
+          -106.93805,
+          -109.232475,
+          -111.48903,
+          -113.7007,
+          -115.874756,
+          -118.014465,
+          -120.115486,
+          -122.181305,
+          -124.222404,
+          -126.238106,
+          -128.224,
+          -130.17479,
+          -132.07867,
+          -133.92528,
+          -135.71457,
+          -137.45479,
+          -139.15862,
+          -140.83266,
+          -142.47356,
+          -144.07578,
+          -145.63768,
+          -147.16444,
+          -148.65924,
+          -150.1239,
+          -151.54417,
+          -152.89583,
+          -154.18192,
+          -155.40805,
+          -156.56165,
+          -157.6548,
+          -158.71053,
+          -159.72287,
+          -160.69345,
+          -161.62878,
+          -162.50972,
+          -163.33424,
+          -164.11667,
+          -164.84843,
+          -165.5241,
+          -166.1446,
+          -166.7112,
+          -167.23898,
+          -167.72609,
+          -168.1562,
+          -168.53146,
+          -168.85971,
+          -169.13512,
+          -169.35144,
+          -169.52252,
+          -169.6605,
+          -169.74936,
+          -169.77274,
+          -169.7461,
+          -169.69426,
+          -169.61739,
+          -169.49419,
+          -169.30087,
+          -169.03764,
+          -168.72617,
+          -168.37004,
+          -167.96274,
+          -167.51001,
+          -167.01477,
+          -166.46263,
+          -165.83835,
+          -165.14069,
+          -164.37897,
+          -163.5706,
+          -162.72142,
+          -161.82307,
+          -160.86998,
+          -159.87013,
+          -158.83612,
+          -157.75679,
+          -156.60626,
+          -155.38257,
+          -154.10005,
+          -152.77272,
+          -151.40903,
+          -150.0015,
+          -148.54738,
+          -147.0588,
+          -145.54987,
+          -144.02225,
+          -142.46712,
+          -140.88046,
+          -139.24974,
+          -137.55222,
+          -135.7831,
+          -133.96169,
+          -132.10408,
+          -130.20816,
+          -128.27429,
+          -126.30874,
+          -124.314644,
+          -122.286385,
+          -120.215546,
+          -118.11017,
+          -115.97531,
+          -113.80463,
+          -111.59762,
+          -109.357376,
+          -107.07476,
+          -104.7478,
+          -102.39463,
+          -100.020195,
+          -97.61132,
+          -95.1609,
+          -92.67084,
+          -90.142235,
+          -87.5774,
+          -84.987305,
+          -82.38546,
+          -79.76918,
+          -77.12719,
+          -74.46003,
+          -71.77898,
+          -69.08853,
+          -66.38364,
+          -63.66288,
+          -60.9266,
+          -58.168922,
+          -55.382286,
+          -52.568497,
+          -49.735226,
+          -46.883865,
+          -44.01346,
+          -41.127594,
+          -38.230835,
+          -35.327442,
+          -32.420895,
+          -29.50783,
+          -26.585379,
+          -23.65452,
+          -20.716314,
+          -17.772493,
+          -14.823057,
+          -11.86765,
+          -8.906654,
+          -5.940208,
+          -2.9704492,
           0.0,
         ]),
         "quartz::components::Targets": ([]),
@@ -23869,8 +23870,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -145.63748,
-            y: -87.50785,
+            x: -145.77432,
+            y: -87.59007,
             z: 0.01,
           ),
           rotation: (
@@ -23904,8 +23905,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -144.06795,
-            y: -90.02364,
+            x: -144.22325,
+            y: -90.12069,
             z: 0.01,
           ),
           rotation: (
@@ -23939,8 +23940,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -99.90488,
-            y: -137.50734,
+            x: -99.86671,
+            y: -137.45479,
             z: 0.01,
           ),
           rotation: (
@@ -23974,8 +23975,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -97.47171,
-            y: -139.20406,
+            x: -97.43989,
+            y: -139.15862,
             z: 0.01,
           ),
           rotation: (
@@ -24009,8 +24010,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -92.506134,
-            y: -142.44708,
+            x: -92.52332,
+            y: -142.47356,
             z: 0.01,
           ),
           rotation: (
@@ -24044,8 +24045,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -89.98536,
-            y: -144.00679,
+            x: -90.028465,
+            y: -144.07578,
             z: 0.01,
           ),
           rotation: (
@@ -24079,8 +24080,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -87.44046,
-            y: -145.52544,
+            x: -87.507904,
+            y: -145.63768,
             z: 0.01,
           ),
           rotation: (
@@ -24114,8 +24115,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -84.874084,
-            y: -147.00626,
+            x: -84.96541,
+            y: -147.16444,
             z: 0.01,
           ),
           rotation: (
@@ -24149,8 +24150,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -82.296844,
-            y: -148.46744,
+            x: -82.40315,
+            y: -148.65924,
             z: 0.01,
           ),
           rotation: (
@@ -24184,8 +24185,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -79.70737,
-            y: -149.9079,
+            x: -79.82221,
+            y: -150.1239,
             z: 0.01,
           ),
           rotation: (
@@ -24219,8 +24220,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -77.09339,
-            y: -151.30441,
+            x: -77.21556,
+            y: -151.54417,
             z: 0.01,
           ),
           rotation: (
@@ -24254,8 +24255,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -74.44978,
-            y: -152.64474,
+            x: -74.57224,
+            y: -152.89583,
             z: 0.01,
           ),
           rotation: (
@@ -24289,8 +24290,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -63.622944,
-            y: -157.47244,
+            x: -63.696625,
+            y: -157.6548,
             z: 0.01,
           ),
           rotation: (
@@ -24324,8 +24325,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -23.647612,
-            y: -168.2619,
+            x: -23.632757,
+            y: -168.1562,
             z: 0.01,
           ),
           rotation: (
@@ -24359,8 +24360,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -20.70388,
-            y: -168.6199,
+            x: -20.693024,
+            y: -168.53146,
             z: 0.01,
           ),
           rotation: (
@@ -24394,8 +24395,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -17.756165,
-            y: -168.93883,
+            x: -17.74785,
+            y: -168.85971,
             z: 0.01,
           ),
           rotation: (
@@ -24429,8 +24430,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -14.805123,
-            y: -169.22339,
+            x: -14.7974,
+            y: -169.13512,
             z: 0.01,
           ),
           rotation: (
@@ -24464,8 +24465,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -11.85097,
-            y: -169.47775,
+            x: -11.842136,
+            y: -169.35144,
             z: 0.01,
           ),
           rotation: (
@@ -24499,8 +24500,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -8.892712,
-            y: -169.68404,
+            x: -8.884247,
+            y: -169.52252,
             z: 0.01,
           ),
           rotation: (
@@ -24534,8 +24535,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -5.930369,
-            y: -169.82457,
+            x: -5.9246397,
+            y: -169.6605,
             z: 0.01,
           ),
           rotation: (
@@ -24569,8 +24570,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 29.534195,
-            y: -167.4963,
+            x: 29.536612,
+            y: -167.51001,
             z: 0.01,
           ),
           rotation: (
@@ -24604,8 +24605,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 32.4537,
-            y: -166.95993,
+            x: 32.464363,
+            y: -167.01477,
             z: 0.01,
           ),
           rotation: (
@@ -24639,8 +24640,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 55.33761,
-            y: -160.71182,
+            x: 55.39207,
+            y: -160.86998,
             z: 0.01,
           ),
           rotation: (
@@ -24674,8 +24675,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -2.9657445,
-            y: -169.90846,
+            x: -2.9629672,
+            y: -169.74936,
             z: 0.01,
           ),
           rotation: (
@@ -24709,8 +24710,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 0.000002026614,
-            y: -169.94838,
+            x: 0.0000020245195,
+            y: -169.77274,
             z: 0.01,
           ),
           rotation: (
@@ -24744,8 +24745,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 2.966458,
-            y: -169.94447,
+            x: 2.9629953,
+            y: -169.7461,
             z: 0.01,
           ),
           rotation: (
@@ -24779,8 +24780,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 5.932406,
-            y: -169.88048,
+            x: 5.9259033,
+            y: -169.69426,
             z: 0.01,
           ),
           rotation: (
@@ -24814,8 +24815,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 8.896602,
-            y: -169.75664,
+            x: 8.889303,
+            y: -169.61739,
             z: 0.01,
           ),
           rotation: (
@@ -24849,8 +24850,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 11.858889,
-            y: -169.58978,
+            x: 11.852204,
+            y: -169.49419,
             z: 0.01,
           ),
           rotation: (
@@ -24884,8 +24885,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 14.818292,
-            y: -169.37387,
+            x: 14.811906,
+            y: -169.30087,
             z: 0.01,
           ),
           rotation: (
@@ -24919,8 +24920,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 17.772556,
-            y: -169.09396,
+            x: 17.766636,
+            y: -169.03764,
             z: 0.01,
           ),
           rotation: (
@@ -24954,8 +24955,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 20.72101,
-            y: -168.75871,
+            x: 20.717014,
+            y: -168.72617,
             z: 0.01,
           ),
           rotation: (
@@ -24989,8 +24990,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 23.665106,
-            y: -168.38577,
+            x: 23.662895,
+            y: -168.37004,
             z: 0.01,
           ),
           rotation: (
@@ -25024,8 +25025,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 26.604008,
-            y: -167.97049,
+            x: 26.60278,
+            y: -167.96274,
             z: 0.01,
           ),
           rotation: (
@@ -25059,8 +25060,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 109.309975,
-            y: -130.27058,
+            x: 109.2576,
+            y: -130.20816,
             z: 0.01,
           ),
           rotation: (
@@ -25094,8 +25095,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 148.70735,
-            y: -82.4298,
+            x: 148.62737,
+            y: -82.38546,
             z: 0.01,
           ),
           rotation: (
@@ -25129,8 +25130,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 150.13391,
-            y: -79.82751,
+            x: 150.0242,
+            y: -79.76918,
             z: 0.01,
           ),
           rotation: (
@@ -25164,8 +25165,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -165.08081,
-            y: -41.159336,
+            x: -164.81299,
+            y: -41.09256,
             z: 0.01,
           ),
           rotation: (
@@ -25199,8 +25200,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 113.85306,
-            y: -126.446594,
+            x: 113.728935,
+            y: -126.30874,
             z: 0.01,
           ),
           rotation: (
@@ -25234,8 +25235,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 116.054726,
-            y: -124.45332,
+            x: 115.9254,
+            y: -124.314644,
             z: 0.01,
           ),
           rotation: (
@@ -25269,8 +25270,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 118.201706,
-            y: -122.40134,
+            x: 118.0907,
+            y: -122.286385,
             z: 0.01,
           ),
           rotation: (
@@ -25304,8 +25305,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 132.09464,
-            y: -106.96807,
+            x: 132.22638,
+            y: -107.07476,
             z: 0.01,
           ),
           rotation: (
@@ -25339,8 +25340,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 133.92822,
-            y: -104.63617,
+            x: 134.0711,
+            y: -104.7478,
             z: 0.01,
           ),
           rotation: (
@@ -25374,8 +25375,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 135.7253,
-            y: -102.27634,
+            x: 135.88228,
+            y: -102.39463,
             z: 0.01,
           ),
           rotation: (
@@ -25409,8 +25410,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 137.49615,
-            y: -99.89672,
+            x: 137.6661,
+            y: -100.020195,
             z: 0.01,
           ),
           rotation: (
@@ -25444,8 +25445,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 139.23105,
-            y: -97.49056,
+            x: 139.4035,
+            y: -97.61132,
             z: 0.01,
           ),
           rotation: (
@@ -25479,8 +25480,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 140.91756,
-            y: -95.04995,
+            x: 141.08203,
+            y: -95.1609,
             z: 0.01,
           ),
           rotation: (
@@ -25514,8 +25515,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 142.56248,
-            y: -92.58114,
+            x: 142.7006,
+            y: -92.67084,
             z: 0.01,
           ),
           rotation: (
@@ -25549,8 +25550,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 152.85274,
-            y: -74.551186,
+            x: 152.66583,
+            y: -74.46003,
             z: 0.01,
           ),
           rotation: (
@@ -25584,8 +25585,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 164.29268,
-            y: -44.022053,
+            x: 164.2606,
+            y: -44.01346,
             z: 0.01,
           ),
           rotation: (
@@ -25619,8 +25620,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 165.69748,
-            y: -38.254272,
+            x: 165.59596,
+            y: -38.230835,
             z: 0.01,
           ),
           rotation: (
@@ -25654,8 +25655,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 166.93294,
-            y: -32.44842,
+            x: 166.7913,
+            y: -32.420895,
             z: 0.01,
           ),
           rotation: (
@@ -25689,7 +25690,7 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 170.18167,
+            x: 170.18544,
             y: 0.0,
             z: 0.01,
           ),
@@ -25724,8 +25725,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -164.3312,
-            y: -44.032463,
+            x: -164.10695,
+            y: -43.972374,
             z: 0.01,
           ),
           rotation: (
@@ -25759,8 +25760,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -163.52829,
-            y: -46.891014,
+            x: -163.33774,
+            y: -46.836376,
             z: 0.01,
           ),
           rotation: (
@@ -25794,8 +25795,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -160.75853,
-            y: -55.35362,
+            x: -160.69841,
+            y: -55.332916,
             z: 0.01,
           ),
           rotation: (
@@ -25829,8 +25830,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -159.72754,
-            y: -58.13612,
+            x: -159.70702,
+            y: -58.128647,
             z: 0.01,
           ),
           rotation: (
@@ -25864,8 +25865,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -158.6738,
-            y: -60.90919,
+            x: -158.65323,
+            y: -60.901295,
             z: 0.01,
           ),
           rotation: (
@@ -25899,8 +25900,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -154.07695,
-            y: -71.847305,
+            x: -154.0343,
+            y: -71.82742,
             z: 0.01,
           ),
           rotation: (
@@ -25934,8 +25935,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -151.51056,
-            y: -77.198494,
+            x: -151.4679,
+            y: -77.17676,
             z: 0.01,
           ),
           rotation: (
@@ -25969,8 +25970,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -150.12415,
-            y: -79.82246,
+            x: -150.12068,
+            y: -79.82062,
             z: 0.01,
           ),
           rotation: (
@@ -26004,8 +26005,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -148.67023,
-            y: -82.40926,
+            x: -148.72289,
+            y: -82.43846,
             z: 0.01,
           ),
           rotation: (
@@ -26039,8 +26040,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -60.871613,
-            y: -158.57607,
+            x: -60.923225,
+            y: -158.71053,
             z: 0.01,
           ),
           rotation: (
@@ -26074,8 +26075,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -58.099663,
-            y: -159.62779,
+            x: -58.13427,
+            y: -159.72287,
             z: 0.01,
           ),
           rotation: (
@@ -26109,8 +26110,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -55.307274,
-            y: -160.62398,
+            x: -55.3312,
+            y: -160.69345,
             z: 0.01,
           ),
           rotation: (
@@ -26144,8 +26145,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 92.60573,
-            y: -142.60014,
+            x: 92.51934,
+            y: -142.46712,
             z: 0.01,
           ),
           rotation: (
@@ -26179,8 +26180,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 95.08797,
-            y: -140.97371,
+            x: 95.02507,
+            y: -140.88046,
             z: 0.01,
           ),
           rotation: (
@@ -26214,8 +26215,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -71.77964,
-            y: -153.93196,
+            x: -71.89619,
+            y: -154.18192,
             z: 0.01,
           ),
           rotation: (
@@ -26249,8 +26250,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -69.082375,
-            y: -155.16156,
+            x: -69.19212,
+            y: -155.40805,
             z: 0.01,
           ),
           rotation: (
@@ -26284,8 +26285,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -66.36017,
-            y: -156.33493,
+            x: -66.456406,
+            y: -156.56165,
             z: 0.01,
           ),
           rotation: (
@@ -26319,8 +26320,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 58.1258,
-            y: -159.69911,
+            x: 58.188046,
+            y: -159.87013,
             z: 0.01,
           ),
           rotation: (
@@ -26354,8 +26355,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 60.890137,
-            y: -158.62408,
+            x: 60.97153,
+            y: -158.83612,
             z: 0.01,
           ),
           rotation: (
@@ -26389,8 +26390,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 63.63554,
-            y: -157.50339,
+            x: 63.73792,
+            y: -157.75679,
             z: 0.01,
           ),
           rotation: (
@@ -26424,8 +26425,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 66.36543,
-            y: -156.34712,
+            x: 66.47543,
+            y: -156.60626,
             z: 0.01,
           ),
           rotation: (
@@ -26459,8 +26460,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 69.078476,
-            y: -155.15279,
+            x: 69.180786,
+            y: -155.38257,
             z: 0.01,
           ),
           rotation: (
@@ -26494,8 +26495,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 71.77778,
-            y: -153.92778,
+            x: 71.85811,
+            y: -154.10005,
             z: 0.01,
           ),
           rotation: (
@@ -26529,8 +26530,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 74.4646,
-            y: -152.67494,
+            x: 74.51229,
+            y: -152.77272,
             z: 0.01,
           ),
           rotation: (
@@ -26564,8 +26565,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 77.13611,
-            y: -151.38788,
+            x: 77.14688,
+            y: -151.40903,
             z: 0.01,
           ),
           rotation: (
@@ -26599,8 +26600,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 79.78509,
-            y: -150.0539,
+            x: 79.75723,
+            y: -150.0015,
             z: 0.01,
           ),
           rotation: (
@@ -26634,8 +26635,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 82.40156,
-            y: -148.65634,
+            x: 82.34116,
+            y: -148.54738,
             z: 0.01,
           ),
           rotation: (
@@ -26669,8 +26670,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 84.985214,
-            y: -147.19856,
+            x: 84.904526,
+            y: -147.0588,
             z: 0.01,
           ),
           rotation: (
@@ -26704,8 +26705,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -161.74788,
-            y: -52.555115,
+            x: -161.63377,
+            y: -52.51804,
             z: 0.01,
           ),
           rotation: (
@@ -26739,8 +26740,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 107.00479,
-            y: -132.13979,
+            x: 106.975876,
+            y: -132.10408,
             z: 0.01,
           ),
           rotation: (
@@ -26774,8 +26775,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 104.67908,
-            y: -133.98296,
+            x: 104.66246,
+            y: -133.96169,
             z: 0.01,
           ),
           rotation: (
@@ -26809,8 +26810,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 102.32546,
-            y: -135.79044,
+            x: 102.31994,
+            y: -135.7831,
             z: 0.01,
           ),
           rotation: (
@@ -26844,8 +26845,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 97.53207,
-            y: -139.2901,
+            x: 97.50379,
+            y: -139.24974,
             z: 0.01,
           ),
           rotation: (
@@ -26879,8 +26880,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -162.67029,
-            y: -49.733356,
+            x: -162.51222,
+            y: -49.68503,
             z: 0.01,
           ),
           rotation: (
@@ -26914,8 +26915,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -165.78273,
-            y: -38.274002,
+            x: -165.46228,
+            y: -38.200016,
             z: 0.01,
           ),
           rotation: (
@@ -26949,8 +26950,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -166.43759,
-            y: -35.37746,
+            x: -166.07362,
+            y: -35.3001,
             z: 0.01,
           ),
           rotation: (
@@ -26984,8 +26985,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -167.03877,
-            y: -32.469044,
+            x: -166.657,
+            y: -32.394833,
             z: 0.01,
           ),
           rotation: (
@@ -27019,8 +27020,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -167.57297,
-            y: -29.547684,
+            x: -167.19527,
+            y: -29.481085,
             z: 0.01,
           ),
           rotation: (
@@ -27054,8 +27055,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -168.038,
-            y: -26.61467,
+            x: -167.6801,
+            y: -26.557985,
             z: 0.01,
           ),
           rotation: (
@@ -27089,8 +27090,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -168.44327,
-            y: -23.673162,
+            x: -168.12042,
+            y: -23.627789,
             z: 0.01,
           ),
           rotation: (
@@ -27124,8 +27125,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -168.79976,
-            y: -20.726023,
+            x: -168.51152,
+            y: -20.690632,
             z: 0.01,
           ),
           rotation: (
@@ -27159,8 +27160,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -169.10524,
-            y: -17.773672,
+            x: -168.84244,
+            y: -17.74605,
             z: 0.01,
           ),
           rotation: (
@@ -27194,8 +27195,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -169.35341,
-            y: -14.816515,
+            x: -169.12541,
+            y: -14.796568,
             z: 0.01,
           ),
           rotation: (
@@ -27229,8 +27230,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -169.5425,
-            y: -11.855596,
+            x: -169.37799,
+            y: -11.844091,
             z: 0.01,
           ),
           rotation: (
@@ -27264,8 +27265,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -169.66925,
-            y: -8.8919935,
+            x: -169.59044,
+            y: -8.887863,
             z: 0.01,
           ),
           rotation: (
@@ -27299,8 +27300,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -169.75426,
-            y: -5.9279714,
+            x: -169.74991,
+            y: -5.9278193,
             z: 0.01,
           ),
           rotation: (
@@ -27334,8 +27335,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -169.80931,
-            y: -2.964071,
+            x: -169.85449,
+            y: -2.9648595,
             z: 0.01,
           ),
           rotation: (
@@ -27369,8 +27370,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 38.257435,
-            y: -165.71104,
+            x: 38.286827,
+            y: -165.83835,
             z: 0.01,
           ),
           rotation: (
@@ -27404,8 +27405,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 35.36164,
-            y: -166.36324,
+            x: 35.38277,
+            y: -166.46263,
             z: 0.01,
           ),
           rotation: (
@@ -27439,8 +27440,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 52.53005,
-            y: -161.67079,
+            x: 52.57953,
+            y: -161.82307,
             z: 0.01,
           ),
           rotation: (
@@ -27474,8 +27475,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 49.706726,
-            y: -162.58324,
+            x: 49.748974,
+            y: -162.72142,
             z: 0.01,
           ),
           rotation: (
@@ -27509,8 +27510,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 46.866848,
-            y: -163.44391,
+            x: 46.903175,
+            y: -163.5706,
             z: 0.01,
           ),
           rotation: (
@@ -27544,8 +27545,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 44.012333,
-            y: -164.25598,
+            x: 44.045288,
+            y: -164.37897,
             z: 0.01,
           ),
           rotation: (
@@ -27579,8 +27580,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 41.14215,
-            y: -165.01176,
+            x: 41.17429,
+            y: -165.14069,
             z: 0.01,
           ),
           rotation: (
@@ -27614,8 +27615,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -26.585,
-            y: -167.85155,
+            x: -26.565128,
+            y: -167.72609,
             z: 0.01,
           ),
           rotation: (
@@ -27649,8 +27650,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -29.511599,
-            y: -167.36911,
+            x: -29.488653,
+            y: -167.23898,
             z: 0.01,
           ),
           rotation: (
@@ -27684,8 +27685,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -32.425083,
-            y: -166.81273,
+            x: -32.405346,
+            y: -166.7112,
             z: 0.01,
           ),
           rotation: (
@@ -27719,8 +27720,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -35.32741,
-            y: -166.2026,
+            x: -35.315083,
+            y: -166.1446,
             z: 0.01,
           ),
           rotation: (
@@ -27754,8 +27755,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -38.220226,
-            y: -165.5499,
+            x: -38.214268,
+            y: -165.5241,
             z: 0.01,
           ),
           rotation: (
@@ -27789,8 +27790,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -41.099907,
-            y: -164.84303,
+            x: -41.101254,
+            y: -164.84843,
             z: 0.01,
           ),
           rotation: (
@@ -27824,8 +27825,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -43.96654,
-            y: -164.08572,
+            x: -43.974834,
+            y: -164.11667,
             z: 0.01,
           ),
           rotation: (
@@ -27859,8 +27860,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -46.82289,
-            y: -163.29092,
+            x: -46.835316,
+            y: -163.33424,
             z: 0.01,
           ),
           rotation: (
@@ -27894,8 +27895,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -49.666935,
-            y: -162.45338,
+            x: -49.68416,
+            y: -162.50972,
             z: 0.01,
           ),
           rotation: (
@@ -27929,8 +27930,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -52.495968,
-            y: -161.56592,
+            x: -52.51639,
+            y: -161.62878,
             z: 0.01,
           ),
           rotation: (
@@ -27964,8 +27965,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -95.00361,
-            y: -140.84865,
+            x: -94.99281,
+            y: -140.83266,
             z: 0.01,
           ),
           rotation: (
@@ -27999,8 +28000,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -102.30397,
-            y: -135.76205,
+            x: -102.26818,
+            y: -135.71457,
             z: 0.01,
           ),
           rotation: (
@@ -28034,8 +28035,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -104.67223,
-            y: -133.97446,
+            x: -104.6338,
+            y: -133.92528,
             z: 0.01,
           ),
           rotation: (
@@ -28069,8 +28070,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -107.00596,
-            y: -132.1415,
+            x: -106.955086,
+            y: -132.07867,
             z: 0.01,
           ),
           rotation: (
@@ -28104,8 +28105,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -109.2991,
-            y: -130.25764,
+            x: -109.22958,
+            y: -130.17479,
             z: 0.01,
           ),
           rotation: (
@@ -28139,8 +28140,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -111.55314,
-            y: -128.32727,
+            x: -111.46337,
+            y: -128.224,
             z: 0.01,
           ),
           rotation: (
@@ -28174,8 +28175,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -113.78241,
-            y: -126.368195,
+            x: -113.665276,
+            y: -126.238106,
             z: 0.01,
           ),
           rotation: (
@@ -28209,8 +28210,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -115.99495,
-            y: -124.389404,
+            x: -115.83922,
+            y: -124.222404,
             z: 0.01,
           ),
           rotation: (
@@ -28244,8 +28245,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -118.18527,
-            y: -122.38451,
+            x: -117.98904,
+            y: -122.181305,
             z: 0.01,
           ),
           rotation: (
@@ -28279,8 +28280,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -120.34395,
-            y: -120.343994,
+            x: -120.11545,
+            y: -120.115486,
             z: 0.01,
           ),
           rotation: (
@@ -28314,8 +28315,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -122.45351,
-            y: -118.252045,
+            x: -122.20749,
+            y: -118.014465,
             z: 0.01,
           ),
           rotation: (
@@ -28349,8 +28350,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -124.49853,
-            y: -116.09678,
+            x: -124.26044,
+            y: -115.874756,
             z: 0.01,
           ),
           rotation: (
@@ -28384,8 +28385,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -137.53796,
-            y: 99.92716,
+            x: -137.4467,
+            y: 99.860855,
             z: 0.01,
           ),
           rotation: (
@@ -28419,8 +28420,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -163.42813,
-            y: 46.862263,
+            x: -163.35048,
+            y: 46.839996,
             z: 0.01,
           ),
           rotation: (
@@ -28454,8 +28455,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -139.30777,
-            y: 97.544304,
+            x: -139.18922,
+            y: 97.4613,
             z: 0.01,
           ),
           rotation: (
@@ -28489,8 +28490,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -128.18266,
-            y: 111.42747,
+            x: -128.24818,
+            y: 111.48443,
             z: 0.01,
           ),
           rotation: (
@@ -28524,8 +28525,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 161.40399,
-            y: 52.443333,
+            x: 161.5973,
+            y: 52.506145,
             z: 0.01,
           ),
           rotation: (
@@ -28559,8 +28560,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 157.4518,
-            y: 63.61466,
+            x: 157.58524,
+            y: 63.66857,
             z: 0.01,
           ),
           rotation: (
@@ -28594,8 +28595,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -169.83142,
-            y: -0.0000148471345,
+            x: -169.89864,
+            y: -0.000014853011,
             z: 0.01,
           ),
           rotation: (
@@ -28629,8 +28630,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -150.08768,
-            y: 79.80304,
+            x: -150.14886,
+            y: 79.83557,
             z: 0.01,
           ),
           rotation: (
@@ -28664,8 +28665,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -164.23402,
-            y: 44.006355,
+            x: -164.12323,
+            y: 43.97666,
             z: 0.01,
           ),
           rotation: (
@@ -28699,8 +28700,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -166.32681,
-            y: 35.35384,
+            x: -166.24207,
+            y: 35.335827,
             z: 0.01,
           ),
           rotation: (
@@ -28734,8 +28735,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -155.23143,
-            y: 69.11347,
+            x: -155.32114,
+            y: 69.15341,
             z: 0.01,
           ),
           rotation: (
@@ -28769,8 +28770,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 169.757,
-            y: 5.9280453,
+            x: 169.90648,
+            y: 5.933265,
             z: 0.01,
           ),
           rotation: (
@@ -28804,8 +28805,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 165.39894,
-            y: 38.18536,
+            x: 165.33684,
+            y: 38.17102,
             z: 0.01,
           ),
           rotation: (
@@ -28839,8 +28840,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 164.70451,
-            y: 41.065453,
+            x: 164.70067,
+            y: 41.06449,
             z: 0.01,
           ),
           rotation: (
@@ -28874,8 +28875,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 159.50223,
-            y: 58.054066,
+            x: 159.67494,
+            y: 58.116932,
             z: 0.01,
           ),
           rotation: (
@@ -28909,8 +28910,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 166.03711,
-            y: 35.292282,
+            x: 165.93628,
+            y: 35.270847,
             z: 0.01,
           ),
           rotation: (
@@ -28944,8 +28945,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -142.45238,
-            y: -92.50973,
+            x: -142.62726,
+            y: -92.62331,
             z: 0.01,
           ),
           rotation: (
@@ -28979,8 +28980,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -137.45203,
-            y: -99.86482,
+            x: -137.54541,
+            y: -99.93267,
             z: 0.01,
           ),
           rotation: (
@@ -29014,8 +29015,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -132.15741,
-            y: -107.01903,
+            x: -132.05742,
+            y: -106.93805,
             z: 0.01,
           ),
           rotation: (
@@ -29049,8 +29050,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -126.47785,
-            y: -113.88122,
+            x: -126.27736,
+            y: -113.7007,
             z: 0.01,
           ),
           rotation: (
@@ -29084,8 +29085,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 162.2989,
-            y: 49.61976,
+            x: 162.47229,
+            y: 49.672768,
             z: 0.01,
           ),
           rotation: (
@@ -29119,8 +29120,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 166.62444,
-            y: 32.38851,
+            x: 166.5123,
+            y: 32.366714,
             z: 0.01,
           ),
           rotation: (
@@ -29154,8 +29155,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 168.10841,
-            y: 23.6261,
+            x: 168.10303,
+            y: 23.625345,
             z: 0.01,
           ),
           rotation: (
@@ -29189,8 +29190,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 167.66275,
-            y: 26.555172,
+            x: 167.6099,
+            y: 26.5468,
             z: 0.01,
           ),
           rotation: (
@@ -29224,8 +29225,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -157.56972,
-            y: 63.662273,
+            x: -157.61794,
+            y: 63.68176,
             z: 0.01,
           ),
           rotation: (
@@ -29259,8 +29260,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -164.9868,
-            y: 41.135777,
+            x: -164.86316,
+            y: 41.10495,
             z: 0.01,
           ),
           rotation: (
@@ -29294,8 +29295,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -160.68744,
-            y: 55.329113,
+            x: -160.71017,
+            y: 55.33694,
             z: 0.01,
           ),
           rotation: (
@@ -29329,8 +29330,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -152.73322,
-            y: 74.49291,
+            x: -152.84299,
+            y: 74.546455,
             z: 0.01,
           ),
           rotation: (
@@ -29364,8 +29365,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -169.82587,
-            y: 2.9642897,
+            x: -169.87254,
+            y: 2.9651046,
             z: 0.01,
           ),
           rotation: (
@@ -29399,8 +29400,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -161.65181,
-            y: 52.52382,
+            x: -161.64507,
+            y: 52.52163,
             z: 0.01,
           ),
           rotation: (
@@ -29434,8 +29435,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 158.49359,
-            y: 60.839993,
+            x: 158.65184,
+            y: 60.900738,
             z: 0.01,
           ),
           rotation: (
@@ -29469,8 +29470,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -159.68799,
-            y: 58.12165,
+            x: -159.72832,
+            y: 58.136326,
             z: 0.01,
           ),
           rotation: (
@@ -29504,8 +29505,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -130.09369,
-            y: 109.161514,
+            x: -130.16335,
+            y: 109.21996,
             z: 0.01,
           ),
           rotation: (
@@ -29539,8 +29540,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -141.02628,
-            y: 95.123405,
+            x: -140.8817,
+            y: 95.02589,
             z: 0.01,
           ),
           rotation: (
@@ -29574,8 +29575,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -162.56648,
-            y: 49.701504,
+            x: -162.52745,
+            y: 49.68957,
             z: 0.01,
           ),
           rotation: (
@@ -29609,8 +29610,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -131.9924,
-            y: 106.88531,
+            x: -132.028,
+            y: 106.91413,
             z: 0.01,
           ),
           rotation: (
@@ -29644,8 +29645,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -144.27246,
-            y: 90.15141,
+            x: -144.1269,
+            y: 90.06046,
             z: 0.01,
           ),
           rotation: (
@@ -29679,8 +29680,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -167.41226,
-            y: 29.519278,
+            x: -167.42584,
+            y: 29.521673,
             z: 0.01,
           ),
           rotation: (
@@ -29714,8 +29715,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -167.87157,
-            y: 26.5882,
+            x: -167.92365,
+            y: 26.596449,
             z: 0.01,
           ),
           rotation: (
@@ -29749,8 +29750,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -168.66754,
-            y: 20.709759,
+            x: -168.71303,
+            y: 20.715345,
             z: 0.01,
           ),
           rotation: (
@@ -29784,8 +29785,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -124.27194,
-            y: 115.885445,
+            x: -124.26487,
+            y: 115.878845,
             z: 0.01,
           ),
           rotation: (
@@ -29819,8 +29820,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 169.60936,
-            y: 8.888851,
+            x: 169.73459,
+            y: 8.895414,
             z: 0.01,
           ),
           rotation: (
@@ -29854,8 +29855,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -102.29195,
-            y: 135.74597,
+            x: -102.31042,
+            y: 135.77048,
             z: 0.01,
           ),
           rotation: (
@@ -29889,8 +29890,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -99.87778,
-            y: 137.46999,
+            x: -99.92852,
+            y: 137.53983,
             z: 0.01,
           ),
           rotation: (
@@ -29924,8 +29925,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 133.96632,
-            y: 104.66597,
+            x: 133.94963,
+            y: 104.65292,
             z: 0.01,
           ),
           rotation: (
@@ -29959,8 +29960,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 151.43216,
-            y: 77.15855,
+            x: 151.4108,
+            y: 77.14767,
             z: 0.01,
           ),
           rotation: (
@@ -29994,8 +29995,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 139.25359,
-            y: 97.50643,
+            x: 139.20071,
+            y: 97.46941,
             z: 0.01,
           ),
           rotation: (
@@ -30029,8 +30030,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 155.22534,
-            y: 69.11079,
+            x: 155.25429,
+            y: 69.123665,
             z: 0.01,
           ),
           rotation: (
@@ -30064,8 +30065,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 148.62102,
-            y: 82.38199,
+            x: 148.60394,
+            y: 82.37253,
             z: 0.01,
           ),
           rotation: (
@@ -30099,8 +30100,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 144.10011,
-            y: 90.043755,
+            x: 144.07964,
+            y: 90.03096,
             z: 0.01,
           ),
           rotation: (
@@ -30134,8 +30135,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 77.18015,
-            y: 151.47458,
+            x: 77.1219,
+            y: 151.36024,
             z: 0.01,
           ),
           rotation: (
@@ -30169,8 +30170,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 60.871616,
-            y: 158.57602,
+            x: 60.834217,
+            y: 158.4786,
             z: 0.01,
           ),
           rotation: (
@@ -30204,8 +30205,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 130.18204,
-            y: 109.2357,
+            x: 130.20752,
+            y: 109.25709,
             z: 0.01,
           ),
           rotation: (
@@ -30239,8 +30240,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 87.617645,
-            y: 145.82025,
+            x: 87.61038,
+            y: 145.80817,
             z: 0.01,
           ),
           rotation: (
@@ -30274,8 +30275,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 79.83082,
-            y: 150.13995,
+            x: 79.78203,
+            y: 150.04819,
             z: 0.01,
           ),
           rotation: (
@@ -30309,8 +30310,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 69.11347,
-            y: 155.23141,
+            x: 69.05202,
+            y: 155.09338,
             z: 0.01,
           ),
           rotation: (
@@ -30344,8 +30345,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 90.16003,
-            y: 144.28624,
+            x: 90.15825,
+            y: 144.2834,
             z: 0.01,
           ),
           rotation: (
@@ -30379,8 +30380,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 118.05634,
-            y: 122.25094,
+            x: 118.16639,
+            y: 122.36489,
             z: 0.01,
           ),
           rotation: (
@@ -30414,8 +30415,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 111.60456,
-            y: 128.38637,
+            x: 111.703636,
+            y: 128.50034,
             z: 0.01,
           ),
           rotation: (
@@ -30449,8 +30450,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 104.7497,
-            y: 134.07352,
+            x: 104.79102,
+            y: 134.1264,
             z: 0.01,
           ),
           rotation: (
@@ -30484,8 +30485,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 95.16951,
-            y: 141.09462,
+            x: 95.13382,
+            y: 141.0417,
             z: 0.01,
           ),
           rotation: (
@@ -30519,8 +30520,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -35.37739,
-            y: 166.43748,
+            x: -35.35301,
+            y: 166.32277,
             z: 0.01,
           ),
           rotation: (
@@ -30554,8 +30555,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -84.88086,
-            y: 147.01794,
+            x: -85.021164,
+            y: 147.26096,
             z: 0.01,
           ),
           rotation: (
@@ -30589,8 +30590,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -113.79721,
-            y: 126.38459,
+            x: -113.74323,
+            y: 126.32464,
             z: 0.01,
           ),
           rotation: (
@@ -30624,8 +30625,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -71.83322,
-            y: 154.0468,
+            x: -71.820946,
+            y: 154.0205,
             z: 0.01,
           ),
           rotation: (
@@ -30659,8 +30660,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -20.727322,
-            y: 168.81024,
+            x: -20.738068,
+            y: 168.89775,
             z: 0.01,
           ),
           rotation: (
@@ -30694,8 +30695,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 2.9671004,
-            y: 169.98645,
+            x: 2.9703112,
+            y: 170.1704,
             z: 0.01,
           ),
           rotation: (
@@ -30729,8 +30730,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 46.830948,
-            y: 163.31895,
+            x: 46.830883,
+            y: 163.31874,
             z: 0.01,
           ),
           rotation: (
@@ -30764,8 +30765,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -29.544922,
-            y: 167.55745,
+            x: -29.54042,
+            y: 167.53192,
             z: 0.01,
           ),
           rotation: (
@@ -30799,8 +30800,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -41.15943,
-            y: 165.08139,
+            x: -41.11017,
+            y: 164.8838,
             z: 0.01,
           ),
           rotation: (
@@ -30834,8 +30835,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -52.561234,
-            y: 161.76675,
+            x: -52.48838,
+            y: 161.54254,
             z: 0.01,
           ),
           rotation: (
@@ -30869,8 +30870,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -168.98378,
-            y: 17.760876,
+            x: -169.00995,
+            y: 17.763628,
             z: 0.01,
           ),
           rotation: (
@@ -30904,8 +30905,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -169.2509,
-            y: 14.807476,
+            x: -169.25932,
+            y: 14.808214,
             z: 0.01,
           ),
           rotation: (
@@ -30939,8 +30940,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -111.59044,
-            y: 128.37007,
+            x: -111.53027,
+            y: 128.30087,
             z: 0.01,
           ),
           rotation: (
@@ -30974,8 +30975,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -55.372902,
-            y: 160.81448,
+            x: -55.30581,
+            y: 160.61963,
             z: 0.01,
           ),
           rotation: (
@@ -31009,8 +31010,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 43.987373,
-            y: 164.16318,
+            x: 43.980804,
+            y: 164.13866,
             z: 0.01,
           ),
           rotation: (
@@ -31044,8 +31045,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 35.36125,
-            y: 166.36165,
+            x: 35.35569,
+            y: 166.33546,
             z: 0.01,
           ),
           rotation: (
@@ -31079,8 +31080,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 26.596378,
-            y: 167.92302,
+            x: 26.617867,
+            y: 168.0587,
             z: 0.01,
           ),
           rotation: (
@@ -31114,8 +31115,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 17.763739,
-            y: 169.01076,
+            x: 17.786211,
+            y: 169.22458,
             z: 0.01,
           ),
           rotation: (
@@ -31149,8 +31150,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -82.31134,
-            y: 148.49353,
+            x: -82.4392,
+            y: 148.7242,
             z: 0.01,
           ),
           rotation: (
@@ -31184,8 +31185,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -2.9671047,
-            y: 169.98468,
+            x: -2.971098,
+            y: 170.21346,
             z: 0.01,
           ),
           rotation: (
@@ -31219,8 +31220,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -11.863044,
-            y: 169.64943,
+            x: -11.874391,
+            y: 169.81169,
             z: 0.01,
           ),
           rotation: (
@@ -31254,8 +31255,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -92.463745,
-            y: 142.38168,
+            x: -92.606384,
+            y: 142.60132,
             z: 0.01,
           ),
           rotation: (
@@ -31289,8 +31290,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -130.29552,
-            y: -109.33091,
+            x: -130.1782,
+            y: -109.232475,
             z: 0.01,
           ),
           rotation: (
@@ -31324,8 +31325,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: -135.73586,
-            y: -102.2843,
+            x: -135.75073,
+            y: -102.29552,
             z: 0.01,
           ),
           rotation: (
@@ -31385,7 +31386,7 @@
         "quartz::components::WhiteHole": (
           bh: 4294967778,
           bh_parent: 4294967767,
-          link_types: (0, 4),
+          link_types: (0, 5),
           open: false,
         ),
       },
@@ -36054,8 +36055,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 1749.4159,
-            y: -718.3753,
+            x: 1746.8358,
+            y: -717.0853,
             z: 0.006,
           ),
           rotation: (
@@ -36065,8 +36066,8 @@
             w: 1.0,
           ),
           scale: (
-            x: 12.035158,
-            y: 12.035158,
+            x: 13.72217,
+            y: 13.72217,
             z: 1.0,
           ),
         ),
@@ -36080,7 +36081,7 @@
         "quartz::components::WhiteHole": (
           bh: 4294968289,
           bh_parent: 4294968309,
-          link_types: (0, 1),
+          link_types: (0, 4),
           open: false,
         ),
       },
@@ -36089,8 +36090,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 1714.7266,
-            y: -682.9095,
+            x: 1693.8877,
+            y: -688.4665,
             z: 0.08099999,
           ),
           rotation: (
@@ -36100,8 +36101,8 @@
             w: 1.0,
           ),
           scale: (
-            x: 7.9558873,
-            y: 7.9558873,
+            x: 10.932877,
+            y: 10.932877,
             z: 1.0,
           ),
         ),
@@ -36786,8 +36787,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 1695.2955,
-            y: -668.99133,
+            x: 1687.7134,
+            y: -660.58984,
             z: 0.07999999,
           ),
           rotation: (
@@ -36797,8 +36798,8 @@
             w: 1.0,
           ),
           scale: (
-            x: 53.039246,
-            y: 53.039246,
+            x: 63.45868,
+            y: 63.45868,
             z: 1.0,
           ),
         ),
@@ -36811,7 +36812,7 @@
         "quartz::components::Vertices": (4),
         "quartz::components::Order": (0),
         "quartz::components::Number": (0.0),
-        "quartz::components::Op": ("div(1)"),
+        "quartz::components::Op": ("limiter(0.1,0.1)"),
         "quartz::components::Holes": ([
           4294968289,
         ]),
@@ -38685,366 +38686,366 @@
           4294968360,
         ]),
         "quartz::components::Arr": ([
-          170.19826,
-          170.24458,
-          170.24965,
-          170.21606,
-          170.15984,
-          170.09685,
-          170.04556,
-          170.01599,
-          170.00452,
-          170.00314,
-          169.99318,
-          169.9717,
-          169.95558,
-          169.93958,
-          169.92433,
-          169.91812,
-          169.91307,
-          169.91241,
-          169.91203,
-          169.9069,
-          169.91473,
-          169.93538,
-          169.9472,
-          169.95493,
-          169.96739,
-          169.97276,
-          169.97346,
-          169.96918,
-          169.95915,
-          169.95874,
-          169.9615,
-          169.9594,
-          169.96599,
-          169.98509,
-          170.01962,
-          170.06967,
-          170.12392,
-          170.16504,
-          170.18384,
-          170.18655,
-          170.18123,
-          170.19058,
-          170.1961,
-          170.19394,
-          170.19592,
-          170.20056,
-          170.19685,
-          170.19415,
-          170.19783,
-          170.19818,
-          170.18556,
-          170.16408,
-          170.13802,
-          170.1065,
-          170.06665,
-          170.02838,
-          170.01448,
-          170.01906,
-          170.01337,
-          169.99179,
-          169.97159,
-          169.96567,
-          169.9746,
-          169.98177,
-          169.96898,
-          169.94197,
-          169.91927,
-          169.91495,
-          169.93002,
-          169.94995,
-          169.97353,
-          170.00253,
-          170.0207,
-          170.03165,
-          170.04312,
-          170.049,
-          170.0613,
-          170.08405,
-          170.09494,
-          170.07848,
-          170.03894,
-          169.9928,
-          169.96194,
-          169.94392,
-          169.92383,
-          169.90955,
-          169.90729,
-          169.91585,
-          169.93272,
-          169.94435,
-          169.93524,
-          169.91602,
-          169.90715,
-          169.90268,
-          169.89395,
-          169.89038,
-          169.89517,
-          169.89642,
-          169.90186,
-          169.93271,
-          169.97557,
-          170.00665,
-          170.03444,
-          170.07059,
-          170.10602,
-          170.13185,
-          170.14667,
-          170.14865,
-          170.13939,
-          170.12221,
-          170.11078,
-          170.1155,
-          170.13065,
-          170.15625,
-          170.19464,
-          170.23589,
-          170.25497,
-          170.24625,
-          170.2231,
-          170.19028,
-          170.15456,
-          170.11989,
-          170.09827,
-          170.10118,
-          170.11565,
-          170.12328,
-          170.12018,
-          170.11478,
-          170.11282,
-          170.10994,
-          170.1063,
-          170.11063,
-          170.11533,
-          170.09943,
-          170.0576,
-          170.01036,
-          169.98546,
-          169.9917,
-          170.01424,
-          170.03374,
-          170.05276,
-          170.07413,
-          170.08638,
-          170.0976,
-          170.12683,
-          170.17522,
-          170.22313,
-          170.24637,
-          170.24536,
-          170.23083,
-          170.21005,
-          170.19473,
-          170.18188,
-          170.1631,
-          170.14217,
-          170.11702,
-          170.07938,
-          170.03207,
-          169.98569,
-          169.94435,
-          169.8987,
-          169.85747,
-          169.85095,
-          169.87769,
-          169.9112,
-          169.94702,
-          169.98213,
-          170.00778,
-          170.0276,
-          170.02841,
-          170.00235,
-          169.97589,
-          169.9663,
-          169.95772,
-          169.93668,
-          169.90869,
-          169.87874,
-          169.8513,
-          169.83008,
-          169.81497,
-          169.81642,
-          169.84044,
-          169.87527,
-          169.9058,
-          169.93024,
-          169.95331,
-          169.97238,
-          169.9921,
-          170.02022,
-          170.05618,
-          170.08765,
-          170.09903,
-          170.09782,
-          170.10272,
-          170.11443,
-          170.11748,
-          170.09448,
-          170.0545,
-          170.02368,
-          170.01227,
-          170.02188,
-          170.03511,
-          170.02689,
-          170.0022,
-          169.97427,
-          169.95065,
-          169.94193,
-          169.9465,
-          169.95279,
-          169.9511,
-          169.943,
-          169.93748,
-          169.94127,
-          169.95222,
-          169.96547,
-          169.98026,
-          169.99388,
-          170.01581,
-          170.04971,
-          170.07663,
-          170.08673,
-          170.09145,
-          170.10045,
-          170.1108,
-          170.11609,
-          170.10616,
-          170.08197,
-          170.06636,
-          170.06227,
-          170.05598,
-          170.05777,
-          170.08127,
-          170.11748,
-          170.15092,
-          170.18045,
-          170.20189,
-          170.19936,
-          170.17105,
-          170.12328,
+          169.88893,
+          169.88214,
+          169.86513,
+          169.85425,
+          169.8623,
+          169.87244,
+          169.87317,
+          169.86966,
+          169.87186,
+          169.88435,
+          169.91266,
+          169.95395,
+          169.99672,
+          170.03038,
+          170.03896,
+          170.01831,
+          169.985,
+          169.96608,
+          169.96405,
+          169.9548,
+          169.93881,
+          169.92766,
+          169.92352,
+          169.94006,
+          169.97214,
+          170.00201,
+          170.02446,
+          170.02496,
+          170.01306,
+          170.02148,
+          170.04587,
           170.0675,
-          170.0286,
-          170.01183,
-          170.00531,
-          170.00227,
-          170.0005,
-          169.99866,
-          169.99196,
-          169.9849,
-          169.97983,
-          169.96681,
-          169.94453,
-          169.92348,
-          169.90991,
+          170.08676,
+          170.0936,
+          170.0769,
+          170.03964,
+          169.9859,
+          169.93013,
+          169.8913,
+          169.87271,
+          169.8761,
+          169.89885,
+          169.9268,
+          169.9569,
+          169.9861,
+          170.01288,
+          170.03838,
+          170.05255,
+          170.05997,
+          170.07059,
+          170.07225,
+          170.0523,
+          170.02142,
+          170.00237,
+          169.99777,
+          170.00249,
+          170.02219,
+          170.04979,
+          170.08006,
+          170.12288,
+          170.17755,
+          170.22559,
+          170.24667,
+          170.24028,
+          170.22557,
+          170.2208,
+          170.22603,
+          170.22472,
+          170.2057,
+          170.1806,
+          170.1625,
+          170.14911,
+          170.13324,
+          170.10558,
+          170.07755,
+          170.06828,
+          170.07243,
+          170.07098,
+          170.04762,
+          170.01054,
+          169.98402,
+          169.97421,
+          169.97667,
+          169.99805,
+          170.04295,
+          170.10341,
+          170.16092,
+          170.2002,
+          170.21631,
+          170.20262,
+          170.16692,
+          170.13757,
+          170.11958,
+          170.10152,
+          170.0878,
+          170.08177,
+          170.0859,
+          170.09348,
+          170.0837,
+          170.05534,
+          170.03477,
+          170.04024,
+          170.06865,
+          170.10233,
+          170.12616,
+          170.1474,
+          170.17416,
+          170.19623,
+          170.1972,
+          170.18288,
+          170.16539,
+          170.14972,
+          170.13861,
+          170.13226,
+          170.12738,
+          170.11137,
+          170.09125,
+          170.08083,
+          170.06633,
+          170.04419,
+          170.0384,
+          170.0553,
+          170.08717,
+          170.13326,
+          170.1743,
+          170.19049,
+          170.18925,
+          170.1809,
+          170.16193,
+          170.12602,
+          170.07884,
+          170.03676,
+          170.00461,
+          169.96399,
+          169.91782,
+          169.88559,
+          169.86159,
+          169.84465,
+          169.84756,
+          169.87192,
+          169.90277,
+          169.93372,
+          169.963,
+          169.9706,
+          169.95714,
+          169.93654,
+          169.91399,
+          169.89618,
+          169.876,
+          169.86047,
+          169.8711,
+          169.89606,
+          169.90363,
+          169.89435,
+          169.88568,
+          169.87778,
+          169.87973,
+          169.89774,
+          169.92204,
+          169.94739,
+          169.96347,
+          169.96808,
+          169.97969,
+          170.00351,
+          170.0216,
+          170.02617,
+          170.02167,
+          170.00522,
+          169.97299,
+          169.92758,
+          169.87633,
+          169.8249,
+          169.7745,
+          169.73997,
+          169.73697,
+          169.76149,
+          169.80376,
+          169.84842,
+          169.88203,
+          169.90976,
+          169.94452,
+          169.97772,
+          169.99226,
+          169.9888,
+          169.9693,
+          169.93149,
+          169.88593,
+          169.85452,
+          169.8417,
+          169.83183,
+          169.81664,
+          169.79971,
+          169.789,
+          169.79477,
+          169.82054,
+          169.85631,
+          169.8875,
+          169.90305,
+          169.91164,
+          169.93527,
+          169.97327,
+          170.00302,
+          170.0192,
+          170.04437,
+          170.08069,
+          170.10242,
+          170.10321,
+          170.09369,
+          170.06888,
+          170.03423,
+          170.00262,
+          169.96176,
+          169.91833,
+          169.89182,
+          169.8678,
+          169.83374,
+          169.79433,
+          169.75613,
+          169.72568,
+          169.71298,
+          169.72015,
+          169.7288,
+          169.73476,
+          169.74377,
+          169.76181,
+          169.79306,
+          169.82175,
+          169.8443,
+          169.86409,
+          169.88126,
           169.8985,
-          169.87979,
-          169.85246,
-          169.83112,
-          169.82611,
-          169.82335,
-          169.82028,
-          169.82681,
-          169.83392,
-          169.8349,
-          169.8298,
-          169.8188,
-          169.80357,
-          169.78476,
-          169.77248,
-          169.7835,
-          169.82565,
-          169.88701,
-          169.94963,
-          169.99849,
-          170.02855,
-          170.048,
-          170.06094,
-          170.07385,
-          170.08322,
-          170.07147,
-          170.03912,
-          169.99857,
-          169.95084,
-          169.89342,
-          169.82883,
-          169.77632,
-          169.76529,
-          169.78781,
-          169.81358,
-          169.83923,
-          169.87311,
-          169.91571,
-          169.96715,
-          170.03003,
-          170.09756,
-          170.14447,
-          170.16187,
-          170.16942,
-          170.16846,
-          170.14848,
-          170.11902,
+          169.90594,
+          169.90842,
+          169.92122,
+          169.95145,
+          169.99161,
+          170.01494,
+          170.01419,
+          170.01155,
+          170.02176,
+          170.03995,
+          170.04897,
+          170.03531,
+          170.01492,
+          170.01593,
+          170.03108,
+          170.0413,
+          170.06042,
+          170.09169,
+          170.10829,
+          170.10252,
           170.0875,
-          170.05655,
-          170.04271,
-          170.04424,
-          170.04839,
-          170.05986,
-          170.07018,
-          170.06923,
-          170.06635,
-          170.0594,
-          170.04012,
-          170.022,
-          170.01819,
-          170.02841,
-          170.05013,
-          170.07516,
-          170.09506,
-          170.11342,
-          170.12868,
-          170.12743,
-          170.11404,
-          170.10814,
-          170.11124,
-          170.11226,
-          170.11142,
-          170.11295,
-          170.12091,
-          170.13852,
-          170.15256,
-          170.15492,
-          170.15535,
-          170.15121,
-          170.13243,
-          170.10715,
-          170.09578,
-          170.09259,
-          170.08388,
-          170.08405,
-          170.0903,
-          170.07423,
-          170.037,
-          169.9943,
-          169.95071,
-          169.92004,
-          169.91154,
-          169.92403,
-          169.9546,
-          169.99709,
-          170.0416,
-          170.07468,
-          170.09349,
-          170.10965,
-          170.1245,
-          170.11765,
+          170.063,
+          170.02571,
+          169.9827,
+          169.93329,
+          169.8825,
+          169.84459,
+          169.8318,
+          169.85158,
+          169.88559,
+          169.91591,
+          169.95427,
+          169.9977,
+          170.0332,
+          170.06494,
+          170.09,
+          170.09668,
+          170.07999,
+          170.04367,
+          170.00346,
+          169.97295,
+          169.93822,
+          169.90022,
+          169.87944,
+          169.86748,
+          169.8567,
+          169.85376,
+          169.85423,
+          169.8606,
+          169.87292,
+          169.88313,
+          169.89293,
+          169.9073,
+          169.92761,
+          169.9367,
+          169.92061,
+          169.88596,
+          169.84547,
+          169.80699,
+          169.7757,
+          169.76855,
+          169.79471,
+          169.84113,
+          169.88492,
+          169.90851,
+          169.92647,
+          169.95978,
+          170.00273,
+          170.04904,
+          170.08911,
+          170.10303,
+          170.09444,
+          170.07674,
+          170.04092,
+          169.99666,
+          169.97893,
+          169.98349,
+          169.98392,
+          169.98412,
+          169.99873,
+          170.024,
+          170.049,
+          170.08005,
+          170.11313,
+          170.1345,
+          170.15215,
+          170.16759,
+          170.16638,
+          170.14099,
+          170.10144,
+          170.07213,
+          170.0718,
+          170.09308,
+          170.10782,
+          170.10324,
           170.0831,
-          170.0416,
-          170.01244,
-          170.00342,
-          170.00558,
-          170.00693,
+          170.05484,
+          170.03688,
+          170.02632,
+          170.00479,
+          169.97537,
+          169.95212,
+          169.94234,
+          169.94016,
+          169.93369,
+          169.92168,
+          169.91081,
+          169.90463,
+          169.91142,
+          169.9283,
+          169.93343,
+          169.9256,
+          169.92389,
+          169.93747,
+          169.96051,
+          169.98456,
+          170.00531,
+          170.02281,
+          170.05089,
+          170.08473,
+          170.09982,
+          170.09799,
+          170.09062,
+          170.07625,
+          170.06152,
+          170.05309,
+          170.04326,
+          170.02975,
+          170.00974,
         ]),
         "quartz::components::Targets": ([]),
       },
@@ -40470,8 +40471,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 487.75836,
-            y: -1066.861,
+            x: 457.34296,
+            y: -1050.9834,
             z: 0.17300001,
           ),
           rotation: (
@@ -40481,8 +40482,8 @@
             w: 1.0,
           ),
           scale: (
-            x: 3.7834604,
-            y: 3.7834604,
+            x: 6.506361,
+            y: 6.506361,
             z: 1.0,
           ),
         ),
@@ -40505,8 +40506,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 477.7518,
-            y: -1035.4679,
+            x: 450.67422,
+            y: -1019.1512,
             z: 0.171,
           ),
           rotation: (
@@ -40516,8 +40517,8 @@
             w: 1.0,
           ),
           scale: (
-            x: 4.6797023,
-            y: 4.6797023,
+            x: 7.139175,
+            y: 7.139175,
             z: 1.0,
           ),
         ),
@@ -40719,8 +40720,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 422.97015,
-            y: -1011.9973,
+            x: 392.8183,
+            y: -1006.74805,
             z: 0.171,
           ),
           rotation: (
@@ -40730,8 +40731,8 @@
             w: 1.0,
           ),
           scale: (
-            x: 4.6797023,
-            y: 4.6797023,
+            x: 6.699966,
+            y: 6.699966,
             z: 1.0,
           ),
         ),
@@ -40921,8 +40922,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 452.4141,
-            y: -1031.7084,
+            x: 423.57983,
+            y: -1020.047,
             z: 0.172,
           ),
           rotation: (
@@ -40932,8 +40933,8 @@
             w: 1.0,
           ),
           scale: (
-            x: 4.6797023,
-            y: 4.6797023,
+            x: 6.524307,
+            y: 6.524307,
             z: 1.0,
           ),
         ),
@@ -40956,8 +40957,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 435.56503,
-            y: -1071.3889,
+            x: 407.60913,
+            y: -1059.3761,
             z: 0.17,
           ),
           rotation: (
@@ -40993,8 +40994,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 448.65112,
-            y: -1011.8773,
+            x: 419.81683,
+            y: -1003.5537,
             z: 0.17300001,
           ),
           rotation: (
@@ -41004,8 +41005,8 @@
             w: 1.0,
           ),
           scale: (
-            x: 4.6797023,
-            y: 4.6797023,
+            x: 7.0512843,
+            y: 7.0512843,
             z: 1.0,
           ),
         ),
@@ -41028,8 +41029,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 442.93353,
-            y: -1050.429,
+            x: 414.7141,
+            y: -1041.3148,
             z: 0.171,
           ),
           rotation: (
@@ -41039,8 +41040,8 @@
             w: 1.0,
           ),
           scale: (
-            x: 4.6797023,
-            y: 4.6797023,
+            x: 7.4904933,
+            y: 7.4904933,
             z: 1.0,
           ),
         ),
@@ -41096,8 +41097,8 @@
       components: {
         "bevy_transform::components::transform::Transform": (
           translation: (
-            x: 465.51892,
-            y: -1015.29395,
+            x: 437.2995,
+            y: -1006.97034,
             z: 0.17,
           ),
           rotation: (
@@ -42876,6 +42877,111 @@
         "quartz::components::BlackHole": (
           wh: 4294968450,
           wh_parent: 4294968307,
+        ),
+      },
+    ),
+    4294968452: (
+      components: {
+        "bevy_transform::components::transform::Transform": (
+          translation: (
+            x: 602.5335,
+            y: -1061.0304,
+            z: 0.0,
+          ),
+          rotation: (
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+            w: 1.0,
+          ),
+          scale: (
+            x: 28.721779,
+            y: 28.721779,
+            z: 1.0,
+          ),
+        ),
+        "quartz::components::Col": ((
+          hue: 296.71167,
+          saturation: 1.0,
+          lightness: 0.75943774,
+          alpha: 1.0,
+        )),
+        "quartz::components::Vertices": (6),
+        "quartz::components::Order": (0),
+        "quartz::components::Number": (0.0),
+        "quartz::components::Op": ("mul(.6)"),
+        "quartz::components::Holes": ([
+          4294968454,
+        ]),
+        "quartz::components::Arr": ([]),
+        "quartz::components::Targets": ([]),
+      },
+    ),
+    4294968453: (
+      components: {
+        "bevy_transform::components::transform::Transform": (
+          translation: (
+            x: 553.0406,
+            y: -1060.9463,
+            z: 0.113999985,
+          ),
+          rotation: (
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+            w: 1.0,
+          ),
+          scale: (
+            x: 5.9153705,
+            y: 5.9153705,
+            z: 1.0,
+          ),
+        ),
+        "quartz::components::Col": ((
+          hue: 0.0,
+          saturation: 0.0,
+          lightness: 0.8,
+          alpha: 1.0,
+        )),
+        "quartz::components::Vertices": (6),
+        "quartz::components::WhiteHole": (
+          bh: 4294968454,
+          bh_parent: 4294968452,
+          link_types: (0, 2),
+          open: false,
+        ),
+      },
+    ),
+    4294968454: (
+      components: {
+        "bevy_transform::components::transform::Transform": (
+          translation: (
+            x: 572.00726,
+            y: -1061.7238,
+            z: 0.001,
+          ),
+          rotation: (
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+            w: 1.0,
+          ),
+          scale: (
+            x: 7.1102324,
+            y: 7.1102324,
+            z: 1.0,
+          ),
+        ),
+        "quartz::components::Col": ((
+          hue: 0.0,
+          saturation: 0.0,
+          lightness: 0.2,
+          alpha: 1.0,
+        )),
+        "quartz::components::Vertices": (6),
+        "quartz::components::BlackHole": (
+          wh: 4294968453,
+          wh_parent: 4294967471,
         ),
       },
     ),
