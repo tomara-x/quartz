@@ -1252,10 +1252,10 @@ pub fn command_parser(
                 let mut t = String::new();
                 for e in selected_query.iter() {
                     if let Ok(arr) = arr_query.get(e) {
-                        t = t + &format!("[{}]{:?}  ", e, arr.0);
+                        t = t + &format!("[{}]{:?}\n", e, arr.0);
                     }
                 }
-                *text = format!(">ARRAY: {}", t);
+                *text = format!(">ARRAY:\n{}", t);
             }
             Some("iho") => {
                 let mut t = String::new();
