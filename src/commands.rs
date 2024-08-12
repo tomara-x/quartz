@@ -1366,7 +1366,9 @@ pub fn command_parser(
                 for e in selected_query.iter() {
                     if let Ok(targets) = targets_query.get(e) {
                         for t in &targets.0 {
-                            commands.entity(*t).insert(Selected);
+                            if let Some(mut e) = commands.get_entity(*t) {
+                                e.insert(Selected);
+                            }
                         }
                         commands.entity(e).remove::<Selected>();
                     }
