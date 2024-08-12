@@ -1517,8 +1517,8 @@ pub fn process(
                     }
                 }
             }
-            // kr() | reset() | sr()
-            68..=70 => {
+            // kr() | reset() | sr() | s()
+            68..=70 | 95 => {
                 let op_changed = op_changed_query.get(*id).unwrap().0;
                 let lost = lost_wh_query.get(*id).unwrap().0;
                 let num_changed = num_query.get_mut(*id).unwrap().is_changed();
@@ -1539,14 +1539,17 @@ pub fn process(
                         let net = net_query.get(input).unwrap().0.clone();
                         let n = num_query.get(*id).unwrap().0;
                         let output = &mut net_query.get_mut(*id).unwrap().0;
+                        // kr()
                         if op_num == 68 {
-                            // kr()
-                            *output = Net::wrap(Box::new(Kr::new(net, n.max(1.) as usize)));
+                            *output = Net::wrap(Box::new(Kr::new(net, n.max(1.) as usize, false)));
+                        // s()
+                        } else if op_num == 95 {
+                            *output = Net::wrap(Box::new(Kr::new(net, n.max(1.) as usize, true)));
+                        // reset()
                         } else if op_num == 69 && net.inputs() == 0 && net.outputs() == 1 {
-                            // reset()
                             *output = Net::wrap(Box::new(An(Reset::new(net, n))));
+                        // sr()
                         } else if op_num == 70 {
-                            // sr()
                             *output = net;
                             output.set_sample_rate(n as f64);
                         }

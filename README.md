@@ -663,6 +663,8 @@ refer to the fundsp [readme](https://github.com/SamiPerttu/fundsp), and [docs](h
     - inputs: `n`, `0 -> 1` (input node)
     - node: ins and outs are the same as the given node
     - tick the input node once every n samples
+- `s()`
+    - same as `kr()` but since `kr()` will tick the node less frequently than it would normally, that has an effect on how it behaves (times and frequencies get stretched) `s()` avoids that by setting the sr of the given node to sr/n in order to preserve the time of that node
 - `sr()`
     - inputs: `n`, `0 -> 1` (input node)
     - set the sample rate for the input node

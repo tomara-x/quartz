@@ -239,15 +239,17 @@ pub struct Kr {
     count: usize,
     inputs: usize,
     outputs: usize,
+    // set the sr of the inner net to sr/n to keep durations and frequencies unchanged
+    preserve_time: bool,
 }
 
 impl Kr {
-    pub fn new(x: Net, n: usize) -> Self {
+    pub fn new(x: Net, n: usize, preserve_time: bool) -> Self {
         let inputs = x.inputs();
         let outputs = x.outputs();
         let mut vals = Vec::new();
         vals.resize(outputs, 0.);
-        Kr { x, n, vals, count: 0, inputs, outputs }
+        Kr { x, n, vals, count: 0, inputs, outputs, preserve_time }
     }
 }
 
@@ -259,7 +261,11 @@ impl AudioUnit for Kr {
     }
 
     fn set_sample_rate(&mut self, sample_rate: f64) {
-        self.x.set_sample_rate(sample_rate);
+        if self.preserve_time {
+            self.x.set_sample_rate(sample_rate / self.n as f64);
+        } else {
+            self.x.set_sample_rate(sample_rate);
+        }
     }
 
     fn tick(&mut self, input: &[f32], output: &mut [f32]) {

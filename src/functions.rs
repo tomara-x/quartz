@@ -1277,6 +1277,7 @@ pub fn str_to_op_num(op: &str) -> u16 {
         "quantize()" => 66,
         "feedback()" => 67,
         "kr()" => 68,
+        "s()" => 95,
         "reset()" => 69,
         "sr()" => 70,
         "trig_reset()" => 71,
