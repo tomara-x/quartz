@@ -67,20 +67,41 @@ when you open quartz, it will be an empty window. there's 3 modes:
 hold `space`, then drag to pan the view, or scroll to zoom in and out
 
 ---
-### circle anatomy
-first, define your terms:
-- circle: an object that you create in draw mode (they're regular polygons)
+### anatomy
+terms:
+- circle[^1]: an object that you create in draw mode (they're regular polygons)
 - hole: a connection object. these always come in (black hole - white hole) pairs
 - entity: i'll use that to refer to any object (circle or hole)
 
-in addition to the shared properties that both circles and holes have (position, color, radius, vertices) a circle holds other things:
-- a number (just a float)
+note: in this file i'll use square brackets `[]` in arguments to denote an optional argument
+
+both circles and holes have:
+- position: x, y, z (z controls depth, what's in front of what)
+- color: in hsla (hue, saturation, lightness, alpha) (hue is in the range [0...360], the rest in the range [0...1])
+- radius: from zero to beeeg
+- vertices: the number of sides (3 or more)
+
+a circle has other things in addition:
+- a number (32-bit float)
 - an [op string](#ops): defining what that circle does
-     - for example: `sum`, `toggle`, `screenshot`, `lowpass()`
-- an array of numbers: for different uses (don't worry it's empty by default, thus allocating no memory)
+     - for example: `sum`, `sine()`, `toggle`, `screenshot`, `lowpass()`
+- an array of numbers: for different uses (empty by default)
 - an array of [target](#targets) entities that this circle controls in some way (empty by default too)
 - an [order](#order) number: defining if/when that circle is processed
 - an audio node (defined by the op string) (empty by default)
+
+holes store information about what they connect:
+- a white hole has:
+    - the black hole it's connected to
+    - and the circle that has that black hole
+    - [link types](#link_types)
+    - and it an open status (whether or not some new data came from the black hole)
+- a black hole knows:
+    - the white hole it's connected to
+    - the circle that has that white hole
+
+[^1]: in early development everything was actually circular, there wasn't a vertices control.. and the word stuck
+
 ---
 ### commands
 there are 2 types of commands:
@@ -117,8 +138,8 @@ there are 2 types of commands:
 - `:set a [id] {float}` set alpha [0...1]
 - `:set v [id] {float}` set number of vertices (3 or higher)
 - `:set o [id] {float}` set rotation [-pi...pi] (`:set rot` and `:set rotation` also work)
-- `:set op [id] {string}` set op (use shortcut `o`)
-- `:set ord[er] [id] {float}` set order (use `[` and `]` to increment/decrement order)
+- `:set op [id] {string}` set the [op string](#ops) (use shortcut `o`)
+- `:set ord[er] [id] {float}` set [order](#order) (use `]` and `[` to go up/down by one)
 - `:set arr[ay] [id] {float float ...}` set the array (space separated)
 - `:set tar[gets] {id id ...}` set targets (if nothing is selected, the first entity gets the rest of the list as its targets)
 - `:tsel {id}` target selected (`:tsel 4v2` sets selected entities as targets of entity 4v2)
@@ -323,10 +344,10 @@ any connection links 2 circles together in some way. the black hole is taking so
 - `A` or `-13` : array
 - `T` or `-14` : targets
 - positive numbers: used to denote "input number x"
-- `0` usually means audio node (or nothing)
-a `0 -> 0` connection does nothing (except for specific ops), but when connecting audio nodes, the connection is usually `0 -> x` (x is positive)
+- `0` can mean audio node, op string, or nothing (it depends on the op)
+a `0 -> 0` connection does nothing (except for connective ops, seq, and select)
 
-use `}`/`{` to increment/decrement link types. or use `l` with selected holes to set a specific link type
+use `}`/`{` to go up/down by one. or use `l` with selected holes to set a specific link type
 
 ---
 ### order
@@ -662,9 +683,9 @@ refer to the fundsp [readme](https://github.com/SamiPerttu/fundsp), and [docs](h
 - `kr()`
     - inputs: `n`, `0 -> 1` (input node)
     - node: ins and outs are the same as the given node
-    - tick the input node once every n samples
+    - process the input node once every n samples (this can be used to optimize things that don't need to be processed sample-by-sample)
 - `s()`
-    - same as `kr()` but since `kr()` will tick the node less frequently than it would normally, that has an effect on how it behaves (times and frequencies get stretched) `s()` avoids that by setting the sr of the given node to sr/n in order to preserve the time of that node
+    - same as `kr()` but since `kr()` will process the node less frequently than it would normally, that has an effect on how it behaves (times and frequencies get stretched) `s()` avoids that by setting the sr of the given node to sr/n in order to preserve the time of that node
 - `sr()`
     - inputs: `n`, `0 -> 1` (input node)
     - set the sample rate for the input node
