@@ -547,14 +547,18 @@ impl AudioUnit for SwapUnit {
 
     fn tick(&mut self, input: &[f32], output: &mut [f32]) {
         if let Ok(net) = self.receiver.try_recv() {
-            self.x = net;
+            if self.x.inputs() == net.inputs() && self.x.outputs() == net.outputs() {
+                self.x = net;
+            }
         }
         self.x.tick(input, output);
     }
 
     fn process(&mut self, size: usize, input: &BufferRef, output: &mut BufferMut) {
         if let Ok(net) = self.receiver.try_recv() {
-            self.x = net;
+            if self.x.inputs() == net.inputs() && self.x.outputs() == net.outputs() {
+                self.x = net;
+            }
         }
         self.x.process(size, input, output);
     }
