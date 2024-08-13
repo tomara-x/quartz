@@ -1341,7 +1341,7 @@ pub fn process(
                                 for _ in 0..len {
                                     let mut s = [0.0];
                                     net.tick(&[], &mut s);
-                                    output.push(s[0])
+                                    output.push(s[0]);
                                 }
                             }
                             lt_to_open = Some(-13);
