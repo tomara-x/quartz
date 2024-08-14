@@ -92,17 +92,17 @@ a circle has other things in addition:
 
 holes store information about what they connect:
 - a white hole has:
-    - the black hole it's connected to
-    - and the circle that has that black hole
+    - id of the black hole it's connected to
+    - id of the circle that has that black hole
     - [link types](#link_types)
-    - and it has an open status (whether or not to read data from the black hole[^2])
-- a black hole knows:
-    - the white hole it's connected to
-    - the circle that has that white hole
+    - an open status (whether or not to read data from the black hole[^2])
+- a black hole has:
+    - id of the white hole it's connected to
+    - id of the circle that has that white hole
 
 [^1]: in early development everything was actually circular, there wasn't a vertices control.. and the word stuck
 
-[^2]: in some ops this is ignored and the op just reads data even if the white hole isn't open
+[^2]: when there is a change on the black hole side, this gets opened automatically. then it gets closed once the data is read. in some ops this is ignored and the op just reads data even if the white hole isn't open
 
 ---
 ### commands
