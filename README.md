@@ -95,12 +95,14 @@ holes store information about what they connect:
     - the black hole it's connected to
     - and the circle that has that black hole
     - [link types](#link_types)
-    - and it an open status (whether or not some new data came from the black hole)
+    - and it has an open status (whether or not to read data from the black hole[^2])
 - a black hole knows:
     - the white hole it's connected to
     - the circle that has that white hole
 
 [^1]: in early development everything was actually circular, there wasn't a vertices control.. and the word stuck
+
+[^2]: in some ops this is ignored and the op just reads data even if the white hole isn't open
 
 ---
 ### commands
