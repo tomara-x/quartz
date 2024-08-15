@@ -80,6 +80,7 @@ both circles and holes have:
 - color: in hsla (hue, saturation, lightness, alpha) (hue is in the range [0...360], the rest in the range [0...1])
 - radius: from zero to beeeg
 - vertices: the number of sides (3 or more)
+- rotation: in radians [-PI...PI]
 
 a circle has other things in addition:
 - a number (32-bit float)
@@ -399,13 +400,13 @@ some ops make a circle do things to its targets. like `process`, `del_targets`, 
     - delete targets and clear targets array when input is non-zero
 - `spin_target`
     - inputs: `n`, `n -> 1`
-    - rotate targets around self by self `n` when input `n` is non-zero
+    - rotate targets around this circle by `n` (radians) when input is non-zero
 - `reorder`
     - inputs: `n -> 1`
     - set target circles' order to input `n`
 - `spawn`
     - inputs: `n -> 1`
-    - spawn a new circle similar to self when input is non-zero. the new circle is added to this circle's targets. only the color, vertices, and transform (ish) are copied (z depth is increased with each one)
+    - spawn a new circle similar to this one when input is non-zero. the new circle is added to this circle's targets. only the color, vertices, and transform (ish) are copied (z depth is increased with each one)
 - `distro`
     - inputs: `A -> n/r/x/y/z/r/o/v/h/s/l/a/-10` (any number of those)
     - distribute values from input array among targets
@@ -435,37 +436,37 @@ some ops make a circle do things to its targets. like `process`, `del_targets`, 
     - zip array 1 and array 2
 - `unzip`
     - inputs: `A -> 1`
-    - unzip input array (one side remains in input array, the other side is in self)
+    - unzip input array (one side remains in input array, the other side is in this circle)
 - `push`
     - inputs: `n -> 1`
-    - push input num to self's array
+    - push input num to this circle's array
 - `pop`
     - inputs: `n -> 1`
-    - pop the last number in the array and set self's num to it when input is non-zero
+    - pop the last number in the array and set this circle's num to it when input is non-zero
 - `len`
     - inputs: `A -> 1` or `T -> 1`
     - length of array (or targets array)
 - `append`
     - inputs: `A -> 1`
-    - copy input array and append it to the end of self's array
+    - copy input array and append it to the end of this circle's array
 - `slice`
     - inputs: `n`, `A -> 1`
-    - slice input array at index `n`, [0..n] remain in input array, [n..len] are moved to self's array
+    - slice input array at index `n`, [0..n] remain in input array, [n..len] are moved to this circle's array
 - `resize`
     - inputs: `n -> 1`
-    - resize self's array, discards numbers when shrinking, and adds zeros when growing
+    - resize this circle's array, discards numbers when shrinking, and adds zeros when growing
 - `contains`
     - inputs: `A -> 1`, `n -> 2`
     - outputs 1 when input array contains input num, 0 otherwise
 - `set`
     - inputs: `n -> 1`, `n -> 2`
-    - first input is index, second is value. sets the value of the given index of self's array
+    - first input is index, second is value. sets the value of the given index of this circle's array
 - `get`
     - inputs: `A -> 1`, `n -> 2`
     - get the value at index of the input array
 - `collect`
     - inputs: `n -> {non-negative}` (any number of those)
-    - collect all connected nums and create an array of them in order (in self)
+    - collect all connected nums and add them in order to this circle's array
 
 </p>
 </details>
@@ -536,7 +537,7 @@ but for persistent change to bloom/tonemapping you have to leave the circles wit
 - `osc`
     - set the settings of osc sender and receiver
     - `n -> 1` receiver port (needs to be specified for receiving to work)
-    - `0 -> 2` op string of the input sets the host ip (ip to send to) (defaults to 127.0.0.1 (the machine itself))
+    - `0 -> 2` op string of the input sets the host ip (ip to send to) (defaults to 127.0.0.1 (localhost))
     - `n -> 3` sender port (defaults to 1729)
 - `osc_r_{osc address}`
     - receive osc messages into the array of this circle. the `osc` op must be present in this patch and is processing for this to work. the osc messages must be sent to the given osc address and contain floats. you can receive from multiple addresses
@@ -595,7 +596,7 @@ for more info about osc: https://opensoundcontrol.stanford.edu/spec-1_0.html
     - render n samples from the given audio node into the array when the second input is non-zero (node must have 0 ins, and 1 out). can process a maximum of 10 million samples at a time (a limit to avoid causing memory issues and excessive cpu usage)
 - `store`
     - inputs: `n -> 1`
-    - store the input num into self's num, but doesn't open the white holes reading nums like usual
+    - store the input num into this circle's num, but doesn't open the white holes reading nums like usual
 - `num_push`
     - inputs: `n -> 1`
     - output this circle's num (open all white holes reading it) when the input num in non-zero
