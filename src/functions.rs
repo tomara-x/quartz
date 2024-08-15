@@ -99,10 +99,10 @@ pub fn parse_with_constants(s: &str) -> Result<f32, &str> {
             "-PHI" => Ok(-1.618034),
             "-SQRT_3" => Ok(-1.7320508),
 
-            "MAX" => Ok(std::f32::MAX),
-            "MIN" => Ok(std::f32::MIN),
-            "EPSILON" => Ok(std::f32::EPSILON),
-            "MIN_POSITIVE" => Ok(std::f32::MIN_POSITIVE),
+            "MAX" => Ok(f32::MAX),
+            "MIN" => Ok(f32::MIN),
+            "EPSILON" => Ok(f32::EPSILON),
+            "MIN_POSITIVE" => Ok(f32::MIN_POSITIVE),
             _ => Err("not a float nor a constant"),
         }
     }
