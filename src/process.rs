@@ -174,60 +174,65 @@ pub fn process(
                 if !wh.open {
                     continue;
                 }
-                if wh.link_types.0 == -13 && wh.link_types.1 != -13 {
-                    continue;
-                }
-                let mut input = 0.;
+                let mut input = None;
                 match wh.link_types.0 {
-                    -1 => input = num_query.get(wh.bh_parent).unwrap().0,
-                    -2 => input = trans_query.get(wh.bh_parent).unwrap().scale.x,
-                    -3 => input = trans_query.get(wh.bh_parent).unwrap().translation.x,
-                    -4 => input = trans_query.get(wh.bh_parent).unwrap().translation.y,
-                    -5 => input = trans_query.get(wh.bh_parent).unwrap().translation.z,
-                    -6 => input = col_query.get(wh.bh_parent).unwrap().0.hue,
-                    -7 => input = col_query.get(wh.bh_parent).unwrap().0.saturation,
-                    -8 => input = col_query.get(wh.bh_parent).unwrap().0.lightness,
-                    -9 => input = col_query.get(wh.bh_parent).unwrap().0.alpha,
-                    -11 => input = vertices_query.get(wh.bh_parent).unwrap().0 as f32,
+                    -1 => input = Some(num_query.get(wh.bh_parent).unwrap().0),
+                    -2 => input = Some(trans_query.get(wh.bh_parent).unwrap().scale.x),
+                    -3 => input = Some(trans_query.get(wh.bh_parent).unwrap().translation.x),
+                    -4 => input = Some(trans_query.get(wh.bh_parent).unwrap().translation.y),
+                    -5 => input = Some(trans_query.get(wh.bh_parent).unwrap().translation.z),
+                    -6 => input = Some(col_query.get(wh.bh_parent).unwrap().0.hue),
+                    -7 => input = Some(col_query.get(wh.bh_parent).unwrap().0.saturation),
+                    -8 => input = Some(col_query.get(wh.bh_parent).unwrap().0.lightness),
+                    -9 => input = Some(col_query.get(wh.bh_parent).unwrap().0.alpha),
+                    -11 => input = Some(vertices_query.get(wh.bh_parent).unwrap().0 as f32),
                     -12 => {
-                        input = trans_query
-                            .get(wh.bh_parent)
-                            .unwrap()
-                            .rotation
-                            .to_euler(EulerRot::XYZ)
-                            .2
+                        input = Some(
+                            trans_query
+                                .get(wh.bh_parent)
+                                .unwrap()
+                                .rotation
+                                .to_euler(EulerRot::XYZ)
+                                .2,
+                        )
+                    }
+                    -13 if wh.link_types.1 == -13 => {
+                        let arr = arr_query.get(wh.bh_parent).unwrap().0.clone();
+                        arr_query.get_mut(*id).unwrap().0 = arr;
+                        lt_to_open = -13;
+                    }
+                    -14 if wh.link_types.1 == -14 => {
+                        let arr = targets_query.get(wh.bh_parent).unwrap().0.clone();
+                        targets_query.get_mut(*id).unwrap().0 = arr;
+                        lt_to_open = -14;
                     }
                     _ => {}
                 }
-                match wh.link_types.1 {
-                    -1 => num_query.get_mut(*id).unwrap().0 = input,
-                    -2 => {
-                        trans_query.get_mut(*id).unwrap().scale.x = input.max(0.);
-                        trans_query.get_mut(*id).unwrap().scale.y = input.max(0.);
+                if let Some(input) = input {
+                    lt_to_open = wh.link_types.1;
+                    match wh.link_types.1 {
+                        -1 => num_query.get_mut(*id).unwrap().0 = input,
+                        -2 => {
+                            trans_query.get_mut(*id).unwrap().scale.x = input.max(0.);
+                            trans_query.get_mut(*id).unwrap().scale.y = input.max(0.);
+                        }
+                        -3 => trans_query.get_mut(*id).unwrap().translation.x = input,
+                        -4 => trans_query.get_mut(*id).unwrap().translation.y = input,
+                        -5 => trans_query.get_mut(*id).unwrap().translation.z = input,
+                        -6 => col_query.get_mut(*id).unwrap().0.hue = input,
+                        -7 => col_query.get_mut(*id).unwrap().0.saturation = input,
+                        -8 => col_query.get_mut(*id).unwrap().0.lightness = input,
+                        -9 => col_query.get_mut(*id).unwrap().0.alpha = input,
+                        -11 => {
+                            vertices_query.get_mut(*id).unwrap().0 = (input as usize).clamp(3, 64)
+                        }
+                        -12 => {
+                            let q = Quat::from_euler(EulerRot::XYZ, 0., 0., input);
+                            trans_query.get_mut(*id).unwrap().rotation = q;
+                        }
+                        _ => lt_to_open = 0,
                     }
-                    -3 => trans_query.get_mut(*id).unwrap().translation.x = input,
-                    -4 => trans_query.get_mut(*id).unwrap().translation.y = input,
-                    -5 => trans_query.get_mut(*id).unwrap().translation.z = input,
-                    -6 => col_query.get_mut(*id).unwrap().0.hue = input,
-                    -7 => col_query.get_mut(*id).unwrap().0.saturation = input,
-                    -8 => col_query.get_mut(*id).unwrap().0.lightness = input,
-                    -9 => col_query.get_mut(*id).unwrap().0.alpha = input,
-                    -11 => vertices_query.get_mut(*id).unwrap().0 = (input as usize).clamp(3, 64),
-                    -12 => {
-                        let q = Quat::from_euler(EulerRot::XYZ, 0., 0., input);
-                        trans_query.get_mut(*id).unwrap().rotation = q;
-                    }
-                    _ => {}
                 }
-                if wh.link_types == (-13, -13) {
-                    let arr = arr_query.get(wh.bh_parent).unwrap().0.clone();
-                    arr_query.get_mut(*id).unwrap().0 = arr;
-                }
-                if wh.link_types == (-14, -14) {
-                    let arr = targets_query.get(wh.bh_parent).unwrap().0.clone();
-                    targets_query.get_mut(*id).unwrap().0 = arr;
-                }
-                lt_to_open = wh.link_types.1;
             }
             // open all white holes reading whatever just changed
             if lt_to_open != 0 {
