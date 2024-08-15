@@ -443,8 +443,8 @@ some ops make a circle do things to its targets. like `process`, `del_targets`, 
     - inputs: `n -> 1`
     - pop the last number in the array and set self's num to it when input is non-zero
 - `len`
-    - inputs: `A -> 1`
-    - length of input array
+    - inputs: `A -> 1` or `T -> 1`
+    - length of array (or targets array)
 - `append`
     - inputs: `A -> 1`
     - copy input array and append it to the end of self's array
