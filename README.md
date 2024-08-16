@@ -600,6 +600,8 @@ for more info about osc: https://opensoundcontrol.stanford.edu/spec-1_0.html
 - `num_push`
     - inputs: `n -> 1`
     - output this circle's num (open all white holes reading it) when the input num in non-zero
+- `worm[string]`
+    - multiple circles with the same op string (starting with `worm`) will mirror the same number value. when one's num changes, the others follow. their order matters, as value flows from lower to higher order
 - `sum`
     - inputs: `n -> 1` (any number of those)
     - convenience op for adding numbers together

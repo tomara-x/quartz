@@ -1317,6 +1317,8 @@ pub fn str_to_op_num(op: &str) -> u16 {
                 51
             } else if x.starts_with("swap") {
                 91
+            } else if x.starts_with("worm") {
+                96
             } else {
                 0
             }

@@ -166,6 +166,7 @@ pub fn process(
     ),
 ) {
     let key_event = key_event.read().collect::<Vec<_>>();
+    let mut worm: Vec<(String, f32)> = Vec::new();
     'entity: for id in queue.0.iter().flatten().chain(loopq.0.iter()) {
         let holes = &holes_query.get(*id).unwrap().0;
         for hole in holes {
@@ -1351,6 +1352,19 @@ pub fn process(
                             }
                             lt_to_open = Some(-13);
                         }
+                    }
+                }
+            }
+            // worm
+            96 => {
+                let n = num_query.get_mut(*id).unwrap();
+                if n.is_changed() {
+                    worm.push((op.to_string(), n.0));
+                }
+                for (address, n) in &worm {
+                    if *address == op {
+                        num_query.get_mut(*id).unwrap().0 = *n;
+                        lt_to_open = Some(-1);
                     }
                 }
             }
