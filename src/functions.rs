@@ -644,6 +644,15 @@ pub fn str_to_net(op: &str) -> Net {
                 return Net::wrap(Box::new(reverb_stereo(*p, 5., 1.)));
             }
         }
+        "reverb_mono" => {
+            if let Some(p) = p.get(0..3) {
+                return Net::wrap(Box::new(split() >> reverb_stereo(p[0], p[1], p[2]) >> join()));
+            } else if let Some(p) = p.get(0..2) {
+                return Net::wrap(Box::new(split() >> reverb_stereo(p[0], p[1], 1.) >> join()));
+            } else if let Some(p) = p.first() {
+                return Net::wrap(Box::new(split() >> reverb_stereo(*p, 5., 1.) >> join()));
+            }
+        }
         "tap" => {
             if let Some(p) = p.get(0..2) {
                 let p0 = p[0].max(0.);

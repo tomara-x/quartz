@@ -806,6 +806,7 @@ other
 - `limiter(float, float)` look ahead limiter. first param is attack time, second is release time (in seconds)
 - `limiter_stereo(float, float)` (same)
 - `reverb_stereo(float, [float], [float])` (room size, reverberation time, damping) when damping isn't provided it defaults to 1, time defaults to 5
+- `reverb_mono(float, [float], [float])` same but input is passed to both channels and output is joined into one
 - `tap(float, float)` (min delay time, max delay time)
 - `tap_linear(float, float)` (same)
 - `samp_delay(float)` argument is max delay time (in samples), node takes 2 inputs (signal, delay time in samples)
